@@ -1,0 +1,965 @@
+<OmiIexTpPdf>
+
+  <Messages>
+
+    <!-- Snapshot Request Message -->
+    <Message>
+      <Name>Snapshot Request Message</Name>
+      <Dependency>Message Type</Dependency>
+      <Branch>Message Data</Branch>
+      <Code>r</Code>
+      <Origin>Client</Origin>
+      <Description>The Snapshot Request message is sent from the client to the Deep Plus Snap server to authenticate and request a Snapshot Response</Description>
+      <Fields>
+        <Field>
+          <Name>Authentication Token</Name>
+          <Size>40</Size>
+          <Type>String</Type>
+          <Description>Token supplied by Iex Market Ops, left justified and space padded on the right</Description>
+        </Field>
+        <Field>
+          <Name>Channel Id</Name>
+          <Size>4</Size>
+          <Type>Integer</Type>
+          <Description>Channel identifier from the Deep Plus feed IexTp header</Description>
+        </Field>
+        <Field>
+          <Name>Session Id</Name>
+          <Size>4</Size>
+          <Type>Integer</Type>
+          <Description>Session identifier from the Deep Plus feed IexTp header</Description>
+        </Field>
+        <Field>
+          <Name>Minimum Sequence Number</Name>
+          <Size>8</Size>
+          <Type>Long</Type>
+          <Description>Minimum sequence number useable by the client, zero returns the latest snapshot available</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Error Response Message -->
+    <Message>
+      <Name>Error Response Message</Name>
+      <Dependency>Message Type</Dependency>
+      <Branch>Message Data</Branch>
+      <Code>e</Code>
+      <Description>Sent by the Deep Plus Snap server to the client when a Snapshot Request is rejected</Description>
+      <Fields>
+        <Field>
+          <Name>Reject Reason Code</Name>
+          <Size>1</Size>
+          <Type>Byte</Type>
+          <Description>Reason the Snapshot Request was rejected</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Snapshot Start Message -->
+    <Message>
+      <Name>Snapshot Start Message</Name>
+      <Dependency>Message Type</Dependency>
+      <Branch>Message Data</Branch>
+      <Code>s</Code>
+      <Description>First message of a Snapshot Response sent from the Deep Plus Snap server when a Snapshot Request is successful</Description>
+      <Fields>
+        <Field>
+          <Name>Snapshot Length</Name>
+          <Size>8</Size>
+          <Type>Long</Type>
+          <Description>Length in bytes of the complete Snapshot Response including the Snapshot Start message, all Snapshot Data messages, and the Snapshot End message</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Snapshot Data Message -->
+    <Message>
+      <Name>Snapshot Data Message</Name>
+      <Dependency>Message Type</Dependency>
+      <Branch>Message Data</Branch>
+      <Code>d</Code>
+      <Description>Carries one complete Deep Plus feed message wrapped with an IexTp header providing Deep Plus feed sequencing and timing information</Description>
+      <Fields>
+        <Field>
+          <Name>IexTp Header</Name>
+          <Size>40</Size>
+          <Type>Byte</Type>
+          <Description>IexTp header for the wrapped Deep Plus feed message, see the Iex Transport specification</Description>
+        </Field>
+        <Field>
+          <Name>IexTp Message Block Length</Name>
+          <Size>2</Size>
+          <Type>Integer</Type>
+          <Description>Length of the IexTp message block, see the Iex Transport specification</Description>
+        </Field>
+        <Field>
+          <Name>IexTp Message Length</Name>
+          <Size>2</Size>
+          <Type>Integer</Type>
+          <Description>Length of the wrapped Deep Plus message in bytes not including this field</Description>
+        </Field>
+        <Field>
+          <Name>IexTp Message Type</Name>
+          <Size>1</Size>
+          <Type>Byte</Type>
+          <Description>Code identifying the wrapped Deep Plus message type</Description>
+        </Field>
+        <Field>
+          <Name>IexTp Message Data</Name>
+          <Size>0</Size>
+          <Type>Byte</Type>
+          <Description>One complete Iex Deep Plus formatted message, may be any Deep Plus message type, see the Iex Transport specification</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Snapshot End Message -->
+    <Message>
+      <Name>Snapshot End Message</Name>
+      <Dependency>Message Type</Dependency>
+      <Branch>Message Data</Branch>
+      <Code>x</Code>
+      <Description>Final message of a Snapshot Response, carries the sequence number at which the snapshot was created</Description>
+      <Fields>
+        <Field>
+          <Name>Snapshot Sequence Number</Name>
+          <Size>8</Size>
+          <Type>Long</Type>
+          <Description>Sequence at which the snapshot was created</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+
+    <!-- Deep Plus feed messages wrapped in a Snapshot Data Message -->
+
+    <Message>
+      <Name>System Event Message</Name>
+      <Dependency>IexTp Message Type</Dependency>
+      <Branch>IexTp Message Data</Branch>
+      <Code>S</Code>
+      <Description>The System Event Message is used to indicate events that apply to the market or the data feed.</Description>
+      <Fields>
+        <Field>
+          <Name>System Event</Name>
+          <Size>1</Size>
+          <Type>Byte</Type>
+          <Description>System event identifier</Description>
+        </Field>
+        <Field>
+          <Name>Timestamp</Name>
+          <Size>8</Size>
+          <Type>Timestamp</Type>
+          <Description>Time stamp of the system event</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <Message>
+      <Name>Security Directory Message</Name>
+      <Dependency>IexTp Message Type</Dependency>
+      <Branch>IexTp Message Data</Branch>
+      <Code>D</Code>
+      <Description>The System Event Message is used to indicate events that apply to the market or the data feed.</Description>
+      <Fields>
+        <Field>
+          <Name>Security Directory Flags</Name>
+          <Size>0</Size>
+          <Type>bitfield</Type>
+          <Description>Security Directory Flags</Description>
+        </Field>
+        <Field>
+          <Name>Timestamp</Name>
+          <Size>8</Size>
+          <Type>Timestamp</Type>
+          <Description>Time stamp of the system event</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Size>8</Size>
+          <Type>String</Type>
+          <Description>Security identifier</Description>
+        </Field>
+        <Field>
+          <Name>Round Lot Size</Name>
+          <Size>4</Size>
+          <Type>Integer</Type>
+          <Description>Number of shares that represent a round lot</Description>
+        </Field>
+        <Field>
+          <Name>Adjusted POC Price</Name>
+          <Size>8</Size>
+          <Type>Price</Type>
+          <Description>Corporate action adjusted previous official closing price</Description>
+        </Field>
+        <Field>
+          <Name>LULD Tier</Name>
+          <Size>1</Size>
+          <Type>Byte (int)</Type>
+          <Description>Indicates which Limit Up-Limit Down price band calculation parameter is to be used</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <Message>
+      <Name>Trading Status Message</Name>
+      <Dependency>IexTp Message Type</Dependency>
+      <Branch>IexTp Message Data</Branch>
+      <Code>H</Code>
+      <Description>The Trading Status Message is used to indicate the current trading status of a security.</Description>
+      <Fields>
+        <Field>
+          <Name>Trading Status</Name>
+          <Size>1</Size>
+          <Type>Byte</Type>
+          <Description>Trading status identifier</Description>
+        </Field>
+        <Field>
+          <Name>Timestamp</Name>
+          <Size>8</Size>
+          <Type>Timestamp</Type>
+          <Description>Time stamp of the system event</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Size>8</Size>
+          <Type>String</Type>
+          <Description>Security identifier</Description>
+        </Field>
+        <Field>
+          <Name>Reason</Name>
+          <Size>4</Size>
+          <Type>String</Type>
+          <Description>Reason for the trading status change</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <Message>
+      <Name>Retail Liquidity Indicator Message</Name>
+      <Dependency>IexTp Message Type</Dependency>
+      <Branch>IexTp Message Data</Branch>
+      <Code>I</Code>
+      <Description>broadcasts a real-time Retail Liquidity Indicator Message each time there is an update to IEX's eligible retail liquidity interest during the trading day</Description>
+      <Fields>
+        <Field>
+          <Name>Retail Liquidity Indicator</Name>
+          <Size>1</Size>
+          <Type>Byte</Type>
+          <Description>Retail Liquidity Indicator identifier</Description>
+        </Field>
+        <Field>
+          <Name>Timestamp</Name>
+          <Size>8</Size>
+          <Type>Timestamp</Type>
+          <Description>Time stamp of the system event</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Size>8</Size>
+          <Type>String</Type>
+          <Description>Security identifier</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <Message>
+      <Name>Operational Halt Status Message</Name>
+      <Dependency>IexTp Message Type</Dependency>
+      <Branch>IexTp Message Data</Branch>
+      <Code>O</Code>
+      <Description>The Exchange may suspend trading of one or more securities on IEX for operational reasons and indicates such operational halt using the Operational Halt Status Message.</Description>
+      <Fields>
+        <Field>
+          <Name>Operational Halt Status</Name>
+          <Size>1</Size>
+          <Type>Byte</Type>
+          <Description>Operational halt status identifier</Description>
+        </Field>
+        <Field>
+          <Name>Timestamp</Name>
+          <Size>8</Size>
+          <Type>Timestamp</Type>
+          <Description>Time stamp of the system event</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Size>8</Size>
+          <Type>String</Type>
+          <Description>Security identifier</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <Message>
+      <Name>Short Sale Price Test Status Message</Name>
+      <Dependency>IexTp Message Type</Dependency>
+      <Branch>IexTp Message Data</Branch>
+      <Code>P</Code>
+      <Description>The Short Sale Price Test Message is used to indicate when a short sale price test restriction is in effect for a security.</Description>
+      <Fields>
+        <Field>
+          <Name>Short Sale Price Test Status</Name>
+          <Size>1</Size>
+          <Type>Byte (int)</Type>
+          <Description>Reg. SHO short sale price test restriction status</Description>
+        </Field>
+        <Field>
+          <Name>Timestamp</Name>
+          <Size>8</Size>
+          <Type>Timestamp</Type>
+          <Description>Time stamp of the system event</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Size>8</Size>
+          <Type>String</Type>
+          <Description>Security identifier</Description>
+        </Field>
+        <Field>
+          <Name>Detail</Name>
+          <Size>1</Size>
+          <Type>Byte</Type>
+          <Description>Detail of the Reg. SHO short sale price test restriction status</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <Message>
+      <Name>Security Event Message</Name>
+      <Dependency>IexTp Message Type</Dependency>
+      <Branch>IexTp Message Data</Branch>
+      <Code>E</Code>
+      <Description>The Security Event Message is used to indicate events that apply to a security</Description>
+      <Fields>
+        <Field>
+          <Name>Security Event</Name>
+          <Size>1</Size>
+          <Type>Byte</Type>
+          <Description>Security event identifier</Description>
+        </Field>
+        <Field>
+          <Name>Timestamp</Name>
+          <Size>8</Size>
+          <Type>Timestamp</Type>
+          <Description>Time stamp of the system event</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Size>8</Size>
+          <Type>String</Type>
+          <Description>Security identifier</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <Message>
+      <Name>Add Order Message</Name>
+      <Dependency>IexTp Message Type</Dependency>
+      <Branch>IexTp Message Data</Branch>
+      <Code>a</Code>
+      <Description>A displayed order that has been added to the IEX Book</Description>
+      <Fields>
+        <Field>
+          <Name>Side</Name>
+          <Size>1</Size>
+          <Type>Byte</Type>
+          <Description>Side of order</Description>
+        </Field>
+        <Field>
+          <Name>Timestamp</Name>
+          <Size>8</Size>
+          <Type>Timestamp</Type>
+          <Description>Time stamp of the system event</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Size>8</Size>
+          <Type>String</Type>
+          <Description>Security identifier</Description>
+        </Field>
+        <Field>
+          <Name>Order ID</Name>
+          <Size>8</Size>
+          <Type>Long</Type>
+          <Description>Order ID of new order</Description>
+        </Field>
+        <Field>
+          <Name>Size</Name>
+          <Size>4</Size>
+          <Type>Integer</Type>
+          <Description>Quoted size</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Size>8</Size>
+          <Type>Price</Type>
+          <Description>Booking price on the IEX Order Book</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <Message>
+      <Name>Order Modify Message</Name>
+      <Dependency>IexTp Message Type</Dependency>
+      <Branch>IexTp Message Data</Branch>
+      <Code>M</Code>
+      <Description>A displayed order that had its Price, Size, or Priority component changed as a result of user or system action</Description>
+      <Fields>
+        <Field>
+          <Name>Modify Flags</Name>
+          <Size>0</Size>
+          <Type>bitfield</Type>
+          <Description>Modify Flags</Description>
+        </Field>
+        <Field>
+          <Name>Timestamp</Name>
+          <Size>8</Size>
+          <Type>Timestamp</Type>
+          <Description>Time stamp of the system event</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Size>8</Size>
+          <Type>String</Type>
+          <Description>Security identifier</Description>
+        </Field>
+        <Field>
+          <Name>Order ID Reference</Name>
+          <Size>8</Size>
+          <Type>Long</Type>
+          <Description>Order ID of the referenced order</Description>
+        </Field>
+        <Field>
+          <Name>Size</Name>
+          <Size>4</Size>
+          <Type>Integer</Type>
+          <Description>New total quoted size</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Size>8</Size>
+          <Type>Price</Type>
+          <Description>Booking price on the IEX Order Book</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <Message>
+      <Name>Order Delete Message</Name>
+      <Dependency>IexTp Message Type</Dependency>
+      <Branch>IexTp Message Data</Branch>
+      <Code>R</Code>
+      <Description>A displayed order that was removed from the IEX Book</Description>
+      <Fields>
+        <Field>
+          <Name>Reserved</Name>
+          <Size>1</Size>
+          <Type>Byte</Type>
+          <Description>Reserved for future use</Description>
+        </Field>
+        <Field>
+          <Name>Timestamp</Name>
+          <Size>8</Size>
+          <Type>Timestamp</Type>
+          <Description>Time stamp of the system event</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Size>8</Size>
+          <Type>String</Type>
+          <Description>Security identifier</Description>
+        </Field>
+        <Field>
+          <Name>Order ID Reference</Name>
+          <Size>8</Size>
+          <Type>Long</Type>
+          <Description>Order ID of the referenced order</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <Message>
+      <Name>Order Executed Message</Name>
+      <Dependency>IexTp Message Type</Dependency>
+      <Branch>IexTp Message Data</Branch>
+      <Code>L</Code>
+      <Description>A displayed order that was executed against</Description>
+      <Fields>
+        <Field>
+          <Name>Sale Condition Flags</Name>
+          <Size>0</Size>
+          <Type>bitfield</Type>
+          <Description>Sale Condition Flags</Description>
+        </Field>
+        <Field>
+          <Name>Timestamp</Name>
+          <Size>8</Size>
+          <Type>Timestamp</Type>
+          <Description>Time stamp of the trade</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Size>8</Size>
+          <Type>String</Type>
+          <Description>Security identifier</Description>
+        </Field>
+        <Field>
+          <Name>Order ID Reference</Name>
+          <Size>8</Size>
+          <Type>Long</Type>
+          <Description>Order ID of the referenced order</Description>
+        </Field>
+        <Field>
+          <Name>Size</Name>
+          <Size>4</Size>
+          <Type>Integer</Type>
+          <Description>Trade volume</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Size>8</Size>
+          <Type>Price</Type>
+          <Description>Trade price</Description>
+        </Field>
+        <Field>
+          <Name>Trade ID</Name>
+          <Size>8</Size>
+          <Type>Long</Type>
+          <Description>IEX Generated Identifier</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <Message>
+      <Name>Trade Message</Name>
+      <Dependency>IexTp Message Type</Dependency>
+      <Branch>IexTp Message Data</Branch>
+      <Code>T</Code>
+      <Description>A non-displayed order on the book that executed against another non-displayed order on the book</Description>
+      <Fields>
+        <Field>
+          <Name>Sale Condition Flags</Name>
+          <Size>0</Size>
+          <Type>bitfield</Type>
+          <Description>Sale Condition Flags</Description>
+        </Field>
+        <Field>
+          <Name>Timestamp</Name>
+          <Size>8</Size>
+          <Type>Timestamp</Type>
+          <Description>Time stamp of the system event</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Size>8</Size>
+          <Type>String</Type>
+          <Description>Security identifier</Description>
+        </Field>
+        <Field>
+          <Name>Size</Name>
+          <Size>4</Size>
+          <Type>Integer</Type>
+          <Description>Quoted size</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Size>8</Size>
+          <Type>Price</Type>
+          <Description>Booking price on the IEX Order Book</Description>
+        </Field>
+        <Field>
+          <Name>Trade ID</Name>
+          <Size>8</Size>
+          <Type>Long</Type>
+          <Description>IEX Generated Identifier</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <Message>
+      <Name>Trade Break Message</Name>
+      <Dependency>IexTp Message Type</Dependency>
+      <Branch>IexTp Message Data</Branch>
+      <Code>B</Code>
+      <Description>Trade Break Messages are sent when an execution on IEX is broken on that same trading day</Description>
+      <Fields>
+        <Field>
+          <Name>Sale Condition Flags</Name>
+          <Size>0</Size>
+          <Type>bitfield</Type>
+          <Description>Sale Condition Flags</Description>
+        </Field>
+        <Field>
+          <Name>Timestamp</Name>
+          <Size>8</Size>
+          <Type>Timestamp</Type>
+          <Description>Time stamp of the system event</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Size>8</Size>
+          <Type>String</Type>
+          <Description>Security identifier</Description>
+        </Field>
+        <Field>
+          <Name>Size</Name>
+          <Size>4</Size>
+          <Type>Integer</Type>
+          <Description>Quoted size</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Size>8</Size>
+          <Type>Price</Type>
+          <Description>Booking price on the IEX Order Book</Description>
+        </Field>
+        <Field>
+          <Name>Trade ID</Name>
+          <Size>8</Size>
+          <Type>Long</Type>
+          <Description>IEX Generated Identifier</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <Message>
+      <Name>Clear Book Message</Name>
+      <Dependency>IexTp Message Type</Dependency>
+      <Branch>IexTp Message Data</Branch>
+      <Code>C</Code>
+      <Description>This message is used to indicate that the IEX Book for a symbol has been cleared of all orders</Description>
+      <Fields>
+        <Field>
+          <Name>Reserved</Name>
+          <Size>1</Size>
+          <Type>Byte</Type>
+          <Description>Reserved for future use</Description>
+        </Field>
+        <Field>
+          <Name>Timestamp</Name>
+          <Size>8</Size>
+          <Type>Timestamp</Type>
+          <Description>Time stamp of the system event</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Size>8</Size>
+          <Type>String</Type>
+          <Description>Security identifier</Description>
+        </Field>
+      </Fields>
+    </Message>
+  </Messages>
+
+  <Bitfields>
+
+    <Bitfield>
+      <Name>Security Directory Flags</Name>
+      <Description>Security Directory Flags</Description>
+      <Fields>
+        <Field>
+          <Name>Unused</Name>
+          <Bits>5</Bits>
+          <Description>Unused</Description>
+        </Field>
+        <Field>
+          <Name>ETP</Name>
+          <Bits>1</Bits>
+          <Description>Symbol is an ETP</Description>
+        </Field>
+        <Field>
+          <Name>When Issued</Name>
+          <Bits>1</Bits>
+          <Description>Symbol is a when issued security</Description>
+        </Field>
+        <Field>
+          <Name>Test Security</Name>
+          <Bits>1</Bits>
+          <Description>Symbol is a test security</Description>
+        </Field>
+      </Fields>
+    </Bitfield>
+
+    <Bitfield>
+      <Name>Modify Flags</Name>
+      <Description>Modify Flags</Description>
+      <Fields>
+        <Field>
+          <Name>Unused</Name>
+          <Bits>7</Bits>
+          <Description>Unused</Description>
+        </Field>
+        <Field>
+          <Name>Priority</Name>
+          <Bits>1</Bits>
+          <Description>Order Priority</Description>
+        </Field>
+      </Fields>
+    </Bitfield>
+
+    <Bitfield>
+      <Name>Sale Condition Flags</Name>
+      <Description>Sale Condition Flags</Description>
+      <Fields>
+        <Field>
+          <Name>Unused</Name>
+          <Bits>3</Bits>
+          <Description>Unused</Description>
+        </Field>
+        <Field>
+          <Name>Single-price Cross Trade</Name>
+          <Bits>1</Bits>
+          <Description>Trade resulting from a single-price cross</Description>
+        </Field>
+        <Field>
+          <Name>Trade Through Exempt</Name>
+          <Bits>1</Bits>
+          <Description>Trade is not subject to Rule 611</Description>
+        </Field>
+        <Field>
+          <Name>Odd Lot</Name>
+          <Bits>1</Bits>
+          <Description>Odd Lot</Description>
+        </Field>
+        <Field>
+          <Name>Extended Hours</Name>
+          <Bits>1</Bits>
+          <Description>Extended Hours Trade</Description>
+        </Field>
+        <Field>
+          <Name>Intermarket Sweep</Name>
+          <Bits>1</Bits>
+          <Description>Intermarket Sweep Order</Description>
+        </Field>
+      </Fields>
+    </Bitfield>
+  </Bitfields>
+
+  <Enums>
+
+    <!-- Reject Reason Code -->
+    <Enum>
+      <Name>Reject Reason Code</Name>
+      <Values>
+        <Value>
+          <Data>A</Data>
+          <Name>Authentication Failure</Name>
+          <Description>The Authentication Token was not valid</Description>
+        </Value>
+        <Value>
+          <Data>C</Data>
+          <Name>Incorrect Channel Id</Name>
+          <Description>Incorrect Channel Id in the Snapshot Request</Description>
+        </Value>
+        <Value>
+          <Data>E</Data>
+          <Name>Snapshot Request Already Active</Name>
+          <Description>A Snapshot Request is already active on this connection</Description>
+        </Value>
+        <Value>
+          <Data>Q</Data>
+          <Name>Quota Exceeded</Name>
+          <Description>The per channel daily Snapshot Request quota has been exceeded</Description>
+        </Value>
+        <Value>
+          <Data>R</Data>
+          <Name>Snapshot Not Yet Available</Name>
+          <Description>No snapshot at or above the requested Minimum Sequence Number is available</Description>
+        </Value>
+        <Value>
+          <Data>S</Data>
+          <Name>Incorrect Session Id</Name>
+          <Description>Incorrect Session Id in the Snapshot Request</Description>
+        </Value>
+        <Value>
+          <Data>U</Data>
+          <Name>Unknown Message</Name>
+          <Description>The message was not recognized by the server</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+
+    <Enum>
+      <Name>System Event</Name>
+      <Values>
+        <Value>
+          <Data>O</Data>
+          <Name>Start Of Messages</Name>
+          <Description>Outside Of Heartbeat Messages On The Lower Level Protocol The Start Of Day Message Is The First Message Sent In Any Trading Session</Description>
+        </Value>
+        <Value>
+          <Data>S</Data>
+          <Name>Start Of System Hours</Name>
+          <Description>This Message Indicates That Iex Is Open And Ready To Start Accepting Orders</Description>
+        </Value>
+        <Value>
+          <Data>R</Data>
+          <Name>Start Of Regular Market Hours</Name>
+          <Description>This Message Indicates That Day And Gtx Orders As Well As Market Orders And Pegged Orders Are Available For Execution On Iex</Description>
+        </Value>
+        <Value>
+          <Data>M</Data>
+          <Name>End Of Regular Market Hours</Name>
+          <Description>This Message Indicates That Day Orders Market Orders And Pegged Orders Are No Longer Accepted By Iex</Description>
+        </Value>
+        <Value>
+          <Data>E</Data>
+          <Name>End Of System Hours</Name>
+          <Description>This Message Indicates That Iex Is Now Closed And Will Not Accept Any New Orders During This Trading Session</Description>
+        </Value>
+        <Value>
+          <Data>C</Data>
+          <Name>End Of Messages</Name>
+          <Description>This Is Always The Last Message Sent In Any Trading Session</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>LULD Tier</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>Not Applicable</Name>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Tier 1 Nms Stock</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Tier 2 Nms Stock</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>Trading Status</Name>
+      <Values>
+        <Value>
+          <Data>H</Data>
+          <Name>Trading Halted Across All Us Equity Markets</Name>
+        </Value>
+        <Value>
+          <Data>O</Data>
+          <Name>Trading Halt Released Into An Order Acceptance Period On Iex</Name>
+        </Value>
+        <Value>
+          <Data>P</Data>
+          <Name>Trading Paused And Order Acceptance Period On Iex</Name>
+        </Value>
+        <Value>
+          <Data>T</Data>
+          <Name>Trading On Iex</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>Retail Liquidity Indicator</Name>
+      <Values>
+        <Value>
+          <Data>' '</Data>
+          <Name>Not Applicable</Name>
+        </Value>
+        <Value>
+          <Data>A</Data>
+          <Name>Buy Interest</Name>
+        </Value>
+        <Value>
+          <Data>B</Data>
+          <Name>Sell Interest</Name>
+        </Value>
+        <Value>
+          <Data>C</Data>
+          <Name>Buy And Sell Interest</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>Operational Halt Status</Name>
+      <Values>
+        <Value>
+          <Data>O</Data>
+          <Name>Iex Specific Operational Trading Halt</Name>
+        </Value>
+        <Value>
+          <Data>N</Data>
+          <Name>Not Operationally Halted On Iex</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>Short Sale Price Test Status</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>Not In Effect</Name>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>In Effect</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>Detail</Name>
+      <Values>
+        <Value>
+          <Data>' '</Data>
+          <Name>No Price Test In Place</Name>
+        </Value>
+        <Value>
+          <Data>A</Data>
+          <Name>Short Sale Price Test Restriction In Effect Due To An Intraday Price Drop In The Security</Name>
+        </Value>
+        <Value>
+          <Data>C</Data>
+          <Name>Short Sale Price Test Restriction Remains In Effect From Prior Day</Name>
+        </Value>
+        <Value>
+          <Data>D</Data>
+          <Name>Short Sale Price Test Restriction Deactivated</Name>
+        </Value>
+        <Value>
+          <Data>N</Data>
+          <Name>Not Available</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>Security Event</Name>
+      <Values>
+        <Value>
+          <Data>O</Data>
+          <Name>Opening Process Complete</Name>
+        </Value>
+        <Value>
+          <Data>C</Data>
+          <Name>Closing Process Complete</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>Side</Name>
+      <Values>
+        <Value>
+          <Data>8</Data>
+          <Name>Buy</Name>
+        </Value>
+        <Value>
+          <Data>5</Data>
+          <Name>Sell</Name>
+        </Value>
+      </Values>
+    </Enum>
+  </Enums>
+
+</OmiIexTpPdf>
