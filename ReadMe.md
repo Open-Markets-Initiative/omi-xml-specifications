@@ -6,7 +6,7 @@ Omi Xml Specifications are the exchange protocol specification xml files that ca
 
 ## Development
 
-The specification xmls in this repository are published copies of the original protocol specifications — they are not generated. Each protocol version is one folder, `{Organization}/{Identifier}/`, holding only the definitions unique to that protocol; the shared framing headers and the reference manifest are omitted. If you find an error in a specification, updates are welcome as pull requests.
+The specification xmls in this repository are published copies of the original protocol specifications — they are not generated. If you find an error in a specification, updates are welcome as pull requests.
 
 ## Testing
 
