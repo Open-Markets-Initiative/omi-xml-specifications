@@ -21,15 +21,15 @@ The Open Markets Initiative (Omi) is a group of technologists dedicated to enhan
 Other generated code can be found at [Omi Projects](https://github.com/Open-Markets-Initiative/Directory/tree/main/Projects "Open Markets Initiative Projects"); for Omi rules and regulations, see [Omi Directory](https://github.com/Open-Markets-Initiative/Directory "Open Markets Initiative Directory").
 ## Organizations
 
-> [CixAts][CixAts.Directory] · [Iex][Iex.Directory]
+> [24X][24X.Directory] · [A2X][A2X.Directory] · [Aquis][Aquis.Directory] · [Asx][Asx.Directory] · [B3][B3.Directory] · [Bist][Bist.Directory] · [BlueOceanAts][BlueOceanAts.Directory] · [CixAts][CixAts.Directory] · [Cme][Cme.Directory] · [Coinbase][Coinbase.Directory] · [Iex][Iex.Directory]
 
 ## Exchanges
 
-> [IexEquities][IexEquities.Exchange] · [IexOptions][IexOptions.Exchange]
+> [24XEquities][24XEquities.Exchange] · [AquisEquities][AquisEquities.Exchange] · [AsxDerivatives][AsxDerivatives.Exchange] · [AsxSecurities][AsxSecurities.Exchange] · [B3Derivatives][B3Derivatives.Exchange] · [BlueEquities][BlueEquities.Ats] · [BorsaIstanbul][BorsaIstanbul.Exchange] · [CoinbaseDerivatives][CoinbaseDerivatives.Exchange] · [Deribit][Deribit.Exchange] · [IexEquities][IexEquities.Exchange] · [IexOptions][IexOptions.Exchange]
 
 ## Platforms
 
-> [CixAts CixAspen][CixAspen.Platform]
+> [CixAts CixAspen][CixAspen.Platform] · [Cme Globex][Globex.Platform]
 
 ## Related Definitions
 
@@ -55,9 +55,28 @@ Any similarities between existing people, places and/or protocols is purely inci
 
 Enjoy.
 
+[24X.Directory]: https://github.com/Open-Markets-Initiative/omi-xml-specifications/tree/main/24X "24 National Exchange"
+[A2X.Directory]: https://github.com/Open-Markets-Initiative/omi-xml-specifications/tree/main/A2X "A2X Markets"
+[Aquis.Directory]: https://github.com/Open-Markets-Initiative/omi-xml-specifications/tree/main/Aquis "Aquis Exchange"
+[Asx.Directory]: https://github.com/Open-Markets-Initiative/omi-xml-specifications/tree/main/Asx "Australian Securities Exchange"
+[B3.Directory]: https://github.com/Open-Markets-Initiative/omi-xml-specifications/tree/main/B3 "Brasil, Bolsa, Balcão"
+[Bist.Directory]: https://github.com/Open-Markets-Initiative/omi-xml-specifications/tree/main/Bist "Borsa İstanbul A.Ş."
+[BlueOceanAts.Directory]: https://github.com/Open-Markets-Initiative/omi-xml-specifications/tree/main/BlueOceanAts "Blue Ocean Technologies"
 [CixAts.Directory]: https://github.com/Open-Markets-Initiative/omi-xml-specifications/tree/main/CixAts "CIX Trading Inc."
+[Cme.Directory]: https://github.com/Open-Markets-Initiative/omi-xml-specifications/tree/main/Cme "CME Group"
+[Coinbase.Directory]: https://github.com/Open-Markets-Initiative/omi-xml-specifications/tree/main/Coinbase "Coinbase"
 [Iex.Directory]: https://github.com/Open-Markets-Initiative/omi-xml-specifications/tree/main/Iex "Investors Exchange"
+[24XEquities.Exchange]: https://github.com/Open-Markets-Initiative/Directory/tree/main/Organizations/24X/Protocols/24XEquities "24X Equities"
+[AquisEquities.Exchange]: https://github.com/Open-Markets-Initiative/Directory/tree/main/Organizations/Aquis/Protocols/AquisEquities "Aquis Equities"
+[AsxDerivatives.Exchange]: https://github.com/Open-Markets-Initiative/Directory/tree/main/Organizations/Asx/Protocols/AsxDerivatives "Asx Derivatives"
+[AsxSecurities.Exchange]: https://github.com/Open-Markets-Initiative/Directory/tree/main/Organizations/Asx/Protocols/AsxSecurities "Asx Securities"
+[B3Derivatives.Exchange]: https://github.com/Open-Markets-Initiative/Directory/tree/main/Organizations/B3/Protocols/B3Derivatives "B3 Derivatives"
+[BlueEquities.Ats]: https://github.com/Open-Markets-Initiative/Directory/tree/main/Organizations/BlueOceanAts/Protocols/BlueEquities "Blue Equities"
+[BorsaIstanbul.Exchange]: https://github.com/Open-Markets-Initiative/Directory/tree/main/Organizations/Bist/Protocols/BorsaIstanbul "Borsa Istanbul"
 [CixAspen.Platform]: https://github.com/Open-Markets-Initiative/Directory/tree/main/Organizations/CixAts/Protocols/CixAspen "CIX Aspen"
+[CoinbaseDerivatives.Exchange]: https://github.com/Open-Markets-Initiative/Directory/tree/main/Organizations/Coinbase/Protocols/CoinbaseDerivatives "Coinbase Derivatives"
+[Deribit.Exchange]: https://github.com/Open-Markets-Initiative/Directory/tree/main/Organizations/Coinbase/Protocols/Deribit "Deribit"
+[Globex.Platform]: https://github.com/Open-Markets-Initiative/Directory/tree/main/Organizations/Cme/Protocols/Globex "CME Globex"
 [IexEquities.Exchange]: https://github.com/Open-Markets-Initiative/Directory/tree/main/Organizations/Iex/Protocols/IexEquities "IEX Equities"
 [IexOptions.Exchange]: https://github.com/Open-Markets-Initiative/Directory/tree/main/Organizations/Iex/Protocols/IexOptions "IEX Options"
 [Kaitai.Definitions.Repository]: https://github.com/Open-Markets-Initiative/omi-kaitai-struct-definitions "Omi Kaitai Struct Definitions"

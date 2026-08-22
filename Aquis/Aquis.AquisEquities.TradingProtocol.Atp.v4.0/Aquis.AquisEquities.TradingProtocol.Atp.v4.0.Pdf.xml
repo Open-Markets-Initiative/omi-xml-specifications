@@ -1,0 +1,2172 @@
+<OmiAtpPdf>
+
+  <Messages>
+
+    <!--Login Message-->
+    <Message>
+      <Name>Login Message</Name>
+      <Description>
+        The Login message is sent by the trading Member as the initial message used to establish a
+        trading session
+      </Description>
+      <Branch>Payload</Branch>
+      <Dependency>Msg Type</Dependency>
+      <Origin>Member</Origin>
+      <Category>Session</Category>
+      <Code>1</Code>
+      <Fields>
+        <Field>
+          <Name>protocolVersion</Name>
+          <Type>u16</Type>
+          <Size>2</Size>
+          <Description>Version of the protocol being used</Description>
+        </Field>
+        <Field>
+          <Name>senderID</Name>
+          <Type>char(16)</Type>
+          <Size>16</Size>
+          <Description>Value as agreed with Aquis to identify the Member’s ATP session</Description>
+        </Field>
+        <Field>
+          <Name>password</Name>
+          <Type>char(16)</Type>
+          <Size>16</Size>
+          <Description>Password as agreed with Aquis to verify the user</Description>
+        </Field>
+        <Field>
+          <Name>inactivityTimeout</Name>
+          <Type>u16</Type>
+          <Size>2</Size>
+          <Description>Optional inactivity timeout, in seconds</Description>
+        </Field>
+        <Field>
+          <Name>atpSeqNo</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>The next sequence number that the trading Member is expecting to receive on messages from Aquis</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!--Login Response Message-->
+    <Message>
+      <Name>Login Response Message</Name>
+      <Description>The Login Response message is sent by Aquis to acknowledge a Login request, and either
+        accept or reject it.</Description>
+      <Branch>Payload</Branch>
+      <Dependency>Msg Type</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Session</Category>
+      <Code>2</Code>
+      <Fields>
+        <Field>
+          <Name>resultCode</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Login result code</Description>
+        </Field>
+        <Field>
+          <Name>clientSeqNo</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Next sequence number Aquis expects to receive</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!--Heartbeat-->
+    <Message>
+      <Name>Heartbeat</Name>
+      <Description>A Heartbeat message is a message header with msgType set to 0 and msgSeqNo set to the sequence number of the next business message.</Description>
+      <Branch>Payload</Branch>
+      <Dependency>Msg Type</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Session</Category>
+      <Code>0</Code>
+      <Fields />
+    </Message>
+
+    <!--Logout Request Message-->
+    <Message>
+      <Name>Logout Request Message</Name>
+      <Description>The Logout Request message is used by the trading Member to request the closure of a trading session.</Description>
+      <Branch>Payload</Branch>
+      <Dependency>Msg Type</Dependency>
+      <Origin>Member</Origin>
+      <Category>Session</Category>
+      <Code>3</Code>
+      <Fields />
+    </Message>
+
+    <!--Logout Message-->
+    <Message>
+      <Name>Logout Message</Name>
+      <Description>The Logout message is usually sent as a response to the Logout Request. The TCP/IP connection is closed immediately after this message has been sent.</Description>
+      <Branch>Payload</Branch>
+      <Dependency>Msg Type</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Session</Category>
+      <Code>4</Code>
+      <Fields>
+        <Field>
+          <Name>logoutReasonCode</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Reason code for logout</Description>
+        </Field>
+        <Field>
+          <Name>reasonText</Name>
+          <Type>char(32)</Type>
+          <Size>32</Size>
+          <Description>Text describing reason for logout</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!--Order Add Message-->
+    <Message>
+      <Name>Order Add Message</Name>
+      <Description>The Order Add message is sent by the trading Member to enter an order for a particular security.</Description>
+      <Branch>Payload</Branch>
+      <Dependency>Msg Type</Dependency>
+      <Origin>Member</Origin>
+      <Category>Order Entry</Category>
+      <Code>5</Code>
+      <Fields>
+        <Field>
+          <Name>securityID</Name>
+          <Type>u16</Type>
+          <Size>2</Size>
+          <Description>Numeric security identifier</Description>
+        </Field>
+        <Field>
+          <Name>orderType</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Order type</Description>
+        </Field>
+        <Field>
+          <Name>timeInForce</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Time in force</Description>
+        </Field>
+        <Field>
+          <Name>side</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Side of the order</Description>
+        </Field>
+        <Field>
+          <Name>quantity</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Number of shares</Description>
+        </Field>
+        <Field>
+          <Name>price</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Limit price of the order; 0 for MaC orders</Description>
+        </Field>
+        <Field>
+          <Name>orderCapacity</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Order capacity</Description>
+        </Field>
+        <Field>
+          <Name>account</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Clearing account identifier; 1 = House Account, 2 or above = agreed Client Account code</Description>
+        </Field>
+        <Field>
+          <Name>userTag</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Free form tag assigned by trading Member</Description>
+        </Field>
+        <Field>
+          <Name>Flags</Name>
+          <Type>bitfield</Type>
+          <Size>1</Size>
+          <Description>Order flags</Description>
+        </Field>
+        <Field>
+          <Name>tableSelect1</Name>
+          <Type>bitfield</Type>
+          <Size>1</Size>
+          <Description>Party role qualifier and role for party 1</Description>
+        </Field>
+        <Field>
+          <Name>shortCode1</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Short code for party 1</Description>
+        </Field>
+        <Field>
+          <Name>tableSelect2</Name>
+          <Type>bitfield</Type>
+          <Size>1</Size>
+          <Description>Party role qualifier and role for party 2</Description>
+        </Field>
+        <Field>
+          <Name>shortCode2</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Short code for party 2</Description>
+        </Field>
+        <Field>
+          <Name>tableSelect3</Name>
+          <Type>bitfield</Type>
+          <Size>1</Size>
+          <Description>Party role qualifier and role for party 3</Description>
+        </Field>
+        <Field>
+          <Name>shortCode3</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Short code for party 3</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!--Order Add Extended Message-->
+    <Message>
+      <Name>Order Add Extended Message</Name>
+      <Description>The Order Add Extended message is sent by the trading Member to enter an order for a particular security with additional attributes.</Description>
+      <Branch>Payload</Branch>
+      <Dependency>Msg Type</Dependency>
+      <Origin>Member</Origin>
+      <Category>Order Entry</Category>
+      <Code>21</Code>
+      <Fields>
+        <Field>
+          <Name>securityID</Name>
+          <Type>u16</Type>
+          <Size>2</Size>
+          <Description>Numeric security identifier</Description>
+        </Field>
+        <Field>
+          <Name>orderType</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Order type</Description>
+        </Field>
+        <Field>
+          <Name>timeInForce</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Time in force</Description>
+        </Field>
+        <Field>
+          <Name>side</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Side of the order</Description>
+        </Field>
+        <Field>
+          <Name>quantity</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Number of shares</Description>
+        </Field>
+        <Field>
+          <Name>price</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Limit price of the order; optional when OrderType=12, a value of 0 is interpreted as no limit price</Description>
+        </Field>
+        <Field>
+          <Name>orderCapacity</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Order capacity</Description>
+        </Field>
+        <Field>
+          <Name>account</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Clearing account identifier; 1 = House Account, 2 or above = agreed Client Account code</Description>
+        </Field>
+        <Field>
+          <Name>userTag</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Free form tag assigned by trading Member</Description>
+        </Field>
+        <Field>
+          <Name>Flags</Name>
+          <Type>bitfield</Type>
+          <Size>1</Size>
+          <Description>Order flags</Description>
+        </Field>
+        <Field>
+          <Name>tableSelect1</Name>
+          <Type>bitfield</Type>
+          <Size>1</Size>
+          <Description>Party role qualifier and role for party 1</Description>
+        </Field>
+        <Field>
+          <Name>shortCode1</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Short code for party 1</Description>
+        </Field>
+        <Field>
+          <Name>tableSelect2</Name>
+          <Type>bitfield</Type>
+          <Size>1</Size>
+          <Description>Party role qualifier and role for party 2</Description>
+        </Field>
+        <Field>
+          <Name>shortCode2</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Short code for party 2</Description>
+        </Field>
+        <Field>
+          <Name>tableSelect3</Name>
+          <Type>bitfield</Type>
+          <Size>1</Size>
+          <Description>Party role qualifier and role for party 3</Description>
+        </Field>
+        <Field>
+          <Name>shortCode3</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Short code for party 3</Description>
+        </Field>
+        <Field>
+          <Name>displayQuantity</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Display quantity for an iceberg order; set to 0 for non-iceberg orders</Description>
+        </Field>
+        <Field>
+          <Name>minQty</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Minimum quantity of an order to be executed; 0 = no minimum quantity</Description>
+        </Field>
+        <Field>
+          <Name>Extended Order Flags</Name>
+          <Type>bitfield</Type>
+          <Size>1</Size>
+          <Description>Extended order flags</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>DesignatedOrderId</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>The order ID of the contra as provided by OptimX; set to 0 if not applicable</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>u16</Type>
+          <Size>2</Size>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>PegDifference</Name>
+          <Type>s64</Type>
+          <Size>8</Size>
+          <Description>Only applicable for AoD Near Touch Pegged orders; value added to the peg calculation</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!--Order Cancel Message-->
+    <Message>
+      <Name>Order Cancel Message</Name>
+      <Description>The Order Cancel message is sent when a user wishes to cancel an open order.</Description>
+      <Branch>Payload</Branch>
+      <Dependency>Msg Type</Dependency>
+      <Origin>Member</Origin>
+      <Category>Order Entry</Category>
+      <Code>7</Code>
+      <Fields>
+        <Field>
+          <Name>orderRef</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Order reference number</Description>
+        </Field>
+        <Field>
+          <Name>userTag</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Free form tag assigned by trading Member</Description>
+        </Field>
+        <Field>
+          <Name>Flags</Name>
+          <Type>bitfield</Type>
+          <Size>1</Size>
+          <Description>Order flags</Description>
+        </Field>
+        <Field>
+          <Name>tableSelect1</Name>
+          <Type>bitfield</Type>
+          <Size>1</Size>
+          <Description>Party role qualifier and role for party 1</Description>
+        </Field>
+        <Field>
+          <Name>shortCode1</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Short code for party 1</Description>
+        </Field>
+        <Field>
+          <Name>tableSelect2</Name>
+          <Type>bitfield</Type>
+          <Size>1</Size>
+          <Description>Party role qualifier and role for party 2</Description>
+        </Field>
+        <Field>
+          <Name>shortCode2</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Short code for party 2</Description>
+        </Field>
+        <Field>
+          <Name>tableSelect3</Name>
+          <Type>bitfield</Type>
+          <Size>1</Size>
+          <Description>Party role qualifier and role for party 3</Description>
+        </Field>
+        <Field>
+          <Name>shortCode3</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Short code for party 3</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!--Order Modify Message-->
+    <Message>
+      <Name>Order Modify Message</Name>
+      <Description>The Order Modify message is sent when a user wishes to modify an open order. Order quantity and/or limit price may be modified. Both values must be included, even if one of them is
+        unchanged.</Description>
+      <Branch>Payload</Branch>
+      <Dependency>Msg Type</Dependency>
+      <Origin>Member</Origin>
+      <Category>Order Entry</Category>
+      <Code>9</Code>
+      <Fields>
+        <Field>
+          <Name>orderRef</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Order reference number</Description>
+        </Field>
+        <Field>
+          <Name>price</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>The new price of the order</Description>
+        </Field>
+        <Field>
+          <Name>quantity</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>The new order quantity</Description>
+        </Field>
+        <Field>
+          <Name>userTag</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Free form tag assigned by trading Member</Description>
+        </Field>
+        <Field>
+          <Name>Flags</Name>
+          <Type>bitfield</Type>
+          <Size>1</Size>
+          <Description>Order flags</Description>
+        </Field>
+        <Field>
+          <Name>tableSelect1</Name>
+          <Type>bitfield</Type>
+          <Size>1</Size>
+          <Description>Party role qualifier and role for party 1</Description>
+        </Field>
+        <Field>
+          <Name>shortCode1</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Short code for party 1</Description>
+        </Field>
+        <Field>
+          <Name>tableSelect2</Name>
+          <Type>bitfield</Type>
+          <Size>1</Size>
+          <Description>Party role qualifier and role for party 2</Description>
+        </Field>
+        <Field>
+          <Name>shortCode2</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Short code for party 2</Description>
+        </Field>
+        <Field>
+          <Name>tableSelect3</Name>
+          <Type>bitfield</Type>
+          <Size>1</Size>
+          <Description>Party role qualifier and role for party 3</Description>
+        </Field>
+        <Field>
+          <Name>shortCode3</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Short code for party 3</Description>
+        </Field>
+        <Field>
+          <Name>orderCapacity</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Order capacity</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!--Order Modify Extended Message-->
+    <Message>
+      <Name>Order Modify Extended Message</Name>
+      <Description>The Order Modify Extended message is sent when a user wants to modify an open Order Add Extended. All values must be included, even if some are unchanged.</Description>
+      <Branch>Payload</Branch>
+      <Dependency>Msg Type</Dependency>
+      <Origin>Member</Origin>
+      <Category>Order Entry</Category>
+      <Code>22</Code>
+      <Fields>
+        <Field>
+          <Name>orderRef</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Order reference number</Description>
+        </Field>
+        <Field>
+          <Name>price</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>The new price of the order; when OrderType=12, a value of 0 is interpreted as no limit price</Description>
+        </Field>
+        <Field>
+          <Name>quantity</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>The new total order quantity (number of shares)</Description>
+        </Field>
+        <Field>
+          <Name>userTag</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Free form tag assigned by trading Member</Description>
+        </Field>
+        <Field>
+          <Name>Flags</Name>
+          <Type>bitfield</Type>
+          <Size>1</Size>
+          <Description>Order flags</Description>
+        </Field>
+        <Field>
+          <Name>tableSelect1</Name>
+          <Type>bitfield</Type>
+          <Size>1</Size>
+          <Description>Party role qualifier and role for party 1</Description>
+        </Field>
+        <Field>
+          <Name>shortCode1</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Short code for party 1</Description>
+        </Field>
+        <Field>
+          <Name>tableSelect2</Name>
+          <Type>bitfield</Type>
+          <Size>1</Size>
+          <Description>Party role qualifier and role for party 2</Description>
+        </Field>
+        <Field>
+          <Name>shortCode2</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Short code for party 2</Description>
+        </Field>
+        <Field>
+          <Name>tableSelect3</Name>
+          <Type>bitfield</Type>
+          <Size>1</Size>
+          <Description>Party role qualifier and role for party 3</Description>
+        </Field>
+        <Field>
+          <Name>shortCode3</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Short code for party 3</Description>
+        </Field>
+        <Field>
+          <Name>orderCapacity</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Order capacity</Description>
+        </Field>
+        <Field>
+          <Name>displayQuantity</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>New display quantity of the iceberg order</Description>
+        </Field>
+        <Field>
+          <Name>minQty</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>New minimum quantity (shares) of an order to be executed</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Reserved</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!--Order Add Response Message-->
+    <Message>
+      <Name>Order Add Response Message</Name>
+      <Description>Aquis sends an Order Add Response message to acknowledge the receipt of an Order Add or an Order Add Extended message.</Description>
+      <Branch>Payload</Branch>
+      <Dependency>Msg Type</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Order Entry</Category>
+      <Code>6</Code>
+      <Fields>
+        <Field>
+          <Name>orderRef</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Order reference number</Description>
+        </Field>
+        <Field>
+          <Name>marketDataID</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>The ID of this order as seen in the Aquis market data; zero if the order is cancelled (IOC) or fully traded on entry</Description>
+        </Field>
+        <Field>
+          <Name>status</Name>
+          <Type>bitfield</Type>
+          <Size>1</Size>
+          <Description>Status of order and reject or cancel code; first 3 most significant bits = order status, lower 5 bits = reason code</Description>
+        </Field>
+        <Field>
+          <Name>tradedQuantity</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Number of shares traded, if any</Description>
+        </Field>
+        <Field>
+          <Name>timestamp</Name>
+          <Type>time</Type>
+          <Size>8</Size>
+          <Description>Time that the order was accepted or rejected by the Aquis system</Description>
+        </Field>
+        <Field>
+          <Name>userTag</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Free form tag as assigned by trading Member on the Order Add message</Description>
+        </Field>
+        <Field>
+          <Name>Order Add Response Flags</Name>
+          <Type>bitfield</Type>
+          <Size>1</Size>
+          <Description>Order add response flags</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!--Order Cancel Response Message-->
+    <Message>
+      <Name>Order Cancel Response Message</Name>
+      <Description>Aquis sends an Order Cancel Response to accept or reject an Order Cancel message. The message is also used if an order is cancelled by Market Operations or due to cancel on
+        disconnect.</Description>
+      <Branch>Payload</Branch>
+      <Dependency>Msg Type</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Order Entry</Category>
+      <Code>8</Code>
+      <Fields>
+        <Field>
+          <Name>orderRef</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Order reference number</Description>
+        </Field>
+        <Field>
+          <Name>requestRef</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Sequence number of the trading Member's Order Cancel message; zero for forced cancels generated by Aquis or cancel messages from the MaC</Description>
+        </Field>
+        <Field>
+          <Name>status</Name>
+          <Type>bitfield</Type>
+          <Size>1</Size>
+          <Description>Status of order and reject or cancel code; first 3 most significant bits = order status, lower 5 bits = reason code</Description>
+        </Field>
+        <Field>
+          <Name>timestamp</Name>
+          <Type>time</Type>
+          <Size>8</Size>
+          <Description>Time that the cancellation was accepted or rejected by the Aquis system</Description>
+        </Field>
+        <Field>
+          <Name>userTag</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Free form tag as assigned by trading Member on the Order Cancel message</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!--Order Modify Response Message-->
+    <Message>
+      <Name>Order Modify Response Message</Name>
+      <Description>Aquis sends an Order Modify Response to accept or reject an Order Modify or an Order Modify Extended message.</Description>
+      <Branch>Payload</Branch>
+      <Dependency>Msg Type</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Order Entry</Category>
+      <Code>10</Code>
+      <Fields>
+        <Field>
+          <Name>orderRef</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Order reference number</Description>
+        </Field>
+        <Field>
+          <Name>requestRef</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Sequence number of the trading Member's Order Modify message</Description>
+        </Field>
+        <Field>
+          <Name>status</Name>
+          <Type>bitfield</Type>
+          <Size>1</Size>
+          <Description>Status of order and reject or cancel code; first 3 most significant bits = order status, lower 5 bits = reason code</Description>
+        </Field>
+        <Field>
+          <Name>timestamp</Name>
+          <Type>time</Type>
+          <Size>8</Size>
+          <Description>Time that the modification was accepted or rejected by the Aquis system</Description>
+        </Field>
+        <Field>
+          <Name>userTag</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Free form tag as assigned by trading Member on the Order Modify message</Description>
+        </Field>
+        <Field>
+          <Name>Order Modify Response Flags</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Order modify response flags</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!--Iceberg Order Refresh Message-->
+    <Message>
+      <Name>Iceberg Order Refresh Message</Name>
+      <Description>Aquis sends an Iceberg Order Refresh message to notify the Member when an iceberg order is refreshed from the non-displayed reserve quantity.</Description>
+      <Branch>Payload</Branch>
+      <Dependency>Msg Type</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Order Entry</Category>
+      <Code>23</Code>
+      <Fields>
+        <Field>
+          <Name>orderRef</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Original order reference number</Description>
+        </Field>
+        <Field>
+          <Name>origAqxOrdId</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>The ID of the original order as seen in the Aquis market data</Description>
+        </Field>
+        <Field>
+          <Name>newAqxOrdId</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>The ID of the iceberg order refresh as seen in the Aquis market data</Description>
+        </Field>
+        <Field>
+          <Name>quantity</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Refreshed display quantity of the iceberg order</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!--Trade Capture Message-->
+    <Message>
+      <Name>Trade Capture Message</Name>
+      <Description>Aquis uses a Trade Capture Report message for the purposes of allowing members to submit Large In Scale (LIS) and Benchmark Cross trades to the exchange.</Description>
+      <Branch>Payload</Branch>
+      <Dependency>Msg Type</Dependency>
+      <Origin>Member</Origin>
+      <Category>Order Entry</Category>
+      <Code>17</Code>
+      <Fields>
+        <Field>
+          <Name>quantity</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>The trade quantity</Description>
+        </Field>
+        <Field>
+          <Name>price</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>The price at which the trade was crossed</Description>
+        </Field>
+        <Field>
+          <Name>securityID</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Numeric security identifier</Description>
+        </Field>
+        <Field>
+          <Name>tradeCaptureType</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Trade capture type</Description>
+        </Field>
+        <Field>
+          <Name>Trade capture flags</Name>
+          <Type>bitfield</Type>
+          <Size>1</Size>
+          <Description>Trade capture flags</Description>
+        </Field>
+        <Field>
+          <Name>account</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Clearing account identifier; 1 = House Account, 2 or above = agreed Client Account code</Description>
+        </Field>
+        <Field>
+          <Name>userTag</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Free form tag as assigned by trading Member</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!--Trade Capture Response Message-->
+    <Message>
+      <Name>Trade Capture Response Message</Name>
+      <Description>Aquis sends a Trade Capture Response Message to accept or reject a Trade Capture Message.</Description>
+      <Branch>Payload</Branch>
+      <Dependency>Msg Type</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Order Entry</Category>
+      <Code>18</Code>
+      <Fields>
+        <Field>
+          <Name>status</Name>
+          <Type>bitfield</Type>
+          <Size>1</Size>
+          <Description>Status of order and reject or cancel code; first 3 most significant bits = order status, lower 5 bits = reason code</Description>
+        </Field>
+        <Field>
+          <Name>tradeRef</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Trade reference number; corresponds to the TVTIC</Description>
+        </Field>
+        <Field>
+          <Name>requestRef</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Sequence number of the trading Member's Trade Capture Message</Description>
+        </Field>
+        <Field>
+          <Name>userTag</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Free form tag as assigned by trading Member on the trade capture message</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!--Trade Message-->
+    <Message>
+      <Name>Trade Message</Name>
+      <Description>The Trade message is published by Aquis when an order executes. The Trade message is also used to communicate indicative trade reports at lock time for Market at Close orders, and
+        matched firm VWAP orders beginning their crossing duration.</Description>
+      <Branch>Payload</Branch>
+      <Dependency>Msg Type</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Order Entry</Category>
+      <Code>11</Code>
+      <Fields>
+        <Field>
+          <Name>orderRef</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Order reference number</Description>
+        </Field>
+        <Field>
+          <Name>quantity</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Number of shares traded</Description>
+        </Field>
+        <Field>
+          <Name>price</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>The price of the trade</Description>
+        </Field>
+        <Field>
+          <Name>side</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Side of the trade</Description>
+        </Field>
+        <Field>
+          <Name>tradeRef</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Trade reference number; corresponds to the TVTIC</Description>
+        </Field>
+        <Field>
+          <Name>ccpCode</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Clearing CCP code; 1 = Self clearing, 2 and above = CCP code</Description>
+        </Field>
+        <Field>
+          <Name>liqIndicator</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Liquidity indicator</Description>
+        </Field>
+        <Field>
+          <Name>securityID</Name>
+          <Type>u16</Type>
+          <Size>2</Size>
+          <Description>Numeric security identifier</Description>
+        </Field>
+        <Field>
+          <Name>timestamp</Name>
+          <Type>time</Type>
+          <Size>8</Size>
+          <Description>Time that the trade occurred on the Aquis system</Description>
+        </Field>
+        <Field>
+          <Name>userTag</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Free form tag as assigned by trading Member on the Order Add message or the most recent Order Modify message</Description>
+        </Field>
+        <Field>
+          <Name>Trade flags</Name>
+          <Type>bitfield</Type>
+          <Size>1</Size>
+          <Description>Trade flags</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!--Trade Bust Message-->
+    <Message>
+      <Name>Trade Bust Message</Name>
+      <Description>If a trade is invalidated, a Trade Bust message is sent to notify the trading Member.</Description>
+      <Branch>Payload</Branch>
+      <Dependency>Msg Type</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Order Entry</Category>
+      <Code>12</Code>
+      <Fields>
+        <Field>
+          <Name>orderRef</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Order reference number</Description>
+        </Field>
+        <Field>
+          <Name>quantity</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Number of shares on invalidated trade</Description>
+        </Field>
+        <Field>
+          <Name>price</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>The price of the invalidated trade</Description>
+        </Field>
+        <Field>
+          <Name>side</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Side of the trade</Description>
+        </Field>
+        <Field>
+          <Name>tradeRef</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Trade reference number for the invalidated trade</Description>
+        </Field>
+        <Field>
+          <Name>timestamp</Name>
+          <Type>time</Type>
+          <Size>8</Size>
+          <Description>Time that the trade was busted by Aquis</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!--IOI Add Message-->
+    <Message>
+      <Name>IOI Add Message</Name>
+      <Description>IOI to send a conditional into the AMP or AVM. IOIs can be cancelled and modified using Order Modify and Order Cancel.</Description>
+      <Branch>Payload</Branch>
+      <Dependency>Msg Type</Dependency>
+      <Origin>Member</Origin>
+      <Category>Order Entry</Category>
+      <Code>27</Code>
+      <Fields>
+        <Field>
+          <Name>securityID</Name>
+          <Type>u16</Type>
+          <Size>2</Size>
+          <Description>Numeric security identifier</Description>
+        </Field>
+        <Field>
+          <Name>IOI Order Type</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Order type</Description>
+        </Field>
+        <Field>
+          <Name>timeInForce</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Time in force</Description>
+        </Field>
+        <Field>
+          <Name>side</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Side of the order</Description>
+        </Field>
+        <Field>
+          <Name>quantity</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Number of shares</Description>
+        </Field>
+        <Field>
+          <Name>price</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Limit price of the order</Description>
+        </Field>
+        <Field>
+          <Name>orderCapacity</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Order capacity</Description>
+        </Field>
+        <Field>
+          <Name>account</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Clearing account identifier; 1 = House Account, 2 or above = agreed Client Account code</Description>
+        </Field>
+        <Field>
+          <Name>userTag</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Free form tag assigned by trading Member</Description>
+        </Field>
+        <Field>
+          <Name>Flags</Name>
+          <Type>bitfield</Type>
+          <Size>1</Size>
+          <Description>Order flags</Description>
+        </Field>
+        <Field>
+          <Name>tableSelect1</Name>
+          <Type>bitfield</Type>
+          <Size>1</Size>
+          <Description>Party role qualifier and role for party 1</Description>
+        </Field>
+        <Field>
+          <Name>shortCode1</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Short code for party 1</Description>
+        </Field>
+        <Field>
+          <Name>tableSelect2</Name>
+          <Type>bitfield</Type>
+          <Size>1</Size>
+          <Description>Party role qualifier and role for party 2</Description>
+        </Field>
+        <Field>
+          <Name>shortCode2</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Short code for party 2</Description>
+        </Field>
+        <Field>
+          <Name>tableSelect3</Name>
+          <Type>bitfield</Type>
+          <Size>1</Size>
+          <Description>Party role qualifier and role for party 3</Description>
+        </Field>
+        <Field>
+          <Name>shortCode3</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Short code for party 3</Description>
+        </Field>
+        <Field>
+          <Name>minQty</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Minimum quantity of an order to be executed; 0 = no minimum quantity</Description>
+        </Field>
+        <Field>
+          <Name>IOI Extended Flags</Name>
+          <Type>bitfield</Type>
+          <Size>1</Size>
+          <Description>Extended order flags</Description>
+        </Field>
+        <Field>
+          <Name>OptimX Universe</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>OptimX universe visibility</Description>
+        </Field>
+        <Field>
+          <Name>BlotterBlacklist</Name>
+          <Type>char(50)</Type>
+          <Size>50</Size>
+          <Description>50 byte blacklist as agreed with OptimX</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!--IOI Invite Message-->
+    <Message>
+      <Name>IOI Invite Message</Name>
+      <Description>Message from Aquis to the member indicating a firm up invite. The invite will expire 300ms after the value in the timestamp field.</Description>
+      <Branch>Payload</Branch>
+      <Dependency>Msg Type</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Order Entry</Category>
+      <Code>28</Code>
+      <Fields>
+        <Field>
+          <Name>orderRef</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Order reference number</Description>
+        </Field>
+        <Field>
+          <Name>price</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Limit price of the order</Description>
+        </Field>
+        <Field>
+          <Name>quantity</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Maximum quantity available to be traded</Description>
+        </Field>
+        <Field>
+          <Name>minQty</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Minimum quantity that is needed for a trade to take place</Description>
+        </Field>
+        <Field>
+          <Name>timestamp</Name>
+          <Type>time</Type>
+          <Size>8</Size>
+          <Description>Time the IOI Invite was sent</Description>
+        </Field>
+        <Field>
+          <Name>userTag</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Free form tag assigned by trading Member</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!--IOI Firmup Message-->
+    <Message>
+      <Name>IOI Firmup Message</Name>
+      <Description>Firm up message to be used as a response to an invite.</Description>
+      <Branch>Payload</Branch>
+      <Dependency>Msg Type</Dependency>
+      <Origin>Member</Origin>
+      <Category>Order Entry</Category>
+      <Code>29</Code>
+      <Fields>
+        <Field>
+          <Name>orderRef</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Order reference number</Description>
+        </Field>
+        <Field>
+          <Name>price</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Limit price of the order</Description>
+        </Field>
+        <Field>
+          <Name>quantity</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Number of shares</Description>
+        </Field>
+        <Field>
+          <Name>minQty</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Minimum quantity of an order to be executed; 0 = no minimum quantity</Description>
+        </Field>
+        <Field>
+          <Name>userTag</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Free form tag assigned by trading Member</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+  </Messages>
+
+  <Bitfields>
+
+    <!--Extended Order Flags-->
+    <Bitfield>
+      <Name>Extended Order Flags</Name>
+      <Description>Extended order flags</Description>
+      <Fields>
+        <Field>
+          <Name>stpEnable</Name>
+          <Bits>1</Bits>
+          <Description>Self-trade prevention; only valid when OrderType=12; 0 = No restriction, 1 = Enabled</Description>
+        </Field>
+        <Field>
+          <Name>lisOnly</Name>
+          <Bits>1</Bits>
+          <Description>LIS executions only; only valid when OrderType=12; 0 = No restriction, 1 = LIS executions only</Description>
+        </Field>
+        <Field>
+          <Name>Routetolit</Name>
+          <Bits>1</Bits>
+          <Description>Route to Lit; 0 = Order is not routed, 1 = Route to Lit</Description>
+        </Field>
+        <Field>
+          <Name>Routing</Name>
+          <Bits>3</Bits>
+          <Description>Behaviour of the Lit portion of a Dark-to-Lit sweep order. ignored when Routetolit = 0</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Bits>2</Bits>
+          <Description>Reserved</Description>
+        </Field>
+      </Fields>
+    </Bitfield>
+
+    <!--Flags-->
+    <Bitfield>
+      <Name>Flags</Name>
+      <Description>flags</Description>
+      <Fields>
+        <Field>
+          <Name>LiqProv</Name>
+          <Bits>1</Bits>
+          <Description>Whether the order relates to liquidity provision activity</Description>
+        </Field>
+        <Field>
+          <Name>AlgoTradeFlag</Name>
+          <Bits>1</Bits>
+          <Description>Whether the order was generated by an algorithm</Description>
+        </Field>
+        <Field>
+          <Name>DEAFlag</Name>
+          <Bits>1</Bits>
+          <Description>Whether the order originates from a Direct Electronic Access client</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Bits>5</Bits>
+          <Description>Reserved</Description>
+        </Field>
+      </Fields>
+    </Bitfield>
+
+    <!--IOI Extended Flags-->
+    <Bitfield>
+      <Name>IOI Extended Flags</Name>
+      <Description>IOI extended order flags</Description>
+      <Fields>
+        <Field>
+          <Name>stpEnable</Name>
+          <Bits>1</Bits>
+          <Description>Self-trade prevention; 0 = No restriction, 1 = Enabled</Description>
+        </Field>
+        <Field>
+          <Name>lisOnly</Name>
+          <Bits>1</Bits>
+          <Description>LIS executions only; 0 = No restriction, 1 = LIS executions only</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Bits>6</Bits>
+          <Description>Reserved</Description>
+        </Field>
+      </Fields>
+    </Bitfield>
+
+    <!--Order Add Response Flags-->
+    <Bitfield>
+      <Name>Order Add Response Flags</Name>
+      <Description>Order add response flags</Description>
+      <Fields>
+        <Field>
+          <Name>Reserved</Name>
+          <Bits>6</Bits>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>lis</Name>
+          <Bits>1</Bits>
+          <Description>LIS indicator set by the system</Description>
+        </Field>
+        <Field>
+          <Name>DarkFlag</Name>
+          <Bits>1</Bits>
+          <Description>Indicates if an order is a dark order</Description>
+        </Field>
+      </Fields>
+    </Bitfield>
+
+    <!--Order Modify Response Flags-->
+    <Bitfield>
+      <Name>Order Modify Response Flags</Name>
+      <Description>Order modify response flags</Description>
+      <Fields>
+        <Field>
+          <Name>Reserved</Name>
+          <Bits>6</Bits>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>lis</Name>
+          <Bits>1</Bits>
+          <Description>LIS indicator set by the system; only valid when OrderType=12; 0 = Reference Price Waiver, 1 = Large in Scale</Description>
+        </Field>
+        <Field>
+          <Name>DarkFlag</Name>
+          <Bits>1</Bits>
+          <Description>Indicates if an order modify request was made for a dark order; 0 = No, 1 = Yes</Description>
+        </Field>
+      </Fields>
+    </Bitfield>
+
+    <!--status-->
+    <Bitfield>
+      <Name>status</Name>
+      <Description>Order status and reason code</Description>
+      <Fields>
+        <Field>
+          <Name>reasonCode</Name>
+          <Bits>5</Bits>
+          <Description>Reason code if rejected or cancelled; otherwise zero</Description>
+        </Field>
+        <Field>
+          <Name>orderStatus</Name>
+          <Bits>3</Bits>
+          <Type>orderStatus</Type>
+          <Description>Order status</Description>
+        </Field>
+      </Fields>
+    </Bitfield>
+
+    <!--tableSelect1-->
+    <Bitfield>
+      <Name>tableSelect1</Name>
+      <Description>Party role qualifier and role</Description>
+      <Fields>
+        <Field>
+          <Name>PartyRole</Name>
+          <Bits>4</Bits>
+          <Description>Party role</Description>
+        </Field>
+        <Field>
+          <Name>PartyRoleQualifier</Name>
+          <Bits>4</Bits>
+          <Description>Party role qualifier</Description>
+        </Field>
+      </Fields>
+    </Bitfield>
+
+    <!--tableSelect2-->
+    <Bitfield>
+      <Name>tableSelect2</Name>
+      <Description>Party role qualifier and role</Description>
+      <Fields>
+        <Field>
+          <Name>PartyRole</Name>
+          <Bits>4</Bits>
+          <Description>Party role</Description>
+        </Field>
+        <Field>
+          <Name>PartyRoleQualifier</Name>
+          <Bits>4</Bits>
+          <Description>Party role qualifier</Description>
+        </Field>
+      </Fields>
+    </Bitfield>
+
+    <!--tableSelect3-->
+    <Bitfield>
+      <Name>tableSelect3</Name>
+      <Description>Party role qualifier and role</Description>
+      <Fields>
+        <Field>
+          <Name>PartyRole</Name>
+          <Bits>4</Bits>
+          <Description>Party role</Description>
+        </Field>
+        <Field>
+          <Name>PartyRoleQualifier</Name>
+          <Bits>4</Bits>
+          <Description>Party role qualifier</Description>
+        </Field>
+      </Fields>
+    </Bitfield>
+
+    <!--Trade Capture Flags-->
+    <Bitfield>
+      <Name>Trade Capture Flags</Name>
+      <Description>Trade capture flags</Description>
+      <Fields>
+        <Field>
+          <Name>Reserved</Name>
+          <Bits>1</Bits>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>AlgoTradeFlag</Name>
+          <Bits>1</Bits>
+          <Description>Whether the order was generated by an algorithm; 0 = No, 1 = Yes</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Bits>6</Bits>
+          <Description>Reserved</Description>
+        </Field>
+      </Fields>
+    </Bitfield>
+
+    <!--Trade Flags-->
+    <Bitfield>
+      <Name>Trade Flags</Name>
+      <Description>Trade flags</Description>
+      <Fields>
+        <Field>
+          <Name>Reserved</Name>
+          <Bits>6</Bits>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>lis</Name>
+          <Bits>1</Bits>
+          <Description>Pre-trade transparency waiver; only valid when OrderType=12; 0 = Reference Price Waiver, 1 = Large in Scale</Description>
+        </Field>
+        <Field>
+          <Name>DarkFlag</Name>
+          <Bits>1</Bits>
+          <Description>Indicates whether a trade was executed on the dark order book; 0 = No, 1 = Yes</Description>
+        </Field>
+      </Fields>
+    </Bitfield>
+
+  </Bitfields>
+
+  <Enums>
+
+    <!--cancelReason-->
+    <Enum>
+      <Name>cancelReason</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Member Request</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Aquis Forced Cancel</Name>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Market Close</Name>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>Expired</Name>
+        </Value>
+        <Value>
+          <Data>5</Data>
+          <Name>Reserved</Name>
+        </Value>
+        <Value>
+          <Data>6</Data>
+          <Name>Aborted</Name>
+        </Value>
+        <Value>
+          <Data>7</Data>
+          <Name>Self-Trade Prevention</Name>
+        </Value>
+        <Value>
+          <Data>8</Data>
+          <Name>Cancel on Disconnect</Name>
+        </Value>
+        <Value>
+          <Data>9</Data>
+          <Name>Post-Only Cancel</Name>
+        </Value>
+        <Value>
+          <Data>10</Data>
+          <Name>Cancel Residual Quantity</Name>
+        </Value>
+        <Value>
+          <Data>11</Data>
+          <Name>Post-Only Cancel Resting</Name>
+        </Value>
+        <Value>
+          <Data>12</Data>
+          <Name>Minimum Resting Value</Name>
+        </Value>
+        <Value>
+          <Data>14</Data>
+          <Name>Cancel Pending</Name>
+        </Value>
+        <Value>
+          <Data>17</Data>
+          <Name>Limit Exceeded</Name>
+        </Value>
+        <Value>
+          <Data>18</Data>
+          <Name>Counterparty Cancel</Name>
+        </Value>
+        <Value>
+          <Data>19</Data>
+          <Name>Unsuccessful</Name>
+        </Value>
+        <Value>
+          <Data>20</Data>
+          <Name>Technical</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!--liqIndicator-->
+    <Enum>
+      <Name>liqIndicator</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Added Liquidity</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Removed Liquidity</Name>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Removed Liquidity Hidden Quantity</Name>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>Auction MaC</Name>
+        </Value>
+        <Value>
+          <Data>6</Data>
+          <Name>Auction on Demand</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!--lis-->
+    <Enum>
+      <Name>lis</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>Reference Price Waiver</Name>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Large in Scale</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!--logoutReasonCode-->
+    <Enum>
+      <Name>logoutReasonCode</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>User Requested</Name>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Admin</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Disconnect</Name>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>End of Day</Name>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>Inactivity Timeout</Name>
+        </Value>
+        <Value>
+          <Data>5</Data>
+          <Name>Protocol Error</Name>
+        </Value>
+        <Value>
+          <Data>6</Data>
+          <Name>Sequence Number Error</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!--modificationReason-->
+    <Enum>
+      <Name>modificationReason</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Modification Accepted</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Order Cancelled</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!--OptimX Universe-->
+    <Enum>
+      <Name>OptimX Universe</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>Off</Name>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Show to All OptimX Clients</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Show to Current Broker Clients Only</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!--orderCapacity-->
+    <Enum>
+      <Name>orderCapacity</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>AOTC</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>DEAL</Name>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>MTCH</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!--orderStatus-->
+    <Enum>
+      <Name>orderStatus</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Pending New</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Acknowledged</Name>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Cancelled</Name>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>Rejected</Name>
+        </Value>
+        <Value>
+          <Data>5</Data>
+          <Name>Filled</Name>
+        </Value>
+        <Value>
+          <Data>6</Data>
+          <Name>Modified</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!--orderType-->
+    <Enum>
+      <Name>orderType</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Limit Order</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Auction on Demand Limit Order</Name>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Auction on Demand Mid Pegged/Limit</Name>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>Auction on Demand Near Touch Pegged</Name>
+        </Value>
+        <Value>
+          <Data>6</Data>
+          <Name>Market at Close</Name>
+        </Value>
+        <Value>
+          <Data>8</Data>
+          <Name>Post-Only Cancel Replace</Name>
+        </Value>
+        <Value>
+          <Data>9</Data>
+          <Name>Post-Only</Name>
+        </Value>
+        <Value>
+          <Data>10</Data>
+          <Name>Restricted POCR Order</Name>
+        </Value>
+        <Value>
+          <Data>11</Data>
+          <Name>Restricted Post Only Order</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!--IOI Order Type-->
+    <Enum>
+      <Name>IOI Order Type</Name>
+      <Values>
+        <Value>
+          <Data>12</Data>
+          <Name>Mid Pegged</Name>
+        </Value>
+        <Value>
+          <Data>17</Data>
+          <Name>Aquis VWAP Match</Name>
+        </Value>
+        <Value>
+          <Data>18</Data>
+          <Name>Targeted Aquis VWAP Match</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!--PartyRole-->
+    <Enum>
+      <Name>PartyRole</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>None</Name>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Client ID</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Executing Decision ID</Name>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Investing Decision ID</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!--PartyRoleQualifier-->
+    <Enum>
+      <Name>PartyRoleQualifier</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>None</Name>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Algo</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Firm</Name>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Person</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!--rejectReason-->
+    <Enum>
+      <Name>rejectReason</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Not Authorised To Trade</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Invalid Quantity</Name>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Invalid Price</Name>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>Unknown Security</Name>
+        </Value>
+        <Value>
+          <Data>5</Data>
+          <Name>Price Does Not Conform To Tick</Name>
+        </Value>
+        <Value>
+          <Data>6</Data>
+          <Name>Invalid Order Type</Name>
+        </Value>
+        <Value>
+          <Data>7</Data>
+          <Name>Invalid Side</Name>
+        </Value>
+        <Value>
+          <Data>8</Data>
+          <Name>Invalid Order Capacity</Name>
+        </Value>
+        <Value>
+          <Data>9</Data>
+          <Name>Market Is Closed</Name>
+        </Value>
+        <Value>
+          <Data>10</Data>
+          <Name>Halted</Name>
+        </Value>
+        <Value>
+          <Data>11</Data>
+          <Name>Suspended</Name>
+        </Value>
+        <Value>
+          <Data>12</Data>
+          <Name>Invalid TimeInForce</Name>
+        </Value>
+        <Value>
+          <Data>13</Data>
+          <Name>Order Not Found</Name>
+        </Value>
+        <Value>
+          <Data>15</Data>
+          <Name>Failed Price Range Check</Name>
+        </Value>
+        <Value>
+          <Data>16</Data>
+          <Name>Invalid Clearing Account</Name>
+        </Value>
+        <Value>
+          <Data>17</Data>
+          <Name>Not Supported</Name>
+        </Value>
+        <Value>
+          <Data>18</Data>
+          <Name>Max Value Exceeded</Name>
+        </Value>
+        <Value>
+          <Data>19</Data>
+          <Name>Auction Ended</Name>
+        </Value>
+        <Value>
+          <Data>20</Data>
+          <Name>Drop Feed Down</Name>
+        </Value>
+        <Value>
+          <Data>21</Data>
+          <Name>Technical Reject</Name>
+        </Value>
+        <Value>
+          <Data>23</Data>
+          <Name>Stock Restricted</Name>
+        </Value>
+        <Value>
+          <Data>24</Data>
+          <Name>Minimum Consideration</Name>
+        </Value>
+        <Value>
+          <Data>25</Data>
+          <Name>Pending Auction</Name>
+        </Value>
+        <Value>
+          <Data>27</Data>
+          <Name>Invalid</Name>
+        </Value>
+        <Value>
+          <Data>29</Data>
+          <Name>Bad Date</Name>
+        </Value>
+        <Value>
+          <Data>30</Data>
+          <Name>Duplicate</Name>
+        </Value>
+        <Value>
+          <Data>31</Data>
+          <Name>Reject Internal</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!--resultCode-->
+    <Enum>
+      <Name>resultCode</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>Success</Name>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Already Logged In</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Sequence Number Error</Name>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Unsupported Protocol</Name>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>Failed Authentication</Name>
+        </Value>
+        <Value>
+          <Data>5</Data>
+          <Name>Unknown Source Network</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!--Routing-->
+    <Enum>
+      <Name>Routing</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>Limit</Name>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Post Only</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>POCR</Name>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Restricted Post Only Order</Name>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>Restricted POCR Order</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!--shortCode1-->
+    <Enum>
+      <Name>shortCode1</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>None</Name>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Aggregated</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Pending Allocation</Name>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Client</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!--shortCode2-->
+    <Enum>
+      <Name>shortCode2</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>None</Name>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Aggregated</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Pending Allocation</Name>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Client</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!--shortCode3-->
+    <Enum>
+      <Name>shortCode3</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>None</Name>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Aggregated</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Pending Allocation</Name>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Client</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!--timeInForce-->
+    <Enum>
+      <Name>timeInForce</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Day</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Fill or Kill</Name>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Immediate or Cancel</Name>
+        </Value>
+        <Value>
+          <Data>9</Data>
+          <Name>Good For Auction</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!--tradeCaptureType-->
+    <Enum>
+      <Name>tradeCaptureType</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>LIS Cross</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>LIS Cross No Clearing</Name>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>VWAP Benchmark Cross</Name>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>VWAP Benchmark Cross No Clearing</Name>
+        </Value>
+        <Value>
+          <Data>5</Data>
+          <Name>TWAP Benchmark Cross</Name>
+        </Value>
+        <Value>
+          <Data>6</Data>
+          <Name>TWAP Benchmark Cross No Clearing</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+  </Enums>
+
+</OmiAtpPdf>

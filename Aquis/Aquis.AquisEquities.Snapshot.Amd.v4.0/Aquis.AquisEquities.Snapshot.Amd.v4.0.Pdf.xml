@@ -1,0 +1,258 @@
+<OmiAmdPdf>
+  
+  <Messages>
+
+    <!--Snapshot Start Message-->
+    <Message>
+      <Name>Snapshot Start Message</Name>
+      <Description>Published as the first message in a snapshot, identifying the continuous stream sequence number and number of securities being reported.</Description>
+      <Branch>Payload</Branch>
+      <Dependency>Msg Type</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>MarketData</Category>
+      <Code>10</Code>
+      <Fields>
+        <Field>
+          <Name>streamSeqNo</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Sequence number of the last message in the continuous stream which relates to this snapshot</Description>
+        </Field>
+        <Field>
+          <Name>securityCount</Name>
+          <Type>u16</Type>
+          <Size>2</Size>
+          <Description>Number of securities reported in this snapshot</Description>
+        </Field>
+        <Field>
+          <Name>timestamp</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Timestamp of this snapshot</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!--Book Status Message-->
+    <Message>
+      <Name>Book Status Message</Name>
+      <Description>Published to report the trading and market status of each security and the number of open orders on the order book at the time of the snapshot.</Description>
+      <Branch>Payload</Branch>
+      <Dependency>Msg Type</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>MarketData</Category>
+      <Code>11</Code>
+      <Fields>
+        <Field>
+          <Name>securityID</Name>
+          <Type>u16</Type>
+          <Size>2</Size>
+          <Description>Numeric identifier of the relevant security</Description>
+        </Field>
+        <Field>
+          <Name>tradingStatus</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Trading status of the security</Description>
+        </Field>
+        <Field>
+          <Name>marketFlags</Name>
+          <Type>bitfield</Type>
+          <Size>1</Size>
+          <Description>Market status flags</Description>
+        </Field>
+        <Field>
+          <Name>entries</Name>
+          <Type>u16</Type>
+          <Size>2</Size>
+          <Description>Number of open orders in the book for this security</Description>
+        </Field>
+        <Field>
+          <Name>closingBuyQty</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Total order quantity on the buy side during the closing market; otherwise 0</Description>
+        </Field>
+        <Field>
+          <Name>closingSellQty</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Total order quantity on the sell side during the closing market; otherwise 0</Description>
+        </Field>
+        <Field>
+          <Name>indicativePrice</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Indicative auction price</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!--Book Entry Message-->
+    <Message>
+      <Name>Book Entry Message</Name>
+      <Description>Published after each Book Status message to provide details of each order for building the book.</Description>
+      <Branch>Payload</Branch>
+      <Dependency>Msg Type</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>MarketData</Category>
+      <Code>12</Code>
+      <Fields>
+        <Field>
+          <Name>securityID</Name>
+          <Type>u16</Type>
+          <Size>2</Size>
+          <Description>Numeric identifier of the relevant security</Description>
+        </Field>
+        <Field>
+          <Name>Side</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>1 = Buy Order, 2 = Sell Order</Description>
+        </Field>
+        <Field>
+          <Name>quantity</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Number of open shares</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>The price of the order</Description>
+        </Field>
+        <Field>
+          <Name>orderRef</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Unique order reference number for the day</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!--MaC Book Entry Message-->
+    <Message>
+      <Name>MaC Book Entry Message</Name>
+      <Description>Published during MaC phase to provide the volume of the 5 best bid and offer orders per security in chronological order.</Description>
+      <Branch>Payload</Branch>
+      <Dependency>Msg Type</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>MarketData</Category>
+      <Code>18</Code>
+      <Fields>
+        <Field>
+          <Name>securityID</Name>
+          <Type>u16</Type>
+          <Size>2</Size>
+          <Description>Numeric identifier of the relevant security</Description>
+        </Field>
+        <Field>
+          <Name>Side</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>1 = Buy Order, 2 = Sell Order</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Number of open shares</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>The price of the order</Description>
+        </Field>
+        <Field>
+          <Name>orderRef</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Unique order reference number for the day</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+
+  </Messages>
+  
+  <Bitfields>
+
+    <!--marketFlags-->
+    <Bitfield>
+      <Name>marketFlags</Name>
+      <Description>Market status flags</Description>
+      <Fields>
+        <Field>
+          <Name>trading</Name>
+          <Bits>1</Bits>
+          <Description>Continuous trading status; 0 = Closed, 1 = Open</Description>
+        </Field>
+        <Field>
+          <Name>macOpen</Name>
+          <Bits>1</Bits>
+          <Description>MaC status; 0 = Closed, 1 = Open</Description>
+        </Field>
+        <Field>
+          <Name>macRun</Name>
+          <Bits>1</Bits>
+          <Description>MaC lockdown status; 0 = Not locked down, 1 = Locked down</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Bits>5</Bits>
+          <Description>Reserved</Description>
+        </Field>
+      </Fields>
+    </Bitfield>
+    
+  </Bitfields>
+  
+  <Enums>
+
+    <!--side-->
+    <Enum>
+      <Name>side</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Buy Order</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Sell Order</Name>
+        </Value>
+      </Values>
+    </Enum>
+    
+    <!-- TradingStatus -->
+    <Enum>
+      <Name>TradingStatus</Name>
+      <Values>
+        <Value>
+          <Name>Active</Name>
+          <Data>1</Data>
+        </Value>
+        <Value>
+          <Name>Halted</Name>
+          <Data>2</Data>
+        </Value>
+        <Value>
+          <Name>Suspended</Name>
+          <Data>3</Data>
+        </Value>
+        <Value>
+          <Name>AoD Start</Name>
+          <Data>8</Data>
+        </Value>
+        <Value>
+          <Name>AoD End</Name>
+          <Data>24</Data>
+        </Value>
+      </Values>
+    </Enum>
+    
+  </Enums>
+  
+</OmiAmdPdf>
