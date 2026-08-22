@@ -32,8 +32,6 @@ The Open Markets Initiative provides protocol definitions in several formats:
 - [P4 Definitions][P4.Definitions.Repository] — P4 programs for software and hardware data planes
 - [Spicy Definitions][Spicy.Definitions.Repository] — declarative Spicy grammars for the spicy toolchain and the zeek network security monitor
 - [FIX Dictionaries][Fix.Dictionaries.Repository] — QuickFIX format xml data dictionaries, one per FIX version
-- [Wireshark Dissectors][Wireshark.Dissectors.Repository] — lua dissectors for the wireshark protocol analyzer
-- [C# Protocols][CSharp.Protocols.Repository] — zero copy c# protocol parsers
 ## Disclaimer
 
 Any similarities between existing people, places and/or protocols is purely incidental.
@@ -45,5 +43,3 @@ Enjoy.
 [P4.Definitions.Repository]: https://github.com/Open-Markets-Initiative/omi-p4-definitions "Omi P4 Definitions"
 [Spicy.Definitions.Repository]: https://github.com/Open-Markets-Initiative/omi-spicy-definitions "Omi Spicy Definitions"
 [Fix.Dictionaries.Repository]: https://github.com/Open-Markets-Initiative/omi-fix-dictionaries "Omi FIX Dictionaries"
-[Wireshark.Dissectors.Repository]: https://github.com/Open-Markets-Initiative/wireshark-lua "Omi Wireshark Dissectors"
-[CSharp.Protocols.Repository]: https://github.com/Open-Markets-Initiative/omi-csharp-protocols "Omi C# Protocols"
