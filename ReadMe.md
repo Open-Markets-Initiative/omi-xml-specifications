@@ -4,13 +4,9 @@
 
 Omi Xml Specifications are the exchange protocol specification xml files that carry the message layouts, enums and dispatch rules of each protocol version — the vendor schemas and message definitions, matching the original specification files. Every Omi generated output — dissectors, parsers, definitions — is compiled from these source specifications.
 
-## Layout
-
-Each protocol version is one folder: `{Organization}/{Identifier}/` holding the protocol's specification xmls as published, matching the original files. The shared framing headers and the reference manifest are omitted, so a folder carries only the definitions unique to that protocol.
-
 ## Development
 
-Updates are greatly appreciated; however, this entire repository is source generated...including the words you are reading right now. If you wish to suggest specification updates, the recommended process is to create an issue with changes and explanation.  Time permitting, we will update the specifications and regenerate.
+The specification xmls in this repository are published copies of the original protocol specifications — they are not generated. Each protocol version is one folder, `{Organization}/{Identifier}/`, holding only the definitions unique to that protocol; the shared framing headers and the reference manifest are omitted. If you find an error in a specification, updates are welcome as pull requests.
 
 ## Testing
 
@@ -22,7 +18,7 @@ Every published specification is validated for well-formed xml on each change. P
 
 The Open Markets Initiative (Omi) is a group of technologists dedicated to enhancing the stability of electronic financial markets using modern development methods.
 
-For a list of Omi Hft projects see [Omi Projects](https://github.com/Open-Markets-Initiative/Directory/tree/main/Projects "Open Markets Initiative Projects"); for details of Omi rules and regulations see [Omi Directory](https://github.com/Open-Markets-Initiative/Directory "Open Markets Initiative Directory").
+Other generated code can be found at [Omi Projects](https://github.com/Open-Markets-Initiative/Directory/tree/main/Projects "Open Markets Initiative Projects"); for details of Omi rules and regulations, see [Omi Directory](https://github.com/Open-Markets-Initiative/Directory "Open Markets Initiative Directory").
 ## Organizations
 
 > CIX Trading Inc. · Investors Exchange
@@ -36,6 +32,15 @@ The Open Markets Initiative provides protocol definitions in several formats:
 - [P4 Definitions][P4.Definitions.Repository] — P4 programs for software and hardware data planes
 - [Spicy Definitions][Spicy.Definitions.Repository] — declarative Spicy grammars for the spicy toolchain and the zeek network security monitor
 - [FIX Dictionaries][Fix.Dictionaries.Repository] — QuickFIX format xml data dictionaries, one per FIX version
+## Projects
+
+The following projects are source generated from these definitions:
+
+- [Wireshark Lua Dissectors][Wireshark.Lua.Dissectors] — cross platform Wireshark dissectors in lua
+- [C Packed Structs][C.Packed.Structs] — c-style packed structs for binary protocols
+- [Rust Protocols][Rust.Protocols] — zero copy Rust message views, one crate per protocol version
+- [Python Classes][Python.Classes] — stable Python deserialization for common exchange protocols
+- [C# Protocols][CSharp.Protocols] — zero copy C# protocol parsers, fixed layout structs and classes
 ## Disclaimer
 
 Any similarities between existing people, places and/or protocols is purely incidental.
@@ -47,3 +52,8 @@ Enjoy.
 [P4.Definitions.Repository]: https://github.com/Open-Markets-Initiative/omi-p4-definitions "Omi P4 Definitions"
 [Spicy.Definitions.Repository]: https://github.com/Open-Markets-Initiative/omi-spicy-definitions "Omi Spicy Definitions"
 [Fix.Dictionaries.Repository]: https://github.com/Open-Markets-Initiative/omi-fix-dictionaries "Omi FIX Dictionaries"
+[Wireshark.Lua.Dissectors]: https://github.com/Open-Markets-Initiative/wireshark-lua "Omi Wireshark Lua Dissectors"
+[C.Packed.Structs]: https://github.com/Open-Markets-Initiative/c-structs "Omi C Packed Structs"
+[Rust.Protocols]: https://github.com/Open-Markets-Initiative/omi-rust-protocols "Omi Rust Protocols"
+[Python.Classes]: https://github.com/Open-Markets-Initiative/omi-python-classes "Omi Python Classes"
+[CSharp.Protocols]: https://github.com/Open-Markets-Initiative/omi-csharp-protocols "Omi C# Protocols"
