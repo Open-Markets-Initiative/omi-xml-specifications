@@ -20,5 +20,5 @@
 | IexOptions | Session | Sbe | 1.0 | [files](Iex.IexOptions.Session.Sbe.v1.0/) |
 
 
-Iex: [website](Iex: [website](https://www.iexexchange.io "Go to Investors Exchange") "Go to Investors Exchange")
+Iex: [website](https://www.iexexchange.io "Go to Investors Exchange")
 

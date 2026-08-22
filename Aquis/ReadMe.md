@@ -17,5 +17,5 @@
 | AquisEquities | UdpHeader | Amd | 1.0 | [files](Aquis.AquisEquities.UdpHeader.Amd.v1.0/) |
 
 
-Aquis: [website](Aquis: [website](https://www.aquis.eu "Go to Aquis Exchange") "Go to Aquis Exchange")
+Aquis: [website](https://www.aquis.eu "Go to Aquis Exchange")
 

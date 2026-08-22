@@ -11,5 +11,5 @@
 | 24XEquities | MemoirTopOfBook | Sbe | 1.3 | [files](24X.24XEquities.MemoirTopOfBook.Sbe.v1.3/) |
 
 
-24X: [website](24X: [website](https://24exchange.com "Go to 24 National Exchange") "Go to 24 National Exchange")
+24X: [website](https://24exchange.com "Go to 24 National Exchange")
 

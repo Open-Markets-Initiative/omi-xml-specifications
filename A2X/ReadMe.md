@@ -10,5 +10,5 @@
 | A2XEquities | UdpHeader | Amd | 1 | [files](A2X.A2XEquities.UdpHeader.Amd.v1/) |
 
 
-A2X: [website](A2X: [website](https://www.a2x.co.za "Go to A2X Markets") "Go to A2X Markets")
+A2X: [website](https://www.a2x.co.za "Go to A2X Markets")
 

@@ -11,5 +11,5 @@
 | BlueEquities | MemoirTopOfBook | Sbe | 1.3 | [files](BlueOceanAts.BlueEquities.MemoirTopOfBook.Sbe.v1.3/) |
 
 
-BlueOceanAts: [website](BlueOceanAts: [website](https://blueocean-tech.io/ "Go to Blue Ocean Technologies") "Go to Blue Ocean Technologies")
+BlueOceanAts: [website](https://blueocean-tech.io/ "Go to Blue Ocean Technologies")
 

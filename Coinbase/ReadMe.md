@@ -23,5 +23,5 @@
 | Deribit | OrdersApi | Sbe | 1.3 | [files](Coinbase.Deribit.OrdersApi.Sbe.v1.3/) |
 
 
-Coinbase: [website](Coinbase: [website](https://www.coinbase.com/ "Go to Coinbase") "Go to Coinbase")
+Coinbase: [website](https://www.coinbase.com/ "Go to Coinbase")
 

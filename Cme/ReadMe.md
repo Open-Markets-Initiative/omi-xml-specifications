@@ -29,5 +29,5 @@
 | Globex | Streamlined | Sbe | 5.9 | [files](Cme.Globex.Streamlined.Sbe.v5.9/) |
 
 
-Cme: [website](Cme: [website](http://www.cmegroup.com "Go to CME Group") "Go to CME Group")
+Cme: [website](http://www.cmegroup.com "Go to CME Group")
 
