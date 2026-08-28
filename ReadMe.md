@@ -84,7 +84,7 @@ Enjoy.
 [P4.Definitions.Repository]: https://github.com/Open-Markets-Initiative/omi-p4-definitions "Omi P4 Definitions"
 [Spicy.Definitions.Repository]: https://github.com/Open-Markets-Initiative/omi-spicy-definitions "Omi Spicy Definitions"
 [Fix.Dictionaries.Repository]: https://github.com/Open-Markets-Initiative/omi-fix-dictionaries "Omi FIX Dictionaries"
-[Wireshark.Lua.Dissectors]: https://github.com/Open-Markets-Initiative/wireshark-lua "Omi Wireshark Lua Dissectors"
+[Wireshark.Lua.Dissectors]: https://github.com/Open-Markets-Initiative/omi-wireshark-lua "Omi Wireshark Lua Dissectors"
 [C.Packed.Structs]: https://github.com/Open-Markets-Initiative/c-structs "Omi C Packed Structs"
 [Rust.Protocols]: https://github.com/Open-Markets-Initiative/omi-rust-protocols "Omi Rust Protocols"
 [Python.Classes]: https://github.com/Open-Markets-Initiative/omi-python-classes "Omi Python Classes"
