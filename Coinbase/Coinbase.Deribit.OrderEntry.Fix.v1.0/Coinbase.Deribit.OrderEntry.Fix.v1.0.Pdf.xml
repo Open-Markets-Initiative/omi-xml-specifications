@@ -1,0 +1,4014 @@
+<OmiFixPdf>
+  <Header>
+    <Fields>
+      <Field>
+        <Tag>8</Tag>
+        <Name>BeginString</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+        <Description>Identifies beginning of new message and protocol version. Must always be first in the message</Description>
+      </Field>
+      <Field>
+        <Tag>9</Tag>
+        <Name>BodyLength</Name>
+        <Required>Y</Required>
+        <Type>Length</Type>
+        <Fixed>Y</Fixed>
+        <Description>Message length in bytes, not including fields BeginString(8), BodyLength(9) and CheckSum(10). The length must be calculated by counting the number of octets in the message up to and including the end of field delimiter (Start of Heading) of the field immediately preceding the CheckSum(10) field. Must always be the second in the message. Please refer to FIX specification for more details</Description>
+      </Field>
+      <Field>
+        <Tag>35</Tag>
+        <Name>MsgType</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+        <Description>The type of the message. See below for available types</Description>
+      </Field>
+      <Field>
+        <Tag>49</Tag>
+        <Name>SenderCompID</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Description>A user defined client name</Description>
+      </Field>
+      <Field>
+        <Tag>56</Tag>
+        <Name>TargetCompID</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Description>Constant value: DERIBITSERVER</Description>
+      </Field>
+      <Field>
+        <Tag>34</Tag>
+        <Name>MsgSeqNum</Name>
+        <Required>Y</Required>
+        <Type>SeqNum</Type>
+        <Description>A sequence number for the message, starts with 1, and must be incremented by 1 for every message</Description>
+      </Field>
+      <Field>
+        <Tag>52</Tag>
+        <Name>SendingTime</Name>
+        <Required>N</Required>
+        <Type>UTCTimestamp</Type>
+        <Description>The time the request is sent. This field is ignored by the server</Description>
+      </Field>
+    </Fields>
+  </Header>
+  <Trailer>
+    <Fields>
+      <Field>
+        <Tag>10</Tag>
+        <Name>CheckSum</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+        <Description>The checksum of all of all preceding messages. In order to calculate checksum, sum up the binary value of each octet up to and including the end of field delimiter (Start of Heading) of the field immediately preceding the CheckSum(10). Afterwards calculate modulo 256 of that sum. The calculated modulo 256 checksum must then be encoded as an ISO 8859-1 three-octet representation of the decimal valu</Description>
+      </Field>
+    </Fields>
+  </Trailer>
+  <Messages>
+    <Message>
+      <Name>ExecutionReport</Name>
+      <MsgType>8</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>527</Tag>
+          <Name>SecondaryExecID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>ID of the order change, may be absent in case of status reports</Description>
+        </Field>
+        <Field>
+          <Tag>37</Tag>
+          <Name>OrderId</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Unique identifier for Order as assigned by the Deribit</Description>
+        </Field>
+        <Field>
+          <Tag>11</Tag>
+          <Name>ClOrdID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Deribit replaces this field with the own value assigned by the server (it is not the client id from New Order Single(D))</Description>
+        </Field>
+        <Field>
+          <Tag>41</Tag>
+          <Name>OrigClOrdId</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>The original value assigned by the client in the New Order Single(D) message</Description>
+        </Field>
+        <Field>
+          <Tag>39</Tag>
+          <Name>OrdStatus</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>For trade – order status. Possible values: 0 = New, 1 = Partially filled, 2 = Filled, 4 = Cancelled 8 = Rejected</Description>
+        </Field>
+        <Field>
+          <Tag>54</Tag>
+          <Name>Side</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Side of order. Possible values: 1 = Buy, 2 = Sell</Description>
+        </Field>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>Y</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Time the transaction represented by this Execution Report occurred. Fix timestamp</Description>
+        </Field>
+        <Field>
+          <Tag>12</Tag>
+          <Name>Commission</Name>
+          <Required>N</Required>
+          <Type>float</Type>
+          <Description>Deprecated. Always 0</Description>
+        </Field>
+        <Field>
+          <Tag>151</Tag>
+          <Name>LeavesQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>Order quantity open for further execution (LeavesQty = OrderQty - CumQty) in Contract units corresponding to the ContractMultiplier in SecurityList</Description>
+        </Field>
+        <Field>
+          <Tag>14</Tag>
+          <Name>CumQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>Total executed quantity or 0.0 in Contract units corresponding to the ContractMultiplier in SecurityList</Description>
+        </Field>
+        <Field>
+          <Tag>38</Tag>
+          <Name>OrderQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>Order quantity in Contract units corresponding to the ContractMultiplier in SecurityList</Description>
+        </Field>
+        <Field>
+          <Tag>152</Tag>
+          <Name>CashOrderQty</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Present only for value based orders (where the order size was specified as a USD amount, e.g. BTC &amp; ETH inverse futures and perpetuals). When present, it equals OrderQty(38) and reflects the USD amount. Absent for quantity based orders</Description>
+        </Field>
+        <Field>
+          <Tag>5127</Tag>
+          <Name>ConditionTriggerMethod</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Trigger for a stop order. Possible values: 1 = Mark Price, 2 = Last Price, 3 = corresponding Index Price</Description>
+        </Field>
+        <Field>
+          <Tag>40</Tag>
+          <Name>OrdType</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Order type. Possible values: 1 = Market, 2 = Limit, 4 = Stop Limit, S = Stop Market (default: limit)</Description>
+        </Field>
+        <Field>
+          <Tag>44</Tag>
+          <Name>Price</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Price, maybe be absent for Market and Stop Market orders</Description>
+        </Field>
+        <Field>
+          <Tag>150</Tag>
+          <Name>ExecType</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>Describes the specific Execution Report. Possible values: I = equal to (Order Status), 7 = (Stopped) for triggered stop orders, 8 = Rejected, 3 = (Done for day) for GTD orders, C = (Expired) for the orders expired at delivery</Description>
+        </Field>
+        <Field>
+          <Tag>18</Tag>
+          <Name>ExecInst</Name>
+          <Required>N</Required>
+          <Type>MultipleValueString</Type>
+          <Description>Currently is used to mark POST ONLY orders and REDUCE ONLY orders. POST ONLY possible values: 6 = "Participate don't initiate", A = "No cross" (only together with 6, "6A" -- REJECT POST ONLY when the order is put to the order book unmodified or the request is rejected and order is cancelled), REDUCE ONLY possible values: E = " Do not increase - DNI"</Description>
+        </Field>
+        <Field>
+          <Tag>99</Tag>
+          <Name>StopPx</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Stop price for stop limit orders</Description>
+        </Field>
+        <Field>
+          <Tag>103</Tag>
+          <Name>OrdRejReason</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Possible reasons: 0 = no reject (the request has been accepted) 1 = Unknown symbol 2 = Exchange closed 3 = Order exceeds limit 4 = Too late to enter 5 = Unknown order 6 = Duplicate Order (e.g. dupe ClOrdID(11)) 7 = Duplicate of a verbally communicated order 8 = Stale order 9 = Trade along required 10 = Invalid Investor ID 11 = Unsupported order characteristic 12 = Surveillance Option 13 = Incorrec</Description>
+        </Field>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Free format text string, usually exceptions</Description>
+        </Field>
+        <Field>
+          <Tag>207</Tag>
+          <Name>SecurityExchange</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>"Deribit"</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Instrument symbol</Description>
+        </Field>
+        <Field>
+          <Tag>854</Tag>
+          <Name>QtyType</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Type of quantity specified in a quantity. Currently only 1 - Contracts</Description>
+        </Field>
+        <Field>
+          <Tag>231</Tag>
+          <Name>ContractMultiplier</Name>
+          <Required>N</Required>
+          <Type>float</Type>
+          <Description>Specifies a multiply factor to convert from contracts to total units</Description>
+        </Field>
+        <Field>
+          <Tag>6</Tag>
+          <Name>AvgPx</Name>
+          <Required>N</Required>
+          <Type>float</Type>
+          <Description>Average execution price or 0.0 if not executed yet or rejected</Description>
+        </Field>
+        <Field>
+          <Tag>1138</Tag>
+          <Name>DisplayQty</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>The (max) quantity to be displayed in the orderbook.</Description>
+        </Field>
+        <Field>
+          <Tag>100012</Tag>
+          <Name>DeribitAdvOrderType</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>If it is present then it denotes advanced order for options. Possible values: 0 = Implied Volatility Order (price defines fixed implied volatility in %), 1 = USD Order (price defines fixed USD price of the option, advanced USD orders are not supported for linear options)</Description>
+        </Field>
+        <Field>
+          <Tag>1188</Tag>
+          <Name>Volatility</Name>
+          <Required>N</Required>
+          <Type>float</Type>
+          <Description>Volatility for Implied Volatility Orders (options orders with fixed volatility)</Description>
+        </Field>
+        <Field>
+          <Tag>839</Tag>
+          <Name>PeggedPrice</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Value of fixed USD price for USD Orders (options orders with fixed USD price)</Description>
+        </Field>
+        <Field>
+          <Tag>31</Tag>
+          <Name>LastPx</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Price of this last fill</Description>
+        </Field>
+        <Field>
+          <Tag>32</Tag>
+          <Name>LastQty</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Quantity bought/sold on this last fill</Description>
+        </Field>
+        <Field>
+          <Tag>880</Tag>
+          <Name>TrdMatchID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Identifier assigned to a trade by a matching system. It can be present for trade execution reports if Logon 9015=Y</Description>
+        </Field>
+        <Field>
+          <Tag>100010</Tag>
+          <Name>DeribitLabel</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>A custom label for your order, max 64 grapheme clusters. Can be used by Order Cancel Request(F) to amend the order later on. This tag operates on grapheme clusters. A grapheme cluster is a user-perceived character, which can be represented by several unicode codepoints. Please refer to Unicode specification for more details about the grapheme clusters</Description>
+        </Field>
+        <Field>
+          <Tag>9008</Tag>
+          <Name>DeribitMMProtection</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>Order Market Maker Protection (MMP) flag</Description>
+        </Field>
+        <Field>
+          <Tag>9019</Tag>
+          <Name>MMPGroup</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>A custom tag of MMP Group. This tag is present only for orders from Mass Quote</Description>
+        </Field>
+        <Field>
+          <Tag>302</Tag>
+          <Name>QuoteSetID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>identifier for the Quote Set. This tag is present only for orders from Mass Quote.</Description>
+        </Field>
+        <Field>
+          <Tag>117</Tag>
+          <Name>QuoteID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>identifier for the Quote. This tag is present only for orders from Mass Quote.</Description>
+        </Field>
+        <Field>
+          <Tag>299</Tag>
+          <Name>QuoteEntryID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>identifier for the Quote Entry. This tag is present only for orders from Mass Quote.</Description>
+        </Field>
+        <Group>
+          <Name>NoFills</Name>
+          <Required>N</Required>
+        </Group>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>Heartbeat</Name>
+      <MsgType>0</MsgType>
+      <Category>admin</Category>
+      <Fields>
+        <Field>
+          <Tag>112</Tag>
+          <Name>TestReqId</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>The identifier when responding to the Test Request(1) message. When not responding to a Test Request(1) message, this tag can be left out</Description>
+        </Field>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>Logon</Name>
+      <MsgType>A</MsgType>
+      <Category>admin</Category>
+      <Fields>
+        <Field>
+          <Tag>108</Tag>
+          <Name>HeartBtInt</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Used to declare the timeout interval in seconds for generating heartbeats</Description>
+        </Field>
+        <Field>
+          <Tag>95</Tag>
+          <Name>RawDataLength</Name>
+          <Required>N</Required>
+          <Type>Length</Type>
+          <Description>Number of bytes in raw data field. Not required, as the normal RawData is base64 text here</Description>
+        </Field>
+        <Field>
+          <Tag>96</Tag>
+          <Name>RawData</Name>
+          <Required>Y</Required>
+          <Type>data</Type>
+          <Description>The timestamp and a Base64 encoded nonce (see below)</Description>
+        </Field>
+        <Field>
+          <Tag>553</Tag>
+          <Name>Username</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>API Client ID. This can be obtained from the API tab on your account settings</Description>
+        </Field>
+        <Field>
+          <Tag>554</Tag>
+          <Name>Password</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>See below</Description>
+        </Field>
+        <Field>
+          <Tag>9002</Tag>
+          <Name>UseWordsafeTags</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>If present and set to Y, all of the tag numbers for our custom tags start at 5000 instead of 100000. For example, Volume24h(100087) would become 5078. This tag can be used due to the fact, that legacy software which implements FIX protocol, doesn't support the extended range for tags, which was defined in later protocol's revisions. This setting stays applied for the remainder of the connection</Description>
+        </Field>
+        <Field>
+          <Tag>9001</Tag>
+          <Name>CancelOnDisconnect</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>Boolean, to enable or disable session-level cancel on disconnect. Default - false(N)</Description>
+        </Field>
+        <Field>
+          <Tag>9004</Tag>
+          <Name>DeribitAppId</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Registered application Client ID. It is necessary for registered applications only</Description>
+        </Field>
+        <Field>
+          <Tag>9005</Tag>
+          <Name>DeribitAppSig</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Registered application Signature. It is necessary for registered applications only. It is calculated in a similar way to the Password(554) but with Application Secret instead of Client Secret: base64(sha256(RawData ++ application_secret)), see below</Description>
+        </Field>
+        <Field>
+          <Tag>9007</Tag>
+          <Name>DeribitSequential</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>Custom tag to adapt Deribit internal messaging to sequential FIX messaging. If the tag is present and set to Y, all messages, including order changes and notifications, are sent through a single queue. This eliminates the distinction between "request/response" and "notifications" queues, which typically handle messages separately. As a result, messages are sent in a sequential order without direct</Description>
+        </Field>
+        <Field>
+          <Tag>9009</Tag>
+          <Name>UnsubscribeExecutionReports</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>Custom tag. Default - false (N). If the tag is present and set to 'Y' this connection is unsubscribed from notificational Execution Reports about order changes. Only responses to order operation requests in this connection will be sent as Execution Reports, but no notifications such as orders from other connection or trades initiated by counterparty</Description>
+        </Field>
+        <Field>
+          <Tag>9010</Tag>
+          <Name>ConnectionOnlyExecutionReports</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>Custom tag. Default - false (N). If the tag is present and set to 'Y' this connection will receive notificational Execution Reports only for order created in this connection, it won't receive notification for orders created in other connections even within the same subaccount. This tag can be used to split Execution Reports between several connections to the same subaccount</Description>
+        </Field>
+        <Field>
+          <Tag>9015</Tag>
+          <Name>ReportFillsAsExecReports</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>Custom tag, default is false (N). If the tag is present and set to 'Y', then FillsGrp is not included into Execution Report, and reported as Execution Reports with ExecType = F(TRADE)</Description>
+        </Field>
+        <Field>
+          <Tag>9018</Tag>
+          <Name>DisplayIncrementSteps</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>Custom tag, default is false (N). If the tag is present and set to 'Y', then symbol entries will include the Price Increment steps of the Symbol (if applicable). See NoTickRules(1205) below</Description>
+        </Field>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>Logout</Name>
+      <MsgType>5</MsgType>
+      <Category>admin</Category>
+      <Fields>
+        <Field>
+          <Tag>58</Tag>
+          <Name>text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Free format text string specifying the logout reason. This is ignored by the server</Description>
+        </Field>
+        <Field>
+          <Tag>9003</Tag>
+          <Name>DontCancelOnDisconnect</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>If Y then it disables CancelOnDisconnect for this connection even if CancelOnDisconnect was enabled in Logon(A) or account settings. Default - false(N), no changes for CancelOnDisconnect flag</Description>
+        </Field>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>MarketDataIncrementalRefresh</Name>
+      <MsgType>X</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Instrument symbol. See instrument naming convention for more details</Description>
+        </Field>
+        <Field>
+          <Tag>262</Tag>
+          <Name>MDReqID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>ID of the original request, if it is applicable</Description>
+        </Field>
+        <Field>
+          <Tag>231</Tag>
+          <Name>ContractMultiplier</Name>
+          <Required>N</Required>
+          <Type>float</Type>
+          <Description>Specifies a multiply factor to convert from contracts to total units</Description>
+        </Field>
+        <Field>
+          <Tag>201</Tag>
+          <Name>PutOrCall</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Indicates whether an Option is for a put or call. Only for Options. Possible values: 0 = put, 1 = call</Description>
+        </Field>
+        <Field>
+          <Tag>100087</Tag>
+          <Name>TradeVolume24h</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Defines 24h trade volume for the Symbol in the corresponding contract units</Description>
+        </Field>
+        <Field>
+          <Tag>100090</Tag>
+          <Name>MarkPrice</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Defines mark price for the Symbol</Description>
+        </Field>
+        <Field>
+          <Tag>746</Tag>
+          <Name>OpenInterest</Name>
+          <Required>N</Required>
+          <Type>float</Type>
+          <Description>Defines open interest for the Symbol</Description>
+        </Field>
+        <Group>
+          <Name>NoMDEntries</Name>
+          <Required>Y</Required>
+        </Group>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>MarketDataRequestReject</Name>
+      <MsgType>Y</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Free format text string</Description>
+        </Field>
+        <Field>
+          <Tag>262</Tag>
+          <Name>MDReqID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>ID of the original request</Description>
+        </Field>
+        <Field>
+          <Tag>281</Tag>
+          <Name>MDReqRejReason</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Reason for the rejection of a Market Data Request(V). Possible reasons: 0 = Unknown symbol 1 = Duplicate MDReqID(262) 2 = Insufficient Bandwidth 3 = Insufficient Permissions 4 = Unsupported SubscriptionRequestType(263) 5 = Unsupported MarketDepth(264) 6 = Unsupported MDUpdateType(265) 7 = Unsupported AggregatedBook (266) 8 = Unsupported MDEntryType(269) 9 = Unsupported TradingSessionID(336) A = Un</Description>
+        </Field>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>MarketDataRequest</Name>
+      <MsgType>V</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>262</Tag>
+          <Name>MdReqId</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Unique ID assigned to this request</Description>
+        </Field>
+        <Field>
+          <Tag>263</Tag>
+          <Name>SubscriptionRequestType</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Subscription Request Type. Valid values: 0 = Snapshot, 1 = Snapshot + Updates (Subscribe), 2 = Disable previous Snapshot + Update Request (Unsubscribe)</Description>
+        </Field>
+        <Field>
+          <Tag>264</Tag>
+          <Name>MarketDepth</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>See remark about MDUpdateType below</Description>
+        </Field>
+        <Field>
+          <Tag>265</Tag>
+          <Name>MDUpdateType</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>The type of update to subscribe to. Valid values: 0= full refresh, 1= incremental refresh</Description>
+        </Field>
+        <Field>
+          <Tag>9011</Tag>
+          <Name>DeribitSkipBlockTrades</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>To skip block trades. If 9011=Y then block trades will not be reported. Default is N</Description>
+        </Field>
+        <Field>
+          <Tag>9012</Tag>
+          <Name>DeribitShowBlockTradeId</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>To show block trade id. If 9012=Y and 9012=N then block trades will include BlockTrade ID as TrdMatchID (880). Default is N</Description>
+        </Field>
+        <Field>
+          <Tag>100007</Tag>
+          <Name>DeribitTradeAmount</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Amount of trades returned in the snapshot response to request for snapshot of recent trades, default 20, maximum 1000</Description>
+        </Field>
+        <Field>
+          <Tag>100008</Tag>
+          <Name>DeribitSinceTimestamp</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>UTC Timestamp in milliseconds (integer number of milliseconds), if specified, the response returns the trades happened since that timestamp, applicable to the request for recent trades snapshot</Description>
+        </Field>
+        <Group>
+          <Name>NoMdEntryTypes</Name>
+          <Required>Y</Required>
+        </Group>
+        <Group>
+          <Name>NoRelatedSym</Name>
+          <Required>N</Required>
+        </Group>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>MarketDataSnapshot</Name>
+      <MsgType>W</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Instrument symbol. See instrument naming convention for more details</Description>
+        </Field>
+        <Field>
+          <Tag>262</Tag>
+          <Name>MDReqID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>ID of the original request, if it is applicable</Description>
+        </Field>
+        <Field>
+          <Tag>311</Tag>
+          <Name>UnderlyingSymbol</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Underlying symbol</Description>
+        </Field>
+        <Field>
+          <Tag>810</Tag>
+          <Name>UnderlyingPx</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Price of the underlying instrument. Underlying instrument underlies the primary instrument</Description>
+        </Field>
+        <Field>
+          <Tag>231</Tag>
+          <Name>ContractMultiplier</Name>
+          <Required>N</Required>
+          <Type>float</Type>
+          <Description>Specifies a multiply factor to convert from contracts to total units</Description>
+        </Field>
+        <Field>
+          <Tag>201</Tag>
+          <Name>PutOrCall</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Indicates whether an Option is for a put or call. Only for Options. Possible values: 0 = put, 1 = call</Description>
+        </Field>
+        <Field>
+          <Tag>100087</Tag>
+          <Name>TradeVolume24h</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Defines 24h trade volume for the Symbol in the corresponding contract units</Description>
+        </Field>
+        <Field>
+          <Tag>100090</Tag>
+          <Name>MarkPrice</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Defines mark price for the Symbol</Description>
+        </Field>
+        <Field>
+          <Tag>746</Tag>
+          <Name>OpenInterest</Name>
+          <Required>N</Required>
+          <Type>float</Type>
+          <Description>Defines open interest for the Symbol</Description>
+        </Field>
+        <Field>
+          <Tag>100092</Tag>
+          <Name>CurrentFunding</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Current funding (perpetual only)</Description>
+        </Field>
+        <Field>
+          <Tag>100093</Tag>
+          <Name>Funding8h</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Funding in last 8h (perpetual only)</Description>
+        </Field>
+        <Group>
+          <Name>NoMDEntries</Name>
+          <Required>Y</Required>
+        </Group>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>MassQuoteAcknowledgement</Name>
+      <MsgType>b</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>117</Tag>
+          <Name>QuoteID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>The same QuoteID as supplied in the Mass Quote (i) message.</Description>
+        </Field>
+        <Field>
+          <Tag>297</Tag>
+          <Name>QuoteStatus</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Status of the mass quote as a whole. 0 = Accepted, 5 = Rejected</Description>
+        </Field>
+        <Field>
+          <Tag>300</Tag>
+          <Name>QuoteRejectReason</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Reason Mass Quote (i) was rejected. 1 = Unknown symbol (Security), 2 = Exchange(Security) closed, 3 = Mass Quote (i) size exceeds limit, 4 = Timed out (Too late to enter), 9 = Not allowed to quote security, 99 = Other</Description>
+        </Field>
+        <Group>
+          <Name>NoQuoteEntries</Name>
+          <Required>N</Required>
+        </Group>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>MassQuote</Name>
+      <MsgType>i</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>117</Tag>
+          <Name>QuoteID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Identifier of a mass quote message. Can be used to match trades to requests. We recommend using an incrementing counter.</Description>
+        </Field>
+        <Field>
+          <Tag>9019</Tag>
+          <Name>MMPGroup</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Custom tag of the MMP group. An MMP group has to be used and only one quote can exist per instrument per side per MMP group.</Description>
+        </Field>
+        <Field>
+          <Tag>62</Tag>
+          <Name>ValidUntilTime</Name>
+          <Required>N</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Indicates expiration time of indication for the request, in UTC.</Description>
+        </Field>
+        <Group>
+          <Name>NoQuoteSets</Name>
+          <Required>Y</Required>
+        </Group>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>MMProtectionLimitsResult</Name>
+      <MsgType>MR</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>20114</Tag>
+          <Name>ProtectionRequestID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Identifier taken from corresponding MM or MZ message</Description>
+        </Field>
+        <Field>
+          <Tag>20117</Tag>
+          <Name>ProtectionRequestResult</Name>
+          <Required>Y</Required>
+          <Type>Boolean</Type>
+          <Description>Y = applied or succeeded, N = rejected</Description>
+        </Field>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Text describes reject reason or equal to "success"</Description>
+        </Field>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>MMProtectionLimits</Name>
+      <MsgType>MM</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>20114</Tag>
+          <Name>ProtectionRequestID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Unique identifier assigned by the requestor. Will be returned in responses</Description>
+        </Field>
+        <Field>
+          <Tag>15</Tag>
+          <Name>Currency</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>First currency of the currency pair to set or get MMP for e.g. BTC, ETH</Description>
+        </Field>
+        <Field>
+          <Tag>5544</Tag>
+          <Name>SecondaryCurrency</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Secondary currency of the currency pair to set or get MMP for. e.g. USD, USDC, defaults to USD if not provided</Description>
+        </Field>
+        <Field>
+          <Tag>20110</Tag>
+          <Name>ProtectionQtyLimit</Name>
+          <Required>N</Required>
+          <Type>float</Type>
+          <Description>Specify the limit of the total size (measured in base currency) per underlying within the exposure time interval when market maker protection is triggered. When this value is met or exceeded the system automatically removes the quotes for the instruments connected to the underlying. Maximum 4 decimal places.</Description>
+        </Field>
+        <Field>
+          <Tag>20111</Tag>
+          <Name>ProtectionDeltaLimit</Name>
+          <Required>N</Required>
+          <Type>float</Type>
+          <Description>The limit of the delta value per underlying within the exposure time interval when market maker protection is triggered. When this value is met or exceeded the system automatically removes the quotes for the instruments connected to the underlying. Maximum 4 decimal places.</Description>
+        </Field>
+        <Field>
+          <Tag>20112</Tag>
+          <Name>FrozenLimit</Name>
+          <Required>Y</Required>
+          <Type>float</Type>
+          <Description>Time interval in seconds when quotes are rejected after market maker protection has been triggered</Description>
+        </Field>
+        <Field>
+          <Tag>20116</Tag>
+          <Name>IntervalLength</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Interval Length in seconds</Description>
+        </Field>
+        <Field>
+          <Tag>20118</Tag>
+          <Name>ProtectionVegaLimit</Name>
+          <Required>N</Required>
+          <Type>float</Type>
+          <Description>The limit of the vega value per underlying within the exposure time interval when market maker protection is triggered. When this value is met or exceeded the system automatically removes the quotes for the instruments connected to the underlying. Maximum 4 decimal places.</Description>
+        </Field>
+        <Field>
+          <Tag>20119</Tag>
+          <Name>MaxQuoteQuantity</Name>
+          <Required>N</Required>
+          <Type>float</Type>
+          <Description>Maximum Quote Quantity (MQQ) in base currency. The total combined size of open MMP orders per side, per order book (instrument), cannot exceed MQQ. MQQ limits cumulative order size, not the number of orders. Order book = instrument, MQQ is per instrument (not sum across instruments): "Per order book" means per instrument (not per expiry). MQQ is enforced separately for each instrument and applies </Description>
+        </Field>
+        <Field>
+          <Tag>9019</Tag>
+          <Name>MMPGroup</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>A custom tag of MMP Group</Description>
+        </Field>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>MMProtectionReset</Name>
+      <MsgType>MZ</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>20114</Tag>
+          <Name>ProtectionRequestID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Unique identifier assigned by the requestor. Will be returned in responses</Description>
+        </Field>
+        <Field>
+          <Tag>15</Tag>
+          <Name>Currency</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>First currency of the currency pair to reset MMP for. e.g. BTC, ETH</Description>
+        </Field>
+        <Field>
+          <Tag>5544</Tag>
+          <Name>SecondaryCurrency</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Secondary currency of the currency pair to reset MMP for. e.g. USD, USDC, defaults to USD if not provided</Description>
+        </Field>
+        <Field>
+          <Tag>9019</Tag>
+          <Name>MMPGroup</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>A custom tag of MMP Group</Description>
+        </Field>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>NewOrderSingle</Name>
+      <MsgType>D</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>11</Tag>
+          <Name>ClOrdID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Unique identifier for the order, assigned by the client, max 64 grapheme clusters. This tag operates on grapheme clusters. A grapheme cluster is a user-perceived character, which can be represented by several unicode codepoints. Please refer to Unicode specification for more details about the grapheme clusters</Description>
+        </Field>
+        <Field>
+          <Tag>54</Tag>
+          <Name>Side</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Side of order. Valid values: 1 = Buy, 2 = Sell</Description>
+        </Field>
+        <Field>
+          <Tag>38</Tag>
+          <Name>OrderQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>Order quantity. Depends on QtyType. When QtyType is set to Units, the OrderQty is specified in USD for perpetual and inverse futures, in the underlying base currency coin for linear futures, or in the amount of cryptocurrency contracts for options. The system will automatically convert Units to Contracts when the order is placed Please, note that Quantity is by default defined in Contract units co</Description>
+        </Field>
+        <Field>
+          <Tag>44</Tag>
+          <Name>Price</Name>
+          <Required>Y</Required>
+          <Type>Price</Type>
+          <Description>Price</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Instrument symbol, e.g., BTC-1JAN16 . See instrument naming convention for more details</Description>
+        </Field>
+        <Field>
+          <Tag>62</Tag>
+          <Name>ValidUntilTime</Name>
+          <Required>N</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Indicates expiration time of indication message, in UTC</Description>
+        </Field>
+        <Field>
+          <Tag>18</Tag>
+          <Name>ExecInst</Name>
+          <Required>N</Required>
+          <Type>MultipleCharValue</Type>
+          <Description>Currently is used to mark POST ONLY orders and REDUCE ONLY orders. POST ONLY valid values: 6 = "Participate don't initiate" A = "No cross" (only together with 6, "6A" -- REJECT POST ONLY when the order is put to order the book unmodified or the request is rejected and order is cancelled), REDUCE ONLY valid values: E = "Do not increase - DNI"</Description>
+        </Field>
+        <Field>
+          <Tag>40</Tag>
+          <Name>OrdType</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>Order type. Valid values: 1 = Market, 2 = Limit (by default), K = Market With Left Over as Limit (market limit), 4 = Stop limit (trailing stop), J = Market If Touched (stop limit, if StopPx(99) is set), S = Stop Limit on Bid or Offer (stop market, if StopPx(99) is set)</Description>
+        </Field>
+        <Field>
+          <Tag>59</Tag>
+          <Name>TimeInForce</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>Specifies how long the order remains in effect. Absence of this field is interpreted as "Good 'Til Cancelled". Valid values: 0 = Good 'Til Day(GTD), 1 = Good 'Til Cancelled(GTC), 3 = Immediate or Cancel(IOC), 4 = Fill or Kill(FOK)</Description>
+        </Field>
+        <Field>
+          <Tag>99</Tag>
+          <Name>StopPx</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Price per unit of quantity</Description>
+        </Field>
+        <Field>
+          <Tag>1138</Tag>
+          <Name>DisplayQty</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>The (max) quantity to be displayed in the orderbook. Setting the DisplayQty (1138) = 0 is interpreted as no hidden volume, i.e. the full order quantity is displayed to the market. Omitting the field gives the same result.</Description>
+        </Field>
+        <Field>
+          <Tag>1088</Tag>
+          <Name>RefreshQty</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Defines the quantity used to refresh DisplayQty.</Description>
+        </Field>
+        <Field>
+          <Tag>854</Tag>
+          <Name>QtyType</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Type of quantity. Valid values: 0 = Units, 1 = Contracts Default is Contracts. When QtyType is Units, then for perpetual and inverse futures the OrderQty is in USD units, and for linear futures it is the underlying base currency coin, and for options it is the amount of corresponding cryptocurrency (e.g., BTC or ETH). The Units will be recalculated into the system's Contracts on server automatical</Description>
+        </Field>
+        <Field>
+          <Tag>211</Tag>
+          <Name>PegOffsetValue</Name>
+          <Required>N</Required>
+          <Type>float</Type>
+          <Description>Amount (signed) added to the peg for a pegged order in the context of the PegOffsetType(836)</Description>
+        </Field>
+        <Field>
+          <Tag>1094</Tag>
+          <Name>PegPriceType</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Needs to be set for Trailing Stop order. Valid value: 8 = Trailing Stop Peg</Description>
+        </Field>
+        <Field>
+          <Tag>100010</Tag>
+          <Name>DeribitLabel</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>A custom label for your order, max 64 grapheme clusters. Can be used by Order Cancel Request(F) to amend the order later on</Description>
+        </Field>
+        <Field>
+          <Tag>100012</Tag>
+          <Name>DeribitAdvOrderType</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>Used to create advanced order for options. If it is present: 0 = Implied Volatility Order (price defines fixed implied volatility in %), 1 = USD Order (price defines fixed USD price of the option, advanced USD orders are not supported for linear options)</Description>
+        </Field>
+        <Field>
+          <Tag>9008</Tag>
+          <Name>DeribitMMProtection</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>Order Market Maker Protection (MMP) flag, default is N. Important: manual admin action is necessary to activate Market Maker Protection (MMP) for an account</Description>
+        </Field>
+        <Field>
+          <Tag>5127</Tag>
+          <Name>DeribitConditionTriggerMethod</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Selects condition trigger method for algo orders. Valid values: 1 = mark price, 2 = trade, 3 = index</Description>
+        </Field>
+        <Field>
+          <Tag>527</Tag>
+          <Name>SecondaryExecID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>ID of the last order change</Description>
+        </Field>
+        <Field>
+          <Tag>37</Tag>
+          <Name>OrderId</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Unique identifier of the order, assigned by the Deribit</Description>
+        </Field>
+        <Field>
+          <Tag>41</Tag>
+          <Name>OrigClOrdId</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>The original value assigned by the client in the New Order Single(D) message</Description>
+        </Field>
+        <Field>
+          <Tag>39</Tag>
+          <Name>OrdStatus</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>For trade – order status. Possible values: 0 = New, 1 = Partially filled, 2 = Filled, 4 = Cancelled 8 = Rejected</Description>
+        </Field>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>Y</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Timestamp when the transaction represented by this Execution Report(8) message occurred. Fix timestamp</Description>
+        </Field>
+        <Field>
+          <Tag>12</Tag>
+          <Name>Commission</Name>
+          <Required>N</Required>
+          <Type>float</Type>
+          <Description>Deprecated. Always 0</Description>
+        </Field>
+        <Field>
+          <Tag>151</Tag>
+          <Name>LeavesQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>Order quantity open for further execution (LeavesQty = OrderQty - CumQty) in Contract units corresponding to the ContractMultiplier in SecurityList</Description>
+        </Field>
+        <Field>
+          <Tag>14</Tag>
+          <Name>CumQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>Total executed quantity or 0.0 in Contract units corresponding to the ContractMultiplier in SecurityList</Description>
+        </Field>
+        <Field>
+          <Tag>150</Tag>
+          <Name>ExecType</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>Describes the specific Execution Report. Possible values: I = equal to (Order Status), 7 = (Stopped) for triggered stop orders, 8 = Rejected, 3 = (Done for day) for GTD orders, C = (Expired) for the orders expired at delivery</Description>
+        </Field>
+        <Field>
+          <Tag>103</Tag>
+          <Name>OrdRejReason</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Possible reasons: 0 = no reject (the request has been accepted) 1 = Unknown symbol 2 = Exchange closed 3 = Order exceeds limit 4 = Too late to enter 5 = Unknown order 6 = Duplicate Order (e.g. dupe ClOrdID(11)) 7 = Duplicate of a verbally communicated order 8 = Stale order 9 = Trade along required 10 = Invalid Investor ID 11 = Unsupported order characteristic 12 = Surveillance Option 13 = Incorrec</Description>
+        </Field>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Free format text string, usually exceptions</Description>
+        </Field>
+        <Field>
+          <Tag>207</Tag>
+          <Name>SecurityExchange</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>"Deribit"</Description>
+        </Field>
+        <Field>
+          <Tag>231</Tag>
+          <Name>ContractMultiplier</Name>
+          <Required>N</Required>
+          <Type>float</Type>
+          <Description>Specifies a multiply factor to convert from contracts to total units</Description>
+        </Field>
+        <Field>
+          <Tag>6</Tag>
+          <Name>AvgPx</Name>
+          <Required>N</Required>
+          <Type>float</Type>
+          <Description>Average execution price or 0.0 if not executed yet or rejected</Description>
+        </Field>
+        <Field>
+          <Tag>1188</Tag>
+          <Name>Volatility</Name>
+          <Required>N</Required>
+          <Type>float</Type>
+          <Description>Volatility for Implied Volatility Orders (options orders with fixed volatility)</Description>
+        </Field>
+        <Field>
+          <Tag>839</Tag>
+          <Name>PeggedPrice</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Value of fixed USD price for USD Orders (options orders with fixed USD price)</Description>
+        </Field>
+        <Field>
+          <Tag>31</Tag>
+          <Name>LastPx</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Price of this last fill</Description>
+        </Field>
+        <Field>
+          <Tag>32</Tag>
+          <Name>LastQty</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Quantity bought/sold on this last fill</Description>
+        </Field>
+        <Field>
+          <Tag>9019</Tag>
+          <Name>MMPGroup</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>A custom tag of MMP Group. This tag is present only for orders from Mass Quote.</Description>
+        </Field>
+        <Field>
+          <Tag>9034</Tag>
+          <Name>IsLiquidation</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>A custom tag, 9034=Y if the order was automatically created during liquidation.</Description>
+        </Field>
+        <Field>
+          <Tag>9035</Tag>
+          <Name>IsRebalance</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>A custom tag, 9035=Y if the order was automatically created during cross-collateral balance restoration.</Description>
+        </Field>
+        <Field>
+          <Tag>9036</Tag>
+          <Name>IsRiskReducing</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>A custom tag, 9036=Y if the order is marked by the platform as a risk reducing order (can apply only to orders placed by PM users).</Description>
+        </Field>
+        <Field>
+          <Tag>302</Tag>
+          <Name>QuoteSetID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>identifier for the Quote Set. This tag is present only for orders from Mass Quote.</Description>
+        </Field>
+        <Field>
+          <Tag>117</Tag>
+          <Name>QuoteID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>identifier for the Quote. This tag is present only for orders from Mass Quote.</Description>
+        </Field>
+        <Field>
+          <Tag>299</Tag>
+          <Name>QuoteEntryID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>identifier for the Quote Entry. This tag is present only for orders from Mass Quote.</Description>
+        </Field>
+        <Group>
+          <Name>NoFills</Name>
+          <Required>N</Required>
+        </Group>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>OrderCancelReject</Name>
+      <MsgType>9</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>39</Tag>
+          <Name>OrdStatus</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>Order status. Present only if applicable. Possible values: 0 = New, 1 = Partially filled, 4 = Cancelled, 6 = Pending cancel, 8 = Rejected</Description>
+        </Field>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Text string explaining the reason for rejection</Description>
+        </Field>
+        <Field>
+          <Tag>41</Tag>
+          <Name>OrigClOrdId</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Original order identifier assigned by the user</Description>
+        </Field>
+        <Field>
+          <Tag>11</Tag>
+          <Name>ClOrdID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Order identifier assigned by Deribit</Description>
+        </Field>
+        <Field>
+          <Tag>100010</Tag>
+          <Name>DeribitLabel</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>A custom label for your order</Description>
+        </Field>
+        <Field>
+          <Tag>150</Tag>
+          <Name>ExecType</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>Describes the specific Execution Report. Possible values: 4 = Cancelled, 6 = Pending Cancel</Description>
+        </Field>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>OrderCancelReplaceRequest</Name>
+      <MsgType>G</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>11</Tag>
+          <Name>ClOrdID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Original order identifier assigned by the user, max 64 grapheme clusters. This tag operates on grapheme clusters. A grapheme cluster is a user-perceived character, which can be represented by several unicode codepoints. Please refer to Unicode specification for more details about the grapheme clusters</Description>
+        </Field>
+        <Field>
+          <Tag>41</Tag>
+          <Name>OrigClOrdId</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Order identifier assigned by Deribit over the user one</Description>
+        </Field>
+        <Field>
+          <Tag>100010</Tag>
+          <Name>DeribitLabel</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>A custom label for your order, max 64 grapheme clusters. Can be used by Order Cancel Request(F) to amend the order later on</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Instrument symbol, e.g., BTC-1JAN16</Description>
+        </Field>
+        <Field>
+          <Tag>62</Tag>
+          <Name>ValidUntilTime</Name>
+          <Required>N</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Indicates expiration time of indication message, in UTC</Description>
+        </Field>
+        <Field>
+          <Tag>15</Tag>
+          <Name>Currency</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>To speed up the search of the order by DeribitLabel or ClOrdID</Description>
+        </Field>
+        <Field>
+          <Tag>54</Tag>
+          <Name>Side</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Should match the original order's side. Valid values: 1 = Buy, 2 = Sell</Description>
+        </Field>
+        <Field>
+          <Tag>38</Tag>
+          <Name>OrderQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>Order quantity. Depends on QtyType. When QtyType is set to Units, the OrderQty is specified in USD for perpetual and inverse futures, in the underlying base currency coin for linear futures, or in the amount of cryptocurrency contracts for options. The system will automatically convert Units to Contracts when the order is placed Please, note that Quantity is by default defined in Contract units co</Description>
+        </Field>
+        <Field>
+          <Tag>40</Tag>
+          <Name>OrdType</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>Currently 2 - 'limit'</Description>
+        </Field>
+        <Field>
+          <Tag>44</Tag>
+          <Name>Price</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Order price (for advanced options orders it could be volatility or USD value if applicable)</Description>
+        </Field>
+        <Field>
+          <Tag>18</Tag>
+          <Name>ExecInst</Name>
+          <Required>N</Required>
+          <Type>MultipleCharValue</Type>
+          <Description>Currently is used to mark POST ONLY orders and REDUCE ONLY orders. POST ONLY valid values: 6 = "Participate don't initiate", A = "No cross" (only together with 6, "6A" -- REJECT POST ONLY when the order is put to order the book unmodified or the request is rejected and order is cancelled), REDUCE ONLY valid values: E = " Do not increase - DNI"</Description>
+        </Field>
+        <Field>
+          <Tag>854</Tag>
+          <Name>QtyType</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Type of quantity. Valid values: 0 = Units, 1 = Contracts Default is Contracts. When QtyType is Units, then for perpetual and inverse futures the OrderQty is in USD units, and for linear futures it is the underlying base currency coin, and for options it is the amount of corresponding cryptocurrency (e.g., BTC or ETH). The Units will be recalculated into the system's Contracts on server automatical</Description>
+        </Field>
+        <Field>
+          <Tag>1138</Tag>
+          <Name>DisplayQty</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>The (max) quantity to be displayed in the orderbook.</Description>
+        </Field>
+        <Field>
+          <Tag>9008</Tag>
+          <Name>DeribitMMProtection</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>Order Market Maker Protection (MMP) flag, if it is absent then the current MMP flag of the order is not changed. N removes the flag if it is set. Important: manual admin action is necessary to activate Market Maker Protection (MMP) for an account</Description>
+        </Field>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>OrderCancelRequest</Name>
+      <MsgType>F</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>11</Tag>
+          <Name>ClOrdID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Original order identifier assigned by the user. There must be the only open order with such ClOrdID</Description>
+        </Field>
+        <Field>
+          <Tag>41</Tag>
+          <Name>OrigClOrdId</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Order identifier assigned by Deribit over the user one</Description>
+        </Field>
+        <Field>
+          <Tag>100010</Tag>
+          <Name>DeribitLabel</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>A custom label for your order, max 64 grapheme clusters. There must be the only open order with this DeribitLabel otherwise use Order MassCancel Request(q). This tag operates on grapheme clusters. A grapheme cluster is a user-perceived character, which can be represented by several unicode codepoints. Please refer to Unicode specification for more details about the grapheme clusters</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Instrument symbol, e.g., BTC-1JAN16</Description>
+        </Field>
+        <Field>
+          <Tag>15</Tag>
+          <Name>Currency</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>To speed up the search of the order by DeribitLabel or ClOrdID</Description>
+        </Field>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>OrderMassCancelReport</Name>
+      <MsgType>r</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>11</Tag>
+          <Name>ClOrdID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Unique Identifier assigned by the client in the Order Mass Cancel Request(q)</Description>
+        </Field>
+        <Field>
+          <Tag>37</Tag>
+          <Name>OrderID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Unique ID assigned by Deribit for this order</Description>
+        </Field>
+        <Field>
+          <Tag>530</Tag>
+          <Name>MassCancelRequestType</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Specifies the type of cancellation request. Possible values: 7 = all orders, 5 = orders by security type, 1 = orders by symbol, 10 = orders by DeribitLabel 11 = quote cancel -- response to Quote Cancel (Z) request used in mass quoting</Description>
+        </Field>
+        <Field>
+          <Tag>531</Tag>
+          <Name>MassCancelResponse</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>If successful, echoes the MassCancelRequestType(530)</Description>
+        </Field>
+        <Field>
+          <Tag>298</Tag>
+          <Name>QuoteCancelType</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>May be present in case of reply to Quote Cancel (Z) request. 1 = Cancel for Symbol(55), 2 = Cancel for SecurityType (167), 4 = Cancel All Quotes, 5 = for Currency (5), 6 = for QuoteSetID (302), 7 = for Delta range</Description>
+        </Field>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>'success', if deletion was successful</Description>
+        </Field>
+        <Field>
+          <Tag>532</Tag>
+          <Name>MassCancelRejectReason</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Reason why deletion failed. Possible values: 1 = Unknown security, 5 = Unknown security type</Description>
+        </Field>
+        <Field>
+          <Tag>533</Tag>
+          <Name>TotalAffectedOrders</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Total number of orders affected by Order Mass Cancel Request(q)</Description>
+        </Field>
+        <Group>
+          <Name>NoAffectedOrders</Name>
+          <Required>N</Required>
+        </Group>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>OrderMassCancelRequest</Name>
+      <MsgType>q</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>11</Tag>
+          <Name>ClOrdID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Unique ID of Order Mass Cancel Request(q) as assigned by the client, max 64 grapheme clusters. This tag operates on grapheme clusters. A grapheme cluster is a user-perceived character, which can be represented by several unicode codepoints. Please refer to Unicode specification for more details about the grapheme clusters</Description>
+        </Field>
+        <Field>
+          <Tag>530</Tag>
+          <Name>MassCancelRequestType</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Specifies the type of cancellation requested. Valid values: 7 = all orders, 5 = orders by security type, 1 = orders by symbol, 10 = orders by DeribitLabel</Description>
+        </Field>
+        <Field>
+          <Tag>100010</Tag>
+          <Name>DeribitLabel</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>A custom label for your order, max 64 grapheme clusters. Can be used by Order Cancel Request(F) to amend the order later on. Equivalent of REST/WS cancel_by_label</Description>
+        </Field>
+        <Field>
+          <Tag>167</Tag>
+          <Name>SecurityType</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Describes type of security. Possible values: FUT for futures, OPT for options, FUTCO for future combo, OPTCO for option combo</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>The symbols for which to cancel all orders</Description>
+        </Field>
+        <Field>
+          <Tag>15</Tag>
+          <Name>Currency</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>To cancel only certain currency if it is applicable. See Security List Request(x)</Description>
+        </Field>
+        <Field>
+          <Tag>9031</Tag>
+          <Name>FreezeQuotes</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>Whether or not to reject incoming quotes for 1 second after cancelling</Description>
+        </Field>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>OrderMassStatusRequest</Name>
+      <MsgType>AF</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>584</Tag>
+          <Name>MassStatusReqID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Client-assigned unique ID of this request</Description>
+        </Field>
+        <Field>
+          <Tag>585</Tag>
+          <Name>MassStatusReqType</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Specifies the scope of the mass status request. (see below)</Description>
+        </Field>
+        <Field>
+          <Tag>9014</Tag>
+          <Name>MassStatusReqIDType</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>For MassStatusReqType=7, it defines which ID or label represents the MassStatusReqID: 0 = OrigClOrdID, 1 = ClOrdId, 2 = DeribitLabel. Default is 0</Description>
+        </Field>
+        <Field>
+          <Tag>11</Tag>
+          <Name>Currency</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>To search the order by DeribitLabel or ClOrdID</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>If Currency is not specified, to search the order by DeribitLabel or ClOrdID</Description>
+        </Field>
+        <Field>
+          <Tag>37</Tag>
+          <Name>OrderId</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Unique identifier for Order as assigned by the Deribit</Description>
+        </Field>
+        <Field>
+          <Tag>41</Tag>
+          <Name>OrigClOrdId</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>The original value assigned by the client in the New Order Single(D) message</Description>
+        </Field>
+        <Field>
+          <Tag>39</Tag>
+          <Name>OrdStatus</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>For trade – order status. Possible values: 0 = New, 1 = Partially filled, 2 = Filled, 4 = Cancelled 8 = Rejected</Description>
+        </Field>
+        <Field>
+          <Tag>54</Tag>
+          <Name>Side</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Side of order. Possible values: 1 = Buy, 2 = Sell</Description>
+        </Field>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>Y</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Timestamp when the transaction represented by this Execution Report occurred. Fix timestamp</Description>
+        </Field>
+        <Field>
+          <Tag>12</Tag>
+          <Name>Commission</Name>
+          <Required>N</Required>
+          <Type>float</Type>
+          <Description>Deprecated. Always 0</Description>
+        </Field>
+        <Field>
+          <Tag>151</Tag>
+          <Name>LeavesQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>Order quantity open for further execution (LeavesQty = OrderQty - CumQty) in Contract units corresponding to the ContractMultiplier in SecurityList</Description>
+        </Field>
+        <Field>
+          <Tag>14</Tag>
+          <Name>CumQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>Total executed quantity or 0.0 in Contract units corresponding to the ContractMultiplier in SecurityList</Description>
+        </Field>
+        <Field>
+          <Tag>38</Tag>
+          <Name>OrderQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>Order quantity in Contract units corresponding to the ContractMultiplier in SecurityList</Description>
+        </Field>
+        <Field>
+          <Tag>40</Tag>
+          <Name>OrdType</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Order type. Possible values: 1 = Market, 2 = Limit (by default), 4 = Stop Limit, S = Stop Market</Description>
+        </Field>
+        <Field>
+          <Tag>44</Tag>
+          <Name>Price</Name>
+          <Required>Y</Required>
+          <Type>Price</Type>
+          <Description>Price</Description>
+        </Field>
+        <Field>
+          <Tag>150</Tag>
+          <Name>ExecType</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>Describes the specific Execution Report. Possible values: I = equal to (Order Status), 7 = (Stopped) for triggered stop orders, 8 = Rejected, 3 = (Done for day) for GTD orders, C = (Expired) for the orders expired at delivery</Description>
+        </Field>
+        <Field>
+          <Tag>18</Tag>
+          <Name>ExecInst</Name>
+          <Required>N</Required>
+          <Type>MultipleCharValue</Type>
+          <Description>Currently is used to mark POST ONLY orders and REDUCE ONLY orders. POST ONLY possible values: 6 = "Participate don't initiate", A = "No cross" (only together with 6, "6A" -- REJECT POST ONLY when the order is put to the order book unmodified or the request is rejected and order is cancelled), REDUCE ONLY possible values: E = " Do not increase - DNI"</Description>
+        </Field>
+        <Field>
+          <Tag>103</Tag>
+          <Name>OrdRejReason</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Possible reasons: 0 = no reject (the request has been accepted) 1 = Unknown symbol 2 = Exchange closed 3 = Order exceeds limit 4 = Too late to enter 5 = Unknown order 6 = Duplicate Order (e.g. dupe ClOrdID(11)) 7 = Duplicate of a verbally communicated order 8 = Stale order 9 = Trade along required 10 = Invalid Investor ID 11 = Unsupported order characteristic 12 = Surveillance Option 13 = Incorrec</Description>
+        </Field>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Free format text string, usually exceptions</Description>
+        </Field>
+        <Field>
+          <Tag>207</Tag>
+          <Name>SecurityExchange</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>"Deribit"</Description>
+        </Field>
+        <Field>
+          <Tag>854</Tag>
+          <Name>QtyType</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Type of quantity specified in a quantity. Currently only 1 - Contracts</Description>
+        </Field>
+        <Field>
+          <Tag>231</Tag>
+          <Name>ContractMultiplier</Name>
+          <Required>N</Required>
+          <Type>float</Type>
+          <Description>Specifies a multiply factor to convert from contracts to total units</Description>
+        </Field>
+        <Field>
+          <Tag>6</Tag>
+          <Name>AvgPx</Name>
+          <Required>N</Required>
+          <Type>float</Type>
+          <Description>Average execution price or 0.0 if not executed yet or rejected</Description>
+        </Field>
+        <Field>
+          <Tag>1138</Tag>
+          <Name>DisplayQty</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>The (max) quantity to be displayed in the orderbook. Contract units corresponding to the ContractMultiplier in SecurityList</Description>
+        </Field>
+        <Field>
+          <Tag>9008</Tag>
+          <Name>DeribitMMProtection</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>Order Market Maker Protection (MMP) flag. Important: manual admin action is necessary to activate Market Maker Protection MMP for an account</Description>
+        </Field>
+        <Field>
+          <Tag>100012</Tag>
+          <Name>DeribitAdvOrderType</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>If it is present then it denotes advanced order for options. Possible values: 0 = Implied Volatility Order (price defines fixed implied volatility in %), 1 = USD Order (price defines fixed USD price of the option, advanced USD orders are not supported for linear options)</Description>
+        </Field>
+        <Field>
+          <Tag>1188</Tag>
+          <Name>Volatility</Name>
+          <Required>N</Required>
+          <Type>float</Type>
+          <Description>Volatility for Implied Volatility Orders (options orders with fixed volatility)</Description>
+        </Field>
+        <Field>
+          <Tag>839</Tag>
+          <Name>PeggedPrice</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Value of fixed USD price for USD Orders (options orders with fixed USD price)</Description>
+        </Field>
+        <Field>
+          <Tag>31</Tag>
+          <Name>LastPx</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Price of this last fill</Description>
+        </Field>
+        <Field>
+          <Tag>32</Tag>
+          <Name>LastQty</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Quantity bought/sold on this last fill.</Description>
+        </Field>
+        <Field>
+          <Tag>100010</Tag>
+          <Name>DeribitLabel</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>A custom label for your order, max 64 grapheme clusters. Can be used by Order Cancel Request(F) to amend the order later on. This tag operates on grapheme clusters. A grapheme cluster is a user-perceived character, which can be represented by several unicode codepoints. Please refer to Unicode specification for more details about the grapheme clusters</Description>
+        </Field>
+        <Field>
+          <Tag>9019</Tag>
+          <Name>MMPGroup</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>A custom tag of MMP Group. This tag is present only for orders from Mass Quote</Description>
+        </Field>
+        <Field>
+          <Tag>302</Tag>
+          <Name>QuoteSetID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>identifier for the Quote Set. This tag is present only for orders from Mass Quote.</Description>
+        </Field>
+        <Field>
+          <Tag>117</Tag>
+          <Name>QuoteID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>identifier for the Quote. This tag is present only for orders from Mass Quote.</Description>
+        </Field>
+        <Field>
+          <Tag>299</Tag>
+          <Name>QuoteEntryID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>identifier for the Quote Entry. This tag is present only for orders from Mass Quote.</Description>
+        </Field>
+        <Group>
+          <Name>NoFills</Name>
+          <Required>N</Required>
+        </Group>
+        <Field>
+          <Tag>911</Tag>
+          <Name>TotNumReports</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>The total number of reports following this initial report</Description>
+        </Field>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>PositionReport</Name>
+      <MsgType>AP</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>721</Tag>
+          <Name>PosMaintRptID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Unique identifier for this position report</Description>
+        </Field>
+        <Field>
+          <Tag>710</Tag>
+          <Name>PosReqID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Unique identifier for the Request for Positions associated with this report</Description>
+        </Field>
+        <Field>
+          <Tag>724</Tag>
+          <Name>PosReqType</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Used to specify the type of position request being made. 0 = Positions (currently)</Description>
+        </Field>
+        <Field>
+          <Tag>728</Tag>
+          <Name>PosReqResult</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Result of a Request for Position. Possible values: 0 = success, 1 = unsupported request for positions, 99 = other</Description>
+        </Field>
+        <Group>
+          <Name>NoPositions</Name>
+          <Required>N</Required>
+        </Group>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>QuoteCancel</Name>
+      <MsgType>Z</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>1166</Tag>
+          <Name>QuoteMsgID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Optionally used to supply a message identifier for a quote cancel.</Description>
+        </Field>
+        <Field>
+          <Tag>298</Tag>
+          <Name>QuoteCancelType</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Default is 4. Identifies the type of Quote Cancel (Z) request. 1 = Cancel for Symbol(55), 2 = Cancel for SecurityType (167), 4 = Cancel All Quotes, 5 = for Currency (5), 6 = for QuoteSetID (302), 7 = for Delta range defined by MinDelta and MaxDelta see below</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Common, "human understood" representation of the security, e.g., BTC-28JUL17, see instrument naming convention for more details.</Description>
+        </Field>
+        <Field>
+          <Tag>15</Tag>
+          <Name>Currency</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Currency</Description>
+        </Field>
+        <Field>
+          <Tag>9031</Tag>
+          <Name>FreezeQuotes</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>Whether or not to reject incoming quotes for 1 second after cancelling</Description>
+        </Field>
+        <Field>
+          <Tag>167</Tag>
+          <Name>SecurityType</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Describes type of security. Possible values: FUT for futures, OPT for options, FUTCO for future combo, OPTCO for option combo SPOT for spot</Description>
+        </Field>
+        <Field>
+          <Tag>302</Tag>
+          <Name>QuoteSetID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Identifier for the Quote Set</Description>
+        </Field>
+        <Field>
+          <Tag>9032</Tag>
+          <Name>MinDelta</Name>
+          <Required>N</Required>
+          <Type>float</Type>
+          <Description>Min Delta to cancel by delta range</Description>
+        </Field>
+        <Field>
+          <Tag>9033</Tag>
+          <Name>MaxDelta</Name>
+          <Required>N</Required>
+          <Type>float</Type>
+          <Description>Max Delta to cancel by delta range</Description>
+        </Field>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>Reject</Name>
+      <MsgType>3</MsgType>
+      <Category>admin</Category>
+      <Fields>
+        <Field>
+          <Tag>45</Tag>
+          <Name>RefSeqNum</Name>
+          <Required>Y</Required>
+          <Type>SeqNum</Type>
+          <Description>MsgSeqNum(34) of the rejected message</Description>
+        </Field>
+        <Field>
+          <Tag>372</Tag>
+          <Name>RefMsgType</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>The MsgType(35) of the FIX message being referenced</Description>
+        </Field>
+        <Field>
+          <Tag>373</Tag>
+          <Name>SessionRejectReason</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Code to identity reason for rejection: 6 = Incorrect data format for value 11 = Invalid MsgType(35) 99 = Other</Description>
+        </Field>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Text string explaining the reason for rejection</Description>
+        </Field>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>RequestForPositions</Name>
+      <MsgType>AN</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>710</Tag>
+          <Name>PosReqID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Unique identifier for the Request for Positions(AN) as assigned by the submitter</Description>
+        </Field>
+        <Field>
+          <Tag>724</Tag>
+          <Name>PosReqType</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>0 = Positions (currently)</Description>
+        </Field>
+        <Field>
+          <Tag>263</Tag>
+          <Name>SubscriptionRequestType</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Subscription Request Type to get notifications about new or terminated instruments. Valid values: 0 = Snapshot, 1 = Snapshot + Updates (Subscribe), 2 = Disable previous Snapshot + Update Request (Unsubscribe)</Description>
+        </Field>
+        <Field>
+          <Tag>15</Tag>
+          <Name>Currency</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>To request for certain currency only. If it is missing, all currencies are reported</Description>
+        </Field>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>ResendRequest</Name>
+      <MsgType>2</MsgType>
+      <Category>admin</Category>
+      <Fields>
+        <Field>
+          <Tag>7</Tag>
+          <Name>BeginSeqNo</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>The first message to repeat</Description>
+        </Field>
+        <Field>
+          <Tag>16</Tag>
+          <Name>EndSeqNo</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>The last message to repeat</Description>
+        </Field>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>SecurityDefinitionRequest</Name>
+      <MsgType>c</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>320</Tag>
+          <Name>SecurityReqID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Request identifier</Description>
+        </Field>
+        <Field>
+          <Tag>321</Tag>
+          <Name>SecurityRequestType</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Type of Security Definition Request(c). Valid values: 0 = Request Security details, specifications by SecurityId, 1 = Request Security identity for the specifications provided, the combo-instrument will be created if necessary. 3 = Request list of existing combo-instruments</Description>
+        </Field>
+        <Field>
+          <Tag>15</Tag>
+          <Name>Currency</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Required is SecurityRequestType = 3, examples: BTC, ETH</Description>
+        </Field>
+        <Field>
+          <Tag>48</Tag>
+          <Name>SecurityID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Required if SecurityRequestType = 0. Identifies combo instrument.</Description>
+        </Field>
+        <Group>
+          <Name>NoLegs</Name>
+          <Required>Y</Required>
+        </Group>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>SecurityDefinition</Name>
+      <MsgType>d</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>320</Tag>
+          <Name>SecurityReqID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Request identifier</Description>
+        </Field>
+        <Field>
+          <Tag>322</Tag>
+          <Name>SecurityResponseID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Equal to the SecurityReqID</Description>
+        </Field>
+        <Field>
+          <Tag>323</Tag>
+          <Name>SecurityResponseType</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Type of Security Definition response. Valid values: 2 = accept security proposal with possible revisions as indicated in the message, 5 = reject proposal</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Common, "human understood" representation of the security</Description>
+        </Field>
+        <Field>
+          <Tag>48</Tag>
+          <Name>SecurityID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Takes precedence in identifying security to counterparty.</Description>
+        </Field>
+        <Field>
+          <Tag>22</Tag>
+          <Name>SecurityIDSource</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>101 = Multi-cast identifier, 102 = Combo instrument identifier</Description>
+        </Field>
+        <Field>
+          <Tag>225</Tag>
+          <Name>IssueDate</Name>
+          <Required>N</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Creation timestamp</Description>
+        </Field>
+        <Field>
+          <Tag>873</Tag>
+          <Name>DatedDate</Name>
+          <Required>N</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>State timestamp</Description>
+        </Field>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Explanatory text string</Description>
+        </Field>
+        <Group>
+          <Name>NoUnderlyings</Name>
+          <Required>N</Required>
+        </Group>
+        <Field>
+          <Tag>965</Tag>
+          <Name>SecurityStatus</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Denotes the current state of the Instrument. Valid values: 1 = Active, 2 = Inactive, 3 = RFQ, 4 = Closed, 12 = Archivized</Description>
+        </Field>
+        <Group>
+          <Name>NoLegs</Name>
+          <Required>Y</Required>
+        </Group>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>SecurityListRequest</Name>
+      <MsgType>x</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>320</Tag>
+          <Name>SecurityReqId</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>A user-generated ID for this request. This can be used to match the request to the response</Description>
+        </Field>
+        <Field>
+          <Tag>559</Tag>
+          <Name>SecurityListRequestType</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>0 or 4 – in any case list of instruments is returned</Description>
+        </Field>
+        <Field>
+          <Tag>263</Tag>
+          <Name>SubscriptionRequestType</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Subscription Request Type to get notifications about new or terminated instruments. Valid values: 0 = Snapshot, 1 = Snapshot + Updates (Subscribe), 2 = Disable previous Snapshot + Update Request (Unsubscribe)</Description>
+        </Field>
+        <Field>
+          <Tag>9013</Tag>
+          <Name>DisplayMulticastInstrumentID</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>Custom tag, default is false (N). If the tag is present and set to 'Y', then symbol entries will include the Multicast identifier of the Symbol (if applicable). See NoSecurityAltID(454) below</Description>
+        </Field>
+        <Field>
+          <Tag>9018</Tag>
+          <Name>DisplayIncrementSteps</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>Custom tag, default is false (N). If the tag is present and set to 'Y', then symbol entries will include the Price Increment steps of the Symbol (if applicable). See NoTickRules(1205) below</Description>
+        </Field>
+        <Field>
+          <Tag>15</Tag>
+          <Name>Currency</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>First currency of the currency pair for limiting the resulted list. Required if SecondaryCurrency(5544) specified.</Description>
+        </Field>
+        <Field>
+          <Tag>5544</Tag>
+          <Name>SecondaryCurrency</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Second currency of the currency pair for limiting the resulted list. Default is USD if Currency(15) is specified. Current API doesn't support queries by SecondaryCurrency only, so Currency (15) is mandatory if SecondaryCurrency is present. In current implementation SecondaryCurrency is ignored in subscription when SubscriptionRequestType (263) = 1</Description>
+        </Field>
+        <Field>
+          <Tag>167</Tag>
+          <Name>SecurityType</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Optional parameter for limiting output by the SecurityType. Describes type of security. Possible values: FXSPOT for currency exchange spot FUT for futures, OPT for options, FUTCO for future combo, OPTCO for option combo INDEX for indexes</Description>
+        </Field>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>SecurityList</Name>
+      <MsgType>y</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>320</Tag>
+          <Name>SecurityReqId</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>The SecurityReqId(320) of the request that this is a response for</Description>
+        </Field>
+        <Field>
+          <Tag>322</Tag>
+          <Name>SecurityResponseID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Identifier for the Security List(x) message</Description>
+        </Field>
+        <Field>
+          <Tag>560</Tag>
+          <Name>SecurityRequestResult</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>0 indicates a successful response. This is the only possible value in the Deribit FIX API</Description>
+        </Field>
+        <Group>
+          <Name>NoRelatedSym</Name>
+          <Required>N</Required>
+        </Group>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>SecurityStatusRequest</Name>
+      <MsgType>e</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>324</Tag>
+          <Name>SecurityStatusReqID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>ID of the request</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Instrument symbol. See instrument naming convention for more details</Description>
+        </Field>
+        <Field>
+          <Tag>263</Tag>
+          <Name>SubscriptionRequestType</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>0 = Snapshot, 1 = Snapshot + Updates (Subscribe), 2 = Unsubscribe (Please note that our system does not send notifications when currencies are locked . Users are advised to subscribe to the platform\_state channel to monitor the state of currencies actively.)</Description>
+        </Field>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>SecurityStatus</Name>
+      <MsgType>f</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>324</Tag>
+          <Name>SecurityStatusReqID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>ID of the request</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Instrument symbol</Description>
+        </Field>
+        <Field>
+          <Tag>326</Tag>
+          <Name>SecurityTradingStatus</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Identifies the trading status. Possible values: 7 = Ready to trade, 8 = Not Available for trading, 20 = Unknown or Invalid</Description>
+        </Field>
+        <Field>
+          <Tag>330</Tag>
+          <Name>BuyVolume</Name>
+          <Required>N</Required>
+          <Type>float</Type>
+          <Description>Volume in buy contracts, absent if there weren't any trades</Description>
+        </Field>
+        <Field>
+          <Tag>331</Tag>
+          <Name>SellVolume</Name>
+          <Required>N</Required>
+          <Type>float</Type>
+          <Description>Volume in sell contracts, absent if there weren't any trades</Description>
+        </Field>
+        <Field>
+          <Tag>332</Tag>
+          <Name>HighPx</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Price of the 24h highest trade, absent if there weren't any trades</Description>
+        </Field>
+        <Field>
+          <Tag>333</Tag>
+          <Name>LowPx</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Price of the 24h lowest trade, absent if there weren't any trades</Description>
+        </Field>
+        <Field>
+          <Tag>31</Tag>
+          <Name>LastPx</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>The price of the latest trade, absent if there weren't any trades</Description>
+        </Field>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Explanatory text string of SubscriptionRequestType outcome. Possible values: success = Snapshot successfully provided, subscribed = Subscription confirmed, unsubscribed = Subscription cancelled</Description>
+        </Field>
+        <Field>
+          <Tag>20114</Tag>
+          <Name>ProtectionRequestID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Unique identifier assigned by the requestor. Will be returned in responses</Description>
+        </Field>
+        <Field>
+          <Tag>15</Tag>
+          <Name>Currency</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>First currency of the currency pair to set or get MMP for e.g. BTC, ETH</Description>
+        </Field>
+        <Field>
+          <Tag>5544</Tag>
+          <Name>SecondaryCurrency</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Secondary currency of the currency pair to set or get MMP for. e.g. USD, USDC, defaults to USD if not provided</Description>
+        </Field>
+        <Field>
+          <Tag>20110</Tag>
+          <Name>ProtectionQtyLimit</Name>
+          <Required>N</Required>
+          <Type>float</Type>
+          <Description>Specify the limit of the total size (measured in base currency) per underlying within the exposure time interval when market maker protection is triggered. When this value is met or exceeded the system automatically removes the quotes for the instruments connected to the underlying. Maximum 4 decimal places.</Description>
+        </Field>
+        <Field>
+          <Tag>20111</Tag>
+          <Name>ProtectionDeltaLimit</Name>
+          <Required>N</Required>
+          <Type>float</Type>
+          <Description>The limit of the delta value per underlying within the exposure time interval when market maker protection is triggered. When this value is met or exceeded the system automatically removes the quotes for the instruments connected to the underlying. Maximum 4 decimal places.</Description>
+        </Field>
+        <Field>
+          <Tag>20112</Tag>
+          <Name>FrozenLimit</Name>
+          <Required>Y</Required>
+          <Type>float</Type>
+          <Description>Time interval in seconds when quotes are rejected after market maker protection has been triggered</Description>
+        </Field>
+        <Field>
+          <Tag>20116</Tag>
+          <Name>IntervalLength</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Interval Length in seconds</Description>
+        </Field>
+        <Field>
+          <Tag>20118</Tag>
+          <Name>ProtectionVegaLimit</Name>
+          <Required>N</Required>
+          <Type>float</Type>
+          <Description>The limit of the vega value per underlying within the exposure time interval when market maker protection is triggered. When this value is met or exceeded the system automatically removes the quotes for the instruments connected to the underlying. Maximum 4 decimal places.</Description>
+        </Field>
+        <Field>
+          <Tag>20119</Tag>
+          <Name>MaxQuoteQuantity</Name>
+          <Required>N</Required>
+          <Type>float</Type>
+          <Description>Maximum Quote Quantity (MQQ) in base currency. The total combined size of open MMP orders per side, per order book (instrument), cannot exceed MQQ. MQQ limits cumulative order size, not the number of orders. Order book = instrument, MQQ is per instrument (not sum across instruments): "Per order book" means per instrument (not per expiry). MQQ is enforced separately for each instrument and applies </Description>
+        </Field>
+        <Field>
+          <Tag>9019</Tag>
+          <Name>MMPGroup</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>A custom tag of MMP Group</Description>
+        </Field>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>SequenceReset</Name>
+      <MsgType>4</MsgType>
+      <Category>admin</Category>
+      <Fields>
+        <Field>
+          <Tag>36</Tag>
+          <Name>NewSeqNo</Name>
+          <Required>Y</Required>
+          <Type>SeqNum</Type>
+          <Description>New Sequence Number</Description>
+        </Field>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>TestRequest</Name>
+      <MsgType>1</MsgType>
+      <Category>admin</Category>
+      <Fields>
+        <Field>
+          <Tag>112</Tag>
+          <Name>TestReqId</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Mirrors the original request ID</Description>
+        </Field>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>TradeCaptureReportRequestAck</Name>
+      <MsgType>AQ</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>568</Tag>
+          <Name>TradeRequestID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Identifier for the trade request</Description>
+        </Field>
+        <Field>
+          <Tag>569</Tag>
+          <Name>TradeRequestType</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Describes request type. Valid value: 0 for all trades</Description>
+        </Field>
+        <Field>
+          <Tag>571</Tag>
+          <Name>TradeRequestResult</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Result of Trade Request. Valid values: 0 - Successful 2 - Invalid type of trade requested</Description>
+        </Field>
+        <Field>
+          <Tag>750</Tag>
+          <Name>TradeRequestStatus</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Status of Trade Request. Valid values: 0 - Accepted 2 - Rejected</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Common, "human understood" representation of the security, e.g., BTC-28JUL17 , see instrument naming convention for more details</Description>
+        </Field>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>TradeCaptureReportRequest</Name>
+      <MsgType>AD</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>568</Tag>
+          <Name>TradeRequestID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Identifier for the trade request</Description>
+        </Field>
+        <Field>
+          <Tag>569</Tag>
+          <Name>TradeRequestType</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Describes request type. Valid value: 0 for all trades</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Common, "human understood" representation of the security, e.g., BTC-28JUL17 , see instrument naming convention for more details</Description>
+        </Field>
+        <Field>
+          <Tag>263</Tag>
+          <Name>SubscriptionRequestType</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>Used to subscribe / unsubscribe for trade capture reports If the field is absent, the value 1 will be the default (subscription). Valid values: 1 = Subscribe 2 = Unsubscribe (Note: 0 = Snapshot is not implemented for now)</Description>
+        </Field>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>TradeCaptureReport</Name>
+      <MsgType>AE</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>568</Tag>
+          <Name>TradeRequestId</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Request ID if the Trade Capture Report AE is in response to a Trade Capture Report Request AD</Description>
+        </Field>
+        <Field>
+          <Tag>570</Tag>
+          <Name>PreviouslyReported</Name>
+          <Required>Y</Required>
+          <Type>Boolean</Type>
+          <Description>Indicates if the trade capture report was previously reported to the counterparty</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Common, "human understood" representation of the security, e.g., BTC-28JUL17 , see instrument naming convention for more details</Description>
+        </Field>
+        <Field>
+          <Tag>32</Tag>
+          <Name>LastQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>Trade Quantity</Description>
+        </Field>
+        <Field>
+          <Tag>31</Tag>
+          <Name>LastPx</Name>
+          <Required>Y</Required>
+          <Type>Price</Type>
+          <Description>Trade Price</Description>
+        </Field>
+        <Field>
+          <Tag>1003</Tag>
+          <Name>TradeId</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>The unique ID assigned to the trade</Description>
+        </Field>
+        <Field>
+          <Tag>1040</Tag>
+          <Name>SecondaryTradeId</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Block Trade ID or Combo Trade ID</Description>
+        </Field>
+        <Field>
+          <Tag>75</Tag>
+          <Name>TradeDate</Name>
+          <Required>Y</Required>
+          <Type>LocalMktDate</Type>
+          <Description>Indicates date of trade referenced in this message in YYYYMMDD format.</Description>
+        </Field>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>Y</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Time of execution/order creation (expressed in UTC (Universal Time Coordinated, also known as "GMT")</Description>
+        </Field>
+        <Field>
+          <Tag>555</Tag>
+          <Name>NoLegs</Name>
+          <Required>N</Required>
+          <Type>NumInGroup</Type>
+          <Description>Number of legs. Identifies a Multi-leg Execution if present and non-zero.</Description>
+        </Field>
+        <Field>
+          <Tag>600</Tag>
+          <Name>LegSymbol</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Multileg instrument's individual security's Symbol.</Description>
+        </Field>
+        <Field>
+          <Tag>687</Tag>
+          <Name>LegQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>Quantity of the leg</Description>
+        </Field>
+        <Field>
+          <Tag>566</Tag>
+          <Name>LegPrice</Name>
+          <Required>Y</Required>
+          <Type>Price</Type>
+          <Description>Price for leg of a multileg</Description>
+        </Field>
+        <Field>
+          <Tag>624</Tag>
+          <Name>LegSide</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>The side of this individual leg (multileg security). Valid values: 1 - Buy 2- Sell</Description>
+        </Field>
+        <Field>
+          <Tag>552</Tag>
+          <Name>NoSides</Name>
+          <Required>Y</Required>
+          <Type>NumInGroup</Type>
+          <Description>Number of sides</Description>
+        </Field>
+        <Field>
+          <Tag>54</Tag>
+          <Name>Side</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Side of order. Valid values: 1 - Buy 2- Sell</Description>
+        </Field>
+        <Field>
+          <Tag>37</Tag>
+          <Name>OrderId</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Unique identifier for Order as assigned by sell-side</Description>
+        </Field>
+        <Field>
+          <Tag>12</Tag>
+          <Name>Commission</Name>
+          <Required>Y</Required>
+          <Type>Amt</Type>
+          <Description>Commission deducted from the requesting party</Description>
+        </Field>
+        <Field>
+          <Tag>479</Tag>
+          <Name>CommCurrency</Name>
+          <Required>Y</Required>
+          <Type>Currency</Type>
+          <Description>Specifies currency to be use for Commission 12</Description>
+        </Field>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>UserRequest</Name>
+      <MsgType>BE</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>923</Tag>
+          <Name>UserRequestID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>The request ID</Description>
+        </Field>
+        <Field>
+          <Tag>924</Tag>
+          <Name>UserRequestType</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Should be equal to 4 (Request individual user status), only UserRequestType=4 supported for now</Description>
+        </Field>
+        <Field>
+          <Tag>553</Tag>
+          <Name>Username</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>API authenticated 'Client ID', user can request only own info, should be the same as for LOGON(A)</Description>
+        </Field>
+        <Field>
+          <Tag>15</Tag>
+          <Name>Currency</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Currency of the report. See Security List Request(x). Default is BTC. If CROSS is given as currency and user has cross collateral enabled, only the following fields are returned: 100001 DeribitUserEquity 100003 DeribitUserInitialMargin 100004 DeribitUserMaintenanceMargin 100013 DeribitMarginBalance</Description>
+        </Field>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>UserResponse</Name>
+      <MsgType>BF</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>923</Tag>
+          <Name>UserRequestID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>The request ID</Description>
+        </Field>
+        <Field>
+          <Tag>553</Tag>
+          <Name>Username</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>User's API 'Client ID'</Description>
+        </Field>
+        <Field>
+          <Tag>926</Tag>
+          <Name>UserStatus</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>1 = logged in, current implementation accepts USER REQUEST-s only from logged in users</Description>
+        </Field>
+        <Field>
+          <Tag>15</Tag>
+          <Name>Currency</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Currency of the report. See Security List Request(x). Default is BTC. If CROSS is given as currency and user has cross collateral enabled, only the following fields are returned: 100001 DeribitUserEquity 100003 DeribitUserInitialMargin 100004 DeribitUserMaintenanceMargin 100013 DeribitMarginBalance</Description>
+        </Field>
+        <Field>
+          <Tag>100001</Tag>
+          <Name>DeribitUserEquity</Name>
+          <Required>N</Required>
+          <Type>float</Type>
+          <Description>Equity of the user</Description>
+        </Field>
+        <Field>
+          <Tag>100002</Tag>
+          <Name>DeribitUserBalance</Name>
+          <Required>N</Required>
+          <Type>float</Type>
+          <Description>Balance of the user</Description>
+        </Field>
+        <Field>
+          <Tag>100003</Tag>
+          <Name>DeribitUserInitialMargin</Name>
+          <Required>N</Required>
+          <Type>float</Type>
+          <Description>Initial margin of the user</Description>
+        </Field>
+        <Field>
+          <Tag>100004</Tag>
+          <Name>DeribitUserMaintenanceMargin</Name>
+          <Required>N</Required>
+          <Type>float</Type>
+          <Description>Maintenance margin of the user</Description>
+        </Field>
+        <Field>
+          <Tag>100005</Tag>
+          <Name>DeribitUnrealizedPl</Name>
+          <Required>N</Required>
+          <Type>float</Type>
+          <Description>Unrealized P/L of the user</Description>
+        </Field>
+        <Field>
+          <Tag>100006</Tag>
+          <Name>DeribitRealizedPl</Name>
+          <Required>N</Required>
+          <Type>float</Type>
+          <Description>Realized P/L of the user</Description>
+        </Field>
+        <Field>
+          <Tag>100011</Tag>
+          <Name>DeribitTotalPl</Name>
+          <Required>N</Required>
+          <Type>float</Type>
+          <Description>Total P/L of the user</Description>
+        </Field>
+        <Field>
+          <Tag>100013</Tag>
+          <Name>DeribitMarginBalance</Name>
+          <Required>N</Required>
+          <Type>float</Type>
+          <Description>Margin Balance</Description>
+        </Field>
+      </Fields>
+    </Message>
+  </Messages>
+  <Groups>
+    <Group>
+      <Name>NoFills</Name>
+      <AnchorTag>1362</AnchorTag>
+      <Fields>
+        <Field>
+          <Tag>1363</Tag>
+          <Name>FillExecID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Unique identifier of execution, concatenated via '#' symbol and trade sequence number, e.g., BTC-28SEP18#38</Description>
+        </Field>
+        <Field>
+          <Tag>1364</Tag>
+          <Name>FillPx</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Price of this partial fill</Description>
+        </Field>
+        <Field>
+          <Tag>1365</Tag>
+          <Name>FillQty</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Quantity bought/sold on this partial fill</Description>
+        </Field>
+        <Field>
+          <Tag>1443</Tag>
+          <Name>FillLiquidityInd</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Indicator to identify whether this fill was a result of a liquidity provider providing or liquidity taker taking the liquidity. Possible values: 1 = Added Liquidity, 2 = Removed Liquidity</Description>
+        </Field>
+      </Fields>
+    </Group>
+    <Group>
+      <Name>NoMDEntries</Name>
+      <AnchorTag>268</AnchorTag>
+      <Fields>
+        <Field>
+          <Tag>279</Tag>
+          <Name>MDUpdateAction</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Type of Market Data update action. Valid values: 0 = New, 1 = Change, 2 = Delete</Description>
+        </Field>
+        <Field>
+          <Tag>269</Tag>
+          <Name>MDEntryType</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Possible values: 0 = Bid (Bid side of the order book), 1 = Offer (Ask side of the order book), 2 = Trade (In case of request for info about recent trades), 3 = Index Value (value of Index for INDEX instruments like BTC-DERIBIT-INDEX ), 6 = Settlement Price (Estimated Delivery Price for INDEX instruments like BTC-DERIBIT-INDEX )</Description>
+        </Field>
+        <Field>
+          <Tag>270</Tag>
+          <Name>MDEntryPx</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Price of an entry</Description>
+        </Field>
+        <Field>
+          <Tag>271</Tag>
+          <Name>MDEntrySize</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Size of an entry in Contract units corresponding to the ContractMultiplier in SecurityList</Description>
+        </Field>
+        <Field>
+          <Tag>272</Tag>
+          <Name>MDEntryDate</Name>
+          <Required>N</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>The timestamp for trade</Description>
+        </Field>
+        <Field>
+          <Tag>100009</Tag>
+          <Name>DeribitTradeId</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Id of the trade, in case of the request for trades</Description>
+        </Field>
+        <Field>
+          <Tag>54</Tag>
+          <Name>Side</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>Side of trade. Possible values: 1 = Buy, 2 = Sell</Description>
+        </Field>
+        <Field>
+          <Tag>37</Tag>
+          <Name>OrderId</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>For trade – order id</Description>
+        </Field>
+        <Field>
+          <Tag>198</Tag>
+          <Name>SecondaryOrderId</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>For trade – matching order id</Description>
+        </Field>
+        <Field>
+          <Tag>39</Tag>
+          <Name>OrdStatus</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>For trade – order status. Possible values: 0 = New, 1 = Partially filled, 2 = Filled, 4 = Cancelled</Description>
+        </Field>
+        <Field>
+          <Tag>100010</Tag>
+          <Name>DeribitLabel</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>User defined max 64 grapheme clusters long, label of the order, in case of the request for trades. This tag operates on grapheme clusters. A grapheme cluster is a user-perceived character, which can be represented by several unicode codepoints. Please refer to Unicode specification for more details about the grapheme clusters</Description>
+        </Field>
+        <Field>
+          <Tag>44</Tag>
+          <Name>Price</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>For trades, this is the index price at the trade moment (Deribit index)</Description>
+        </Field>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>The trade sequence number</Description>
+        </Field>
+        <Field>
+          <Tag>100091</Tag>
+          <Name>DeribitLiquidation</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Optional field (only for trades caused by liquidation): "M" when maker side of trade was under liquidation, "T" when taker side was under liquidation, "MT" when both sides of trade were under liquidation. This field is hidden for public for the first hour after the trade in order to prevent traders from abusing this information.</Description>
+        </Field>
+        <Field>
+          <Tag>880</Tag>
+          <Name>TrdMatchID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Only for trades. Block trade id - when trade was part of block trade. It can be included only if DeribitShowBlockTradeId(9012) is set to Y and DeribitSkipBlockTrades(9011) is set to N</Description>
+        </Field>
+      </Fields>
+    </Group>
+    <Group>
+      <Name>NoMdEntryTypes</Name>
+      <AnchorTag>267</AnchorTag>
+      <Fields>
+        <Field>
+          <Tag>269</Tag>
+          <Name>MDEntryType</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Valid values: 0 = Bid (Bid side of the order book), 1 = Offer (Ask side of the order book), 2 = Trade (Info about recent trades), 3 = Index Value (value of Index for INDEX instruments like BTC-DERIBIT-INDEX ), 6 = Settlement Price (Estimated Delivery Price for INDEX instruments like BTC-DERIBIT-INDEX )</Description>
+        </Field>
+      </Fields>
+    </Group>
+    <Group>
+      <Name>NoRelatedSym</Name>
+      <AnchorTag>146</AnchorTag>
+      <Fields>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Instrument symbol. See instrument naming convention for more details</Description>
+        </Field>
+        <Field>
+          <Tag>107</Tag>
+          <Name>SecurityDesc</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Free form security description: 'future', 'option', 'future\_combo', 'option\_combo' and various indexes</Description>
+        </Field>
+        <Field>
+          <Tag>167</Tag>
+          <Name>SecurityType</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Describes type of security. Possible values: FXSPOT for currency exchange spot FUT for futures, OPT for options, FUTCO for future combo, OPTCO for option combo INDEX for indexes</Description>
+        </Field>
+        <Field>
+          <Tag>201</Tag>
+          <Name>PutOrCall</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Indicates whether an Option is for a put or call. Only for Options. Possible values: 0 = put, 1 = call</Description>
+        </Field>
+        <Field>
+          <Tag>202</Tag>
+          <Name>StrikePrice</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Strike price</Description>
+        </Field>
+        <Field>
+          <Tag>947</Tag>
+          <Name>StrikeCurrency</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Strike currency</Description>
+        </Field>
+        <Field>
+          <Tag>15</Tag>
+          <Name>Currency</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Currency</Description>
+        </Field>
+        <Field>
+          <Tag>1524</Tag>
+          <Name>PriceQuoteCurrency</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Quoting or counter currency</Description>
+        </Field>
+        <Field>
+          <Tag>2576</Tag>
+          <Name>InstrumentPricePrecision</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Number of decimal places for instrument prices (usually 4 for options, 2 for futures)</Description>
+        </Field>
+        <Field>
+          <Tag>969</Tag>
+          <Name>MinPriceIncrement</Name>
+          <Required>N</Required>
+          <Type>float</Type>
+          <Description>Minimum price tick for a given Instrument</Description>
+        </Field>
+        <Field>
+          <Tag>311</Tag>
+          <Name>UnderlyingSymbol</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Underlying symbol for options</Description>
+        </Field>
+        <Field>
+          <Tag>225</Tag>
+          <Name>IssueDate</Name>
+          <Required>N</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Date instrument was issued</Description>
+        </Field>
+        <Field>
+          <Tag>541</Tag>
+          <Name>MaturityDate</Name>
+          <Required>N</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Expiration date, YYYYMMDD</Description>
+        </Field>
+        <Field>
+          <Tag>1079</Tag>
+          <Name>MaturityTime</Name>
+          <Required>N</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Time of instruments expiration expressed in local time with offset to UTC specified</Description>
+        </Field>
+        <Field>
+          <Tag>562</Tag>
+          <Name>MinTradeVol</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>The minimum trading volume for a security</Description>
+        </Field>
+        <Field>
+          <Tag>63</Tag>
+          <Name>SettlType</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Indicates order settlement period. E.g., M1 – month, W1 – week, W2 – 2 weeks etc</Description>
+        </Field>
+        <Field>
+          <Tag>120</Tag>
+          <Name>SettlCurrency</Name>
+          <Required>N</Required>
+          <Type>Currency</Type>
+          <Description>Currency code of settlement denomination</Description>
+        </Field>
+        <Field>
+          <Tag>479</Tag>
+          <Name>CommCurrency</Name>
+          <Required>N</Required>
+          <Type>Currency</Type>
+          <Description>Specifies currency to be used for Commission</Description>
+        </Field>
+        <Field>
+          <Tag>231</Tag>
+          <Name>ContractMultiplier</Name>
+          <Required>N</Required>
+          <Type>float</Type>
+          <Description>Specifies the ratio or multiply factor to convert from contracts to total units</Description>
+        </Field>
+        <Field>
+          <Tag>454</Tag>
+          <Name>NoSecurityAltID</Name>
+          <Required>N</Required>
+          <Type>NumInGroup</Type>
+          <Description>Number of alternate security identifier. It is present only if Security List Request(x) has DisplayMulticastInstrumentID = Y</Description>
+        </Field>
+        <Field>
+          <Tag>455</Tag>
+          <Name>SecurityAltID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>The security identifier</Description>
+        </Field>
+        <Field>
+          <Tag>456</Tag>
+          <Name>SecurityAltIDSource</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Identifies the class or source of the SecurityAltID(455) value. Required if SecurityAltID is specified. Possible values: 101 = Multicast identifier 102 = Combo instrument identifier</Description>
+        </Field>
+        <Field>
+          <Tag>1205</Tag>
+          <Name>NoTickRules</Name>
+          <Required>N</Required>
+          <Type>NumInGroup</Type>
+          <Description>Number of price increment steps. It is present only if Security List Request(x) has DisplayIncrementSteps = Y</Description>
+        </Field>
+        <Field>
+          <Tag>1206</Tag>
+          <Name>StartTickPriceRange</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Above this price, the TickIncrement applies</Description>
+        </Field>
+        <Field>
+          <Tag>1208</Tag>
+          <Name>TickIncrement</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Valid price increment for prices above the StartTickPriceRange</Description>
+        </Field>
+        <Field>
+          <Tag>965</Tag>
+          <Name>SecurityStatus</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>(\) It is present in notifications about new or terminated instruments. Possible values: 1 = open (active trading state; accepts new orders, edits, and cancellations) 2 = halted (due to an error condition; settlement is not possible) 3 = inactive (for deactivated combo books; no new orders, edits, or cancellations) 4 = delivered (post-delivery completion; no new orders, edits, or cancellations) 5 </Description>
+        </Field>
+      </Fields>
+    </Group>
+    <Group>
+      <Name>NoQuoteEntries</Name>
+      <AnchorTag>295</AnchorTag>
+      <Fields>
+        <Field>
+          <Tag>299</Tag>
+          <Name>QuoteEntryID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Echoed from the Mass Quote (i) message for orders. For trades, it is the trade ID.</Description>
+        </Field>
+        <Field>
+          <Tag>9020</Tag>
+          <Name>QuoteEntryType</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>0 = order, 1 = trade, 2 = error</Description>
+        </Field>
+        <Field>
+          <Tag>302</Tag>
+          <Name>QuoteSetID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Identifier of the QuoteSet supplied in Mass Quote (i). Only present for orders.</Description>
+        </Field>
+        <Field>
+          <Tag>1167</Tag>
+          <Name>QuoteEntryStatus</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Status of individual Quote Entry. 0 = Accepted, 5 = Rejected, 17 = Cancelled, 0 = Accepted, 5 = Rejected, 17 = Cancelled, 18 = Cancelled by MMP, 19 = Replaced, 20 = Filled, 21 = Open, 22 = Closed, 23 = Triggered, 24 = Untriggered, 25 = Unknown</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Common, "human understood" representation of the security, e.g., BTC-28JUL17, see instrument naming convention for more details.</Description>
+        </Field>
+        <Field>
+          <Tag>54</Tag>
+          <Name>Side</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>Side of the entry.</Description>
+        </Field>
+        <Field>
+          <Tag>192</Tag>
+          <Name>OrderQty2</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Size of the trade in contracts, in case of a trade.</Description>
+        </Field>
+        <Field>
+          <Tag>37</Tag>
+          <Name>OrderId</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Unique identifier of the quote, assigned by the exchange. It follows the format of OrderIDs for regular orders.</Description>
+        </Field>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>N</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Timestamp of the transaction.</Description>
+        </Field>
+        <Field>
+          <Tag>132</Tag>
+          <Name>BidPx</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Bid price.</Description>
+        </Field>
+        <Field>
+          <Tag>134</Tag>
+          <Name>BidSize</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Bid quantity in contracts.</Description>
+        </Field>
+        <Field>
+          <Tag>133</Tag>
+          <Name>OfferPx</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Offer price.</Description>
+        </Field>
+        <Field>
+          <Tag>135</Tag>
+          <Name>OfferSize</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Offer quantity in contracts.</Description>
+        </Field>
+        <Field>
+          <Tag>368</Tag>
+          <Name>QuoteEntryRejectReason</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>RPC error code, in case of an error.</Description>
+        </Field>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>The error description, in case of an error.</Description>
+        </Field>
+      </Fields>
+    </Group>
+    <Group>
+      <Name>NoQuoteSets</Name>
+      <AnchorTag>296</AnchorTag>
+      <Fields>
+        <Field>
+          <Tag>302</Tag>
+          <Name>QuoteSetID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Identifier for the QuoteSet. Can be used in Quote Cancel (Z).</Description>
+        </Field>
+        <Field>
+          <Tag>304</Tag>
+          <Name>TotNoQuoteEntries</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Total number of quotes for the quote set. IMPORTANT: For now, splitting QuoteSets over several messages is not supported.</Description>
+        </Field>
+        <Field>
+          <Tag>295</Tag>
+          <Name>NoQuoteEntries</Name>
+          <Required>Y</Required>
+          <Type>NumInGroup</Type>
+          <Description>Number of quotes in the QuoteSet repeating group.</Description>
+        </Field>
+        <Field>
+          <Tag>299</Tag>
+          <Name>QuoteEntryID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Identifier of the quote. It is echoed in the Mass Quote Acknowledgement (b).</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Common, "human understood" representation of the security, e.g., BTC-28JUL17 , see instrument naming convention for more details.</Description>
+        </Field>
+        <Field>
+          <Tag>132</Tag>
+          <Name>BidPx</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Bid price. If no price is supplied, only the quantity is amended.</Description>
+        </Field>
+        <Field>
+          <Tag>133</Tag>
+          <Name>OfferPx</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Offer price. If no price is supplied, only the quantity is amended.</Description>
+        </Field>
+        <Field>
+          <Tag>134</Tag>
+          <Name>BidSize</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Bid quantity in contracts. If no quantity is supplied, only the price is amended.</Description>
+        </Field>
+        <Field>
+          <Tag>135</Tag>
+          <Name>OfferSize</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Offer quantity in contracts. If no quantity is supplied, only the price is amended.</Description>
+        </Field>
+        <Field>
+          <Tag>18</Tag>
+          <Name>ExecInst</Name>
+          <Required>N</Required>
+          <Type>MultipleCharValue</Type>
+          <Description>Supports post-only and post-only-reject, see NewOrderSingle (D).</Description>
+        </Field>
+      </Fields>
+    </Group>
+    <Group>
+      <Name>NoAffectedOrders</Name>
+      <AnchorTag>534</AnchorTag>
+      <Fields>
+        <Field>
+          <Tag>41</Tag>
+          <Name>OrigClOrdID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Required if NoAffectedOrders(534) &gt; 0. Indicates the client order id of an order affected by the Order Mass Cancel Request(q)</Description>
+        </Field>
+      </Fields>
+    </Group>
+    <Group>
+      <Name>NoPositions</Name>
+      <AnchorTag>702</AnchorTag>
+      <Fields>
+        <Field>
+          <Tag>703</Tag>
+          <Name>PosType</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Type of quantity. Possible values: TQ = Transaction Quantity</Description>
+        </Field>
+        <Field>
+          <Tag>704</Tag>
+          <Name>LongQty</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Qty for long position (0 for short position) in Contract units corresponding to the ContractMultiplier in SecurityList</Description>
+        </Field>
+        <Field>
+          <Tag>705</Tag>
+          <Name>ShortQty</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Qty for short position (0 for long position) in Contract units corresponding to the ContractMultiplier in SecurityList</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Instrument symbol</Description>
+        </Field>
+        <Field>
+          <Tag>854</Tag>
+          <Name>QtyType</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Type of quantity specified in a quantity. Currently only 1 - Contracts</Description>
+        </Field>
+        <Field>
+          <Tag>231</Tag>
+          <Name>ContractMultiplier</Name>
+          <Required>N</Required>
+          <Type>float</Type>
+          <Description>Specifies a multiply factor to convert from contracts to total units</Description>
+        </Field>
+        <Field>
+          <Tag>883</Tag>
+          <Name>UnderlyingEndPrice</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Mark price (reference price)</Description>
+        </Field>
+        <Field>
+          <Tag>54</Tag>
+          <Name>Side</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>Side of order. Possible values: 1 = Buy, 2 = Sell</Description>
+        </Field>
+        <Field>
+          <Tag>730</Tag>
+          <Name>SettlPrice</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Average price</Description>
+        </Field>
+        <Field>
+          <Tag>96</Tag>
+          <Name>RawData</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Additional info, semi-colon separated: maintenance margin;initial margin;floating P/L</Description>
+        </Field>
+        <Field>
+          <Tag>100088</Tag>
+          <Name>DeribitLiquidationPrice</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Estimated liquidation price</Description>
+        </Field>
+        <Field>
+          <Tag>100089</Tag>
+          <Name>DeribitSizeInCurrency</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Size in the underlying currency, for example BTC or ETH</Description>
+        </Field>
+      </Fields>
+    </Group>
+    <Group>
+      <Name>NoLegs</Name>
+      <AnchorTag>555</AnchorTag>
+      <Fields>
+        <Field>
+          <Tag>600</Tag>
+          <Name>LegSymbol</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Non-combo instrument name</Description>
+        </Field>
+        <Field>
+          <Tag>624</Tag>
+          <Name>LegSide</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>Valid values: 1 = Buy, 2 = Sell</Description>
+        </Field>
+        <Field>
+          <Tag>623</Tag>
+          <Name>LegRatioQty</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Positive integer for the strategy</Description>
+        </Field>
+      </Fields>
+    </Group>
+    <Group>
+      <Name>NoUnderlyings</Name>
+      <AnchorTag>711</AnchorTag>
+      <Fields>
+        <Field>
+          <Tag>311</Tag>
+          <Name>UnderlyingSymbol</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Combo-instrument symbols in reply to Security Definition Request (c) with SecurityRequestType(321) = 3</Description>
+        </Field>
+      </Fields>
+    </Group>
+  </Groups>
+  <Values>
+    <!-- BeginString (8) static. Source: protocol documentation describes a FIX 4.4 subset; mapping approved as implied. -->
+    <Value><Type>BeginString</Type><Enum>FIX.4.4</Enum><Kind>Static</Kind><Description>FIX 4.4</Description></Value>
+
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>0</Enum>
+      <Description>New</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>1</Enum>
+      <Description>Partially filled</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>2</Enum>
+      <Description>Filled</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>4</Enum>
+      <Description>Cancelled</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>8</Enum>
+      <Description>Rejected</Description>
+    </Value>
+    <Value>
+      <Type>Side</Type>
+      <Enum>1</Enum>
+      <Description>Buy</Description>
+    </Value>
+    <Value>
+      <Type>Side</Type>
+      <Enum>2</Enum>
+      <Description>Sell</Description>
+    </Value>
+    <Value>
+      <Type>ConditionTriggerMethod</Type>
+      <Enum>1</Enum>
+      <Description>Mark Price</Description>
+    </Value>
+    <Value>
+      <Type>ConditionTriggerMethod</Type>
+      <Enum>2</Enum>
+      <Description>Last Price</Description>
+    </Value>
+    <Value>
+      <Type>OrdType</Type>
+      <Enum>1</Enum>
+      <Description>Market</Description>
+    </Value>
+    <Value>
+      <Type>OrdType</Type>
+      <Enum>2</Enum>
+      <Description>Limit</Description>
+    </Value>
+    <Value>
+      <Type>OrdType</Type>
+      <Enum>4</Enum>
+      <Description>Stop Limit</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>8</Enum>
+      <Description>Rejected</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>1</Enum>
+      <Description>Unknown symbol</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>2</Enum>
+      <Description>Exchange closed</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>3</Enum>
+      <Description>Order exceeds limit</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>4</Enum>
+      <Description>Too late to enter</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>5</Enum>
+      <Description>Unknown order</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>6</Enum>
+      <Description>Duplicate Order (e</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>7</Enum>
+      <Description>Duplicate of a verbally communicated order</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>8</Enum>
+      <Description>Stale order</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>9</Enum>
+      <Description>Trade along required</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>10</Enum>
+      <Description>Invalid Investor ID</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>11</Enum>
+      <Description>Unsupported order characteristic</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>12</Enum>
+      <Description>Surveillance Option</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>13</Enum>
+      <Description>Incorrect quantity</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>14</Enum>
+      <Description>Incorrect allocated quantity</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>15</Enum>
+      <Description>Unknown account(s)</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>16</Enum>
+      <Description>Price exceeds current price band</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>18</Enum>
+      <Description>Invalid price increment</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>99</Enum>
+      <Description>Other</Description>
+    </Value>
+    <Value>
+      <Type>FillLiquidityInd</Type>
+      <Enum>1</Enum>
+      <Description>Added Liquidity</Description>
+    </Value>
+    <Value>
+      <Type>FillLiquidityInd</Type>
+      <Enum>2</Enum>
+      <Description>Removed Liquidity</Description>
+    </Value>
+    <Value>
+      <Type>MDUpdateAction</Type>
+      <Enum>0</Enum>
+      <Description>New</Description>
+    </Value>
+    <Value>
+      <Type>MDUpdateAction</Type>
+      <Enum>1</Enum>
+      <Description>Change</Description>
+    </Value>
+    <Value>
+      <Type>MDUpdateAction</Type>
+      <Enum>2</Enum>
+      <Description>Delete</Description>
+    </Value>
+    <Value>
+      <Type>MDEntryType</Type>
+      <Enum>0</Enum>
+      <Description>Bid (Bid side of the order book)</Description>
+    </Value>
+    <Value>
+      <Type>MDEntryType</Type>
+      <Enum>1</Enum>
+      <Description>Offer (Ask side of the order book)</Description>
+    </Value>
+    <Value>
+      <Type>MDReqRejReason</Type>
+      <Enum>0</Enum>
+      <Description>Unknown symbol</Description>
+    </Value>
+    <Value>
+      <Type>MDReqRejReason</Type>
+      <Enum>1</Enum>
+      <Description>Duplicate MDReqID(</Description>
+    </Value>
+    <Value>
+      <Type>MDReqRejReason</Type>
+      <Enum>2</Enum>
+      <Description>Insufficient Bandwidth</Description>
+    </Value>
+    <Value>
+      <Type>MDReqRejReason</Type>
+      <Enum>3</Enum>
+      <Description>Insufficient Permissions</Description>
+    </Value>
+    <Value>
+      <Type>MDReqRejReason</Type>
+      <Enum>4</Enum>
+      <Description>Unsupported SubscriptionRequestType(</Description>
+    </Value>
+    <Value>
+      <Type>MDReqRejReason</Type>
+      <Enum>5</Enum>
+      <Description>Unsupported MarketDepth(</Description>
+    </Value>
+    <Value>
+      <Type>MDReqRejReason</Type>
+      <Enum>6</Enum>
+      <Description>Unsupported MDUpdateType(</Description>
+    </Value>
+    <Value>
+      <Type>MDReqRejReason</Type>
+      <Enum>7</Enum>
+      <Description>Unsupported AggregatedBook (</Description>
+    </Value>
+    <Value>
+      <Type>MDReqRejReason</Type>
+      <Enum>8</Enum>
+      <Description>Unsupported MDEntryType(</Description>
+    </Value>
+    <Value>
+      <Type>MDReqRejReason</Type>
+      <Enum>9</Enum>
+      <Description>Unsupported TradingSessionID(</Description>
+    </Value>
+    <Value>
+      <Type>MDReqRejReason</Type>
+      <Enum>A</Enum>
+      <Description>Unsupported Scope(</Description>
+    </Value>
+    <Value>
+      <Type>MDReqRejReason</Type>
+      <Enum>B</Enum>
+      <Description>Unsupported OpenCloseSettlFlag(</Description>
+    </Value>
+    <Value>
+      <Type>MDReqRejReason</Type>
+      <Enum>C</Enum>
+      <Description>Unsupported MDImplicitDelete(</Description>
+    </Value>
+    <Value>
+      <Type>MDReqRejReason</Type>
+      <Enum>D</Enum>
+      <Description>Insufficient credit</Description>
+    </Value>
+    <Value>
+      <Type>SubscriptionRequestType</Type>
+      <Enum>0</Enum>
+      <Description>Snapshot</Description>
+    </Value>
+    <Value>
+      <Type>SubscriptionRequestType</Type>
+      <Enum>1</Enum>
+      <Description>Snapshot + Updates (Subscribe)</Description>
+    </Value>
+    <Value>
+      <Type>MDEntryType</Type>
+      <Enum>2</Enum>
+      <Description>Trade (Info about recent trades)</Description>
+    </Value>
+    <Value>
+      <Type>QuoteRejectReason</Type>
+      <Enum>1</Enum>
+      <Description>Unknown symbol (Security)</Description>
+    </Value>
+    <Value>
+      <Type>QuoteRejectReason</Type>
+      <Enum>2</Enum>
+      <Description>Exchange(Security) closed</Description>
+    </Value>
+    <Value>
+      <Type>QuoteRejectReason</Type>
+      <Enum>4</Enum>
+      <Description>Timed out (Too late to enter)</Description>
+    </Value>
+    <Value>
+      <Type>QuoteRejectReason</Type>
+      <Enum>9</Enum>
+      <Description>Not allowed to quote security</Description>
+    </Value>
+    <Value>
+      <Type>QuoteRejectReason</Type>
+      <Enum>99</Enum>
+      <Description>Other</Description>
+    </Value>
+    <Value>
+      <Type>QuoteEntryStatus</Type>
+      <Enum>0</Enum>
+      <Description>Accepted</Description>
+    </Value>
+    <Value>
+      <Type>QuoteEntryStatus</Type>
+      <Enum>5</Enum>
+      <Description>Rejected</Description>
+    </Value>
+    <Value>
+      <Type>QuoteEntryStatus</Type>
+      <Enum>17</Enum>
+      <Description>Cancelled</Description>
+    </Value>
+    <Value>
+      <Type>QuoteEntryStatus</Type>
+      <Enum>18</Enum>
+      <Description>Cancelled by MMP</Description>
+    </Value>
+    <Value>
+      <Type>QuoteEntryStatus</Type>
+      <Enum>19</Enum>
+      <Description>Replaced</Description>
+    </Value>
+    <Value>
+      <Type>QuoteEntryStatus</Type>
+      <Enum>20</Enum>
+      <Description>Filled</Description>
+    </Value>
+    <Value>
+      <Type>QuoteEntryStatus</Type>
+      <Enum>21</Enum>
+      <Description>Open</Description>
+    </Value>
+    <Value>
+      <Type>QuoteEntryStatus</Type>
+      <Enum>22</Enum>
+      <Description>Closed</Description>
+    </Value>
+    <Value>
+      <Type>QuoteEntryStatus</Type>
+      <Enum>23</Enum>
+      <Description>Triggered</Description>
+    </Value>
+    <Value>
+      <Type>QuoteEntryStatus</Type>
+      <Enum>24</Enum>
+      <Description>Untriggered</Description>
+    </Value>
+    <Value>
+      <Type>QuoteEntryStatus</Type>
+      <Enum>25</Enum>
+      <Description>Unknown</Description>
+    </Value>
+    <Value>
+      <Type>OrdType</Type>
+      <Enum>K</Enum>
+      <Description>Market With Left Over as Limit (market limit)</Description>
+    </Value>
+    <Value>
+      <Type>OrdType</Type>
+      <Enum>J</Enum>
+      <Description>Market If Touched (stop limit</Description>
+    </Value>
+    <Value>
+      <Type>OrdType</Type>
+      <Enum>S</Enum>
+      <Description>Stop Limit on Bid or Offer (stop market</Description>
+    </Value>
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>0</Enum>
+      <Description>Good 'Til Day(</Description>
+    </Value>
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>1</Enum>
+      <Description>Good 'Til Cancelled(</Description>
+    </Value>
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>3</Enum>
+      <Description>Immediate or Cancel(</Description>
+    </Value>
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>4</Enum>
+      <Description>Fill or Kill(</Description>
+    </Value>
+    <Value>
+      <Type>PegPriceType</Type>
+      <Enum>8</Enum>
+      <Description>Trailing Stop Peg</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>6</Enum>
+      <Description>Pending cancel</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>4</Enum>
+      <Description>Cancelled</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>6</Enum>
+      <Description>Pending Cancel</Description>
+    </Value>
+    <Value>
+      <Type>MassCancelRejectReason</Type>
+      <Enum>1</Enum>
+      <Description>Unknown security</Description>
+    </Value>
+    <Value>
+      <Type>MassCancelRejectReason</Type>
+      <Enum>5</Enum>
+      <Description>Unknown security type</Description>
+    </Value>
+    <Value>
+      <Type>PosReqType</Type>
+      <Enum>0</Enum>
+      <Description>Positions (currently)</Description>
+    </Value>
+    <Value>
+      <Type>PosType</Type>
+      <Enum>TQ</Enum>
+      <Description>Transaction Quantity</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>6</Enum>
+      <Description>Incorrect data format for value</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>11</Enum>
+      <Description>Invalid</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>99</Enum>
+      <Description>Other</Description>
+    </Value>
+    <Value>
+      <Type>SecurityRequestType</Type>
+      <Enum>0</Enum>
+      <Description>Request Security details</Description>
+    </Value>
+    <Value>
+      <Type>SecurityRequestType</Type>
+      <Enum>3</Enum>
+      <Description>Request list of existing combo-instruments</Description>
+    </Value>
+    <Value>
+      <Type>LegSide</Type>
+      <Enum>1</Enum>
+      <Description>Buy</Description>
+    </Value>
+    <Value>
+      <Type>LegSide</Type>
+      <Enum>2</Enum>
+      <Description>Sell</Description>
+    </Value>
+    <Value>
+      <Type>SecurityIDSource</Type>
+      <Enum>101</Enum>
+      <Description>Multi-cast identifier</Description>
+    </Value>
+    <Value>
+      <Type>SecurityIDSource</Type>
+      <Enum>102</Enum>
+      <Description>Combo instrument identifier</Description>
+    </Value>
+    <Value>
+      <Type>SecurityStatus</Type>
+      <Enum>1</Enum>
+      <Description>Active</Description>
+    </Value>
+    <Value>
+      <Type>SecurityStatus</Type>
+      <Enum>2</Enum>
+      <Description>Inactive</Description>
+    </Value>
+    <Value>
+      <Type>SecurityStatus</Type>
+      <Enum>3</Enum>
+      <Description>RFQ</Description>
+    </Value>
+    <Value>
+      <Type>SecurityStatus</Type>
+      <Enum>4</Enum>
+      <Description>Closed</Description>
+    </Value>
+    <Value>
+      <Type>SecurityStatus</Type>
+      <Enum>12</Enum>
+      <Description>Archivized</Description>
+    </Value>
+    <Value>
+      <Type>SecurityAltIDSource</Type>
+      <Enum>101</Enum>
+      <Description>Multicast identifier</Description>
+    </Value>
+    <Value>
+      <Type>SecurityAltIDSource</Type>
+      <Enum>102</Enum>
+      <Description>Combo instrument identifier</Description>
+    </Value>
+    <Value>
+      <Type>SecurityTradingStatus</Type>
+      <Enum>7</Enum>
+      <Description>Ready to trade</Description>
+    </Value>
+    <Value>
+      <Type>SecurityTradingStatus</Type>
+      <Enum>8</Enum>
+      <Description>Not Available for trading</Description>
+    </Value>
+    <Value>
+      <Type>SecurityTradingStatus</Type>
+      <Enum>20</Enum>
+      <Description>Unknown or Invalid</Description>
+    </Value>
+  </Values>
+</OmiFixPdf>

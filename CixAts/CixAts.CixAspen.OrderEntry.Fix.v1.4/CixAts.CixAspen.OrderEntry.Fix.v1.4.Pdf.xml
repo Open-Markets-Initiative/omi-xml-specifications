@@ -1,0 +1,1831 @@
+<OmiFixPdf>
+  <Header>
+    <Fields>
+      <Field>
+        <Tag>8</Tag>
+        <Name>BeginString</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+        <Description>Identifies beginning of new message and protocol version. ALWAYS the first field in the message. Must be set to 4.2</Description>
+      </Field>
+      <Field>
+        <Tag>9</Tag>
+        <Name>BodyLength</Name>
+        <Required>Y</Required>
+        <Type>Length</Type>
+        <Fixed>Y</Fixed>
+        <Description>Message length, in bytes, forward to the CheckSum field. ALWAYS the second field in the message.</Description>
+      </Field>
+      <Field>
+        <Tag>35</Tag>
+        <Name>MsgType</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+        <Description>Defines message type. ALWAYS the third field in the message.</Description>
+      </Field>
+      <Field>
+        <Tag>34</Tag>
+        <Name>MsgSeqNum</Name>
+        <Required>Y</Required>
+        <Type>Int</Type>
+        <Description>Integer message sequence number. The first message of the day starts with sequence number = 1.</Description>
+      </Field>
+      <Field>
+        <Tag>43</Tag>
+        <Name>PossDupFlag</Name>
+        <Required>N</Required>
+        <Type>Boolean</Type>
+        <Description>Indicates possible retransmission of message with this sequence number.</Description>
+      </Field>
+      <Field>
+        <Tag>52</Tag>
+        <Name>SendingTime</Name>
+        <Required>Y</Required>
+        <Type>UTCTimestamp</Type>
+        <Description>Time of message transmission, in UTC.</Description>
+      </Field>
+      <Field>
+        <Tag>49</Tag>
+        <Name>SenderCompID</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Description>Assigned value used to identify the firm sending the message.</Description>
+      </Field>
+      <Field>
+        <Tag>56</Tag>
+        <Name>TargetCompID</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Description>Assigned value used to identify the receiving firm.</Description>
+      </Field>
+      <Field>
+        <Tag>50</Tag>
+        <Name>SenderSubID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Description>Value assigned by the firm sending the message.</Description>
+      </Field>
+      <Field>
+        <Tag>115</Tag>
+        <Name>OnBehalfOfCompID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Description>Assigned value used to identify the firm originating the message if it was delivered by a third party. This field is not echoed back.</Description>
+      </Field>
+      <Field>
+        <Tag>116</Tag>
+        <Name>OnBehalfOfSubID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Description>Assigned value used to identify a specific message originator (i.e. trader) if the message was delivered by a third party. This field is not echoed back.</Description>
+      </Field>
+      <Field>
+        <Tag>128</Tag>
+        <Name>DeliverToCompID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Description>Will echo the SenderCompID of the session that originated the order. Only present on Drop Copy connections.</Description>
+      </Field>
+    </Fields>
+  </Header>
+
+  <Trailer>
+    <Fields>
+      <Field>
+        <Tag>10</Tag>
+        <Name>CheckSum</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+        <Description>Three byte, simple checksum. ALWAYS the last field in the message; it serves, with the trailing &lt;SOH&gt;, as the end-of-message delimiter.</Description>
+      </Field>
+    </Fields>
+  </Trailer>
+
+  <Messages>
+    <!-- Session Messages -->
+    <!-- Logon (A) -->
+    <Message>
+      <Name>Logon</Name>
+      <MsgType>A</MsgType>
+      <Category>admin</Category>
+      <Origin>Firm, Exchange</Origin>
+      <Description>The Logon message must be the first message received by CIX after the TCP connection is established by the member. CIX will close the TCP socket after 5 seconds if no Logon message is received.</Description>
+      <Fields>
+        <Field>
+          <Tag>98</Tag>
+          <Name>EncryptMethod</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>If present, must be 0 (no encryption).</Description>
+        </Field>
+        <Field>
+          <Tag>108</Tag>
+          <Name>HeartBtInt</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Member heartbeat interval (in seconds).</Description>
+        </Field>
+      </Fields>
+    </Message>
+    <!-- Heartbeat (0) -->
+    <Message>
+      <Name>Heartbeat</Name>
+      <MsgType>0</MsgType>
+      <Category>admin</Category>
+      <Origin>Firm, Exchange</Origin>
+      <Description>The heartbeat maintains the FIX connection during periods of inactivity. A heartbeat message is sent only if no other message has been sent during the preceding HeartbeatInterval.</Description>
+      <Fields />
+    </Message>
+    <!-- Test Request (1) -->
+    <Message>
+      <Name>TestRequest</Name>
+      <MsgType>1</MsgType>
+      <Category>admin</Category>
+      <Origin>Firm, Exchange</Origin>
+      <Description>The test request message forces a heartbeat from the opposing application.</Description>
+      <Fields />
+    </Message>
+    <!-- Resend Request (2) -->
+    <Message>
+      <Name>ResendRequest</Name>
+      <MsgType>2</MsgType>
+      <Category>admin</Category>
+      <Origin>Firm, Exchange</Origin>
+      <Description>The resend request is sent by the receiving application to initiate the retransmission of messages.</Description>
+      <Fields>
+        <Field>
+          <Tag>7</Tag>
+          <Name>BeginSeqNo</Name>
+          <Required>Y</Required>
+          <Type>SeqNum</Type>
+          <Description>Message sequence number of the first message in the range to be resent.</Description>
+        </Field>
+        <Field>
+          <Tag>16</Tag>
+          <Name>EndSeqNo</Name>
+          <Required>Y</Required>
+          <Type>SeqNum</Type>
+          <Description>Message sequence number of the last message in the range to be resent. If the request is for a single message, BeginSeqNo = EndSeqNo. If the request is for all messages subsequent to a particular message, EndSeqNo = 0 (zero).</Description>
+        </Field>
+      </Fields>
+    </Message>
+    <!-- Session Reject (3) -->
+    <Message>
+      <Name>Reject</Name>
+      <MsgType>3</MsgType>
+      <Category>admin</Category>
+      <Origin>Exchange</Origin>
+      <Description>The reject message will be issued when a message is received but cannot be properly processed due to a session-level violation.</Description>
+      <Fields>
+        <Field>
+          <Tag>45</Tag>
+          <Name>RefSeqNum</Name>
+          <Required>Y</Required>
+          <Type>SeqNum</Type>
+          <Description>MsgSeqNum of the rejected message.</Description>
+        </Field>
+        <Field>
+          <Tag>373</Tag>
+          <Name>SessionRejectReason</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Code to identify the reason for a session-level Reject message.</Description>
+        </Field>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Text.</Description>
+        </Field>
+      </Fields>
+    </Message>
+    <!-- Sequence Reset (4) -->
+    <Message>
+      <Name>SequenceReset</Name>
+      <MsgType>4</MsgType>
+      <Category>admin</Category>
+      <Origin>Firm, Exchange</Origin>
+      <Description>The Sequence Reset message is used by the sending application to reset the incoming sequence number on the opposing side.</Description>
+      <Fields>
+        <Field>
+          <Tag>123</Tag>
+          <Name>GapFillFlag</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>Indicates whether the Sequence Reset is a Gap Fill or a Reset.</Description>
+        </Field>
+        <Field>
+          <Tag>36</Tag>
+          <Name>NewSeqNo</Name>
+          <Required>Y</Required>
+          <Type>SeqNum</Type>
+          <Description>New sequence number.</Description>
+        </Field>
+      </Fields>
+    </Message>
+    <!-- Logout (5) -->
+    <Message>
+      <Name>Logout</Name>
+      <MsgType>5</MsgType>
+      <Category>admin</Category>
+      <Origin>Firm, Exchange</Origin>
+      <Description>The logout message initiates or confirms the termination of the FIX session.</Description>
+      <Fields>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Optional text.</Description>
+        </Field>
+      </Fields>
+    </Message>
+    <!-- Application Messages -->
+    <!-- New Order Single (D) -->
+    <Message>
+      <Name>NewOrderSingle</Name>
+      <MsgType>D</MsgType>
+      <Category>app</Category>
+      <Origin>Firm</Origin>
+      <Description>New Order Single. If a New Order Single is received with invalid values or missing required tags, an Execution Report message will be sent in response with a rejected OrdStatus. Upon receipt of an accepted New Order message, an ack message will be sent out with a new OrdStatus per FIX standards.</Description>
+      <Fields>
+        <Field>
+          <Tag>1</Tag>
+          <Name>Account</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Account Field, if sent, will be echoed back to the client in the Execution msg. 1*32 alphanumeric.</Description>
+        </Field>
+        <Field>
+          <Tag>11</Tag>
+          <Name>ClOrdID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Unique identifier for Order as assigned by the order sender. Uniqueness must be guaranteed within a single trading day per symbol across all sessions. 1*32 alphanumeric.</Description>
+        </Field>
+        <Field>
+          <Tag>18</Tag>
+          <Name>ExecInst</Name>
+          <Required>N</Required>
+          <Type>MultipleValueString</Type>
+          <Description>For Pegs, OrdType(40) MUST be equal to P. If ExecInst=f, it will override any HandlInst(21) and the order will be treated as DAO.</Description>
+        </Field>
+        <Field>
+          <Tag>21</Tag>
+          <Name>HandlInst</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>Will be defaulted to 1 (OPR Reprice) if not received. If ExecInst=f, it will override HandlInst(21) and the order will be treated as DAO.</Description>
+        </Field>
+        <Field>
+          <Tag>38</Tag>
+          <Name>OrderQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>Number of shares. Precise to 6 decimals for support of fractional shares.</Description>
+        </Field>
+        <Field>
+          <Tag>40</Tag>
+          <Name>OrdType</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>If 40=P, then 18 MUST be M, R, or P.</Description>
+        </Field>
+        <Field>
+          <Tag>44</Tag>
+          <Name>Price</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Price per share. Must not be present when 40=1. Required when 40=2. Optional when 40=P.</Description>
+        </Field>
+        <Field>
+          <Tag>54</Tag>
+          <Name>Side</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Side of the order.</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Ticker Symbol. Must be 11 characters or less.</Description>
+        </Field>
+        <Field>
+          <Tag>59</Tag>
+          <Name>TimeInForce</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Specifies how long the order remains in effect. GTT = Good Till Time; essentially a same-day GTD order with a specified expiry time prior to market close. For GTT, it must be combined with ExpireTime(126) using the current date to specify the expiry time of the order. Any date other than current, if provided in ExpireTime(126), will result in an order rejection.</Description>
+        </Field>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>Y</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Time of Order creation expressed in UTC. See Appendix C for more details.</Description>
+        </Field>
+        <Field>
+          <Tag>100</Tag>
+          <Name>ExDestination</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Specify which book to send the order to. For Midpoint Peg orders, 100 MUST be set to INCC. Ignored on replaces.</Description>
+        </Field>
+        <Field>
+          <Tag>110</Tag>
+          <Name>MinQty</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Minimum Acceptable Quantity (MAQ): Minimum quantity of each execution report. Orders will not interact with smaller sized contra orders. Order will be rejected if Bypass=Y is combined with MinQty. Only accepted on non-display orders such as IOC and Midpoint orders.</Description>
+        </Field>
+        <Field>
+          <Tag>111</Tag>
+          <Name>MaxFloor</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>The quantity to be displayed, in board lot sizes only. If MaxFloor(111)=0 on a visible order, then the entire order quantity is hidden. See Appendix B for more details.</Description>
+        </Field>
+        <Field>
+          <Tag>126</Tag>
+          <Name>ExpireTime</Name>
+          <Required>N</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Conditionally required if TimeInForce(59) is set to GTT(6). Expressed in UTC.</Description>
+        </Field>
+        <Field>
+          <Tag>1724</Tag>
+          <Name>OrderOrigination</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Identifies the type of customer sending the order.</Description>
+        </Field>
+        <Field>
+          <Tag>2883</Tag>
+          <Name>RoutingArrangementIndicator</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Indicates whether a routing arrangement is in place.</Description>
+        </Field>
+        <Field>
+          <Tag>6750</Tag>
+          <Name>UMIRAccountType</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Required for Canadian regulatory reporting. If not provided on a MsgType(35) = D (a New Order Single), will default to value NC, which will be echoed back on the Execution Reports.</Description>
+        </Field>
+        <Field>
+          <Tag>6751</Tag>
+          <Name>UMIRUserID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Required for Canadian regulatory reporting, the trading system's user ID for the trader. 1*8 alphanumeric.</Description>
+        </Field>
+        <Field>
+          <Tag>6754</Tag>
+          <Name>BasketTrade</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Identification for order as part of a basket trade. May carry a 15 digit Basket Number.</Description>
+        </Field>
+        <Field>
+          <Tag>6755</Tag>
+          <Name>ProgramTrade</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>Identify this order as part of a program trade. Allowed values: Y, N.</Description>
+        </Field>
+        <Field>
+          <Tag>6757</Tag>
+          <Name>Jitney</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Broker on whose behalf this order is being submitted if different from the executing broker. This is a 3-digit numeric identifier per BrokerNumber(6774).</Description>
+        </Field>
+        <Field>
+          <Tag>6761</Tag>
+          <Name>Anonymous</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>Anonymize this order when trade reporting. Allowed values: Y, N. Default is N.</Description>
+        </Field>
+        <Field>
+          <Tag>6763</Tag>
+          <Name>UMIRRegulationID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Identification marker for UMIR-specific designations to orders and trades.</Description>
+        </Field>
+        <Field>
+          <Tag>6774</Tag>
+          <Name>BrokerNumber</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Three digit private PO number identifying a Member Firm. Anonymous orders are assigned a public broker number of 001.</Description>
+        </Field>
+        <Field>
+          <Tag>6791</Tag>
+          <Name>Bypass</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>Indicates the order should only trade with displayed volumes. These orders are treated as IOC. Default is N. Order will be rejected if Bypass=Y is combined with MinQty.</Description>
+        </Field>
+        <Field>
+          <Tag>7713</Tag>
+          <Name>NoTradeFeat</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>Code that defines self-trade prevention behavior for orders from the same broker. If there are conflicting instructions, the newer order's instructions shall take precedence.</Description>
+        </Field>
+        <Field>
+          <Tag>7714</Tag>
+          <Name>NoTradeKey</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Self-cross trade prevention ID generated by participant. 1*6 alphanumeric.</Description>
+        </Field>
+        <Field>
+          <Tag>7729</Tag>
+          <Name>ShortMarkingExempt</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>Identifies an order as Short Marking Exempt (SME). Not valid on short sell orders.</Description>
+        </Field>
+        <Field>
+          <Tag>7737</Tag>
+          <Name>POComment</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Free form pass-through tag. 1*32 alphanumeric.</Description>
+        </Field>
+        <Field>
+          <Tag>8020</Tag>
+          <Name>DisplayRange</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>A quantity added and subtracted to the MaxFloor(111) of an Iceberg order to define a range from which the iceberg's display volume is randomly chosen. E.g. MaxFloor(111)=1000 and DisplayRange(8020)=200 will allow random display volumes of 800, 900, 1000, 1100, or 1200.</Description>
+        </Field>
+        <Field>
+          <Tag>8025</Tag>
+          <Name>CustomerAccount</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Account number for clients not eligible to obtain an LEI. 1*20 alphanumeric.</Description>
+        </Field>
+        <Field>
+          <Tag>8026</Tag>
+          <Name>AlgorithmID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Unique identifier for the end-client (orders automatically generated on a predetermined basis). 1*20 alphanumeric.</Description>
+        </Field>
+        <Field>
+          <Tag>8027</Tag>
+          <Name>CustomerLEI</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>LEI for clients eligible to obtain an LEI including LEI of the foreign dealer equivalent (encryption required). 1*52 alphanumeric.</Description>
+        </Field>
+        <Field>
+          <Tag>8028</Tag>
+          <Name>BrokerLEI</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Non-PO IIROC Dealer Member (correspondent broker) LEI. 1*20 alphanumeric.</Description>
+        </Field>
+        <Field>
+          <Tag>9110</Tag>
+          <Name>MinQtyAggregation</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>Instruction for setting MinQty to permit the aggregation of contra-side interest to meet the minimum quantity requirements. Note that orders are not bunched into one fill. If MinQty(110) is not present on order, then MinQtyAggregation(9110) will be ignored. Ignored on replaces.</Description>
+        </Field>
+        <Field>
+          <Tag>9215</Tag>
+          <Name>FractionalTradeRelatedIdentification</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Identifies fractional client orders intended as fractional clean up orders (FRC).</Description>
+        </Field>
+        <Field>
+          <Tag>9303</Tag>
+          <Name>RoutingInst</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>Applicable to ALO orders only in the ASPEN and ASPEN VERT order books.</Description>
+        </Field>
+      </Fields>
+    </Message>
+    <!-- Order Cancel Request (F) -->
+    <Message>
+      <Name>OrderCancelRequest</Name>
+      <MsgType>F</MsgType>
+      <Category>app</Category>
+      <Origin>Firm</Origin>
+      <Description>Request to fully cancel the remaining open shares on the order.</Description>
+      <Fields>
+        <Field>
+          <Tag>11</Tag>
+          <Name>ClOrdID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Unique identifier of the cancel request as assigned by the order sender.</Description>
+        </Field>
+        <Field>
+          <Tag>38</Tag>
+          <Name>OrderQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>Number of shares on the order being cancelled.</Description>
+        </Field>
+        <Field>
+          <Tag>40</Tag>
+          <Name>OrdType</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Order type of the original order.</Description>
+        </Field>
+        <Field>
+          <Tag>41</Tag>
+          <Name>OrigClOrdID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>ClOrdID(11) of the order to be cancelled.</Description>
+        </Field>
+        <Field>
+          <Tag>54</Tag>
+          <Name>Side</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Side of the original order.</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Ticker Symbol of the original order.</Description>
+        </Field>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>Y</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Time of cancel request creation expressed in UTC.</Description>
+        </Field>
+      </Fields>
+    </Message>
+    <!-- Order Cancel/Replace Request (G) -->
+    <Message>
+      <Name>OrderCancelReplaceRequest</Name>
+      <MsgType>G</MsgType>
+      <Category>app</Category>
+      <Origin>Firm</Origin>
+      <Description>Request to modify the parameters of an existing open order.</Description>
+      <Fields>
+        <Field>
+          <Tag>11</Tag>
+          <Name>ClOrdID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Unique identifier of the replacement request as assigned by the order sender.</Description>
+        </Field>
+        <Field>
+          <Tag>18</Tag>
+          <Name>ExecInst</Name>
+          <Required>N</Required>
+          <Type>MultipleValueString</Type>
+          <Description>For Pegs, OrdType(40) MUST be equal to P.</Description>
+        </Field>
+        <Field>
+          <Tag>21</Tag>
+          <Name>HandlInst</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>Will be defaulted to 1 (OPR Reprice) if not received.</Description>
+        </Field>
+        <Field>
+          <Tag>38</Tag>
+          <Name>OrderQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>New number of shares. Precise to 6 decimals for support of fractional shares.</Description>
+        </Field>
+        <Field>
+          <Tag>40</Tag>
+          <Name>OrdType</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>If 40=P, then 18 MUST be M, R, or P.</Description>
+        </Field>
+        <Field>
+          <Tag>41</Tag>
+          <Name>OrigClOrdID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>ClOrdID(11) of the order to be replaced.</Description>
+        </Field>
+        <Field>
+          <Tag>44</Tag>
+          <Name>Price</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>New price per share. Must not be present when 40=1. Required when 40=2. Optional when 40=P.</Description>
+        </Field>
+        <Field>
+          <Tag>54</Tag>
+          <Name>Side</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Side of the order.</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Ticker Symbol. Must be 11 characters or less.</Description>
+        </Field>
+        <Field>
+          <Tag>59</Tag>
+          <Name>TimeInForce</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Specifies how long the order remains in effect.</Description>
+        </Field>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>Y</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Time of replacement request creation expressed in UTC.</Description>
+        </Field>
+        <Field>
+          <Tag>110</Tag>
+          <Name>MinQty</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Minimum Acceptable Quantity (MAQ). Only accepted on non-display orders such as IOC and Midpoint orders.</Description>
+        </Field>
+      </Fields>
+    </Message>
+    <!-- Execution Report (8) -->
+    <Message>
+      <Name>ExecutionReport</Name>
+      <MsgType>8</MsgType>
+      <Category>app</Category>
+      <Origin>Exchange</Origin>
+      <Description>The Execution Report message is used to confirm the receipt of an order, confirm changes to an existing order, relay order status information, relay fill information on working orders, or reject an order.</Description>
+      <Fields>
+        <Field>
+          <Tag>1</Tag>
+          <Name>Account</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Will match original order.</Description>
+        </Field>
+        <Field>
+          <Tag>6</Tag>
+          <Name>AvgPx</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Calculated average price of all fills on this order.</Description>
+        </Field>
+        <Field>
+          <Tag>11</Tag>
+          <Name>ClOrdID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Unique identifier of the most recent order as assigned by the order sender.</Description>
+        </Field>
+        <Field>
+          <Tag>14</Tag>
+          <Name>CumQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>Total number of shares filled on this order.</Description>
+        </Field>
+        <Field>
+          <Tag>15</Tag>
+          <Name>Currency</Name>
+          <Required>N</Required>
+          <Type>Currency</Type>
+          <Description>Currency of the order.</Description>
+        </Field>
+        <Field>
+          <Tag>17</Tag>
+          <Name>ExecID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Unique identifier of this execution report as assigned by CIX.</Description>
+        </Field>
+        <Field>
+          <Tag>18</Tag>
+          <Name>ExecInst</Name>
+          <Required>N</Required>
+          <Type>MultipleValueString</Type>
+          <Description>Will match original order.</Description>
+        </Field>
+        <Field>
+          <Tag>19</Tag>
+          <Name>ExecRefID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Reference to the ExecID(17) of the original execution being cancelled or corrected. Present when ExecTransType(20) = 1 or 2.</Description>
+        </Field>
+        <Field>
+          <Tag>20</Tag>
+          <Name>ExecTransType</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Identifies transaction type.</Description>
+        </Field>
+        <Field>
+          <Tag>21</Tag>
+          <Name>HandlInst</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>Will match original order.</Description>
+        </Field>
+        <Field>
+          <Tag>30</Tag>
+          <Name>LastMkt</Name>
+          <Required>N</Required>
+          <Type>Exchange</Type>
+          <Description>Market of execution for the last fill.</Description>
+        </Field>
+        <Field>
+          <Tag>31</Tag>
+          <Name>LastPx</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Price of the last fill.</Description>
+        </Field>
+        <Field>
+          <Tag>32</Tag>
+          <Name>LastShares</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Quantity of shares on the last fill.</Description>
+        </Field>
+        <Field>
+          <Tag>37</Tag>
+          <Name>OrderID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Unique identifier for the order as assigned by CIX.</Description>
+        </Field>
+        <Field>
+          <Tag>38</Tag>
+          <Name>OrderQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>Number of shares on the order.</Description>
+        </Field>
+        <Field>
+          <Tag>39</Tag>
+          <Name>OrdStatus</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Identifies current status of order.</Description>
+        </Field>
+        <Field>
+          <Tag>40</Tag>
+          <Name>OrdType</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>Will match original order.</Description>
+        </Field>
+        <Field>
+          <Tag>41</Tag>
+          <Name>OrigClOrdID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>ClOrdID(11) of the previous order when responding to a cancel or cancel/replace request.</Description>
+        </Field>
+        <Field>
+          <Tag>42</Tag>
+          <Name>OrigTime</Name>
+          <Required>N</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Time of original order creation expressed in UTC.</Description>
+        </Field>
+        <Field>
+          <Tag>44</Tag>
+          <Name>Price</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Will match original order.</Description>
+        </Field>
+        <Field>
+          <Tag>54</Tag>
+          <Name>Side</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Will match original order.</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Will match original order.</Description>
+        </Field>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Free-form text with additional details.</Description>
+        </Field>
+        <Field>
+          <Tag>59</Tag>
+          <Name>TimeInForce</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>Will match original order.</Description>
+        </Field>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>Y</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Time this execution report was generated, expressed in UTC.</Description>
+        </Field>
+        <Field>
+          <Tag>103</Tag>
+          <Name>OrdRejReason</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Code to identify reason for order rejection.</Description>
+        </Field>
+        <Field>
+          <Tag>110</Tag>
+          <Name>MinQty</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Will match original order.</Description>
+        </Field>
+        <Field>
+          <Tag>111</Tag>
+          <Name>MaxFloor</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Will match original order.</Description>
+        </Field>
+        <Field>
+          <Tag>126</Tag>
+          <Name>ExpireTime</Name>
+          <Required>N</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Will match original order.</Description>
+        </Field>
+        <Field>
+          <Tag>150</Tag>
+          <Name>ExecType</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Describes the specific ExecutionRpt (ie Pending Cancel) while OrdStatus will always identify the current order status (ie Partially Filled).</Description>
+        </Field>
+        <Field>
+          <Tag>151</Tag>
+          <Name>LeavesQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>Quantity open for further execution. Precise to 6 decimals for support of fractional order quantities.</Description>
+        </Field>
+        <Field>
+          <Tag>375</Tag>
+          <Name>ContraBroker</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>The broker with whom the trade occurred. Format and values will be as described for BrokerNumber(6774).</Description>
+        </Field>
+        <Field>
+          <Tag>378</Tag>
+          <Name>ExecRestatementReason</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Only present when 150=D or 150=3.</Description>
+        </Field>
+        <Field>
+          <Tag>851</Tag>
+          <Name>LastLiquidityInd</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Indicator to identify whether a fill or partial fill was the result of a liquidity code.</Description>
+        </Field>
+        <Field>
+          <Tag>1724</Tag>
+          <Name>OrderOrigination</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Will match original order.</Description>
+        </Field>
+        <Field>
+          <Tag>2883</Tag>
+          <Name>RoutingArrangementIndicator</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Will match original order.</Description>
+        </Field>
+        <Field>
+          <Tag>6750</Tag>
+          <Name>UMIRAccountType</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Will match original order.</Description>
+        </Field>
+        <Field>
+          <Tag>6751</Tag>
+          <Name>UMIRUserID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Will match original order.</Description>
+        </Field>
+        <Field>
+          <Tag>6754</Tag>
+          <Name>BasketTrade</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Will match original order.</Description>
+        </Field>
+        <Field>
+          <Tag>6755</Tag>
+          <Name>ProgramTrade</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>Will match original order.</Description>
+        </Field>
+        <Field>
+          <Tag>6757</Tag>
+          <Name>Jitney</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Will match original order.</Description>
+        </Field>
+        <Field>
+          <Tag>6761</Tag>
+          <Name>Anonymous</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>Will match original order.</Description>
+        </Field>
+        <Field>
+          <Tag>6763</Tag>
+          <Name>UMIRRegulationID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Will match original order.</Description>
+        </Field>
+        <Field>
+          <Tag>6774</Tag>
+          <Name>BrokerNumber</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Will match original order.</Description>
+        </Field>
+        <Field>
+          <Tag>6776</Tag>
+          <Name>PrincipalTrade</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>A principal transaction between a dealer and a dealer's customer account.</Description>
+        </Field>
+        <Field>
+          <Tag>6777</Tag>
+          <Name>WashTrade</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>A trade that has occurred between proprietary accounts of the same member firm.</Description>
+        </Field>
+        <Field>
+          <Tag>6791</Tag>
+          <Name>Bypass</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>Will match original order.</Description>
+        </Field>
+        <Field>
+          <Tag>7713</Tag>
+          <Name>NoTradeFeat</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>Will match original order.</Description>
+        </Field>
+        <Field>
+          <Tag>7714</Tag>
+          <Name>NoTradeKey</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Will match original order unless it was not provided, in which case it will be NC.</Description>
+        </Field>
+        <Field>
+          <Tag>7729</Tag>
+          <Name>ShortMarkingExempt</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>Will match original order.</Description>
+        </Field>
+        <Field>
+          <Tag>7732</Tag>
+          <Name>MatchingPriority</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>The type of priority used to match an order in a trade. May only be present if 150 = 1 or 2 (partial fill or fill).</Description>
+        </Field>
+        <Field>
+          <Tag>7733</Tag>
+          <Name>ExecuteMatch</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>Trade matched and suppressed due to no self-trade.</Description>
+        </Field>
+        <Field>
+          <Tag>7737</Tag>
+          <Name>POComment</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Will match original order.</Description>
+        </Field>
+        <Field>
+          <Tag>8025</Tag>
+          <Name>CustomerAccount</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Will match original order.</Description>
+        </Field>
+        <Field>
+          <Tag>8026</Tag>
+          <Name>AlgorithmID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Will match original order.</Description>
+        </Field>
+        <Field>
+          <Tag>8027</Tag>
+          <Name>CustomerLEI</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Will match original order.</Description>
+        </Field>
+        <Field>
+          <Tag>8028</Tag>
+          <Name>BrokerLEI</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Will match original order.</Description>
+        </Field>
+        <Field>
+          <Tag>9110</Tag>
+          <Name>MinQtyAggregation</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>Will match original order.</Description>
+        </Field>
+        <Field>
+          <Tag>9303</Tag>
+          <Name>RoutingInst</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>Will match original order.</Description>
+        </Field>
+      </Fields>
+    </Message>
+    <!-- Order Cancel Reject (9) -->
+    <Message>
+      <Name>OrderCancelReject</Name>
+      <MsgType>9</MsgType>
+      <Category>app</Category>
+      <Origin>Exchange</Origin>
+      <Description>A reject in response to a cancel or Cancel/Replace request.</Description>
+      <Fields>
+        <Field>
+          <Tag>11</Tag>
+          <Name>ClOrdID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>The unique ClOrdID as specified on the original Cancel or Cancel/Replace request that is being rejected.</Description>
+        </Field>
+        <Field>
+          <Tag>37</Tag>
+          <Name>OrderID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>The OrderID is the order intended for cancellation or replacement. Will return value NONE if original order not found.</Description>
+        </Field>
+        <Field>
+          <Tag>39</Tag>
+          <Name>OrdStatus</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Identifies current status of order.</Description>
+        </Field>
+        <Field>
+          <Tag>41</Tag>
+          <Name>OrigClOrdID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>The OrigClOrdID as specified on the original Cancel or Cancel/Replace request.</Description>
+        </Field>
+        <Field>
+          <Tag>102</Tag>
+          <Name>CxlRejReason</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Code to identify the reason for cancel rejection.</Description>
+        </Field>
+        <Field>
+          <Tag>434</Tag>
+          <Name>CxlRejResponseTo</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Identifies the request this reject is in response to.</Description>
+        </Field>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Textual description of the reject reason.</Description>
+        </Field>
+      </Fields>
+    </Message>
+  </Messages>
+
+  <Values>
+
+    <!-- BeginString (8) static. Source: "Must be set to 4.2" -->
+    <Value>
+      <Type>BeginString</Type>
+      <Enum>FIX.4.2</Enum>
+      <Kind>Static</Kind>
+      <Description>FIX 4.2</Description>
+    </Value>
+
+    <!-- MsgType -->
+    <Value>
+      <Type>MsgType</Type>
+      <Enum>0</Enum>
+      <Description>Heartbeat</Description>
+    </Value>
+    <Value>
+      <Type>MsgType</Type>
+      <Enum>1</Enum>
+      <Description>Test Request</Description>
+    </Value>
+    <Value>
+      <Type>MsgType</Type>
+      <Enum>2</Enum>
+      <Description>Resend Request</Description>
+    </Value>
+    <Value>
+      <Type>MsgType</Type>
+      <Enum>3</Enum>
+      <Description>Reject</Description>
+    </Value>
+    <Value>
+      <Type>MsgType</Type>
+      <Enum>4</Enum>
+      <Description>Sequence Reset</Description>
+    </Value>
+    <Value>
+      <Type>MsgType</Type>
+      <Enum>5</Enum>
+      <Description>Logout</Description>
+    </Value>
+    <Value>
+      <Type>MsgType</Type>
+      <Enum>8</Enum>
+      <Description>Execution Report</Description>
+    </Value>
+    <Value>
+      <Type>MsgType</Type>
+      <Enum>9</Enum>
+      <Description>Order Cancel Reject</Description>
+    </Value>
+    <Value>
+      <Type>MsgType</Type>
+      <Enum>A</Enum>
+      <Description>Logon</Description>
+    </Value>
+    <Value>
+      <Type>MsgType</Type>
+      <Enum>D</Enum>
+      <Description>Order Single</Description>
+    </Value>
+    <Value>
+      <Type>MsgType</Type>
+      <Enum>F</Enum>
+      <Description>Order Cancel Request</Description>
+    </Value>
+    <Value>
+      <Type>MsgType</Type>
+      <Enum>G</Enum>
+      <Description>Order Cancel/Replace Request</Description>
+    </Value>
+
+    <!-- ExecInst -->
+    <Value>
+      <Type>ExecInst</Type>
+      <Enum>f</Enum>
+      <Description>DAO</Description>
+    </Value>
+    <Value>
+      <Type>ExecInst</Type>
+      <Enum>M</Enum>
+      <Description>Midpoint Peg</Description>
+    </Value>
+    <Value>
+      <Type>ExecInst</Type>
+      <Enum>R</Enum>
+      <Description>Primary (Passive) Peg</Description>
+    </Value>
+    <Value>
+      <Type>ExecInst</Type>
+      <Enum>P</Enum>
+      <Description>Market (Aggressive) Peg</Description>
+    </Value>
+
+    <!-- HandlInst -->
+    <Value>
+      <Type>HandlInst</Type>
+      <Enum>1</Enum>
+      <Description>OPR Reprice</Description>
+    </Value>
+    <Value>
+      <Type>HandlInst</Type>
+      <Enum>5</Enum>
+      <Description>OPR Cancel</Description>
+    </Value>
+
+    <!-- OrdType -->
+    <Value>
+      <Type>OrdType</Type>
+      <Enum>1</Enum>
+      <Description>Market</Description>
+    </Value>
+    <Value>
+      <Type>OrdType</Type>
+      <Enum>2</Enum>
+      <Description>Limit</Description>
+    </Value>
+    <Value>
+      <Type>OrdType</Type>
+      <Enum>P</Enum>
+      <Description>Pegged</Description>
+    </Value>
+
+    <!-- Side -->
+    <Value>
+      <Type>Side</Type>
+      <Enum>1</Enum>
+      <Description>Buy</Description>
+    </Value>
+    <Value>
+      <Type>Side</Type>
+      <Enum>2</Enum>
+      <Description>Sell</Description>
+    </Value>
+    <Value>
+      <Type>Side</Type>
+      <Enum>5</Enum>
+      <Description>Sell short</Description>
+    </Value>
+
+    <!-- TimeInForce -->
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>0</Enum>
+      <Description>DAY</Description>
+    </Value>
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>3</Enum>
+      <Description>IOC</Description>
+    </Value>
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>6</Enum>
+      <Description>GTT (Midpoint book only)</Description>
+    </Value>
+
+    <!-- ExDestination -->
+    <Value>
+      <Type>ExDestination</Type>
+      <Enum>ASPV</Enum>
+      <Description>CIX ASPEN VERT</Description>
+    </Value>
+    <Value>
+      <Type>ExDestination</Type>
+      <Enum>ASPC</Enum>
+      <Description>CIX ASPEN</Description>
+    </Value>
+    <Value>
+      <Type>ExDestination</Type>
+      <Enum>INCC</Enum>
+      <Description>CIX Midpoint</Description>
+    </Value>
+
+    <!-- OrderOrigination -->
+    <Value>
+      <Type>OrderOrigination</Type>
+      <Enum>5</Enum>
+      <Description>Direct access client</Description>
+    </Value>
+    <Value>
+      <Type>OrderOrigination</Type>
+      <Enum>6</Enum>
+      <Description>Foreign dealer equivalent</Description>
+    </Value>
+    <Value>
+      <Type>OrderOrigination</Type>
+      <Enum>7</Enum>
+      <Description>Order execution only service</Description>
+    </Value>
+
+    <!-- RoutingArrangementIndicator -->
+    <Value>
+      <Type>RoutingArrangementIndicator</Type>
+      <Enum>0</Enum>
+      <Description>No routing arrangement in place</Description>
+    </Value>
+    <Value>
+      <Type>RoutingArrangementIndicator</Type>
+      <Enum>1</Enum>
+      <Description>Routing arrangement in place</Description>
+    </Value>
+
+    <!-- UMIRAccountType -->
+    <Value>
+      <Type>UMIRAccountType</Type>
+      <Enum>CL</Enum>
+      <Description>Client</Description>
+    </Value>
+    <Value>
+      <Type>UMIRAccountType</Type>
+      <Enum>NC</Enum>
+      <Description>Non-Client (Default)</Description>
+    </Value>
+    <Value>
+      <Type>UMIRAccountType</Type>
+      <Enum>ST</Enum>
+      <Description>Specialist</Description>
+    </Value>
+    <Value>
+      <Type>UMIRAccountType</Type>
+      <Enum>IN</Enum>
+      <Description>Inventory</Description>
+    </Value>
+    <Value>
+      <Type>UMIRAccountType</Type>
+      <Enum>OF</Enum>
+      <Description>Options firm account</Description>
+    </Value>
+    <Value>
+      <Type>UMIRAccountType</Type>
+      <Enum>OT</Enum>
+      <Description>Options market maker</Description>
+    </Value>
+    <Value>
+      <Type>UMIRAccountType</Type>
+      <Enum>BU</Enum>
+      <Description>Bundled</Description>
+    </Value>
+    <Value>
+      <Type>UMIRAccountType</Type>
+      <Enum>MC</Enum>
+      <Description>Multiple Clients</Description>
+    </Value>
+
+    <!-- BasketTrade -->
+    <Value>
+      <Type>BasketTrade</Type>
+      <Enum>N</Enum>
+      <Description>No (Default)</Description>
+    </Value>
+
+    <!-- ProgramTrade -->
+    <Value>
+      <Type>ProgramTrade</Type>
+      <Enum>Y</Enum>
+      <Description>Yes</Description>
+    </Value>
+    <Value>
+      <Type>ProgramTrade</Type>
+      <Enum>N</Enum>
+      <Description>No</Description>
+    </Value>
+
+    <!-- Anonymous -->
+    <Value>
+      <Type>Anonymous</Type>
+      <Enum>Y</Enum>
+      <Description>Yes</Description>
+    </Value>
+    <Value>
+      <Type>Anonymous</Type>
+      <Enum>N</Enum>
+      <Description>No (Default)</Description>
+    </Value>
+
+    <!-- UMIRRegulationID -->
+    <Value>
+      <Type>UMIRRegulationID</Type>
+      <Enum>IA</Enum>
+      <Description>Insider Account</Description>
+    </Value>
+    <Value>
+      <Type>UMIRRegulationID</Type>
+      <Enum>NA</Enum>
+      <Description>Not Applicable</Description>
+    </Value>
+    <Value>
+      <Type>UMIRRegulationID</Type>
+      <Enum>SS</Enum>
+      <Description>Significant Shareholder</Description>
+    </Value>
+
+    <!-- Bypass -->
+    <Value>
+      <Type>Bypass</Type>
+      <Enum>Y</Enum>
+      <Description>Yes</Description>
+    </Value>
+    <Value>
+      <Type>Bypass</Type>
+      <Enum>N</Enum>
+      <Description>No (Default)</Description>
+    </Value>
+
+    <!-- NoTradeFeat -->
+    <Value>
+      <Type>NoTradeFeat</Type>
+      <Enum>N</Enum>
+      <Description>Cancel newest order</Description>
+    </Value>
+    <Value>
+      <Type>NoTradeFeat</Type>
+      <Enum>O</Enum>
+      <Description>Cancel oldest order</Description>
+    </Value>
+    <Value>
+      <Type>NoTradeFeat</Type>
+      <Enum>D</Enum>
+      <Description>Decrement and Cancel (larger order decremented)</Description>
+    </Value>
+    <Value>
+      <Type>NoTradeFeat</Type>
+      <Enum>E</Enum>
+      <Description>Execute - trade is suppressed on market data; ExecuteMatch(7733) returned in ExecutionReport</Description>
+    </Value>
+
+    <!-- ShortMarkingExempt -->
+    <Value>
+      <Type>ShortMarkingExempt</Type>
+      <Enum>0</Enum>
+      <Description>SME</Description>
+    </Value>
+
+    <!-- MinQtyAggregation -->
+    <Value>
+      <Type>MinQtyAggregation</Type>
+      <Enum>Y</Enum>
+      <Description>Enabled</Description>
+    </Value>
+    <Value>
+      <Type>MinQtyAggregation</Type>
+      <Enum>N</Enum>
+      <Description>Disabled</Description>
+    </Value>
+
+    <!-- FractionalTradeRelatedIdentification -->
+    <Value>
+      <Type>FractionalTradeRelatedIdentification</Type>
+      <Enum>2</Enum>
+      <Description>Fractional client orders intended as fractional clean up orders (FRC)</Description>
+    </Value>
+
+    <!-- RoutingInst -->
+    <Value>
+      <Type>RoutingInst</Type>
+      <Enum>P</Enum>
+      <Description>Post Only</Description>
+    </Value>
+
+    <!-- ExecTransType -->
+    <Value>
+      <Type>ExecTransType</Type>
+      <Enum>0</Enum>
+      <Description>New</Description>
+    </Value>
+    <Value>
+      <Type>ExecTransType</Type>
+      <Enum>1</Enum>
+      <Description>Cancel</Description>
+    </Value>
+    <Value>
+      <Type>ExecTransType</Type>
+      <Enum>2</Enum>
+      <Description>Correct</Description>
+    </Value>
+
+    <!-- OrdStatus -->
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>0</Enum>
+      <Description>New</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>1</Enum>
+      <Description>Partially filled</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>2</Enum>
+      <Description>Filled</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>4</Enum>
+      <Description>Canceled</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>5</Enum>
+      <Description>Replaced</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>8</Enum>
+      <Description>Rejected</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>D</Enum>
+      <Description>Restated</Description>
+    </Value>
+
+    <!-- OrdRejReason -->
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>0</Enum>
+      <Description>Broker Option</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>1</Enum>
+      <Description>Unknown symbol</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>2</Enum>
+      <Description>Exchange closed</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>3</Enum>
+      <Description>Order exceeds limit</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>4</Enum>
+      <Description>Too late to enter</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>5</Enum>
+      <Description>Unknown order</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>6</Enum>
+      <Description>Duplicate Order (dupe ClOrdID)</Description>
+    </Value>
+
+    <!-- ExecType -->
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>0</Enum>
+      <Description>New</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>1</Enum>
+      <Description>Partial fill</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>2</Enum>
+      <Description>Fill</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>4</Enum>
+      <Description>Canceled</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>5</Enum>
+      <Description>Replaced</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>8</Enum>
+      <Description>Rejected</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>D</Enum>
+      <Description>Restated</Description>
+    </Value>
+
+    <!-- LastMkt -->
+    <Value>
+      <Type>LastMkt</Type>
+      <Enum>ASPV</Enum>
+      <Description>CIX ASPEN VERT</Description>
+    </Value>
+    <Value>
+      <Type>LastMkt</Type>
+      <Enum>ASPC</Enum>
+      <Description>CIX ASPEN</Description>
+    </Value>
+    <Value>
+      <Type>LastMkt</Type>
+      <Enum>INCC</Enum>
+      <Description>CIX Midpoint</Description>
+    </Value>
+
+    <!-- ExecRestatementReason -->
+    <Value>
+      <Type>ExecRestatementReason</Type>
+      <Enum>3</Enum>
+      <Description>Repricing (ex. OPR)</Description>
+    </Value>
+    <Value>
+      <Type>ExecRestatementReason</Type>
+      <Enum>5</Enum>
+      <Description>Partial Reduce due to self - trade prevention result based on NoTradeFeat(7713)</Description>
+    </Value>
+
+    <!-- LastLiquidityInd -->
+    <Value>
+      <Type>LastLiquidityInd</Type>
+      <Enum>0</Enum>
+      <Description>Neither Added Nor Removed Liquidity (used for Midpoint only as appropriate)</Description>
+    </Value>
+    <Value>
+      <Type>LastLiquidityInd</Type>
+      <Enum>1</Enum>
+      <Description>Added Liquidity</Description>
+    </Value>
+    <Value>
+      <Type>LastLiquidityInd</Type>
+      <Enum>2</Enum>
+      <Description>Removed Liquidity</Description>
+    </Value>
+
+    <!-- PrincipalTrade -->
+    <Value>
+      <Type>PrincipalTrade</Type>
+      <Enum>Y</Enum>
+      <Description>Yes</Description>
+    </Value>
+
+    <!-- WashTrade -->
+    <Value>
+      <Type>WashTrade</Type>
+      <Enum>Y</Enum>
+      <Description>Yes</Description>
+    </Value>
+
+    <!-- MatchingPriority -->
+    <Value>
+      <Type>MatchingPriority</Type>
+      <Enum>1</Enum>
+      <Description>Broker Preferencing</Description>
+    </Value>
+
+    <!-- ExecuteMatch -->
+    <Value>
+      <Type>ExecuteMatch</Type>
+      <Enum>Y</Enum>
+      <Description>Yes</Description>
+    </Value>
+
+    <!-- CxlRejReason -->
+    <Value>
+      <Type>CxlRejReason</Type>
+      <Enum>0</Enum>
+      <Description>Too late to cancel</Description>
+    </Value>
+    <Value>
+      <Type>CxlRejReason</Type>
+      <Enum>1</Enum>
+      <Description>Unknown order</Description>
+    </Value>
+    <Value>
+      <Type>CxlRejReason</Type>
+      <Enum>2</Enum>
+      <Description>Broker / Exchange Options</Description>
+    </Value>
+    <Value>
+      <Type>CxlRejReason</Type>
+      <Enum>6</Enum>
+      <Description>Duplicate ClOrdID (11) received</Description>
+    </Value>
+    <Value>
+      <Type>CxlRejReason</Type>
+      <Enum>99</Enum>
+      <Description>Other</Description>
+    </Value>
+
+    <!-- CxlRejResponseTo -->
+    <Value>
+      <Type>CxlRejResponseTo</Type>
+      <Enum>1</Enum>
+      <Description>Order Cancel Request</Description>
+    </Value>
+    <Value>
+      <Type>CxlRejResponseTo</Type>
+      <Enum>2</Enum>
+      <Description>Cancel/Replace</Description>
+    </Value>
+
+    <!-- GapFillFlag -->
+    <Value>
+      <Type>GapFillFlag</Type>
+      <Enum>Y</Enum>
+      <Description>Sequence Reset - Gap Fill</Description>
+    </Value>
+    <Value>
+      <Type>GapFillFlag</Type>
+      <Enum>N</Enum>
+      <Description>Sequence Reset - Reset</Description>
+    </Value>
+
+    <!-- SessionRejectReason -->
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>0</Enum>
+      <Description>Invalid tag number</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>1</Enum>
+      <Description>Required tag missing</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>2</Enum>
+      <Description>Tag not defined for this message type</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>3</Enum>
+      <Description>Undefined tag</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>4</Enum>
+      <Description>Tag specified without a value</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>5</Enum>
+      <Description>Value is incorrect for this tag</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>6</Enum>
+      <Description>Incorrect data format for value</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>8</Enum>
+      <Description>Signature problem</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>9</Enum>
+      <Description>CompID problem</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>10</Enum>
+      <Description>SendingTime accuracy problem</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>11</Enum>
+      <Description>Invalid MsgType</Description>
+    </Value>
+  </Values>
+</OmiFixPdf>

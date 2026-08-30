@@ -10,6 +10,7 @@
 | LinkAts | Multicast | Link | 4.3 | [files](OtcMarkets.LinkAts.Multicast.Link.v4.3/) |
 | LinkAts | Multicast | Link | 4.5 | [files](OtcMarkets.LinkAts.Multicast.Link.v4.5/) |
 | LinkAts | Multicast | Link | 4.10.4 | [files](OtcMarkets.LinkAts.Multicast.Link.v4.10.4/) |
+| LinkAts | Quotation | Fix | 1.7 | [files](OtcMarkets.LinkAts.Quotation.Fix.v1.7/) |
 | LinkAts | QuoteBook | Link | 4.10.4 | [files](OtcMarkets.LinkAts.QuoteBook.Link.v4.10.4/) |
 | LinkAts | QuoteBookGlobalOtc | Link | 4.10.4 | [files](OtcMarkets.LinkAts.QuoteBookGlobalOtc.Link.v4.10.4/) |
 | LinkAts | QuoteInside | Link | 4.10.4 | [files](OtcMarkets.LinkAts.QuoteInside.Link.v4.10.4/) |
@@ -18,10 +19,14 @@
 | LinkAts | ReferenceData | Link | 4.10.4 | [files](OtcMarkets.LinkAts.ReferenceData.Link.v4.10.4/) |
 | LinkAts | ReferenceDataNoCusip | Link | 4.10.4 | [files](OtcMarkets.LinkAts.ReferenceDataNoCusip.Link.v4.10.4/) |
 | LinkAts | Trade | Link | 4.10.4 | [files](OtcMarkets.LinkAts.Trade.Link.v4.10.4/) |
+| LinkAts | TradeMessaging | Fix | 1.16 | [files](OtcMarkets.LinkAts.TradeMessaging.Fix.v1.16/) |
+| LinkEcn | OrderEntry | Fix | 1.3 | [files](OtcMarkets.LinkEcn.OrderEntry.Fix.v1.3.31/) |
 | LinkNqb | DepthOfBook | Link | 1.18 | [files](OtcMarkets.LinkNqb.DepthOfBook.Link.v1.18/) |
+| LinkNqb | OrderEntry | Fix | 1.18 | [files](OtcMarkets.LinkNqb.OrderEntry.Fix.v1.18.1/) |
 | LinkNqb | Retransmission | Link | 1.18 | [files](OtcMarkets.LinkNqb.Retransmission.Link.v1.18/) |
 | LinkNqb | TopOfBook | Link | 1.18 | [files](OtcMarkets.LinkNqb.TopOfBook.Link.v1.18/) |
 | MoonAts | DepthOfBook | Link | 1.3 | [files](OtcMarkets.MoonAts.DepthOfBook.Link.v1.3/) |
+| MoonAts | OrderEntry | Fix | 1.8 | [files](OtcMarkets.MoonAts.OrderEntry.Fix.v1.8.2/) |
 | MoonAts | Retransmission | Link | 1.3 | [files](OtcMarkets.MoonAts.Retransmission.Link.v1.3/) |
 | MoonAts | TopOfBook | Link | 1.3 | [files](OtcMarkets.MoonAts.TopOfBook.Link.v1.3/) |
 | Overnight | DepthOfBook | Link | 1.0 | [files](OtcMarkets.Overnight.DepthOfBook.Link.v1.0/) |

@@ -1,0 +1,198 @@
+<OmiFixPdf>
+
+  <!-- ASX Signal B FIX Manual. FIXT.1.1 session with FIX 5.0 application messages delivering a
+       progressive intra-day trade confirmation feed for an ASX Trading Participant, covering all
+       instruments listed on the ASX Trade platform. Tags marked "REVIEW" are ASX specific extensions. -->
+
+  <Header>
+    <Fields>
+      <Field><Tag>8</Tag><Name>BeginString</Name><Required>Y</Required><Type>String</Type><Fixed>Y</Fixed><Description>Identifies beginning of new message and protocol version. Always first field in message.</Description></Field>
+      <Field><Tag>9</Tag><Name>BodyLength</Name><Required>Y</Required><Type>Length</Type><Fixed>Y</Fixed><Description>Message length. Always second field in message.</Description></Field>
+      <Field><Tag>35</Tag><Name>MsgType</Name><Required>Y</Required><Type>String</Type><Fixed>Y</Fixed><Description>Defines message type. Always third field in message.</Description></Field>
+      <Field><Tag>49</Tag><Name>SenderCompID</Name><Required>Y</Required><Type>String</Type><Description>ID of the party sending the message.</Description></Field>
+      <Field><Tag>56</Tag><Name>TargetCompID</Name><Required>Y</Required><Type>String</Type><Description>ID of the party the message is sent to.</Description></Field>
+      <Field><Tag>34</Tag><Name>MsgSeqNum</Name><Required>Y</Required><Type>SeqNum</Type><Description>Message sequence number.</Description></Field>
+      <Field><Tag>52</Tag><Name>SendingTime</Name><Required>Y</Required><Type>UTCTimestamp</Type><Description>Time of message transmission in UTC.</Description></Field>
+      <Field><Tag>43</Tag><Name>PossDupFlag</Name><Required>N</Required><Type>Boolean</Type><Description>Indicates a possible duplicate message.</Description></Field>
+      <Field><Tag>97</Tag><Name>PossResend</Name><Required>N</Required><Type>Boolean</Type><Description>Indicates a possible resend of an application message.</Description></Field>
+      <Field><Tag>122</Tag><Name>OrigSendingTime</Name><Required>N</Required><Type>UTCTimestamp</Type><Description>Original sending time for retransmitted messages.</Description></Field>
+      <Field><Tag>1128</Tag><Name>ApplVerID</Name><Required>N</Required><Type>String</Type><Description>Application version ID.</Description></Field>
+    </Fields>
+  </Header>
+
+  <Trailer>
+    <Fields>
+      <Field><Tag>10</Tag><Name>CheckSum</Name><Required>Y</Required><Type>String</Type><Fixed>Y</Fixed><Description>Three byte simple checksum. Always the last field of a FIX message.</Description></Field>
+    </Fields>
+  </Trailer>
+
+  <Messages>
+
+    <!-- Logon -->
+    <Message><Name>Logon</Name><MsgType>A</MsgType><Category>admin</Category><Origin>Client,Exchange</Origin>
+      <Fields>
+        <Field><Tag>108</Tag><Name>HeartBtInt</Name><Required>Y</Required><Type>Int</Type><Description>Heartbeat interval in seconds.</Description></Field>
+        <Field><Tag>141</Tag><Name>ResetSeqNumFlag</Name><Required>N</Required><Type>Boolean</Type><Description>Indicates both sides of a FIX session should reset sequence numbers.</Description></Field>
+        <Field><Tag>789</Tag><Name>NextExpectedMsgSeqNum</Name><Required>N</Required><Type>SeqNum</Type><Description>Next expected message sequence number.</Description></Field>
+        <Field><Tag>553</Tag><Name>Username</Name><Required>N</Required><Type>String</Type><Description>User name for authentication.</Description></Field>
+        <Field><Tag>554</Tag><Name>Password</Name><Required>N</Required><Type>String</Type><Description>Password for authentication.</Description></Field>
+        <Field><Tag>925</Tag><Name>NewPassword</Name><Required>N</Required><Type>String</Type><Description>New password when changing the password.</Description></Field>
+        <Field><Tag>1409</Tag><Name>SessionStatus</Name><Required>N</Required><Type>Int</Type><Description>Status of the FIX session.</Description></Field>
+        <Field><Tag>1137</Tag><Name>DefaultApplVerID</Name><Required>N</Required><Type>String</Type><Description>Default application version ID.</Description></Field>
+        <Field><Tag>58</Tag><Name>Text</Name><Required>N</Required><Type>String</Type><Description>Free text.</Description></Field>
+      </Fields>
+    </Message>
+
+    <!-- Heartbeat -->
+    <Message><Name>Heartbeat</Name><MsgType>0</MsgType><Category>admin</Category><Origin>Client,Exchange</Origin>
+      <Fields>
+        <Field><Tag>112</Tag><Name>TestReqID</Name><Required>N</Required><Type>String</Type><Description>Test request identifier.</Description></Field>
+      </Fields>
+    </Message>
+
+    <!-- Resend Request -->
+    <Message><Name>Resend Request</Name><MsgType>2</MsgType><Category>admin</Category><Origin>Client,Exchange</Origin>
+      <Fields>
+        <Field><Tag>7</Tag><Name>BeginSeqNo</Name><Required>Y</Required><Type>SeqNum</Type><Description>First message in range to be resent.</Description></Field>
+        <Field><Tag>16</Tag><Name>EndSeqNo</Name><Required>Y</Required><Type>SeqNum</Type><Description>Last message in range to be resent.</Description></Field>
+      </Fields>
+    </Message>
+
+    <!-- Sequence Reset -->
+    <Message><Name>Sequence Reset</Name><MsgType>4</MsgType><Category>admin</Category><Origin>Client,Exchange</Origin>
+      <Fields>
+        <Field><Tag>123</Tag><Name>GapFillFlag</Name><Required>N</Required><Type>Boolean</Type><Description>Indicates a gap fill.</Description></Field>
+        <Field><Tag>36</Tag><Name>NewSeqNo</Name><Required>Y</Required><Type>SeqNum</Type><Description>New sequence number.</Description></Field>
+      </Fields>
+    </Message>
+
+    <!-- Logout -->
+    <Message><Name>Logout</Name><MsgType>5</MsgType><Category>admin</Category><Origin>Client,Exchange</Origin>
+      <Fields>
+        <Field><Tag>1409</Tag><Name>SessionStatus</Name><Required>N</Required><Type>Int</Type><Description>Status of the FIX session.</Description></Field>
+        <Field><Tag>58</Tag><Name>Text</Name><Required>N</Required><Type>String</Type><Description>Free text.</Description></Field>
+      </Fields>
+    </Message>
+
+    <!-- Trade Capture Report Request -->
+    <Message><Name>Trade Capture Report Request</Name><MsgType>AD</MsgType><Category>app</Category><Origin>Client</Origin>
+      <Fields>
+        <Field><Tag>568</Tag><Name>TradeRequestID</Name><Required>Y</Required><Type>String</Type><Description>Unique identifier of the trade capture report request.</Description></Field>
+        <Field><Tag>569</Tag><Name>TradeRequestType</Name><Required>Y</Required><Type>Int</Type><Description>Type of trade capture report request.</Description></Field>
+        <Group><Name>NoDates</Name><Required>N</Required></Group>
+      </Fields>
+    </Message>
+
+    <!-- Trade Capture Report Request Ack -->
+    <Message><Name>Trade Capture Report Request Ack</Name><MsgType>AQ</MsgType><Category>app</Category><Origin>Exchange</Origin>
+      <Fields>
+        <Field><Tag>568</Tag><Name>TradeRequestID</Name><Required>Y</Required><Type>String</Type><Description>Unique identifier of the trade capture report request.</Description></Field>
+        <Field><Tag>569</Tag><Name>TradeRequestType</Name><Required>Y</Required><Type>Int</Type><Description>Type of trade capture report request.</Description></Field>
+        <Field><Tag>749</Tag><Name>TradeRequestResult</Name><Required>N</Required><Type>Int</Type><Description>Result of the trade capture report request.</Description></Field>
+        <Field><Tag>750</Tag><Name>TradeRequestStatus</Name><Required>N</Required><Type>Int</Type><Description>Status of the trade capture report request.</Description></Field>
+        <Field><Tag>58</Tag><Name>Text</Name><Required>N</Required><Type>String</Type><Description>Free text.</Description></Field>
+      </Fields>
+    </Message>
+
+    <!-- Trade Capture Report -->
+    <Message><Name>Trade Capture Report</Name><MsgType>AE</MsgType><Category>app</Category><Origin>Exchange</Origin>
+      <Fields>
+        <Field><Tag>487</Tag><Name>TradeReportTransType</Name><Required>N</Required><Type>Int</Type><Description>Type of transaction represented by this trade report.</Description></Field>
+        <Field><Tag>1125</Tag><Name>OrigTradeDate</Name><Required>N</Required><Type>LocalMktDate</Type><Description>Trade date of the original trade.</Description></Field>
+        <Field><Tag>20003</Tag><Name>TrdConditionCode</Name><Required>N</Required><Type>String</Type><Description>Asx trade condition code.</Description>
+          <!-- REVIEW: TrdConditionCode exchange specific tag 20003 -->
+        </Field>
+        <Field><Tag>20007</Tag><Name>CorporateActionCode</Name><Required>N</Required><Type>String</Type><Description>Asx corporate action code.</Description>
+          <!-- REVIEW: CorporateActionCode exchange specific tag 20007 -->
+        </Field>
+        <Field><Tag>880</Tag><Name>TrdMatchID</Name><Required>N</Required><Type>String</Type><Description>Trade match identifier assigned by the exchange.</Description></Field>
+        <Field><Tag>1003</Tag><Name>TradeID</Name><Required>Y</Required><Type>String</Type><Description>Unique identifier of the trade.</Description></Field>
+        <Field><Tag>75</Tag><Name>TradeDate</Name><Required>Y</Required><Type>LocalMktDate</Type><Description>Trade date. Format: YYYYMMDD.</Description></Field>
+        <Field><Tag>64</Tag><Name>SettlDate</Name><Required>N</Required><Type>LocalMktDate</Type><Description>Settlement date of the trade.</Description></Field>
+        <Field><Tag>60</Tag><Name>TransactTime</Name><Required>N</Required><Type>UTCTimestamp</Type><Description>Time the transaction occurred.</Description></Field>
+        <Field><Tag>32</Tag><Name>LastShares</Name><Required>Y</Required><Type>Qty</Type><Description>Quantity of this fill.</Description></Field>
+        <Field><Tag>31</Tag><Name>LastPx</Name><Required>Y</Required><Type>Price</Type><Description>Price of this fill.</Description></Field>
+        <Field><Tag>381</Tag><Name>GrossTradeAmt</Name><Required>N</Required><Type>Amt</Type><Description>Gross trade amount.</Description></Field>
+        <Field><Tag>15</Tag><Name>Currency</Name><Required>N</Required><Type>Currency</Type><Description>Currency of the trade.</Description></Field>
+        <Field><Tag>1015</Tag><Name>AsOfIndicator</Name><Required>N</Required><Type>char</Type><Description>Indicates the trade is reported as of a prior date.</Description></Field>
+        <Field><Tag>167</Tag><Name>SecurityType</Name><Required>N</Required><Type>String</Type><Description>Type of security.</Description></Field>
+        <Field><Tag>762</Tag><Name>SecuritySubType</Name><Required>N</Required><Type>String</Type><Description>Sub type of the security.</Description></Field>
+        <Field><Tag>22</Tag><Name>SecurityIDSource</Name><Required>N</Required><Type>String</Type><Description>Source of the SecurityID.</Description></Field>
+        <Field><Tag>48</Tag><Name>SecurityID</Name><Required>N</Required><Type>String</Type><Description>Instrument identifier.</Description></Field>
+        <Field><Tag>55</Tag><Name>Symbol</Name><Required>N</Required><Type>String</Type><Description>Symbol of the instrument.</Description></Field>
+        <Field><Tag>461</Tag><Name>CFICode</Name><Required>N</Required><Type>String</Type><Description>CFI code of the instrument.</Description></Field>
+        <Field><Tag>1301</Tag><Name>MarketID</Name><Required>N</Required><Type>String</Type><Description>Identifier of the market.</Description></Field>
+        <Field><Tag>106</Tag><Name>Issuer</Name><Required>N</Required><Type>String</Type><Description>Issuer of the instrument.</Description></Field>
+        <Group><Name>NoSides</Name><Required>Y</Required></Group>
+      </Fields>
+    </Message>
+
+    <!-- Business Message Reject -->
+    <Message><Name>Business Message Reject</Name><MsgType>j</MsgType><Category>app</Category><Origin>Exchange</Origin>
+      <Fields>
+        <Field><Tag>45</Tag><Name>RefSeqNum</Name><Required>N</Required><Type>SeqNum</Type><Description>MsgSeqNum of the referenced message.</Description></Field>
+        <Field><Tag>372</Tag><Name>RefMsgType</Name><Required>Y</Required><Type>String</Type><Description>MsgType of the FIX message being referenced.</Description></Field>
+        <Field><Tag>380</Tag><Name>BusinessRejectReason</Name><Required>Y</Required><Type>Int</Type><Description>Code to identify reason for the business rejection.</Description></Field>
+        <Field><Tag>58</Tag><Name>Text</Name><Required>N</Required><Type>String</Type><Description>Free text.</Description></Field>
+      </Fields>
+    </Message>
+
+  </Messages>
+
+  <Groups>
+
+    <!-- NoDates (580) -->
+    <Group>
+      <Name>NoDates</Name>
+      <AnchorTag>580</AnchorTag>
+      <Fields>
+        <Field><Tag>75</Tag><Name>TradeDate</Name><Required>Y</Required><Type>LocalMktDate</Type><Description>Trade date. Format: YYYYMMDD.</Description></Field>
+      </Fields>
+    </Group>
+
+    <!-- NoSides (552) -->
+    <Group>
+      <Name>NoSides</Name>
+      <AnchorTag>552</AnchorTag>
+      <Fields>
+        <Field><Tag>54</Tag><Name>Side</Name><Required>Y</Required><Type>char</Type><Description>Side of order. Valid values: 1 = Buy, 2 = Sell.</Description></Field>
+        <Group><Name>NoPartyIDs</Name><Required>N</Required></Group>
+        <Field><Tag>1</Tag><Name>Account</Name><Required>N</Required><Type>String</Type><Description>Account identifier.</Description></Field>
+        <Field><Tag>11</Tag><Name>ClOrdID</Name><Required>N</Required><Type>String</Type><Description>Unique identifier of the order as assigned by the participant.</Description></Field>
+        <Group><Name>NoClearingInstructions</Name><Required>N</Required></Group>
+      </Fields>
+    </Group>
+
+    <!-- NoPartyIDs (453) -->
+    <Group>
+      <Name>NoPartyIDs</Name>
+      <AnchorTag>453</AnchorTag>
+      <Fields>
+        <Field><Tag>448</Tag><Name>PartyID</Name><Required>Y</Required><Type>String</Type><Description>Party identifier.</Description></Field>
+        <Field><Tag>447</Tag><Name>PartyIDSource</Name><Required>N</Required><Type>char</Type><Description>Source of the PartyID.</Description></Field>
+        <Field><Tag>452</Tag><Name>PartyRole</Name><Required>N</Required><Type>Int</Type><Description>Role of the specified PartyID.</Description></Field>
+      </Fields>
+    </Group>
+
+    <!-- NoClearingInstructions (576) -->
+    <Group>
+      <Name>NoClearingInstructions</Name>
+      <AnchorTag>576</AnchorTag>
+      <Fields>
+        <Field><Tag>577</Tag><Name>ClearingInstruction</Name><Required>Y</Required><Type>Int</Type><Description>Clearing instruction.</Description></Field>
+      </Fields>
+    </Group>
+
+  </Groups>
+
+  <Values>
+
+    <!-- BeginString (8) static. Source: "FIXT.1.1" -->
+    <Value><Type>BeginString</Type><Enum>FIXT.1.1</Enum><Kind>Static</Kind><Description>FIXT 1.1</Description></Value>
+
+    <Value><Type>Side</Type><Enum>1</Enum><Description>Buy</Description></Value>
+    <Value><Type>Side</Type><Enum>2</Enum><Description>Sell</Description></Value>
+
+  </Values>
+
+</OmiFixPdf>

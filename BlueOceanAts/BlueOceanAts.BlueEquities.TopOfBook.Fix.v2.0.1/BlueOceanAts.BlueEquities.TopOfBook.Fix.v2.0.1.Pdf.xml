@@ -1,0 +1,221 @@
+<OmiFixPdf>
+
+  <!-- Transcribed from "Blue Ocean ATS FIX Top of Book.pdf" (v2.0.1), BOATS 2024.
+
+       A market data feed: the server publishes unsolicited Top of Book Snapshots and
+       the client sends no business level messages, so only the session messages flow
+       client to server. -->
+
+  <Header>
+    <Fields>
+      <Field>
+        <Tag>8</Tag>
+        <Name>BeginString</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+        <Value>FIXT.1.1</Value>
+        <Description>"FIXT.1.1" This must be the first field in the message.</Description>
+      </Field>
+      <Field>
+        <Tag>9</Tag>
+        <Name>BodyLength</Name>
+        <Required>Y</Required>
+        <Type>Length</Type>
+        <Fixed>Y</Fixed>
+        <Description>The length of the FIX message. This must be the second field in the message.</Description>
+      </Field>
+      <Field>
+        <Tag>35</Tag>
+        <Name>MsgType</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+        <Description>The type of message. This must be the third field in the message.</Description>
+      </Field>
+      <Field>
+        <Tag>49</Tag>
+        <Name>SenderCompID</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Description>The sender's id, assigned at on-boarding time.</Description>
+      </Field>
+      <Field>
+        <Tag>56</Tag>
+        <Name>TargetCompID</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Value>BLUE</Value>
+        <Description>"BLUE"</Description>
+      </Field>
+      <Field>
+        <Tag>34</Tag>
+        <Name>MsgSeqNum</Name>
+        <Required>Y</Required>
+        <Type>SeqNum</Type>
+        <Description>The message sequence number.</Description>
+      </Field>
+      <Field>
+        <Tag>52</Tag>
+        <Name>SendingTime</Name>
+        <Required>Y</Required>
+        <Type>UTCTimestamp</Type>
+        <Description>The time of message transmission in Universal Time coordinated. See UTCTimestamp in FIX 5.0 SP2 specification.</Description>
+      </Field>
+      <Field>
+        <Tag>43</Tag>
+        <Name>PossDupFlag</Name>
+        <Required>N</Required>
+        <Type>Boolean</Type>
+        <Description>Always required for retransmitted messages, whether prompted by the sending system or as the result of a resend request.</Description>
+      </Field>
+      <Field>
+        <Tag>97</Tag>
+        <Name>PossResend</Name>
+        <Required>N</Required>
+        <Type>Boolean</Type>
+        <Description>Required when message may be duplicate of another message sent under a different sequence number.</Description>
+      </Field>
+      <Field>
+        <Tag>122</Tag>
+        <Name>OrigSendingTime</Name>
+        <Required>N</Required>
+        <Type>UTCTimestamp</Type>
+        <Description>Required for message resent as a result of a ResendRequest. If data is not available set to same value as SendingTime.</Description>
+      </Field>
+    </Fields>
+  </Header>
+
+  <Trailer>
+    <Fields>
+      <Field>
+        <Tag>10</Tag>
+        <Name>CheckSum</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+        <Description>The message checksum. This must be the last field in the message.</Description>
+      </Field>
+    </Fields>
+  </Trailer>
+
+  <Messages>
+
+    <!-- 6.2 Heartbeat -->
+    <Message>
+      <Name>Heartbeat</Name>
+      <MsgType>0</MsgType>
+      <Category>admin</Category>
+      <Fields>
+        <Field><Tag>112</Tag><Name>TestReqID</Name><Required>N</Required><Type>String</Type><Size>64</Size><Description>Identifier included in Test Request message to be returned in resulting Heartbeat. (Max Length: 64 characters)</Description></Field>
+      </Fields>
+    </Message>
+
+    <!-- 6.3 Logon -->
+    <Message>
+      <Name>Logon</Name>
+      <MsgType>A</MsgType>
+      <Category>admin</Category>
+      <Fields>
+        <Field><Tag>98</Tag><Name>EncryptMethod</Name><Required>Y</Required><Type>Int</Type><Value>0</Value><Description>Required to be 0.</Description></Field>
+        <Field><Tag>108</Tag><Name>HeartBtInt</Name><Required>Y</Required><Type>Int</Type><Description>Heartbeat interval, in seconds. An interval of 0 indicates there are no heartbeats. The maximum supported interval is 90 seconds.</Description></Field>
+      </Fields>
+    </Message>
+
+    <!-- 6.4 Logout -->
+    <Message>
+      <Name>Logout</Name>
+      <MsgType>5</MsgType>
+      <Category>admin</Category>
+      <Fields>
+        <Field><Tag>58</Tag><Name>Text</Name><Required>N</Required><Type>String</Type><Size>128</Size><Description>Text explaining reason for logout. (Max Length: 128 characters)</Description></Field>
+      </Fields>
+    </Message>
+
+    <!-- 6.5 Reject -->
+    <Message>
+      <Name>Reject</Name>
+      <MsgType>3</MsgType>
+      <Category>admin</Category>
+      <Fields>
+        <Field><Tag>45</Tag><Name>RefSeqNum</Name><Required>Y</Required><Type>SeqNum</Type><Description>Reference message sequence number.</Description></Field>
+        <Field><Tag>58</Tag><Name>Text</Name><Required>N</Required><Type>String</Type><Size>128</Size><Description>Explanatory reason. (Max Length: 128 characters)</Description></Field>
+      </Fields>
+    </Message>
+
+    <!-- 6.6 ResendRequest -->
+    <Message>
+      <Name>ResendRequest</Name>
+      <MsgType>2</MsgType>
+      <Category>admin</Category>
+      <Fields>
+        <Field><Tag>7</Tag><Name>BeginSeqNo</Name><Required>Y</Required><Type>SeqNum</Type><Description>Message sequence number of first message in range to be resent.</Description></Field>
+        <Field><Tag>16</Tag><Name>EndSeqNo</Name><Required>Y</Required><Type>SeqNum</Type><Description>Message sequence number of last message in range to be resent.</Description></Field>
+      </Fields>
+    </Message>
+
+    <!-- 6.7 SequenceReset -->
+    <Message>
+      <Name>SequenceReset</Name>
+      <MsgType>4</MsgType>
+      <Category>admin</Category>
+      <Fields>
+        <Field><Tag>123</Tag><Name>GapFillFlag</Name><Required>N</Required><Type>Boolean</Type><Description>Indicates that this message is replacing administrative or application messages which will not be resent.</Description></Field>
+        <Field><Tag>36</Tag><Name>NewSeqNo</Name><Required>Y</Required><Type>SeqNum</Type><Description>New sequence number.</Description></Field>
+      </Fields>
+    </Message>
+
+    <!-- 6.8 TestRequest -->
+    <Message>
+      <Name>TestRequest</Name>
+      <MsgType>1</MsgType>
+      <Category>admin</Category>
+      <Fields>
+        <Field><Tag>112</Tag><Name>TestReqID</Name><Required>Y</Required><Type>String</Type><Size>64</Size><Description>Identifier included in Test Request message to be returned in resulting Heartbeat. (Max Length: 64 characters)</Description></Field>
+      </Fields>
+    </Message>
+
+    <!-- 8.1 Top of Book Snapshot -->
+    <Message>
+      <Name>TopOfBookSnapshot</Name>
+      <MsgType>W</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field><Tag>262</Tag><Name>MDReqID</Name><Required>Y</Required><Type>String</Type><Description>Unsolicited messages = 0.</Description></Field>
+        <Field><Tag>55</Tag><Name>Symbol</Name><Required>Y</Required><Type>String</Type><Description>Identifier for the symbol</Description></Field>
+        <Field><Tag>65</Tag><Name>SymbolSfx</Name><Required>N</Required><Type>String</Type></Field>
+        <Group><Name>NoMDEntries</Name><Required>Y</Required></Group>
+      </Fields>
+    </Message>
+
+  </Messages>
+
+  <Groups>
+
+    <!-- NoMDEntries (268) -->
+    <Group>
+      <Name>NoMDEntries</Name>
+      <AnchorTag>268</AnchorTag>
+      <Fields>
+        <Field><Tag>269</Tag><Name>MDEntryType</Name><Required>Y</Required><Type>char</Type><Description>Type of market data entry.</Description></Field>
+        <Field><Tag>270</Tag><Name>MDEntryPx</Name><Required>Y</Required><Type>Price</Type><Description>Price</Description></Field>
+        <Field><Tag>271</Tag><Name>MDEntrySize</Name><Required>N</Required><Type>Qty</Type><Description>Number of shares</Description></Field>
+      </Fields>
+    </Group>
+
+  </Groups>
+
+  <Values>
+    <!-- BeginString (8) static. Source: "FIXT.1.1" This must be the first field in the message. -->
+    <Value>
+      <Type>BeginString</Type>
+      <Enum>FIXT.1.1</Enum>
+      <Kind>Static</Kind>
+      <Description>FIXT 1.1</Description>
+    </Value>
+    <Value><Tag>269</Tag><Name>MDEntryType</Name><Enum>0</Enum><Description>Bid</Description></Value>
+    <Value><Tag>269</Tag><Name>MDEntryType</Name><Enum>1</Enum><Description>Offer</Description></Value>
+    <Value><Tag>269</Tag><Name>MDEntryType</Name><Enum>2</Enum><Description>Trade</Description></Value>
+  </Values>
+
+</OmiFixPdf>

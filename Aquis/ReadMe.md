@@ -5,6 +5,8 @@
 
 | Division | Protocol | Encoding | Version | Specification |
 | --- | --- | --- | --- | --- |
+| AquisEquities | DropCopy | Fix | 2.1 | [files](Aquis.AquisEquities.DropCopy.Fix.v2.1/) |
+| AquisEquities | OrderEntry | Fix | 5.0 | [files](Aquis.AquisEquities.OrderEntry.Fix.v5.0/) |
 | AquisEquities | RealTime | Amd | 4.0 | [files](Aquis.AquisEquities.RealTime.Amd.v4.0/) |
 | AquisEquities | RealTime | Amd | 4.1 | [files](Aquis.AquisEquities.RealTime.Amd.v4.1/) |
 | AquisEquities | Replay | Amd | 4.0 | [files](Aquis.AquisEquities.Replay.Amd.v4.0/) |

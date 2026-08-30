@@ -1,0 +1,2438 @@
+<OmiFixPdf>
+  <Header>
+    <Fields>
+      <Field>
+        <Tag>8</Tag>
+        <Name>BeginString</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+        <Description>FIX 4.2</Description>
+      </Field>
+      <Field>
+        <Tag>9</Tag>
+        <Name>BodyLength</Name>
+        <Required>Y</Required>
+        <Type>Length</Type>
+        <Fixed>Y</Fixed>
+        <Description>Message length, in bytes, forward to the CheckSum field</Description>
+      </Field>
+      <Field>
+        <Tag>35</Tag>
+        <Name>MsgType</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+      </Field>
+      <Field>
+        <Tag>34</Tag>
+        <Name>MsgSeqNum</Name>
+        <Required>Y</Required>
+        <Type>SeqNum</Type>
+        <Description>Last sequence number processed. First message sent has sequence of 1.</Description>
+      </Field>
+      <Field>
+        <Tag>43</Tag>
+        <Name>PossDupFlag</Name>
+        <Required>N</Required>
+        <Type>Boolean</Type>
+        <Description>Y indicates a message resend and should be used during FIX Replay. All inbound orders with Y will be rejected.</Description>
+      </Field>
+      <Field>
+        <Tag>49</Tag>
+        <Name>SenderCompID</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Description>Incoming: agreed upon connection identifier. Outgoing: MIC of the sending exchange, IEXO = IEX Options</Description>
+      </Field>
+      <Field>
+        <Tag>50</Tag>
+        <Name>SenderSubID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Description>Outgoing from IEX Options: Sub ID of destination. TEST for test system, PROD for production.</Description>
+      </Field>
+      <Field>
+        <Tag>52</Tag>
+        <Name>SendingTime</Name>
+        <Required>Y</Required>
+        <Type>UTCTimestamp</Type>
+        <Description>Time of message transmission. UTC time, in milliseconds - YYYYMMDD-HH:MM:SS.mmm</Description>
+      </Field>
+      <Field>
+        <Tag>56</Tag>
+        <Name>TargetCompID</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Description>Incoming: MIC of target exchange, IEXO = IEX Options. Outgoing: agreed upon connection identifier.</Description>
+      </Field>
+      <Field>
+        <Tag>57</Tag>
+        <Name>TargetSubID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Description>On incoming messages from firm: SubID of destination. TEST for messages sent to IEX test system.</Description>
+      </Field>
+      <Field>
+        <Tag>97</Tag>
+        <Name>PossResend</Name>
+        <Required>N</Required>
+        <Type>Boolean</Type>
+        <Description>Default: not sent. Only required for resend messages (PossDup or PossResend)</Description>
+      </Field>
+      <Field>
+        <Tag>115</Tag>
+        <Name>OnBehalfOfCompID</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Description>Incoming messages from firm: Firm identifier - MPID. If not provided and default value is set, will be populated with Member-defined default value by IEX Options.</Description>
+      </Field>
+      <Field>
+        <Tag>116</Tag>
+        <Name>OnBehalfOfSubID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Description>End-client sub identifier. 4 characters alphanumeric, otherwise not validated. Recorded and returned in DeliverToSubID. Available via Drop.</Description>
+      </Field>
+      <Field>
+        <Tag>122</Tag>
+        <Name>OrigSendingTime</Name>
+        <Required>N</Required>
+        <Type>UTCTimestamp</Type>
+        <Description>Original time of message transmission when transmitting orders as the result of a resend request</Description>
+      </Field>
+      <Field>
+        <Tag>128</Tag>
+        <Name>DeliverToCompID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Description>Outgoing messages from IEX Options: Firm identifier - MPID</Description>
+      </Field>
+      <Field>
+        <Tag>129</Tag>
+        <Name>DeliverToSubID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Description>Outgoing messages from IEX Options: returns OnBehalfOfSubID sent by client</Description>
+      </Field>
+    </Fields>
+  </Header>
+  <Trailer>
+    <Fields>
+      <Field>
+        <Tag>10</Tag>
+        <Name>CheckSum</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+        <Description>Three-byte, simple checksum. Serves, with the trailing SOH, as the end-of-message delimiter.</Description>
+      </Field>
+    </Fields>
+  </Trailer>
+  <Messages>
+    <Message>
+      <Name>Logon</Name>
+      <MsgType>A</MsgType>
+      <Category>admin</Category>
+      <Fields>
+        <Field>
+          <Tag>108</Tag>
+          <Name>HeartBtInt</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>The Heartbeat interval in seconds. Low values (e.g. 30) are recommended</Description>
+        </Field>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>Logout</Name>
+      <MsgType>5</MsgType>
+      <Category>admin</Category>
+      <Fields>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+        </Field>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>Heartbeat</Name>
+      <MsgType>0</MsgType>
+      <Category>admin</Category>
+      <Fields>
+        <Field>
+          <Tag>112</Tag>
+          <Name>TestReqID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Required when the Heartbeat is in response to a Test Request. Must be the same value as in the Test Request that solicited the Heartbeat.</Description>
+        </Field>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>TestRequest</Name>
+      <MsgType>1</MsgType>
+      <Category>admin</Category>
+      <Fields>
+        <Field>
+          <Tag>112</Tag>
+          <Name>TestReqID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Identifier included in Test Request message to be returned in resulting Heartbeat.</Description>
+        </Field>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>ResendRequest</Name>
+      <MsgType>2</MsgType>
+      <Category>admin</Category>
+      <Fields>
+        <Field>
+          <Tag>7</Tag>
+          <Name>BeginSeqNo</Name>
+          <Required>Y</Required>
+          <Type>SeqNum</Type>
+          <Description>Message sequence number of first message in range to be resent.</Description>
+        </Field>
+        <Field>
+          <Tag>16</Tag>
+          <Name>EndSeqNo</Name>
+          <Required>Y</Required>
+          <Type>SeqNum</Type>
+          <Description>Message sequence number of last message in range to be resent. If request is for all messages subsequent to a particular message, EndSeqNo = 0 (representing infinity).</Description>
+        </Field>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>SequenceReset</Name>
+      <MsgType>4</MsgType>
+      <Category>admin</Category>
+      <Fields>
+        <Field>
+          <Tag>123</Tag>
+          <Name>GapFillFlag</Name>
+          <Required>Y</Required>
+          <Type>Boolean</Type>
+          <Description>Indicates the mode in which the message is to be interpreted: Y = Gap Fill Reset, N = Sequence Reset</Description>
+        </Field>
+        <Field>
+          <Tag>36</Tag>
+          <Name>NewSeqNo</Name>
+          <Required>Y</Required>
+          <Type>SeqNum</Type>
+          <Description>The new valid sequence number</Description>
+        </Field>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>SessionReject</Name>
+      <MsgType>3</MsgType>
+      <Category>admin</Category>
+      <Fields>
+        <Field>
+          <Tag>45</Tag>
+          <Name>RefSeqNum</Name>
+          <Required>Y</Required>
+          <Type>SeqNum</Type>
+          <Description>MsgSeqNum of rejected message</Description>
+        </Field>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+        </Field>
+        <Field>
+          <Tag>373</Tag>
+          <Name>SessionRejectReason</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Code to identify reason for a session-level Reject message.</Description>
+        </Field>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>NewOrderSingle</Name>
+      <MsgType>D</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>1</Tag>
+          <Name>Account</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Customer-defined (max length 16 chars). Will be mapped to the OCC Customer ID field (max 10 characters).</Description>
+        </Field>
+        <Field>
+          <Tag>11</Tag>
+          <Name>ClOrdID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Day-unique identifier of message as assigned by the User (max length 20 chars). IEX Options only enforces uniqueness against open orders.</Description>
+        </Field>
+        <Field>
+          <Tag>18</Tag>
+          <Name>ExecInst</Name>
+          <Required>N</Required>
+          <Type>MultipleCharValue</Type>
+          <Description>f = ISO, i = Do Not Route (Book Only)</Description>
+        </Field>
+        <Field>
+          <Tag>38</Tag>
+          <Name>OrderQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>Range of 1 - 999,999</Description>
+        </Field>
+        <Field>
+          <Tag>40</Tag>
+          <Name>OrdType</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+        </Field>
+        <Field>
+          <Tag>44</Tag>
+          <Name>Price</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>0.01 - 9,999.99. Only required if 40=2</Description>
+        </Field>
+        <Field>
+          <Tag>54</Tag>
+          <Name>Side</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Valid Options OSI Root symbol</Description>
+        </Field>
+        <Field>
+          <Tag>59</Tag>
+          <Name>TimeInForce</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+        </Field>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>Y</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Time of message creation expressed in UTC</Description>
+        </Field>
+        <Field>
+          <Tag>77</Tag>
+          <Name>OpenClose</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Indicates status of Client's position in the Option</Description>
+        </Field>
+        <Field>
+          <Tag>167</Tag>
+          <Name>SecurityType</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>OPT = option</Description>
+        </Field>
+        <Field>
+          <Tag>200</Tag>
+          <Name>MaturityMonthYear</Name>
+          <Required>Y</Required>
+          <Type>MonthYear</Type>
+          <Description>Month and year of maturity. Part of Options series identifier. YYYYMM</Description>
+        </Field>
+        <Field>
+          <Tag>201</Tag>
+          <Name>PutOrCall</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Put or Call indicator. Part of Options series identifier.</Description>
+        </Field>
+        <Field>
+          <Tag>202</Tag>
+          <Name>StrikePrice</Name>
+          <Required>Y</Required>
+          <Type>Price</Type>
+          <Description>Strike price of the option. Part of Options series identifier. Range of 0.000001 - 999,999,999.999999</Description>
+        </Field>
+        <Field>
+          <Tag>204</Tag>
+          <Name>CustomerOrFirm</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Capacity of the order</Description>
+        </Field>
+        <Field>
+          <Tag>205</Tag>
+          <Name>MaturityDay</Name>
+          <Required>Y</Required>
+          <Type>DayOfMonth</Type>
+          <Description>Part of Options series identifier. DD</Description>
+        </Field>
+        <Field>
+          <Tag>439</Tag>
+          <Name>ClearingFirm</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Clearing number of CMTA. Must be supplied for CMTA orders. Must be a valid OCC clearing number, else rejected.</Description>
+        </Field>
+        <Field>
+          <Tag>440</Tag>
+          <Name>ClearingAccount</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>OCC sub-account number / MMID. When CustomerOrFirm is 3 or 4 this field must be populated with an MMID.</Description>
+        </Field>
+        <Field>
+          <Tag>526</Tag>
+          <Name>OptionalData</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Clearing Optional Data. Customer defined up to 16 characters. Will be passed to the OCC in the Optional Data field.</Description>
+        </Field>
+        <Field>
+          <Tag>1462</Tag>
+          <Name>TargetPartyID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>A valid MPID of the Directed Market Maker is required for Directed Orders.</Description>
+        </Field>
+        <Field>
+          <Tag>7928</Tag>
+          <Name>AntiInternalizationQualifiers</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Anti-Internalization Qualifiers (AIQ), three characters: AIQ modifier, unique ID level, trading group ID. To mark order Free to Trade populate with ---.</Description>
+        </Field>
+        <Field>
+          <Tag>7933</Tag>
+          <Name>RoutingFirmID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Used to optionally convey the routing firm of the order. If supplied, value must be a valid MPID.</Description>
+        </Field>
+        <Field>
+          <Tag>9140</Tag>
+          <Name>DisplayInst</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>P = Post Only (implicitly non-routable). None is the default DisplayInst.</Description>
+        </Field>
+        <Field>
+          <Tag>9385</Tag>
+          <Name>AuctionID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Auction order identifier supplied by IEX Options. Corresponds to identifiers used in IEX Options market data products.</Description>
+        </Field>
+        <Field>
+          <Tag>20001</Tag>
+          <Name>AttributedQuote</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>SUM exposure instruction. If not provided and default value is set, will be populated with Member-defined default value by IEX Options.</Description>
+        </Field>
+        <Field>
+          <Tag>20003</Tag>
+          <Name>CancelInsteadOfSlide</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>0 = Slide, 3 = Cancel order instead of slide. Default behavior is Slide.</Description>
+        </Field>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>OrderCancelRequest</Name>
+      <MsgType>F</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>11</Tag>
+          <Name>ClOrdID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Day-unique identifier of message as assigned by the User (max length 20 chars).</Description>
+        </Field>
+        <Field>
+          <Tag>41</Tag>
+          <Name>OrigClOrdID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Refers to the ClOrdID of a previously entered order. Required for single order cancels; absent on mass cancels.</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Mass cancel only: optional underlying symbol. If populated, only quotes/orders for the Symbol will be cancelled.</Description>
+        </Field>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>Y</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Time of Cancel Request creation expressed in UTC</Description>
+        </Field>
+        <Field>
+          <Tag>20100</Tag>
+          <Name>AckStyle</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>Mass cancel only. Required for BulkAction C or B: S = single Mass Cancel Acknowledgement, B = both Order Canceled messages and a Mass Cancel Acknowledgement. For BulkAction U must populate with S.</Description>
+        </Field>
+        <Field>
+          <Tag>20101</Tag>
+          <Name>MPIDFilter</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Mass cancel only. 0 = Take BulkAction explicitly for this MPID on this session, 1 = Take BulkAction across MPIDs on this session</Description>
+        </Field>
+        <Field>
+          <Tag>20102</Tag>
+          <Name>BulkAction</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>Mass cancel only. C = Cancel, B = Cancel and Block, U = Unblock. Presence marks the message as a Mass Cancel Request.</Description>
+        </Field>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>OrderCancelReplaceRequest</Name>
+      <MsgType>G</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>1</Tag>
+          <Name>Account</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Customer-defined (max length 16 chars). Will be mapped to the OCC Customer ID field (max 10 characters).</Description>
+        </Field>
+        <Field>
+          <Tag>11</Tag>
+          <Name>ClOrdID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Day-unique identifier of message as assigned by the User (max length 20 chars).</Description>
+        </Field>
+        <Field>
+          <Tag>18</Tag>
+          <Name>ExecInst</Name>
+          <Required>N</Required>
+          <Type>MultipleCharValue</Type>
+          <Description>Validated but not applied - value preserved from original order, if any</Description>
+        </Field>
+        <Field>
+          <Tag>38</Tag>
+          <Name>OrderQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>Range of 1 - 999,999</Description>
+        </Field>
+        <Field>
+          <Tag>40</Tag>
+          <Name>OrdType</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Validated but not applied - value preserved from original order</Description>
+        </Field>
+        <Field>
+          <Tag>41</Tag>
+          <Name>OrigClOrdID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Refers to the ClOrdID of a previously entered order (max length 20 chars).</Description>
+        </Field>
+        <Field>
+          <Tag>44</Tag>
+          <Name>Price</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>0.01 - 9,999.99. Only required if 40=2</Description>
+        </Field>
+        <Field>
+          <Tag>54</Tag>
+          <Name>Side</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Validated but not applied - value preserved from original order</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Validated but not applied - value preserved from original order</Description>
+        </Field>
+        <Field>
+          <Tag>59</Tag>
+          <Name>TimeInForce</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Validated but not applied - value preserved from original order</Description>
+        </Field>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>Y</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Time of Cancel/Replace Request creation expressed in UTC</Description>
+        </Field>
+        <Field>
+          <Tag>77</Tag>
+          <Name>OpenClose</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Validated but not applied - value preserved from original order</Description>
+        </Field>
+        <Field>
+          <Tag>167</Tag>
+          <Name>SecurityType</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Validated but not applied - value preserved from original order</Description>
+        </Field>
+        <Field>
+          <Tag>200</Tag>
+          <Name>MaturityMonthYear</Name>
+          <Required>Y</Required>
+          <Type>MonthYear</Type>
+          <Description>Validated but not applied - value preserved from original order</Description>
+        </Field>
+        <Field>
+          <Tag>201</Tag>
+          <Name>PutOrCall</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Validated but not applied - value preserved from original order</Description>
+        </Field>
+        <Field>
+          <Tag>202</Tag>
+          <Name>StrikePrice</Name>
+          <Required>Y</Required>
+          <Type>Price</Type>
+          <Description>Validated but not applied - value preserved from original order</Description>
+        </Field>
+        <Field>
+          <Tag>204</Tag>
+          <Name>CustomerOrFirm</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Validated but not applied - value preserved from original order</Description>
+        </Field>
+        <Field>
+          <Tag>205</Tag>
+          <Name>MaturityDay</Name>
+          <Required>Y</Required>
+          <Type>DayOfMonth</Type>
+          <Description>Validated but not applied - value preserved from original order</Description>
+        </Field>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>OrderCancelReject</Name>
+      <MsgType>9</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>1</Tag>
+          <Name>Account</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Present on message if initially supplied on Order Cancel / Order Cancel/Replace Request.</Description>
+        </Field>
+        <Field>
+          <Tag>11</Tag>
+          <Name>ClOrdID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Returned from the Cancel or Cancel/Replace Request - the ClOrdID of the message that is rejected (max length 20 chars).</Description>
+        </Field>
+        <Field>
+          <Tag>37</Tag>
+          <Name>OrderID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>OrderID of the order intended for cancellation or replacement. Will be None if no order corresponding to the OrigClOrdID provided is known. Absent on mass cancel rejects.</Description>
+        </Field>
+        <Field>
+          <Tag>39</Tag>
+          <Name>OrdStatus</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>8 = Rejected</Description>
+        </Field>
+        <Field>
+          <Tag>41</Tag>
+          <Name>OrigClOrdID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Represents the ClOrdID of the previously entered order intended for cancellation or replacement. Absent on mass cancel rejects.</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Mass cancel reject only: will reflect value supplied on Mass Cancel Request, if any.</Description>
+        </Field>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Reason for rejection (see Appendix B).</Description>
+        </Field>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>Y</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>IEX Options application time. UTC time, in milliseconds</Description>
+        </Field>
+        <Field>
+          <Tag>434</Tag>
+          <Name>CxlRejResponseTo</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>1 = Order Cancel Request, 2 = Order Cancel/Replace Request. Absent on mass cancel rejects.</Description>
+        </Field>
+        <Field>
+          <Tag>20009</Tag>
+          <Name>NanosecondSendingTime</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Time of message transmission on outgoing message from IEX Options. UTC time, in nanoseconds.</Description>
+        </Field>
+        <Field>
+          <Tag>20010</Tag>
+          <Name>NanosecondTransactTime</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>IEX Options application time of Event Processing Outcome. UTC time, in nanoseconds.</Description>
+        </Field>
+        <Field>
+          <Tag>20100</Tag>
+          <Name>AckStyle</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>Mass cancel reject only: will match value supplied in Mass Cancel request.</Description>
+        </Field>
+        <Field>
+          <Tag>20101</Tag>
+          <Name>MPIDFilter</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Mass cancel reject only: will reflect value supplied on Mass Cancel Request.</Description>
+        </Field>
+        <Field>
+          <Tag>20102</Tag>
+          <Name>BulkAction</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>Mass cancel reject only: will reflect value supplied on Mass Cancel Request.</Description>
+        </Field>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>ExecutionReport</Name>
+      <MsgType>8</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>1</Tag>
+          <Name>Account</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Present on message only if initially supplied on the order.</Description>
+        </Field>
+        <Field>
+          <Tag>14</Tag>
+          <Name>CumQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>1 - 999,999</Description>
+        </Field>
+        <Field>
+          <Tag>18</Tag>
+          <Name>ExecInst</Name>
+          <Required>N</Required>
+          <Type>MultipleCharValue</Type>
+          <Description>Will match original order if provided. Otherwise not populated.</Description>
+        </Field>
+        <Field>
+          <Tag>38</Tag>
+          <Name>OrderQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>Will reflect last accepted value.</Description>
+        </Field>
+        <Field>
+          <Tag>40</Tag>
+          <Name>OrdType</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Will match original order.</Description>
+        </Field>
+        <Field>
+          <Tag>44</Tag>
+          <Name>Price</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Will reflect last accepted value. Only present if supplied on the order.</Description>
+        </Field>
+        <Field>
+          <Tag>54</Tag>
+          <Name>Side</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Will match original order.</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Will match original order.</Description>
+        </Field>
+        <Field>
+          <Tag>59</Tag>
+          <Name>TimeInForce</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Will match original order.</Description>
+        </Field>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>Y</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>IEX Options application time.</Description>
+        </Field>
+        <Field>
+          <Tag>77</Tag>
+          <Name>OpenClose</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Will match original order.</Description>
+        </Field>
+        <Field>
+          <Tag>151</Tag>
+          <Name>LeavesQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>0 - 999,999</Description>
+        </Field>
+        <Field>
+          <Tag>167</Tag>
+          <Name>SecurityType</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>OPT = option</Description>
+        </Field>
+        <Field>
+          <Tag>200</Tag>
+          <Name>MaturityMonthYear</Name>
+          <Required>Y</Required>
+          <Type>MonthYear</Type>
+          <Description>Will match original order.</Description>
+        </Field>
+        <Field>
+          <Tag>201</Tag>
+          <Name>PutOrCall</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Will match original order.</Description>
+        </Field>
+        <Field>
+          <Tag>202</Tag>
+          <Name>StrikePrice</Name>
+          <Required>Y</Required>
+          <Type>Price</Type>
+          <Description>Will match original order.</Description>
+        </Field>
+        <Field>
+          <Tag>204</Tag>
+          <Name>CustomerOrFirm</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Will match original order.</Description>
+        </Field>
+        <Field>
+          <Tag>205</Tag>
+          <Name>MaturityDay</Name>
+          <Required>Y</Required>
+          <Type>DayOfMonth</Type>
+          <Description>Will match original order.</Description>
+        </Field>
+        <Field>
+          <Tag>439</Tag>
+          <Name>ClearingFirm</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Will match original order if provided.</Description>
+        </Field>
+        <Field>
+          <Tag>440</Tag>
+          <Name>ClearingAccount</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Will match original order if provided.</Description>
+        </Field>
+        <Field>
+          <Tag>526</Tag>
+          <Name>OptionalData</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Will match original order if provided.</Description>
+        </Field>
+        <Field>
+          <Tag>1462</Tag>
+          <Name>TargetPartyID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Will match original order if provided.</Description>
+        </Field>
+        <Field>
+          <Tag>7928</Tag>
+          <Name>AntiInternalizationQualifiers</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Will match original order if provided.</Description>
+        </Field>
+        <Field>
+          <Tag>7933</Tag>
+          <Name>RoutingFirmID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Will match original order if provided.</Description>
+        </Field>
+        <Field>
+          <Tag>9140</Tag>
+          <Name>DisplayInst</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>Will match original order if provided.</Description>
+        </Field>
+        <Field>
+          <Tag>9385</Tag>
+          <Name>AuctionID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Will match original order if provided.</Description>
+        </Field>
+        <Field>
+          <Tag>20001</Tag>
+          <Name>AttributedQuote</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Will match original order if provided.</Description>
+        </Field>
+        <Field>
+          <Tag>20003</Tag>
+          <Name>CancelInsteadOfSlide</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Will match original order if provided. Otherwise populated with 0 (Slide).</Description>
+        </Field>
+        <Field>
+          <Tag>20009</Tag>
+          <Name>NanosecondSendingTime</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Time of message transmission on outgoing message from IEX Options. UTC time, in nanoseconds.</Description>
+        </Field>
+        <Field>
+          <Tag>20010</Tag>
+          <Name>NanosecondTransactTime</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>IEX Options application time of Event Processing Outcome. UTC time, in nanoseconds.</Description>
+        </Field>
+        <Branch>
+          <Name>New Order Acknowledge</Name>
+          <Required>N</Required>
+          <Dependency>ExecType</Dependency>
+          <Value>0</Value>
+          <Fields>
+            <Field>
+              <Tag>11</Tag>
+              <Name>ClOrdID</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>Reflects value as assigned by the Client on the New Order - Single.</Description>
+            </Field>
+            <Field>
+              <Tag>20</Tag>
+              <Name>ExecTransType</Name>
+              <Required>Y</Required>
+              <Type>Char</Type>
+              <Description>0 = New</Description>
+            </Field>
+            <Field>
+              <Tag>37</Tag>
+              <Name>OrderID</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>Unique identifier of order as assigned by IEX Options. Matches the OrderID published on DEEP.</Description>
+            </Field>
+            <Field>
+              <Tag>39</Tag>
+              <Name>OrdStatus</Name>
+              <Required>Y</Required>
+              <Type>Char</Type>
+              <Description>0 = New</Description>
+            </Field>
+            <Field>
+              <Tag>151</Tag>
+              <Name>LeavesQty</Name>
+              <Required>Y</Required>
+              <Type>Qty</Type>
+              <Description>OrderQty</Description>
+            </Field>
+            <Field>
+              <Tag>9690</Tag>
+              <Name>EffectiveLimitPrice</Name>
+              <Required>N</Required>
+              <Type>Price</Type>
+              <Description>Only present when order is fully or partially booked. Adjusted price to avoid crossing the NBBO.</Description>
+            </Field>
+            <Field>
+              <Tag>9691</Tag>
+              <Name>DisplayPrice</Name>
+              <Required>N</Required>
+              <Type>Price</Type>
+              <Description>Only present when order is fully or partially booked. Initial displayed price.</Description>
+            </Field>
+          </Fields>
+        </Branch>
+        <Branch>
+          <Name>Order Rejected</Name>
+          <Required>N</Required>
+          <Dependency>ExecType</Dependency>
+          <Value>8</Value>
+          <Fields>
+            <Field>
+              <Tag>11</Tag>
+              <Name>ClOrdID</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>Reflects value as assigned by the Client on the New Order - Single.</Description>
+            </Field>
+            <Field>
+              <Tag>20</Tag>
+              <Name>ExecTransType</Name>
+              <Required>Y</Required>
+              <Type>Char</Type>
+              <Description>0 = New</Description>
+            </Field>
+            <Field>
+              <Tag>31</Tag>
+              <Name>LastPx</Name>
+              <Required>Y</Required>
+              <Type>Price</Type>
+              <Description>0.00</Description>
+            </Field>
+            <Field>
+              <Tag>32</Tag>
+              <Name>LastQty</Name>
+              <Required>Y</Required>
+              <Type>Qty</Type>
+              <Description>0</Description>
+            </Field>
+            <Field>
+              <Tag>39</Tag>
+              <Name>OrdStatus</Name>
+              <Required>Y</Required>
+              <Type>Char</Type>
+              <Description>8 = Rejected</Description>
+            </Field>
+            <Field>
+              <Tag>58</Tag>
+              <Name>Text</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>Reason for which the order was rejected (see Appendix B).</Description>
+            </Field>
+            <Field>
+              <Tag>151</Tag>
+              <Name>LeavesQty</Name>
+              <Required>Y</Required>
+              <Type>Qty</Type>
+              <Description>0</Description>
+            </Field>
+          </Fields>
+        </Branch>
+        <Branch>
+          <Name>Order Canceled</Name>
+          <Required>N</Required>
+          <Dependency>ExecType</Dependency>
+          <Value>4</Value>
+          <Fields>
+            <Field>
+              <Tag>11</Tag>
+              <Name>ClOrdID</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>ClOrdID used to identify the order being canceled. Unsolicited cancels carry the reason in Text.</Description>
+            </Field>
+            <Field>
+              <Tag>20</Tag>
+              <Name>ExecTransType</Name>
+              <Required>Y</Required>
+              <Type>Char</Type>
+              <Description>0 = New</Description>
+            </Field>
+            <Field>
+              <Tag>31</Tag>
+              <Name>LastPx</Name>
+              <Required>Y</Required>
+              <Type>Price</Type>
+              <Description>0.00</Description>
+            </Field>
+            <Field>
+              <Tag>32</Tag>
+              <Name>LastQty</Name>
+              <Required>Y</Required>
+              <Type>Qty</Type>
+              <Description>0</Description>
+            </Field>
+            <Field>
+              <Tag>37</Tag>
+              <Name>OrderID</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>Unique identifier of order as assigned by IEX Options.</Description>
+            </Field>
+            <Field>
+              <Tag>39</Tag>
+              <Name>OrdStatus</Name>
+              <Required>Y</Required>
+              <Type>Char</Type>
+              <Description>4 = Canceled</Description>
+            </Field>
+            <Field>
+              <Tag>41</Tag>
+              <Name>OrigClOrdID</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>ClOrdID used to identify the order being canceled.</Description>
+            </Field>
+            <Field>
+              <Tag>58</Tag>
+              <Name>Text</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Reason for which the order was canceled (see Appendix B). Present on unsolicited cancels.</Description>
+            </Field>
+            <Field>
+              <Tag>151</Tag>
+              <Name>LeavesQty</Name>
+              <Required>Y</Required>
+              <Type>Qty</Type>
+              <Description>0</Description>
+            </Field>
+          </Fields>
+        </Branch>
+        <Branch>
+          <Name>Partial And Full Fills</Name>
+          <Required>N</Required>
+          <Dependency>ExecType</Dependency>
+          <Value>1</Value>
+          <Fields>
+            <Field>
+              <Tag>17</Tag>
+              <Name>ExecID</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>Unique identifier of execution message</Description>
+            </Field>
+            <Field>
+              <Tag>20</Tag>
+              <Name>ExecTransType</Name>
+              <Required>Y</Required>
+              <Type>Char</Type>
+              <Description>0 = New</Description>
+            </Field>
+            <Field>
+              <Tag>30</Tag>
+              <Name>LastMkt</Name>
+              <Required>Y</Required>
+              <Type>Exchange</Type>
+              <Description>The Market Identifier Code (MIC) of the sending exchange. IEXO = IEX Options</Description>
+            </Field>
+            <Field>
+              <Tag>31</Tag>
+              <Name>LastPx</Name>
+              <Required>Y</Required>
+              <Type>Price</Type>
+              <Description>Price of current partial or full fill. 0.01 - 9,999.99</Description>
+            </Field>
+            <Field>
+              <Tag>32</Tag>
+              <Name>LastQty</Name>
+              <Required>Y</Required>
+              <Type>Qty</Type>
+              <Description>Quantity of current partial or full fill. 1 - 999,999</Description>
+            </Field>
+            <Field>
+              <Tag>37</Tag>
+              <Name>OrderID</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>Unique identifier of order as assigned by IEX Options.</Description>
+            </Field>
+            <Field>
+              <Tag>39</Tag>
+              <Name>OrdStatus</Name>
+              <Required>Y</Required>
+              <Type>Char</Type>
+              <Description>1 = Partially Filled, 2 = Filled</Description>
+            </Field>
+            <Field>
+              <Tag>151</Tag>
+              <Name>LeavesQty</Name>
+              <Required>Y</Required>
+              <Type>Qty</Type>
+              <Description>0 - 999,999</Description>
+            </Field>
+            <Group>
+              <Name>NoContraBrokers</Name>
+              <Required>Y</Required>
+            </Group>
+            <Field>
+              <Tag>9483</Tag>
+              <Name>TradeID</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>Unique identifier of the transaction, assigned by IEX Options to both Execution reports representing the two sides of a single trade.</Description>
+            </Field>
+            <Field>
+              <Tag>9730</Tag>
+              <Name>TradeLiquidityIndicator</Name>
+              <Required>Y</Required>
+              <Type>Int</Type>
+              <Description>Liquidity indicator for the fill</Description>
+            </Field>
+            <Field>
+              <Tag>9882</Tag>
+              <Name>FeeCode</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>Specific fee code associated with execution. See Appendix for Options.</Description>
+            </Field>
+            <Field>
+              <Tag>20016</Tag>
+              <Name>ContraCustomerOrFirm</Name>
+              <Required>Y</Required>
+              <Type>Int</Type>
+              <Description>Contra party capacity of the order</Description>
+            </Field>
+            <Field>
+              <Tag>20017</Tag>
+              <Name>ContraClearingAccount</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Contra party OCC sub-account number / MMID.</Description>
+            </Field>
+            <Field>
+              <Tag>20018</Tag>
+              <Name>ContraOpenClose</Name>
+              <Required>Y</Required>
+              <Type>Char</Type>
+              <Description>Contra party position in the Option.</Description>
+            </Field>
+            <Field>
+              <Tag>20110</Tag>
+              <Name>OCCID</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>OCC clearing number on the execution.</Description>
+            </Field>
+            <Field>
+              <Tag>20111</Tag>
+              <Name>ContraOCCID</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>OCC clearing number of the contra on the execution.</Description>
+            </Field>
+          </Fields>
+        </Branch>
+        <Branch>
+          <Name>Replaced</Name>
+          <Required>N</Required>
+          <Dependency>ExecType</Dependency>
+          <Value>5</Value>
+          <Fields>
+            <Field>
+              <Tag>11</Tag>
+              <Name>ClOrdID</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>Reflects value as assigned by the Client on the Cancel/Replace Request</Description>
+            </Field>
+            <Field>
+              <Tag>20</Tag>
+              <Name>ExecTransType</Name>
+              <Required>Y</Required>
+              <Type>Char</Type>
+              <Description>0 = New</Description>
+            </Field>
+            <Field>
+              <Tag>31</Tag>
+              <Name>LastPx</Name>
+              <Required>Y</Required>
+              <Type>Price</Type>
+              <Description>0.00</Description>
+            </Field>
+            <Field>
+              <Tag>32</Tag>
+              <Name>LastQty</Name>
+              <Required>Y</Required>
+              <Type>Qty</Type>
+              <Description>0</Description>
+            </Field>
+            <Field>
+              <Tag>37</Tag>
+              <Name>OrderID</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>Unique identifier of order as assigned by IEX Options.</Description>
+            </Field>
+            <Field>
+              <Tag>39</Tag>
+              <Name>OrdStatus</Name>
+              <Required>Y</Required>
+              <Type>Char</Type>
+              <Description>5 = Replaced</Description>
+            </Field>
+            <Field>
+              <Tag>41</Tag>
+              <Name>OrigClOrdID</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>ClOrdID of the replaced order</Description>
+            </Field>
+            <Field>
+              <Tag>151</Tag>
+              <Name>LeavesQty</Name>
+              <Required>Y</Required>
+              <Type>Qty</Type>
+              <Description>OrderQty - CumQty</Description>
+            </Field>
+            <Field>
+              <Tag>9690</Tag>
+              <Name>EffectiveLimitPrice</Name>
+              <Required>N</Required>
+              <Type>Price</Type>
+              <Description>Adjusted price to avoid crossing the NBBO.</Description>
+            </Field>
+            <Field>
+              <Tag>9691</Tag>
+              <Name>DisplayPrice</Name>
+              <Required>N</Required>
+              <Type>Price</Type>
+              <Description>Initial displayed price.</Description>
+            </Field>
+          </Fields>
+        </Branch>
+        <Branch>
+          <Name>Repriced</Name>
+          <Required>N</Required>
+          <Dependency>ExecType</Dependency>
+          <Value>D</Value>
+          <Fields>
+            <Field>
+              <Tag>11</Tag>
+              <Name>ClOrdID</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>ClOrdID used to identify the order being repriced.</Description>
+            </Field>
+            <Field>
+              <Tag>20</Tag>
+              <Name>ExecTransType</Name>
+              <Required>Y</Required>
+              <Type>Char</Type>
+              <Description>0 = New</Description>
+            </Field>
+            <Field>
+              <Tag>31</Tag>
+              <Name>LastPx</Name>
+              <Required>Y</Required>
+              <Type>Price</Type>
+              <Description>0.00</Description>
+            </Field>
+            <Field>
+              <Tag>32</Tag>
+              <Name>LastQty</Name>
+              <Required>Y</Required>
+              <Type>Qty</Type>
+              <Description>0</Description>
+            </Field>
+            <Field>
+              <Tag>37</Tag>
+              <Name>OrderID</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>Unique identifier of order as assigned by IEX Options.</Description>
+            </Field>
+            <Field>
+              <Tag>39</Tag>
+              <Name>OrdStatus</Name>
+              <Required>Y</Required>
+              <Type>Char</Type>
+              <Description>5 = Replaced</Description>
+            </Field>
+            <Field>
+              <Tag>58</Tag>
+              <Name>Text</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>Reason for which the order was repriced (see Appendix B)</Description>
+            </Field>
+            <Field>
+              <Tag>151</Tag>
+              <Name>LeavesQty</Name>
+              <Required>Y</Required>
+              <Type>Qty</Type>
+              <Description>OrderQty - CumQty</Description>
+            </Field>
+            <Field>
+              <Tag>378</Tag>
+              <Name>ExecRestatementReason</Name>
+              <Required>Y</Required>
+              <Type>Int</Type>
+              <Description>1 = Price Adjust Repricing, 2 = Drill-Through Protection Repricing, 3 = Trading Halt</Description>
+            </Field>
+            <Field>
+              <Tag>9690</Tag>
+              <Name>EffectiveLimitPrice</Name>
+              <Required>N</Required>
+              <Type>Price</Type>
+              <Description>Adjusted price to avoid crossing the NBBO.</Description>
+            </Field>
+            <Field>
+              <Tag>9691</Tag>
+              <Name>DisplayPrice</Name>
+              <Required>N</Required>
+              <Type>Price</Type>
+              <Description>Initial displayed price.</Description>
+            </Field>
+          </Fields>
+        </Branch>
+        <Branch>
+          <Name>Pending Cancel</Name>
+          <Required>N</Required>
+          <Dependency>ExecType</Dependency>
+          <Value>6</Value>
+          <Fields>
+            <Field>
+              <Tag>11</Tag>
+              <Name>ClOrdID</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>Reflects value as assigned by the Client on the Cancel Request</Description>
+            </Field>
+            <Field>
+              <Tag>20</Tag>
+              <Name>ExecTransType</Name>
+              <Required>Y</Required>
+              <Type>Char</Type>
+              <Description>0 = New</Description>
+            </Field>
+            <Field>
+              <Tag>31</Tag>
+              <Name>LastPx</Name>
+              <Required>Y</Required>
+              <Type>Price</Type>
+              <Description>0.00</Description>
+            </Field>
+            <Field>
+              <Tag>32</Tag>
+              <Name>LastQty</Name>
+              <Required>Y</Required>
+              <Type>Qty</Type>
+              <Description>0</Description>
+            </Field>
+            <Field>
+              <Tag>37</Tag>
+              <Name>OrderID</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>Unique identifier of order as assigned by IEX Options.</Description>
+            </Field>
+            <Field>
+              <Tag>39</Tag>
+              <Name>OrdStatus</Name>
+              <Required>Y</Required>
+              <Type>Char</Type>
+              <Description>6 = Pending Cancel</Description>
+            </Field>
+            <Field>
+              <Tag>41</Tag>
+              <Name>OrigClOrdID</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>ClOrdID of the pending cancel order.</Description>
+            </Field>
+            <Field>
+              <Tag>58</Tag>
+              <Name>Text</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>Reason for which the order could not be immediately canceled (see Appendix B).</Description>
+            </Field>
+            <Field>
+              <Tag>151</Tag>
+              <Name>LeavesQty</Name>
+              <Required>Y</Required>
+              <Type>Qty</Type>
+              <Description>OrderQty - CumQty</Description>
+            </Field>
+          </Fields>
+        </Branch>
+        <Branch>
+          <Name>Pending Replace</Name>
+          <Required>N</Required>
+          <Dependency>ExecType</Dependency>
+          <Value>E</Value>
+          <Fields>
+            <Field>
+              <Tag>11</Tag>
+              <Name>ClOrdID</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>Reflects value as assigned by the Client on the Cancel/Replace Request</Description>
+            </Field>
+            <Field>
+              <Tag>20</Tag>
+              <Name>ExecTransType</Name>
+              <Required>Y</Required>
+              <Type>Char</Type>
+              <Description>0 = New</Description>
+            </Field>
+            <Field>
+              <Tag>31</Tag>
+              <Name>LastPx</Name>
+              <Required>Y</Required>
+              <Type>Price</Type>
+              <Description>0.00</Description>
+            </Field>
+            <Field>
+              <Tag>32</Tag>
+              <Name>LastQty</Name>
+              <Required>Y</Required>
+              <Type>Qty</Type>
+              <Description>0</Description>
+            </Field>
+            <Field>
+              <Tag>37</Tag>
+              <Name>OrderID</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>Unique identifier of order as assigned by IEX Options.</Description>
+            </Field>
+            <Field>
+              <Tag>39</Tag>
+              <Name>OrdStatus</Name>
+              <Required>Y</Required>
+              <Type>Char</Type>
+              <Description>E = Pending Replace</Description>
+            </Field>
+            <Field>
+              <Tag>41</Tag>
+              <Name>OrigClOrdID</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>ClOrdID of the pending replace order</Description>
+            </Field>
+            <Field>
+              <Tag>58</Tag>
+              <Name>Text</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>Reason for which the order could not be immediately repriced (see Appendix B).</Description>
+            </Field>
+            <Field>
+              <Tag>151</Tag>
+              <Name>LeavesQty</Name>
+              <Required>Y</Required>
+              <Type>Qty</Type>
+              <Description>OrderQty - CumQty</Description>
+            </Field>
+          </Fields>
+        </Branch>
+        <Branch>
+          <Name>Mass Cancel Acknowledgement</Name>
+          <Required>N</Required>
+          <Dependency>ExecType</Dependency>
+          <Value>M</Value>
+          <Fields>
+            <Field>
+              <Tag>11</Tag>
+              <Name>ClOrdID</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>Day-unique identifier of message as assigned by the User.</Description>
+            </Field>
+            <Field>
+              <Tag>20</Tag>
+              <Name>ExecTransType</Name>
+              <Required>Y</Required>
+              <Type>Char</Type>
+              <Description>0 = New</Description>
+            </Field>
+            <Field>
+              <Tag>52</Tag>
+              <Name>SendingTime</Name>
+              <Required>Y</Required>
+              <Type>UTCTimestamp</Type>
+              <Description>Time that the execution report was sent</Description>
+            </Field>
+            <Field>
+              <Tag>55</Tag>
+              <Name>Symbol</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Will match value supplied in Mass Cancel request if provided.</Description>
+            </Field>
+            <Field>
+              <Tag>60</Tag>
+              <Name>TransactTime</Name>
+              <Required>Y</Required>
+              <Type>UTCTimestamp</Type>
+              <Description>IEX Options application time.</Description>
+            </Field>
+            <Field>
+              <Tag>20100</Tag>
+              <Name>AckStyle</Name>
+              <Required>N</Required>
+              <Type>Char</Type>
+              <Description>Will match value supplied in Mass Cancel request.</Description>
+            </Field>
+            <Field>
+              <Tag>20101</Tag>
+              <Name>MPIDFilter</Name>
+              <Required>Y</Required>
+              <Type>Int</Type>
+              <Description>Will match value supplied on Mass Cancel Request.</Description>
+            </Field>
+            <Field>
+              <Tag>20102</Tag>
+              <Name>BulkAction</Name>
+              <Required>Y</Required>
+              <Type>Char</Type>
+              <Description>Will match value supplied on Mass Cancel Request.</Description>
+            </Field>
+            <Field>
+              <Tag>20103</Tag>
+              <Name>CancelCount</Name>
+              <Required>N</Required>
+              <Type>Int</Type>
+              <Description>Count of canceled orders. Only supplied if BulkAction = C or B.</Description>
+            </Field>
+          </Fields>
+        </Branch>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>TradeBustCorrection</Name>
+      <MsgType>UCC</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>1</Tag>
+          <Name>Account</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Will match original order, unless modified.</Description>
+        </Field>
+        <Field>
+          <Tag>11</Tag>
+          <Name>ClOrdID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Will match original execution.</Description>
+        </Field>
+        <Field>
+          <Tag>17</Tag>
+          <Name>ExecID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Always the ExecID in the original trade</Description>
+        </Field>
+        <Field>
+          <Tag>20</Tag>
+          <Name>ExecTransType</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>1 = Bust, 2 = Correction</Description>
+        </Field>
+        <Field>
+          <Tag>31</Tag>
+          <Name>LastPx</Name>
+          <Required>Y</Required>
+          <Type>Price</Type>
+          <Description>If Bust: will match original execution. If Correction: corrected price</Description>
+        </Field>
+        <Field>
+          <Tag>32</Tag>
+          <Name>LastQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>If Bust: will match original execution. If Correction: corrected execution quantity</Description>
+        </Field>
+        <Field>
+          <Tag>37</Tag>
+          <Name>OrderID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Will match original execution.</Description>
+        </Field>
+        <Field>
+          <Tag>42</Tag>
+          <Name>OrigTime</Name>
+          <Required>Y</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Indicates TransactTime (60) of original execution</Description>
+        </Field>
+        <Field>
+          <Tag>54</Tag>
+          <Name>Side</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Will match original execution.</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Will match original execution.</Description>
+        </Field>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>Y</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Time of trade bust / correction expressed in UTC</Description>
+        </Field>
+        <Field>
+          <Tag>77</Tag>
+          <Name>OpenClose</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Will match original order, unless modified.</Description>
+        </Field>
+        <Field>
+          <Tag>167</Tag>
+          <Name>SecurityType</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>OPT = option</Description>
+        </Field>
+        <Field>
+          <Tag>200</Tag>
+          <Name>MaturityMonthYear</Name>
+          <Required>Y</Required>
+          <Type>MonthYear</Type>
+          <Description>Will match original order.</Description>
+        </Field>
+        <Field>
+          <Tag>201</Tag>
+          <Name>PutOrCall</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Will match original order.</Description>
+        </Field>
+        <Field>
+          <Tag>202</Tag>
+          <Name>StrikePrice</Name>
+          <Required>Y</Required>
+          <Type>Price</Type>
+          <Description>Will match original order.</Description>
+        </Field>
+        <Field>
+          <Tag>204</Tag>
+          <Name>CustomerOrFirm</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Will match original order, unless modified.</Description>
+        </Field>
+        <Field>
+          <Tag>205</Tag>
+          <Name>MaturityDay</Name>
+          <Required>Y</Required>
+          <Type>DayOfMonth</Type>
+          <Description>Will match original order.</Description>
+        </Field>
+        <Group>
+          <Name>NoContraBrokers</Name>
+          <Required>Y</Required>
+        </Group>
+        <Field>
+          <Tag>439</Tag>
+          <Name>ClearingFirm</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Will match original order if provided, unless modified.</Description>
+        </Field>
+        <Field>
+          <Tag>440</Tag>
+          <Name>ClearingAccount</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Will match original order if provided, unless modified.</Description>
+        </Field>
+        <Field>
+          <Tag>526</Tag>
+          <Name>OptionalData</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Will match original order if provided, unless modified.</Description>
+        </Field>
+        <Field>
+          <Tag>7933</Tag>
+          <Name>RoutingFirmID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Will match original order if provided.</Description>
+        </Field>
+        <Field>
+          <Tag>9483</Tag>
+          <Name>TradeID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Unique identifier of the newly defined trade resulting from the adjustment of a previous trade. Not populated if ExecTransType = 1.</Description>
+        </Field>
+        <Field>
+          <Tag>9730</Tag>
+          <Name>TradeLiquidityIndicator</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Will match original execution.</Description>
+        </Field>
+        <Field>
+          <Tag>9882</Tag>
+          <Name>FeeCode</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Will match original execution.</Description>
+        </Field>
+        <Field>
+          <Tag>20009</Tag>
+          <Name>NanosecondSendingTime</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Time of message transmission on outgoing message from IEX Options. UTC time, in nanoseconds.</Description>
+        </Field>
+        <Field>
+          <Tag>20010</Tag>
+          <Name>NanosecondTransactTime</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>IEX Options application time of Event Processing Outcome. UTC time, in nanoseconds.</Description>
+        </Field>
+        <Field>
+          <Tag>20016</Tag>
+          <Name>ContraCustomerOrFirm</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Contra party capacity of the order. Will match value populated on contra order if provided, unless modified.</Description>
+        </Field>
+        <Field>
+          <Tag>20017</Tag>
+          <Name>ContraClearingAccount</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Contra party OCC sub-account number / MMID.</Description>
+        </Field>
+        <Field>
+          <Tag>20018</Tag>
+          <Name>ContraOpenClose</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Contra party position in the Option. Will match value populated on contra order if provided, unless modified.</Description>
+        </Field>
+        <Field>
+          <Tag>20110</Tag>
+          <Name>OCCID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>OCC clearing number on the execution. Will match original execution, unless modified.</Description>
+        </Field>
+        <Field>
+          <Tag>20111</Tag>
+          <Name>ContraOCCID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>OCC clearing number of the contra on the execution. Will match original execution, unless modified.</Description>
+        </Field>
+        <Field>
+          <Tag>20112</Tag>
+          <Name>TradeRefID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Unique identifier of the transaction being busted or adjusted, assigned by IEX Options to both Execution reports representing the two sides of a single trade.</Description>
+        </Field>
+      </Fields>
+    </Message>
+  </Messages>
+  <Groups>
+    <Group>
+      <Name>NoContraBrokers</Name>
+      <AnchorTag>382</AnchorTag>
+      <Fields>
+        <Field>
+          <Tag>375</Tag>
+          <Name>ContraBroker</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Contra party clearing number of CMTA. Will match value populated on contra order if provided. Otherwise space-filled. 5 digits.</Description>
+        </Field>
+        <Field>
+          <Tag>337</Tag>
+          <Name>ContraTrader</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>For local trades, contra party Firm Identifier - MPID. For routed fills, identifies the away exchange for the execution.</Description>
+        </Field>
+      </Fields>
+    </Group>
+  </Groups>
+  <Values>
+    <Value>
+      <Type>MsgType</Type>
+      <Enum>A</Enum>
+      <Description>Logon</Description>
+    </Value>
+    <Value>
+      <Type>MsgType</Type>
+      <Enum>0</Enum>
+      <Description>Heartbeat</Description>
+    </Value>
+    <Value>
+      <Type>MsgType</Type>
+      <Enum>1</Enum>
+      <Description>Test Request</Description>
+    </Value>
+    <Value>
+      <Type>MsgType</Type>
+      <Enum>2</Enum>
+      <Description>Resend Request</Description>
+    </Value>
+    <Value>
+      <Type>MsgType</Type>
+      <Enum>3</Enum>
+      <Description>Session Layer Reject</Description>
+    </Value>
+    <Value>
+      <Type>MsgType</Type>
+      <Enum>4</Enum>
+      <Description>Sequence Reset</Description>
+    </Value>
+    <Value>
+      <Type>MsgType</Type>
+      <Enum>5</Enum>
+      <Description>Logout</Description>
+    </Value>
+    <Value>
+      <Type>MsgType</Type>
+      <Enum>D</Enum>
+      <Description>New Order Single</Description>
+    </Value>
+    <Value>
+      <Type>MsgType</Type>
+      <Enum>F</Enum>
+      <Description>Order Cancel Request</Description>
+    </Value>
+    <Value>
+      <Type>MsgType</Type>
+      <Enum>G</Enum>
+      <Description>Order Cancel/Replace Request</Description>
+    </Value>
+    <Value>
+      <Type>MsgType</Type>
+      <Enum>8</Enum>
+      <Description>Execution Report</Description>
+    </Value>
+    <Value>
+      <Type>MsgType</Type>
+      <Enum>9</Enum>
+      <Description>Order Cancel Reject</Description>
+    </Value>
+    <Value>
+      <Type>MsgType</Type>
+      <Enum>UCC</Enum>
+      <Description>Trade Bust / Correction</Description>
+    </Value>
+    <Value>
+      <Type>ExecInst</Type>
+      <Enum>f</Enum>
+      <Description>ISO</Description>
+    </Value>
+    <Value>
+      <Type>ExecInst</Type>
+      <Enum>i</Enum>
+      <Description>Do Not Route (Book Only)</Description>
+    </Value>
+    <Value>
+      <Type>OrdType</Type>
+      <Enum>1</Enum>
+      <Description>Market</Description>
+    </Value>
+    <Value>
+      <Type>OrdType</Type>
+      <Enum>2</Enum>
+      <Description>Limit</Description>
+    </Value>
+    <Value>
+      <Type>Side</Type>
+      <Enum>1</Enum>
+      <Description>Buy</Description>
+    </Value>
+    <Value>
+      <Type>Side</Type>
+      <Enum>2</Enum>
+      <Description>Sell</Description>
+    </Value>
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>0</Enum>
+      <Description>Day</Description>
+    </Value>
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>3</Enum>
+      <Description>IOC</Description>
+    </Value>
+    <Value>
+      <Type>OpenClose</Type>
+      <Enum>O</Enum>
+      <Description>Open</Description>
+    </Value>
+    <Value>
+      <Type>OpenClose</Type>
+      <Enum>C</Enum>
+      <Description>Close</Description>
+    </Value>
+    <Value>
+      <Type>OpenClose</Type>
+      <Enum>N</Enum>
+      <Description>Not Applicable</Description>
+    </Value>
+    <Value>
+      <Type>SecurityType</Type>
+      <Enum>OPT</Enum>
+      <Description>Option</Description>
+    </Value>
+    <Value>
+      <Type>PutOrCall</Type>
+      <Enum>0</Enum>
+      <Description>Put</Description>
+    </Value>
+    <Value>
+      <Type>PutOrCall</Type>
+      <Enum>1</Enum>
+      <Description>Call</Description>
+    </Value>
+    <Value>
+      <Type>CustomerOrFirm</Type>
+      <Enum>0</Enum>
+      <Description>Customer</Description>
+    </Value>
+    <Value>
+      <Type>CustomerOrFirm</Type>
+      <Enum>1</Enum>
+      <Description>Firm</Description>
+    </Value>
+    <Value>
+      <Type>CustomerOrFirm</Type>
+      <Enum>2</Enum>
+      <Description>Broker/Dealer</Description>
+    </Value>
+    <Value>
+      <Type>CustomerOrFirm</Type>
+      <Enum>3</Enum>
+      <Description>Market Maker</Description>
+    </Value>
+    <Value>
+      <Type>CustomerOrFirm</Type>
+      <Enum>4</Enum>
+      <Description>Away Market Maker</Description>
+    </Value>
+    <Value>
+      <Type>CustomerOrFirm</Type>
+      <Enum>8</Enum>
+      <Description>Prof customer</Description>
+    </Value>
+    <Value>
+      <Type>DisplayInst</Type>
+      <Enum>P</Enum>
+      <Description>Post Only (implicitly non-routable)</Description>
+    </Value>
+    <Value>
+      <Type>AttributedQuote</Type>
+      <Enum>1</Enum>
+      <Description>SUM - Expose order info only</Description>
+    </Value>
+    <Value>
+      <Type>AttributedQuote</Type>
+      <Enum>2</Enum>
+      <Description>SUM - Expose order info and Capacity only</Description>
+    </Value>
+    <Value>
+      <Type>AttributedQuote</Type>
+      <Enum>3</Enum>
+      <Description>SUM - Expose order info and MPID only</Description>
+    </Value>
+    <Value>
+      <Type>AttributedQuote</Type>
+      <Enum>4</Enum>
+      <Description>SUM - Expose order info, Capacity and MPID</Description>
+    </Value>
+    <Value>
+      <Type>AttributedQuote</Type>
+      <Enum>5</Enum>
+      <Description>Do not SUM</Description>
+    </Value>
+    <Value>
+      <Type>CancelInsteadOfSlide</Type>
+      <Enum>0</Enum>
+      <Description>Slide</Description>
+    </Value>
+    <Value>
+      <Type>CancelInsteadOfSlide</Type>
+      <Enum>3</Enum>
+      <Description>Cancel order instead of slide</Description>
+    </Value>
+    <Value>
+      <Type>GapFillFlag</Type>
+      <Enum>Y</Enum>
+      <Description>Gap Fill Reset</Description>
+    </Value>
+    <Value>
+      <Type>GapFillFlag</Type>
+      <Enum>N</Enum>
+      <Description>Sequence Reset</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>0</Enum>
+      <Description>Invalid tag number</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>1</Enum>
+      <Description>Required tag missing</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>2</Enum>
+      <Description>Tag not defined for this message type</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>3</Enum>
+      <Description>Undefined Tag</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>4</Enum>
+      <Description>Tag is empty</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>5</Enum>
+      <Description>Value is incorrect (out of range) for this tag</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>6</Enum>
+      <Description>Incorrect data format for value</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>7</Enum>
+      <Description>Decryption problem</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>8</Enum>
+      <Description>Signature problem</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>9</Enum>
+      <Description>CompID problem</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>10</Enum>
+      <Description>SendingTime accuracy problem</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>11</Enum>
+      <Description>Invalid MsgType</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>0</Enum>
+      <Description>New</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>1</Enum>
+      <Description>Partially Filled</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>2</Enum>
+      <Description>Filled</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>4</Enum>
+      <Description>Canceled</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>5</Enum>
+      <Description>Replaced</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>6</Enum>
+      <Description>Pending Cancel</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>8</Enum>
+      <Description>Rejected</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>E</Enum>
+      <Description>Pending Replace</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>0</Enum>
+      <Description>New</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>1</Enum>
+      <Description>Partially Filled</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>2</Enum>
+      <Description>Filled</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>4</Enum>
+      <Description>Canceled</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>5</Enum>
+      <Description>Replaced</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>6</Enum>
+      <Description>Pending Cancel</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>8</Enum>
+      <Description>Rejected</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>D</Enum>
+      <Description>Restated</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>E</Enum>
+      <Description>Pending Replace</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>M</Enum>
+      <Description>Mass Cancel</Description>
+    </Value>
+    <Value>
+      <Type>ExecTransType</Type>
+      <Enum>0</Enum>
+      <Description>New</Description>
+    </Value>
+    <Value>
+      <Type>ExecTransType</Type>
+      <Enum>1</Enum>
+      <Description>Bust</Description>
+    </Value>
+    <Value>
+      <Type>ExecTransType</Type>
+      <Enum>2</Enum>
+      <Description>Correction</Description>
+    </Value>
+    <Value>
+      <Type>CxlRejResponseTo</Type>
+      <Enum>1</Enum>
+      <Description>Order Cancel Request</Description>
+    </Value>
+    <Value>
+      <Type>CxlRejResponseTo</Type>
+      <Enum>2</Enum>
+      <Description>Order Cancel/Replace Request</Description>
+    </Value>
+    <Value>
+      <Type>ExecRestatementReason</Type>
+      <Enum>1</Enum>
+      <Description>Price Adjust Repricing</Description>
+    </Value>
+    <Value>
+      <Type>ExecRestatementReason</Type>
+      <Enum>2</Enum>
+      <Description>Drill-Through Protection Repricing</Description>
+    </Value>
+    <Value>
+      <Type>ExecRestatementReason</Type>
+      <Enum>3</Enum>
+      <Description>Trading Halt</Description>
+    </Value>
+    <Value>
+      <Type>TradeLiquidityIndicator</Type>
+      <Enum>1</Enum>
+      <Description>Added Liquidity</Description>
+    </Value>
+    <Value>
+      <Type>TradeLiquidityIndicator</Type>
+      <Enum>2</Enum>
+      <Description>Removed Liquidity</Description>
+    </Value>
+    <Value>
+      <Type>TradeLiquidityIndicator</Type>
+      <Enum>3</Enum>
+      <Description>Routed</Description>
+    </Value>
+    <Value>
+      <Type>TradeLiquidityIndicator</Type>
+      <Enum>4</Enum>
+      <Description>Opening Process</Description>
+    </Value>
+    <Value>
+      <Type>TradeLiquidityIndicator</Type>
+      <Enum>5</Enum>
+      <Description>Re-Opening Process</Description>
+    </Value>
+    <Value>
+      <Type>TradeLiquidityIndicator</Type>
+      <Enum>6</Enum>
+      <Description>SUM - Initiating</Description>
+    </Value>
+    <Value>
+      <Type>TradeLiquidityIndicator</Type>
+      <Enum>7</Enum>
+      <Description>SUM - Response</Description>
+    </Value>
+    <Value>
+      <Type>TradeLiquidityIndicator</Type>
+      <Enum>8</Enum>
+      <Description>SUM - Unrelated</Description>
+    </Value>
+    <Value>
+      <Type>ContraCustomerOrFirm</Type>
+      <Enum>0</Enum>
+      <Description>Customer</Description>
+    </Value>
+    <Value>
+      <Type>ContraCustomerOrFirm</Type>
+      <Enum>1</Enum>
+      <Description>Firm</Description>
+    </Value>
+    <Value>
+      <Type>ContraCustomerOrFirm</Type>
+      <Enum>2</Enum>
+      <Description>Broker/Dealer</Description>
+    </Value>
+    <Value>
+      <Type>ContraCustomerOrFirm</Type>
+      <Enum>3</Enum>
+      <Description>Market Maker</Description>
+    </Value>
+    <Value>
+      <Type>ContraCustomerOrFirm</Type>
+      <Enum>4</Enum>
+      <Description>Away Market Maker</Description>
+    </Value>
+    <Value>
+      <Type>ContraCustomerOrFirm</Type>
+      <Enum>8</Enum>
+      <Description>Prof customer</Description>
+    </Value>
+    <Value>
+      <Type>ContraOpenClose</Type>
+      <Enum>O</Enum>
+      <Description>Open</Description>
+    </Value>
+    <Value>
+      <Type>ContraOpenClose</Type>
+      <Enum>C</Enum>
+      <Description>Close</Description>
+    </Value>
+    <Value>
+      <Type>ContraOpenClose</Type>
+      <Enum>N</Enum>
+      <Description>Not Applicable</Description>
+    </Value>
+    <Value>
+      <Type>AckStyle</Type>
+      <Enum>S</Enum>
+      <Description>Single Mass Cancel Acknowledgement</Description>
+    </Value>
+    <Value>
+      <Type>AckStyle</Type>
+      <Enum>B</Enum>
+      <Description>Order Canceled messages and Mass Cancel Acknowledgement</Description>
+    </Value>
+    <Value>
+      <Type>MPIDFilter</Type>
+      <Enum>0</Enum>
+      <Description>Take BulkAction explicitly for this MPID on this session</Description>
+    </Value>
+    <Value>
+      <Type>MPIDFilter</Type>
+      <Enum>1</Enum>
+      <Description>Take BulkAction across MPIDs on this session</Description>
+    </Value>
+    <Value>
+      <Type>BulkAction</Type>
+      <Enum>C</Enum>
+      <Description>Cancel</Description>
+    </Value>
+    <Value>
+      <Type>BulkAction</Type>
+      <Enum>B</Enum>
+      <Description>Cancel and Block</Description>
+    </Value>
+    <Value>
+      <Type>BulkAction</Type>
+      <Enum>U</Enum>
+      <Description>Unblock</Description>
+    </Value>
+  </Values>
+</OmiFixPdf>

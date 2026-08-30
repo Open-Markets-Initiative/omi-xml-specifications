@@ -1,0 +1,464 @@
+<OmiFixPdf>
+
+  <!-- ASX Trade24 Developer's Guide FIX Specifications. FIX 4.0 order entry and market data for the
+       ASX 24 derivatives market on the legacy Trade24 platform, superseded by the New Trading
+       Platform. The User Message (U) broadcast carries reference and market data for futures and
+       spread contracts. Tags marked "REVIEW" are Trade24 specific extensions in the 5000 range. -->
+
+  <Header>
+    <Fields>
+      <Field><Tag>8</Tag><Name>BeginString</Name><Required>Y</Required><Type>String</Type><Fixed>Y</Fixed><Description>Identifies beginning of new message and protocol version. Always first field in message.</Description></Field>
+      <Field><Tag>9</Tag><Name>BodyLength</Name><Required>Y</Required><Type>Length</Type><Fixed>Y</Fixed><Description>Message length. Always second field in message.</Description></Field>
+      <Field><Tag>35</Tag><Name>MsgType</Name><Required>Y</Required><Type>String</Type><Fixed>Y</Fixed><Description>Defines message type. Always third field in message.</Description></Field>
+      <Field><Tag>49</Tag><Name>SenderCompID</Name><Required>Y</Required><Type>String</Type><Description>ID of the party sending the message.</Description></Field>
+      <Field><Tag>56</Tag><Name>TargetCompID</Name><Required>Y</Required><Type>String</Type><Description>ID of the party the message is sent to.</Description></Field>
+      <Field><Tag>34</Tag><Name>MsgSeqNum</Name><Required>Y</Required><Type>SeqNum</Type><Description>Message sequence number.</Description></Field>
+      <Field><Tag>52</Tag><Name>SendingTime</Name><Required>Y</Required><Type>UTCTimestamp</Type><Description>Time of message transmission in UTC.</Description></Field>
+      <Field><Tag>43</Tag><Name>PossDupFlag</Name><Required>N</Required><Type>Boolean</Type><Description>Indicates a possible duplicate message.</Description></Field>
+      <Field><Tag>97</Tag><Name>PossResend</Name><Required>N</Required><Type>Boolean</Type><Description>Indicates a possible resend of an application message.</Description></Field>
+      <Field><Tag>122</Tag><Name>OrigSendingTime</Name><Required>N</Required><Type>UTCTimestamp</Type><Description>Original sending time for retransmitted messages.</Description></Field>
+    </Fields>
+  </Header>
+
+  <Trailer>
+    <Fields>
+      <Field><Tag>10</Tag><Name>CheckSum</Name><Required>Y</Required><Type>String</Type><Fixed>Y</Fixed><Description>Three byte simple checksum. Always the last field of a FIX message.</Description></Field>
+    </Fields>
+  </Trailer>
+
+  <Messages>
+
+    <!-- Logon -->
+    <Message><Name>Logon</Name><MsgType>A</MsgType><Category>admin</Category><Origin>Client,Exchange</Origin>
+      <Fields>
+        <Field><Tag>108</Tag><Name>HeartBtInt</Name><Required>Y</Required><Type>Int</Type><Description>Heartbeat interval in seconds.</Description></Field>
+        <Field><Tag>95</Tag><Name>RawDataLength</Name><Required>N</Required><Type>Length</Type><Description>Length of the RawData field.</Description></Field>
+        <Field><Tag>96</Tag><Name>RawData</Name><Required>N</Required><Type>String</Type><Description>Raw data carrying the logon credentials.</Description></Field>
+      </Fields>
+    </Message>
+
+    <!-- Heartbeat -->
+    <Message><Name>Heartbeat</Name><MsgType>0</MsgType><Category>admin</Category><Origin>Client,Exchange</Origin>
+      <Fields>
+        <Field><Tag>112</Tag><Name>TestReqID</Name><Required>N</Required><Type>String</Type><Description>Test request identifier.</Description></Field>
+      </Fields>
+    </Message>
+
+    <!-- Test Request -->
+    <Message><Name>Test Request</Name><MsgType>1</MsgType><Category>admin</Category><Origin>Client,Exchange</Origin>
+      <Fields>
+        <Field><Tag>112</Tag><Name>TestReqID</Name><Required>Y</Required><Type>String</Type><Description>Test request identifier.</Description></Field>
+      </Fields>
+    </Message>
+
+    <!-- Resend Request -->
+    <Message><Name>Resend Request</Name><MsgType>2</MsgType><Category>admin</Category><Origin>Client,Exchange</Origin>
+      <Fields>
+        <Field><Tag>7</Tag><Name>BeginSeqNo</Name><Required>Y</Required><Type>SeqNum</Type><Description>First message in range to be resent.</Description></Field>
+        <Field><Tag>16</Tag><Name>EndSeqNo</Name><Required>Y</Required><Type>SeqNum</Type><Description>Last message in range to be resent.</Description></Field>
+      </Fields>
+    </Message>
+
+    <!-- Reject -->
+    <Message><Name>Reject</Name><MsgType>3</MsgType><Category>admin</Category><Origin>Client,Exchange</Origin>
+      <Fields>
+        <Field><Tag>45</Tag><Name>RefSeqNum</Name><Required>Y</Required><Type>SeqNum</Type><Description>MsgSeqNum of the referenced message.</Description></Field>
+        <Field><Tag>58</Tag><Name>Text</Name><Required>N</Required><Type>String</Type><Description>Free text.</Description></Field>
+      </Fields>
+    </Message>
+
+    <!-- Sequence Reset -->
+    <Message><Name>Sequence Reset</Name><MsgType>4</MsgType><Category>admin</Category><Origin>Client,Exchange</Origin>
+      <Fields>
+        <Field><Tag>123</Tag><Name>GapFillFlag</Name><Required>N</Required><Type>Boolean</Type><Description>Indicates a gap fill.</Description></Field>
+        <Field><Tag>36</Tag><Name>NewSeqNo</Name><Required>Y</Required><Type>SeqNum</Type><Description>New sequence number.</Description></Field>
+      </Fields>
+    </Message>
+
+    <!-- Logout -->
+    <Message><Name>Logout</Name><MsgType>5</MsgType><Category>admin</Category><Origin>Client,Exchange</Origin>
+      <Fields>
+        <Field><Tag>58</Tag><Name>Text</Name><Required>N</Required><Type>String</Type><Description>Free text.</Description></Field>
+      </Fields>
+    </Message>
+
+    <!-- User Message -->
+    <Message><Name>User Message</Name><MsgType>U</MsgType><Category>app</Category><Origin>Exchange</Origin>
+      <Fields>
+        <Field><Tag>5001</Tag><Name>UserMsgCat</Name><Required>Y</Required><Type>Int</Type><Description>Trade24 user message category.</Description>
+          <!-- REVIEW: UserMsgCat exchange specific tag 5001 -->
+        </Field>
+        <Field><Tag>100</Tag><Name>ExDestination</Name><Required>N</Required><Type>Exchange</Type><Description>Execution destination of the order.</Description></Field>
+        <Field><Tag>55</Tag><Name>Symbol</Name><Required>N</Required><Type>String</Type><Description>Symbol of the instrument.</Description></Field>
+        <Field><Tag>5004</Tag><Name>Currency</Name><Required>N</Required><Type>Currency</Type><Description>Currency of the contract.</Description>
+          <!-- REVIEW: Currency exchange specific tag 5004 -->
+        </Field>
+        <Field><Tag>5021</Tag><Name>FOBIndicator</Name><Required>N</Required><Type>char</Type><Description>Free on board indicator.</Description>
+          <!-- REVIEW: FOBIndicator exchange specific tag 5021 -->
+        </Field>
+        <Field><Tag>58</Tag><Name>Text</Name><Required>N</Required><Type>String</Type><Description>Free text.</Description></Field>
+        <Field><Tag>5003</Tag><Name>LastMessage</Name><Required>N</Required><Type>Boolean</Type><Description>Indicates the final message of a broadcast set.</Description>
+          <!-- REVIEW: LastMessage exchange specific tag 5003 -->
+        </Field>
+        <Field><Tag>5002</Tag><Name>InstrmntIndicator</Name><Required>N</Required><Type>char</Type><Description>Instrument indicator.</Description>
+          <!-- REVIEW: InstrmntIndicator exchange specific tag 5002 -->
+        </Field>
+        <Field><Tag>5009</Tag><Name>MonthYear</Name><Required>N</Required><Type>MonthYear</Type><Description>Contract month and year.</Description>
+          <!-- REVIEW: MonthYear exchange specific tag 5009 -->
+        </Field>
+        <Field><Tag>5005</Tag><Name>TickIncrement</Name><Required>N</Required><Type>Price</Type><Description>Tick increment of the contract.</Description>
+          <!-- REVIEW: TickIncrement exchange specific tag 5005 -->
+        </Field>
+        <Field><Tag>5010</Tag><Name>UnderlyingFut</Name><Required>N</Required><Type>String</Type><Description>Underlying futures contract.</Description>
+          <!-- REVIEW: UnderlyingFut exchange specific tag 5010 -->
+        </Field>
+        <Field><Tag>5054</Tag><Name>FractionalIndicator</Name><Required>N</Required><Type>char</Type><Description>Indicates fractional price display.</Description>
+          <!-- REVIEW: FractionalIndicator exchange specific tag 5054 -->
+        </Field>
+        <Field><Tag>5036</Tag><Name>ReferenceNo</Name><Required>N</Required><Type>String</Type><Description>Reference number of the message.</Description>
+          <!-- REVIEW: ReferenceNo exchange specific tag 5036 -->
+        </Field>
+        <Field><Tag>5033</Tag><Name>FilterType</Name><Required>N</Required><Type>char</Type><Description>Type of filter applied to the broadcast.</Description>
+          <!-- REVIEW: FilterType exchange specific tag 5033 -->
+        </Field>
+        <Field><Tag>5034</Tag><Name>InterSpreadsFlag</Name><Required>N</Required><Type>Boolean</Type><Description>Indicates an inter spread contract.</Description>
+          <!-- REVIEW: InterSpreadsFlag exchange specific tag 5034 -->
+        </Field>
+        <Field><Tag>5028</Tag><Name>InterSprdRatio</Name><Required>N</Required><Type>float</Type><Description>Inter spread ratio.</Description>
+          <!-- REVIEW: InterSprdRatio exchange specific tag 5028 -->
+        </Field>
+        <Field><Tag>5013</Tag><Name>OptionsStrikeP</Name><Required>N</Required><Type>Price</Type><Description>Strike price of the option contract.</Description>
+          <!-- REVIEW: OptionsStrikeP exchange specific tag 5013 -->
+        </Field>
+        <Field><Tag>5014</Tag><Name>MarketStatus</Name><Required>N</Required><Type>char</Type><Description>Status of the market for the contract.</Description>
+          <!-- REVIEW: MarketStatus exchange specific tag 5014 -->
+        </Field>
+        <Field><Tag>5017</Tag><Name>SettlementPrice</Name><Required>N</Required><Type>Price</Type><Description>Settlement price of the contract.</Description>
+          <!-- REVIEW: SettlementPrice exchange specific tag 5017 -->
+        </Field>
+        <Field><Tag>5018</Tag><Name>Volatility</Name><Required>N</Required><Type>float</Type><Description>Volatility of the contract.</Description>
+          <!-- REVIEW: Volatility exchange specific tag 5018 -->
+        </Field>
+        <Field><Tag>5019</Tag><Name>OpenPrice</Name><Required>N</Required><Type>Price</Type><Description>Opening price of the session.</Description>
+          <!-- REVIEW: OpenPrice exchange specific tag 5019 -->
+        </Field>
+        <Field><Tag>5020</Tag><Name>ClosePrice</Name><Required>N</Required><Type>Price</Type><Description>Closing price of the session.</Description>
+          <!-- REVIEW: ClosePrice exchange specific tag 5020 -->
+        </Field>
+        <Field><Tag>5016</Tag><Name>HighTradePrice</Name><Required>N</Required><Type>Price</Type><Description>Highest traded price of the session.</Description>
+          <!-- REVIEW: HighTradePrice exchange specific tag 5016 -->
+        </Field>
+        <Field><Tag>5015</Tag><Name>LowTradePrice</Name><Required>N</Required><Type>Price</Type><Description>Lowest traded price of the session.</Description>
+          <!-- REVIEW: LowTradePrice exchange specific tag 5015 -->
+        </Field>
+        <Field><Tag>5022</Tag><Name>AskPrice</Name><Required>N</Required><Type>Price</Type><Description>Best ask price.</Description>
+          <!-- REVIEW: AskPrice exchange specific tag 5022 -->
+        </Field>
+        <Field><Tag>5023</Tag><Name>AskVolume</Name><Required>N</Required><Type>Qty</Type><Description>Volume at the best ask.</Description>
+          <!-- REVIEW: AskVolume exchange specific tag 5023 -->
+        </Field>
+        <Field><Tag>5024</Tag><Name>BidPrice</Name><Required>N</Required><Type>Price</Type><Description>Best bid price.</Description>
+          <!-- REVIEW: BidPrice exchange specific tag 5024 -->
+        </Field>
+        <Field><Tag>5025</Tag><Name>BidVolume</Name><Required>N</Required><Type>Qty</Type><Description>Volume at the best bid.</Description>
+          <!-- REVIEW: BidVolume exchange specific tag 5025 -->
+        </Field>
+        <Field><Tag>5026</Tag><Name>LastTradedPrice</Name><Required>N</Required><Type>Price</Type><Description>Price of the last trade.</Description>
+          <!-- REVIEW: LastTradedPrice exchange specific tag 5026 -->
+        </Field>
+        <Field><Tag>5011</Tag><Name>LastTradedVolume</Name><Required>N</Required><Type>Qty</Type><Description>Volume of the last trade.</Description>
+          <!-- REVIEW: LastTradedVolume exchange specific tag 5011 -->
+        </Field>
+        <Field><Tag>5055</Tag><Name>TotalTradedVolume</Name><Required>N</Required><Type>Qty</Type><Description>Total traded volume of the contract.</Description>
+          <!-- REVIEW: TotalTradedVolume exchange specific tag 5055 -->
+        </Field>
+        <Field><Tag>5056</Tag><Name>InterimSettlement</Name><Required>N</Required><Type>Price</Type><Description>Interim settlement price.</Description>
+          <!-- REVIEW: InterimSettlement exchange specific tag 5056 -->
+        </Field>
+        <Field><Tag>5031</Tag><Name>LastBuyer</Name><Required>N</Required><Type>String</Type><Description>Firm identifier of the last buyer.</Description>
+          <!-- REVIEW: LastBuyer exchange specific tag 5031 -->
+        </Field>
+        <Field><Tag>5032</Tag><Name>LastSeller</Name><Required>N</Required><Type>String</Type><Description>Firm identifier of the last seller.</Description>
+          <!-- REVIEW: LastSeller exchange specific tag 5032 -->
+        </Field>
+        <Field><Tag>5057</Tag><Name>ImpliedPrice25</Name><Required>N</Required><Type>Price</Type><Description>Implied price at level 25.</Description>
+          <!-- REVIEW: ImpliedPrice25 exchange specific tag 5057 -->
+        </Field>
+        <Field><Tag>5053</Tag><Name>UserMsgCatReq</Name><Required>N</Required><Type>Int</Type><Description>Requested user message category.</Description>
+          <!-- REVIEW: UserMsgCatReq exchange specific tag 5053 -->
+        </Field>
+        <Field><Tag>5048</Tag><Name>SendMsgType</Name><Required>N</Required><Type>char</Type><Description>Type of the user broadcast message.</Description>
+          <!-- REVIEW: SendMsgType exchange specific tag 5048 -->
+        </Field>
+        <Field><Tag>5049</Tag><Name>SendMsgUserId</Name><Required>N</Required><Type>String</Type><Description>User identifier of the broadcast sender.</Description>
+          <!-- REVIEW: SendMsgUserId exchange specific tag 5049 -->
+        </Field>
+        <Field><Tag>5050</Tag><Name>SendMsgText</Name><Required>N</Required><Type>String</Type><Description>Text of the user broadcast message.</Description>
+          <!-- REVIEW: SendMsgText exchange specific tag 5050 -->
+        </Field>
+        <Field><Tag>5051</Tag><Name>QuoteVolume</Name><Required>N</Required><Type>Qty</Type><Description>Volume of the quote.</Description>
+          <!-- REVIEW: QuoteVolume exchange specific tag 5051 -->
+        </Field>
+        <Field><Tag>5052</Tag><Name>QuoteFirm</Name><Required>N</Required><Type>String</Type><Description>Firm identifier of the quote.</Description>
+          <!-- REVIEW: QuoteFirm exchange specific tag 5052 -->
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- New Order Single -->
+    <Message><Name>New Order Single</Name><MsgType>D</MsgType><Category>app</Category><Origin>Client</Origin>
+      <Fields>
+        <Field><Tag>11</Tag><Name>ClOrdID</Name><Required>Y</Required><Type>String</Type><Description>Unique identifier of the order as assigned by the participant.</Description></Field>
+        <Field><Tag>1</Tag><Name>Account</Name><Required>N</Required><Type>String</Type><Description>Account identifier.</Description></Field>
+        <Field><Tag>100</Tag><Name>ExDestination</Name><Required>N</Required><Type>Exchange</Type><Description>Execution destination of the order.</Description></Field>
+        <Field><Tag>55</Tag><Name>Symbol</Name><Required>Y</Required><Type>String</Type><Description>Symbol of the instrument.</Description></Field>
+        <Field><Tag>54</Tag><Name>Side</Name><Required>Y</Required><Type>char</Type><Description>Side of order. Valid values: 1 = Buy, 2 = Sell.</Description></Field>
+        <Field><Tag>38</Tag><Name>OrderQty</Name><Required>Y</Required><Type>Qty</Type><Description>Order quantity.</Description></Field>
+        <Field><Tag>40</Tag><Name>OrdType</Name><Required>Y</Required><Type>char</Type><Description>Order type.</Description></Field>
+        <Field><Tag>44</Tag><Name>Price</Name><Required>N</Required><Type>Price</Type><Description>Order price.</Description></Field>
+        <Field><Tag>81</Tag><Name>ProcessCode</Name><Required>N</Required><Type>char</Type><Description>Processing code for the order.</Description></Field>
+        <Field><Tag>18</Tag><Name>ExecInst</Name><Required>N</Required><Type>MultipleValueString</Type><Description>Execution instructions.</Description></Field>
+        <Field><Tag>5030</Tag><Name>SharedAccount</Name><Required>N</Required><Type>String</Type><Description>Shared account identifier.</Description>
+          <!-- REVIEW: SharedAccount exchange specific tag 5030 -->
+        </Field>
+        <Field><Tag>5029</Tag><Name>SharedOrderIndicator</Name><Required>N</Required><Type>char</Type><Description>Shared order indicator.</Description>
+          <!-- REVIEW: SharedOrderIndicator exchange specific tag 5029 -->
+        </Field>
+        <Field><Tag>58</Tag><Name>Text</Name><Required>N</Required><Type>String</Type><Description>Free text.</Description></Field>
+        <Field><Tag>126</Tag><Name>ExpireTime</Name><Required>N</Required><Type>UTCTimestamp</Type><Description>Time of order expiration.</Description></Field>
+        <Group><Name>NoLegs</Name><Required>N</Required></Group>
+      </Fields>
+    </Message>
+
+    <!-- Order Cancel Replace Request -->
+    <Message><Name>Order Cancel Replace Request</Name><MsgType>G</MsgType><Category>app</Category><Origin>Client</Origin>
+      <Fields>
+        <Field><Tag>11</Tag><Name>ClOrdID</Name><Required>Y</Required><Type>String</Type><Description>Unique identifier of the order as assigned by the participant.</Description></Field>
+        <Field><Tag>37</Tag><Name>OrderID</Name><Required>N</Required><Type>String</Type><Description>Order identifier assigned by the exchange.</Description></Field>
+        <Field><Tag>55</Tag><Name>Symbol</Name><Required>Y</Required><Type>String</Type><Description>Symbol of the instrument.</Description></Field>
+        <Field><Tag>54</Tag><Name>Side</Name><Required>Y</Required><Type>char</Type><Description>Side of order. Valid values: 1 = Buy, 2 = Sell.</Description></Field>
+        <Field><Tag>1</Tag><Name>Account</Name><Required>N</Required><Type>String</Type><Description>Account identifier.</Description></Field>
+        <Field><Tag>38</Tag><Name>OrderQty</Name><Required>N</Required><Type>Qty</Type><Description>Order quantity.</Description></Field>
+        <Field><Tag>40</Tag><Name>OrdType</Name><Required>N</Required><Type>char</Type><Description>Order type.</Description></Field>
+        <Field><Tag>126</Tag><Name>ExpireTime</Name><Required>N</Required><Type>UTCTimestamp</Type><Description>Time of order expiration.</Description></Field>
+        <Field><Tag>81</Tag><Name>ProcessCode</Name><Required>N</Required><Type>char</Type><Description>Processing code for the order.</Description></Field>
+        <Field><Tag>18</Tag><Name>ExecInst</Name><Required>N</Required><Type>MultipleValueString</Type><Description>Execution instructions.</Description></Field>
+        <Field><Tag>58</Tag><Name>Text</Name><Required>N</Required><Type>String</Type><Description>Free text.</Description></Field>
+        <Field><Tag>44</Tag><Name>Price</Name><Required>N</Required><Type>Price</Type><Description>Order price.</Description></Field>
+      </Fields>
+    </Message>
+
+    <!-- Order Cancel Request -->
+    <Message><Name>Order Cancel Request</Name><MsgType>F</MsgType><Category>app</Category><Origin>Client</Origin>
+      <Fields>
+        <Field><Tag>37</Tag><Name>OrderID</Name><Required>N</Required><Type>String</Type><Description>Order identifier assigned by the exchange.</Description></Field>
+        <Field><Tag>11</Tag><Name>ClOrdID</Name><Required>Y</Required><Type>String</Type><Description>Unique identifier of the order as assigned by the participant.</Description></Field>
+        <Field><Tag>125</Tag><Name>CxlType</Name><Required>N</Required><Type>char</Type><Description>Type of cancellation requested.</Description></Field>
+        <Field><Tag>1</Tag><Name>Account</Name><Required>N</Required><Type>String</Type><Description>Account identifier.</Description></Field>
+        <Field><Tag>55</Tag><Name>Symbol</Name><Required>N</Required><Type>String</Type><Description>Symbol of the instrument.</Description></Field>
+        <Field><Tag>54</Tag><Name>Side</Name><Required>Y</Required><Type>char</Type><Description>Side of order. Valid values: 1 = Buy, 2 = Sell.</Description></Field>
+      </Fields>
+    </Message>
+
+    <!-- Execution Report -->
+    <Message><Name>Execution Report</Name><MsgType>8</MsgType><Category>app</Category><Origin>Exchange</Origin>
+      <Fields>
+        <Field><Tag>37</Tag><Name>OrderID</Name><Required>Y</Required><Type>String</Type><Description>Order identifier assigned by the exchange.</Description></Field>
+        <Field><Tag>17</Tag><Name>ExecID</Name><Required>Y</Required><Type>String</Type><Description>Unique identifier of the execution report.</Description></Field>
+        <Field><Tag>11</Tag><Name>ClOrdID</Name><Required>N</Required><Type>String</Type><Description>Unique identifier of the order as assigned by the participant.</Description></Field>
+        <Field><Tag>20</Tag><Name>ExecTransType</Name><Required>N</Required><Type>char</Type><Description>Identifies the transaction type.</Description></Field>
+        <Field><Tag>39</Tag><Name>OrdStatus</Name><Required>Y</Required><Type>char</Type><Description>Current status of the order.</Description></Field>
+        <Field><Tag>103</Tag><Name>OrdRejReason</Name><Required>N</Required><Type>Int</Type><Description>Reason the order was rejected.</Description></Field>
+        <Field><Tag>54</Tag><Name>Side</Name><Required>N</Required><Type>char</Type><Description>Side of order. Valid values: 1 = Buy, 2 = Sell.</Description></Field>
+        <Field><Tag>55</Tag><Name>Symbol</Name><Required>N</Required><Type>String</Type><Description>Symbol of the instrument.</Description></Field>
+        <Field><Tag>1</Tag><Name>Account</Name><Required>N</Required><Type>String</Type><Description>Account identifier.</Description></Field>
+        <Field><Tag>38</Tag><Name>OrderQty</Name><Required>N</Required><Type>Qty</Type><Description>Order quantity.</Description></Field>
+        <Field><Tag>40</Tag><Name>OrdType</Name><Required>N</Required><Type>char</Type><Description>Order type.</Description></Field>
+        <Field><Tag>44</Tag><Name>Price</Name><Required>N</Required><Type>Price</Type><Description>Order price.</Description></Field>
+        <Field><Tag>32</Tag><Name>LastShares</Name><Required>N</Required><Type>Qty</Type><Description>Quantity of this fill.</Description></Field>
+        <Field><Tag>14</Tag><Name>CumQty</Name><Required>N</Required><Type>Qty</Type><Description>Total quantity filled.</Description></Field>
+        <Field><Tag>60</Tag><Name>TransactTime</Name><Required>N</Required><Type>UTCTimestamp</Type><Description>Time the transaction occurred.</Description></Field>
+        <Field><Tag>18</Tag><Name>ExecInst</Name><Required>N</Required><Type>MultipleValueString</Type><Description>Execution instructions.</Description></Field>
+        <Field><Tag>58</Tag><Name>Text</Name><Required>N</Required><Type>String</Type><Description>Free text.</Description></Field>
+        <Field><Tag>5059</Tag><Name>SharedTradeIndicator</Name><Required>N</Required><Type>char</Type><Description>Shared trade indicator.</Description>
+          <!-- REVIEW: SharedTradeIndicator exchange specific tag 5059 -->
+        </Field>
+        <Field><Tag>5001</Tag><Name>UserMsgCat</Name><Required>N</Required><Type>Int</Type><Description>Trade24 user message category.</Description>
+          <!-- REVIEW: UserMsgCat exchange specific tag 5001 -->
+        </Field>
+        <Field><Tag>5036</Tag><Name>ReferenceNo</Name><Required>N</Required><Type>String</Type><Description>Reference number of the message.</Description>
+          <!-- REVIEW: ReferenceNo exchange specific tag 5036 -->
+        </Field>
+        <Field><Tag>5033</Tag><Name>FilterType</Name><Required>N</Required><Type>char</Type><Description>Type of filter applied to the broadcast.</Description>
+          <!-- REVIEW: FilterType exchange specific tag 5033 -->
+        </Field>
+        <Field><Tag>100</Tag><Name>ExDestination</Name><Required>N</Required><Type>Exchange</Type><Description>Execution destination of the order.</Description></Field>
+        <Field><Tag>55</Tag><Name>Symbol</Name><Required>N</Required><Type>String</Type><Description>Symbol of the instrument.</Description></Field>
+        <Field><Tag>5034</Tag><Name>InterSpreadsFlag</Name><Required>N</Required><Type>Boolean</Type><Description>Indicates an inter spread contract.</Description>
+          <!-- REVIEW: InterSpreadsFlag exchange specific tag 5034 -->
+        </Field>
+        <Field><Tag>5035</Tag><Name>Enable</Name><Required>N</Required><Type>Boolean</Type><Description>Enables or disables the subscription.</Description>
+          <!-- REVIEW: Enable exchange specific tag 5035 -->
+        </Field>
+        <Field><Tag>5002</Tag><Name>InstrmntIndicator</Name><Required>N</Required><Type>char</Type><Description>Instrument indicator.</Description>
+          <!-- REVIEW: InstrmntIndicator exchange specific tag 5002 -->
+        </Field>
+        <Field><Tag>5009</Tag><Name>MonthYear</Name><Required>N</Required><Type>MonthYear</Type><Description>Contract month and year.</Description>
+          <!-- REVIEW: MonthYear exchange specific tag 5009 -->
+        </Field>
+        <Field><Tag>5013</Tag><Name>OptionsStrikeP</Name><Required>N</Required><Type>Price</Type><Description>Strike price of the option contract.</Description>
+          <!-- REVIEW: OptionsStrikeP exchange specific tag 5013 -->
+        </Field>
+        <Field><Tag>5012</Tag><Name>ChangeStatusOf</Name><Required>N</Required><Type>char</Type><Description>Indicates which status is being changed.</Description>
+          <!-- REVIEW: ChangeStatusOf exchange specific tag 5012 -->
+        </Field>
+        <Field><Tag>5014</Tag><Name>MarketStatus</Name><Required>N</Required><Type>char</Type><Description>Status of the market for the contract.</Description>
+          <!-- REVIEW: MarketStatus exchange specific tag 5014 -->
+        </Field>
+        <Field><Tag>5015</Tag><Name>LowTradePrice</Name><Required>N</Required><Type>Price</Type><Description>Lowest traded price of the session.</Description>
+          <!-- REVIEW: LowTradePrice exchange specific tag 5015 -->
+        </Field>
+        <Field><Tag>5016</Tag><Name>HighTradePrice</Name><Required>N</Required><Type>Price</Type><Description>Highest traded price of the session.</Description>
+          <!-- REVIEW: HighTradePrice exchange specific tag 5016 -->
+        </Field>
+        <Field><Tag>5017</Tag><Name>SettlementPrice</Name><Required>N</Required><Type>Price</Type><Description>Settlement price of the contract.</Description>
+          <!-- REVIEW: SettlementPrice exchange specific tag 5017 -->
+        </Field>
+        <Field><Tag>5019</Tag><Name>OpenPrice</Name><Required>N</Required><Type>Price</Type><Description>Opening price of the session.</Description>
+          <!-- REVIEW: OpenPrice exchange specific tag 5019 -->
+        </Field>
+        <Field><Tag>5020</Tag><Name>ClosePrice</Name><Required>N</Required><Type>Price</Type><Description>Closing price of the session.</Description>
+          <!-- REVIEW: ClosePrice exchange specific tag 5020 -->
+        </Field>
+        <Field><Tag>5022</Tag><Name>AskPrice</Name><Required>N</Required><Type>Price</Type><Description>Best ask price.</Description>
+          <!-- REVIEW: AskPrice exchange specific tag 5022 -->
+        </Field>
+        <Field><Tag>5023</Tag><Name>AskVolume</Name><Required>N</Required><Type>Qty</Type><Description>Volume at the best ask.</Description>
+          <!-- REVIEW: AskVolume exchange specific tag 5023 -->
+        </Field>
+        <Field><Tag>5024</Tag><Name>BidPrice</Name><Required>N</Required><Type>Price</Type><Description>Best bid price.</Description>
+          <!-- REVIEW: BidPrice exchange specific tag 5024 -->
+        </Field>
+        <Field><Tag>5025</Tag><Name>BidVolume</Name><Required>N</Required><Type>Qty</Type><Description>Volume at the best bid.</Description>
+          <!-- REVIEW: BidVolume exchange specific tag 5025 -->
+        </Field>
+        <Field><Tag>5057</Tag><Name>ImpliedPrice25</Name><Required>N</Required><Type>Price</Type><Description>Implied price at level 25.</Description>
+          <!-- REVIEW: ImpliedPrice25 exchange specific tag 5057 -->
+        </Field>
+        <Field><Tag>5026</Tag><Name>LastTradedPrice</Name><Required>N</Required><Type>Price</Type><Description>Price of the last trade.</Description>
+          <!-- REVIEW: LastTradedPrice exchange specific tag 5026 -->
+        </Field>
+        <Field><Tag>5011</Tag><Name>LastTradedVolume</Name><Required>N</Required><Type>Qty</Type><Description>Volume of the last trade.</Description>
+          <!-- REVIEW: LastTradedVolume exchange specific tag 5011 -->
+        </Field>
+        <Field><Tag>5031</Tag><Name>LastBuyer</Name><Required>N</Required><Type>String</Type><Description>Firm identifier of the last buyer.</Description>
+          <!-- REVIEW: LastBuyer exchange specific tag 5031 -->
+        </Field>
+        <Field><Tag>5032</Tag><Name>LastSeller</Name><Required>N</Required><Type>String</Type><Description>Firm identifier of the last seller.</Description>
+          <!-- REVIEW: LastSeller exchange specific tag 5032 -->
+        </Field>
+        <Field><Tag>5055</Tag><Name>TotalTradedVolume</Name><Required>N</Required><Type>Qty</Type><Description>Total traded volume of the contract.</Description>
+          <!-- REVIEW: TotalTradedVolume exchange specific tag 5055 -->
+        </Field>
+        <Field><Tag>5018</Tag><Name>Volatility</Name><Required>N</Required><Type>float</Type><Description>Volatility of the contract.</Description>
+          <!-- REVIEW: Volatility exchange specific tag 5018 -->
+        </Field>
+        <Field><Tag>5056</Tag><Name>InterimSettlement</Name><Required>N</Required><Type>Price</Type><Description>Interim settlement price.</Description>
+          <!-- REVIEW: InterimSettlement exchange specific tag 5056 -->
+        </Field>
+        <Field><Tag>5037</Tag><Name>CustomVolume</Name><Required>N</Required><Type>Qty</Type><Description>Custom volume of the contract.</Description>
+          <!-- REVIEW: CustomVolume exchange specific tag 5037 -->
+        </Field>
+        <Group><Name>NoLegs</Name><Required>N</Required></Group>
+        <Group><Name>NoAskLevels</Name><Required>N</Required></Group>
+        <Group><Name>NoBidLevels</Name><Required>N</Required></Group>
+      </Fields>
+    </Message>
+
+    <!-- Order Cancel Reject -->
+    <Message><Name>Order Cancel Reject</Name><MsgType>9</MsgType><Category>app</Category><Origin>Exchange</Origin>
+      <Fields>
+        <Field><Tag>37</Tag><Name>OrderID</Name><Required>N</Required><Type>String</Type><Description>Order identifier assigned by the exchange.</Description></Field>
+        <Field><Tag>11</Tag><Name>ClOrdID</Name><Required>Y</Required><Type>String</Type><Description>Unique identifier of the order as assigned by the participant.</Description></Field>
+        <Field><Tag>102</Tag><Name>CxlRejReason</Name><Required>N</Required><Type>Int</Type><Description>Code to identify reason for cancel rejection.</Description></Field>
+        <Field><Tag>58</Tag><Name>Text</Name><Required>N</Required><Type>String</Type><Description>Free text.</Description></Field>
+        <Field><Tag>5001</Tag><Name>UserMsgCat</Name><Required>N</Required><Type>Int</Type><Description>Trade24 user message category.</Description>
+          <!-- REVIEW: UserMsgCat exchange specific tag 5001 -->
+        </Field>
+        <Field><Tag>5036</Tag><Name>ReferenceNo</Name><Required>N</Required><Type>String</Type><Description>Reference number of the message.</Description>
+          <!-- REVIEW: ReferenceNo exchange specific tag 5036 -->
+        </Field>
+        <Field><Tag>17</Tag><Name>ExecID</Name><Required>N</Required><Type>String</Type><Description>Unique identifier of the execution report.</Description></Field>
+        <Field><Tag>54</Tag><Name>Side</Name><Required>N</Required><Type>char</Type><Description>Side of order. Valid values: 1 = Buy, 2 = Sell.</Description></Field>
+        <Field><Tag>55</Tag><Name>Symbol</Name><Required>N</Required><Type>String</Type><Description>Symbol of the instrument.</Description></Field>
+        <Field><Tag>1</Tag><Name>Account</Name><Required>N</Required><Type>String</Type><Description>Account identifier.</Description></Field>
+      </Fields>
+    </Message>
+
+  </Messages>
+
+  <Groups>
+
+    <!-- NoLegs (5038) -->
+    <Group>
+      <Name>NoLegs</Name>
+      <AnchorTag>5038</AnchorTag>
+      <Fields>
+        <Field><Tag>5039</Tag><Name>LegPrice</Name><Required>Y</Required><Type>Price</Type><Description>Price of the individual leg.</Description>
+          <!-- REVIEW: LegPrice exchange specific tag 5039 -->
+        </Field>
+        <Field><Tag>5040</Tag><Name>LegVolumeRatio</Name><Required>N</Required><Type>float</Type><Description>Volume ratio of the individual leg.</Description>
+          <!-- REVIEW: LegVolumeRatio exchange specific tag 5040 -->
+        </Field>
+        <Field><Tag>5041</Tag><Name>LegSide</Name><Required>N</Required><Type>char</Type><Description>Side of the individual leg.</Description>
+          <!-- REVIEW: LegSide exchange specific tag 5041 -->
+        </Field>
+      </Fields>
+    </Group>
+
+    <!-- NoAskLevels (5042) -->
+    <Group>
+      <Name>NoAskLevels</Name>
+      <AnchorTag>5042</AnchorTag>
+      <Fields>
+        <Field><Tag>5043</Tag><Name>AskFirm</Name><Required>Y</Required><Type>String</Type><Description>Firm identifier at the ask level.</Description>
+          <!-- REVIEW: AskFirm exchange specific tag 5043 -->
+        </Field>
+        <Field><Tag>5044</Tag><Name>AskVol</Name><Required>N</Required><Type>Qty</Type><Description>Volume at the ask level.</Description>
+          <!-- REVIEW: AskVol exchange specific tag 5044 -->
+        </Field>
+      </Fields>
+    </Group>
+
+    <!-- NoBidLevels (5045) -->
+    <Group>
+      <Name>NoBidLevels</Name>
+      <AnchorTag>5045</AnchorTag>
+      <Fields>
+        <Field><Tag>5046</Tag><Name>BidFirm</Name><Required>Y</Required><Type>String</Type><Description>Firm identifier at the bid level.</Description>
+          <!-- REVIEW: BidFirm exchange specific tag 5046 -->
+        </Field>
+        <Field><Tag>5047</Tag><Name>BidVol</Name><Required>N</Required><Type>Qty</Type><Description>Volume at the bid level.</Description>
+          <!-- REVIEW: BidVol exchange specific tag 5047 -->
+        </Field>
+      </Fields>
+    </Group>
+
+  </Groups>
+
+  <Values>
+
+    <!-- BeginString (8) static. Source: "FIX.4.0" -->
+    <Value>
+      <Type>BeginString</Type>
+      <Enum>FIX.4.0</Enum>
+      <Kind>Static</Kind>
+      <Description>FIX 4.0</Description>
+    </Value>
+
+    <Value><Type>Side</Type><Enum>1</Enum><Description>Buy</Description></Value>
+    <Value><Type>Side</Type><Enum>2</Enum><Description>Sell</Description></Value>
+
+  </Values>
+
+</OmiFixPdf>

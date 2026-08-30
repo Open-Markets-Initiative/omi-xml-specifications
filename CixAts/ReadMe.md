@@ -6,6 +6,7 @@
 | Division | Protocol | Encoding | Version | Specification |
 | --- | --- | --- | --- | --- |
 | CixAspen | MarketDataFeed | Aspen | 1.4 | [files](CixAts.CixAspen.MarketDataFeed.Aspen.v1.4/) |
+| CixAspen | OrderEntry | Fix | 1.4 | [files](CixAts.CixAspen.OrderEntry.Fix.v1.4/) |
 
 
 CixAts: [website](https://www.thecix.ca "Go to CIX Trading Inc.")

@@ -1,0 +1,494 @@
+<OmiFixPdf>
+
+  <!-- ASX 24 FIX Market Data Specification V2.02 (ASX New Trading Platform). FIXT.1.1 session with FIX 5.0
+       application messages streaming order book, trade, settlement, equilibrium price and market statistic
+       data for the ASX 24 derivatives market, plus security and derivative security lists, market and
+       trading session definitions. The MarketDataIncrementalRefresh (X) and SecurityList (y) messages each
+       carry several documented variants distinguished by MDEntryType and product type; they are modelled
+       here as a single message per MsgType with the union of documented fields. -->
+
+  <Header>
+    <Fields>
+      <Field><Tag>8</Tag><Name>BeginString</Name><Required>Y</Required><Type>String</Type><Fixed>Y</Fixed><Description>Always FIXT.1.1. First field in the message.</Description></Field>
+      <Field><Tag>9</Tag><Name>BodyLength</Name><Required>Y</Required><Type>Length</Type><Fixed>Y</Fixed><Description>Length of the message body. Second field in the message.</Description></Field>
+      <Field><Tag>35</Tag><Name>MsgType</Name><Required>Y</Required><Type>String</Type><Fixed>Y</Fixed><Description>Defines message type. Third field in the message.</Description></Field>
+      <Field><Tag>49</Tag><Name>SenderCompID</Name><Required>Y</Required><Type>String</Type><Description>ID of the party sending the message.</Description></Field>
+      <Field><Tag>56</Tag><Name>TargetCompID</Name><Required>Y</Required><Type>String</Type><Description>ID of the party the message is sent to.</Description></Field>
+      <Field><Tag>34</Tag><Name>MsgSeqNum</Name><Required>Y</Required><Type>SeqNum</Type><Description>Message sequence number.</Description></Field>
+      <Field><Tag>52</Tag><Name>SendingTime</Name><Required>Y</Required><Type>UTCTimestamp</Type><Description>Time of message transmission in UTC.</Description></Field>
+      <Field><Tag>43</Tag><Name>PossDupFlag</Name><Required>N</Required><Type>Boolean</Type><Description>Indicates a possible duplicate message.</Description></Field>
+      <Field><Tag>97</Tag><Name>PossResend</Name><Required>N</Required><Type>Boolean</Type><Description>Indicates a possible resend of an application message.</Description></Field>
+      <Field><Tag>122</Tag><Name>OrigSendingTime</Name><Required>N</Required><Type>UTCTimestamp</Type><Description>Original sending time for retransmitted messages.</Description></Field>
+      <Field><Tag>1128</Tag><Name>ApplVerID</Name><Required>N</Required><Type>String</Type><Description>Application version ID.</Description></Field>
+    </Fields>
+  </Header>
+
+  <Trailer>
+    <Fields>
+      <Field><Tag>10</Tag><Name>CheckSum</Name><Required>Y</Required><Type>String</Type><Fixed>Y</Fixed><Description>Three byte simple checksum. Always the last field of a FIX message.</Description></Field>
+    </Fields>
+  </Trailer>
+
+  <Messages>
+
+    <!-- Logon -->
+    <Message><Name>Logon</Name><MsgType>A</MsgType><Category>admin</Category><Origin>Client,Exchange</Origin>
+      <Fields>
+        <Field><Tag>98</Tag><Name>EncryptMethod</Name><Required>Y</Required><Type>Int</Type><Description>Method of encryption. 0 = None.</Description></Field>
+        <Field><Tag>108</Tag><Name>HeartBtInt</Name><Required>Y</Required><Type>Int</Type><Description>Heartbeat interval in seconds.</Description></Field>
+        <Field><Tag>141</Tag><Name>ResetSeqNumFlag</Name><Required>N</Required><Type>Boolean</Type><Description>Indicates both sides of a FIX session should reset sequence numbers.</Description></Field>
+        <Field><Tag>789</Tag><Name>NextExpectedMsgSeqNum</Name><Required>N</Required><Type>SeqNum</Type><Description>Next expected message sequence number.</Description></Field>
+        <Field><Tag>553</Tag><Name>Username</Name><Required>N</Required><Type>String</Type><Description>User name for authentication.</Description></Field>
+        <Field><Tag>554</Tag><Name>Password</Name><Required>N</Required><Type>String</Type><Description>Password for authentication.</Description></Field>
+        <Field><Tag>925</Tag><Name>NewPassword</Name><Required>N</Required><Type>String</Type><Description>New password when changing the password.</Description></Field>
+        <Field><Tag>1409</Tag><Name>SessionStatus</Name><Required>N</Required><Type>Int</Type><Description>Status of the FIX session.</Description></Field>
+        <Field><Tag>1137</Tag><Name>DefaultApplVerID</Name><Required>N</Required><Type>String</Type><Description>Default application version ID.</Description></Field>
+        <Field><Tag>58</Tag><Name>Text</Name><Required>N</Required><Type>String</Type><Description>Free text. Length restricted to 128 characters.</Description></Field>
+      </Fields>
+    </Message>
+
+    <!-- Heartbeat -->
+    <Message><Name>Heartbeat</Name><MsgType>0</MsgType><Category>admin</Category><Origin>Client,Exchange</Origin>
+      <Fields>
+        <Field><Tag>112</Tag><Name>TestReqID</Name><Required>N</Required><Type>String</Type><Description>Test request identifier.</Description></Field>
+      </Fields>
+    </Message>
+
+    <!-- Test Request -->
+    <Message><Name>Test Request</Name><MsgType>1</MsgType><Category>admin</Category><Origin>Client,Exchange</Origin>
+      <Fields>
+        <Field><Tag>112</Tag><Name>TestReqID</Name><Required>Y</Required><Type>String</Type><Description>Test request identifier.</Description></Field>
+      </Fields>
+    </Message>
+
+    <!-- Resend Request -->
+    <Message><Name>Resend Request</Name><MsgType>2</MsgType><Category>admin</Category><Origin>Client,Exchange</Origin>
+      <Fields>
+        <Field><Tag>7</Tag><Name>BeginSeqNo</Name><Required>Y</Required><Type>SeqNum</Type><Description>First message in range to be resent.</Description></Field>
+        <Field><Tag>16</Tag><Name>EndSeqNo</Name><Required>Y</Required><Type>SeqNum</Type><Description>Last message in range to be resent.</Description></Field>
+      </Fields>
+    </Message>
+
+    <!-- Reject -->
+    <Message><Name>Reject</Name><MsgType>3</MsgType><Category>admin</Category><Origin>Client,Exchange</Origin>
+      <Fields>
+        <Field><Tag>45</Tag><Name>RefSeqNum</Name><Required>Y</Required><Type>SeqNum</Type><Description>MsgSeqNum of the referenced message.</Description></Field>
+        <Field><Tag>371</Tag><Name>RefTagID</Name><Required>N</Required><Type>Int</Type><Description>Tag number of the FIX field being referenced.</Description></Field>
+        <Field><Tag>372</Tag><Name>RefMsgType</Name><Required>N</Required><Type>String</Type><Description>MsgType of the FIX message being referenced.</Description></Field>
+        <Field><Tag>373</Tag><Name>SessionRejectReason</Name><Required>N</Required><Type>Int</Type><Description>Code to identify reason for the session-level reject.</Description></Field>
+        <Field><Tag>58</Tag><Name>Text</Name><Required>N</Required><Type>String</Type><Description>Free text. Length restricted to 128 characters.</Description></Field>
+      </Fields>
+    </Message>
+
+    <!-- Sequence Reset -->
+    <Message><Name>Sequence Reset</Name><MsgType>4</MsgType><Category>admin</Category><Origin>Client,Exchange</Origin>
+      <Fields>
+        <Field><Tag>123</Tag><Name>GapFillFlag</Name><Required>N</Required><Type>Boolean</Type><Description>Indicates a gap fill.</Description></Field>
+        <Field><Tag>36</Tag><Name>NewSeqNo</Name><Required>Y</Required><Type>SeqNum</Type><Description>New sequence number.</Description></Field>
+      </Fields>
+    </Message>
+
+    <!-- Logout -->
+    <Message><Name>Logout</Name><MsgType>5</MsgType><Category>admin</Category><Origin>Client,Exchange</Origin>
+      <Fields>
+        <Field><Tag>1409</Tag><Name>SessionStatus</Name><Required>N</Required><Type>Int</Type><Description>Status of the FIX session.</Description></Field>
+        <Field><Tag>58</Tag><Name>Text</Name><Required>N</Required><Type>String</Type><Description>Free text. Length restricted to 128 characters.</Description></Field>
+      </Fields>
+    </Message>
+
+    <!-- Business Message Reject -->
+    <Message><Name>Business Message Reject</Name><MsgType>j</MsgType><Category>app</Category><Origin>Exchange</Origin>
+      <Fields>
+        <Field><Tag>45</Tag><Name>RefSeqNum</Name><Required>N</Required><Type>SeqNum</Type><Description>MsgSeqNum of the referenced message.</Description></Field>
+        <Field><Tag>372</Tag><Name>RefMsgType</Name><Required>Y</Required><Type>String</Type><Description>MsgType of the FIX message being referenced.</Description></Field>
+        <Field><Tag>380</Tag><Name>BusinessRejectReason</Name><Required>Y</Required><Type>Int</Type><Description>Code to identify reason for the business rejection.</Description></Field>
+        <Field><Tag>379</Tag><Name>BusinessRejectRefID</Name><Required>N</Required><Type>String</Type><Description>RefID of the message being rejected.</Description></Field>
+        <Field><Tag>58</Tag><Name>Text</Name><Required>N</Required><Type>String</Type><Description>Free text. Length restricted to 128 characters.</Description></Field>
+      </Fields>
+    </Message>
+
+    <!-- Market Data Request -->
+    <Message><Name>Market Data Request</Name><MsgType>V</MsgType><Category>app</Category><Origin>Client</Origin>
+      <Fields>
+        <Field><Tag>262</Tag><Name>MDReqID</Name><Required>Y</Required><Type>String</Type><Description>Unique identifier of the market data request.</Description></Field>
+        <Field><Tag>263</Tag><Name>SubscriptionRequestType</Name><Required>Y</Required><Type>char</Type><Description>Type of subscription request.</Description></Field>
+        <Field><Tag>264</Tag><Name>MarketDepth</Name><Required>Y</Required><Type>Int</Type><Description>Depth of market for the subscription.</Description></Field>
+        <Field><Tag>265</Tag><Name>MDUpdateType</Name><Required>N</Required><Type>Int</Type><Description>Type of market data update. I = Incremental.</Description></Field>
+        <Field><Tag>266</Tag><Name>AggregatedBook</Name><Required>N</Required><Type>Boolean</Type><Description>Indicates whether the book is aggregated.</Description></Field>
+        <Group><Name>NoMDEntryTypes</Name><Required>Y</Required></Group>
+        <Group><Name>NoRelatedSym</Name><Required>N</Required></Group>
+        <Group><Name>NoMarketSegments</Name><Required>N</Required></Group>
+        <Group><Name>NoTradeSeqNoSeries</Name><Required>N</Required></Group>
+      </Fields>
+    </Message>
+
+    <!-- Market Data Request Reject -->
+    <Message><Name>Market Data Request Reject</Name><MsgType>Y</MsgType><Category>app</Category><Origin>Exchange</Origin>
+      <Fields>
+        <Field><Tag>262</Tag><Name>MDReqID</Name><Required>Y</Required><Type>String</Type><Description>Unique identifier of the market data request.</Description></Field>
+        <Field><Tag>281</Tag><Name>MDReqRejReason</Name><Required>N</Required><Type>char</Type><Description>Reason the market data request was rejected.</Description></Field>
+        <Field><Tag>58</Tag><Name>Text</Name><Required>N</Required><Type>String</Type><Description>Free text. Length restricted to 128 characters.</Description></Field>
+      </Fields>
+    </Message>
+
+    <!-- Market Data Snapshot Full Refresh -->
+    <Message><Name>Market Data Snapshot Full Refresh</Name><MsgType>W</MsgType><Category>app</Category><Origin>Exchange</Origin>
+      <Fields>
+        <Field><Tag>262</Tag><Name>MDReqID</Name><Required>N</Required><Type>String</Type><Description>Unique identifier of the market data request.</Description></Field>
+        <Field><Tag>75</Tag><Name>TradeDate</Name><Required>N</Required><Type>LocalMktDate</Type><Description>Trade date. Format: YYYYMMDD.</Description></Field>
+        <Field><Tag>55</Tag><Name>Symbol</Name><Required>Y</Required><Type>String</Type><Description>Symbol of the instrument.</Description></Field>
+        <Field><Tag>48</Tag><Name>SecurityID</Name><Required>N</Required><Type>String</Type><Description>Instrument identifier.</Description></Field>
+        <Field><Tag>22</Tag><Name>SecurityIDSource</Name><Required>N</Required><Type>String</Type><Description>Source of the SecurityID.</Description></Field>
+        <Field><Tag>461</Tag><Name>CFICode</Name><Required>N</Required><Type>String</Type><Description>CFI code of the instrument.</Description></Field>
+        <Group><Name>NoMDEntries</Name><Required>Y</Required></Group>
+      </Fields>
+    </Message>
+
+    <!-- Market Data Incremental Refresh -->
+    <Message><Name>Market Data Incremental Refresh</Name><MsgType>X</MsgType><Category>app</Category><Origin>Exchange</Origin>
+      <Fields>
+        <Field><Tag>262</Tag><Name>MDReqID</Name><Required>N</Required><Type>String</Type><Description>Unique identifier of the market data request.</Description></Field>
+        <Field><Tag>75</Tag><Name>TradeDate</Name><Required>N</Required><Type>LocalMktDate</Type><Description>Trade date. Format: YYYYMMDD.</Description></Field>
+        <Group><Name>NoMDEntries</Name><Required>Y</Required></Group>
+      </Fields>
+    </Message>
+
+    <!-- Quote Request -->
+    <Message><Name>Quote Request</Name><MsgType>R</MsgType><Category>app</Category><Origin>Exchange</Origin>
+      <Fields>
+        <Field><Tag>131</Tag><Name>QuoteReqID</Name><Required>Y</Required><Type>String</Type><Description>Unique identifier of the quote request.</Description></Field>
+        <Group><Name>NoRelatedSym</Name><Required>N</Required></Group>
+      </Fields>
+    </Message>
+
+    <!-- RFQ Request -->
+    <Message><Name>RFQ Request</Name><MsgType>AH</MsgType><Category>app</Category><Origin>Client</Origin>
+      <Fields>
+        <Field><Tag>320</Tag><Name>SecurityReqID</Name><Required>N</Required><Type>String</Type><Description>Unique identifier of the security request.</Description></Field>
+        <Group><Name>NoPartyIDs</Name><Required>N</Required></Group>
+        <Group><Name>NoRelatedSym</Name><Required>N</Required></Group>
+      </Fields>
+    </Message>
+
+    <!-- Market Definition Request -->
+    <Message><Name>Market Definition Request</Name><MsgType>BT</MsgType><Category>app</Category><Origin>Client</Origin>
+      <Fields>
+        <Field><Tag>1393</Tag><Name>MarketReqID</Name><Required>Y</Required><Type>String</Type><Description>Unique identifier of the market definition request.</Description></Field>
+        <Field><Tag>263</Tag><Name>SubscriptionRequestType</Name><Required>N</Required><Type>char</Type><Description>Type of subscription request.</Description></Field>
+        <Field><Tag>1301</Tag><Name>MarketID</Name><Required>N</Required><Type>String</Type><Description>Identifier of the market.</Description></Field>
+        <Field><Tag>1300</Tag><Name>MarketSegmentID</Name><Required>N</Required><Type>String</Type><Description>Identifier of the market segment.</Description></Field>
+      </Fields>
+    </Message>
+
+    <!-- Market Definition -->
+    <Message><Name>Market Definition</Name><MsgType>BU</MsgType><Category>app</Category><Origin>Exchange</Origin>
+      <Fields>
+        <Field><Tag>1394</Tag><Name>MarketReportID</Name><Required>Y</Required><Type>String</Type><Description>Unique identifier of the market definition report.</Description></Field>
+        <Field><Tag>1393</Tag><Name>MarketReqID</Name><Required>N</Required><Type>String</Type><Description>Unique identifier of the market definition request.</Description></Field>
+        <Field><Tag>1301</Tag><Name>MarketID</Name><Required>Y</Required><Type>String</Type><Description>Identifier of the market.</Description></Field>
+        <Field><Tag>1300</Tag><Name>MarketSegmentID</Name><Required>N</Required><Type>String</Type><Description>Identifier of the market segment.</Description></Field>
+        <Field><Tag>1396</Tag><Name>MarketSegmentDesc</Name><Required>N</Required><Type>String</Type><Description>Description of the market segment.</Description></Field>
+        <Field><Tag>1325</Tag><Name>ParentMktSegmID</Name><Required>N</Required><Type>String</Type><Description>Identifier of the parent market segment.</Description></Field>
+        <Field><Tag>2400</Tag><Name>EffectiveBusinessDate</Name><Required>N</Required><Type>LocalMktDate</Type><Description>Effective business date of the market definition.</Description></Field>
+        <Group><Name>NoTickRules</Name><Required>N</Required></Group>
+      </Fields>
+    </Message>
+
+    <!-- Security List Request -->
+    <Message><Name>Security List Request</Name><MsgType>x</MsgType><Category>app</Category><Origin>Client</Origin>
+      <Fields>
+        <Field><Tag>320</Tag><Name>SecurityReqID</Name><Required>Y</Required><Type>String</Type><Description>Unique identifier of the security request.</Description></Field>
+        <Field><Tag>263</Tag><Name>SubscriptionRequestType</Name><Required>N</Required><Type>char</Type><Description>Type of subscription request.</Description></Field>
+        <Field><Tag>559</Tag><Name>SecurityListRequestType</Name><Required>Y</Required><Type>Int</Type><Description>Type of security list request.</Description></Field>
+        <Field><Tag>1301</Tag><Name>MarketID</Name><Required>N</Required><Type>String</Type><Description>Identifier of the market.</Description></Field>
+        <Field><Tag>1300</Tag><Name>MarketSegmentID</Name><Required>N</Required><Type>String</Type><Description>Identifier of the market segment.</Description></Field>
+      </Fields>
+    </Message>
+
+    <!-- Security List -->
+    <Message><Name>Security List</Name><MsgType>y</MsgType><Category>app</Category><Origin>Exchange</Origin>
+      <Fields>
+        <Field><Tag>320</Tag><Name>SecurityReqID</Name><Required>Y</Required><Type>String</Type><Description>Unique identifier of the security request.</Description></Field>
+        <Field><Tag>322</Tag><Name>SecurityResponseID</Name><Required>Y</Required><Type>String</Type><Description>Unique identifier of the security response.</Description></Field>
+        <Field><Tag>393</Tag><Name>TotNoRelatedSym</Name><Required>N</Required><Type>Int</Type><Description>Total number of instruments across all fragments.</Description></Field>
+        <Field><Tag>560</Tag><Name>SecurityRequestResult</Name><Required>N</Required><Type>Int</Type><Description>Result of the security request.</Description></Field>
+        <Field><Tag>1301</Tag><Name>MarketID</Name><Required>N</Required><Type>String</Type><Description>Identifier of the market.</Description></Field>
+        <Field><Tag>1300</Tag><Name>MarketSegmentID</Name><Required>N</Required><Type>String</Type><Description>Identifier of the market segment.</Description></Field>
+        <Field><Tag>893</Tag><Name>LastFragment</Name><Required>N</Required><Type>Boolean</Type><Description>Indicates whether this is the last fragment of a fragmented response.</Description></Field>
+        <Field><Tag>715</Tag><Name>ClearingBusinessDate</Name><Required>N</Required><Type>LocalMktDate</Type><Description>Clearing business date.</Description></Field>
+        <Group><Name>NoRelatedSym</Name><Required>N</Required></Group>
+      </Fields>
+    </Message>
+
+    <!-- Derivative Security List -->
+    <Message><Name>Derivative Security List</Name><MsgType>AA</MsgType><Category>app</Category><Origin>Exchange</Origin>
+      <Fields>
+        <Field><Tag>320</Tag><Name>SecurityReqID</Name><Required>N</Required><Type>String</Type><Description>Unique identifier of the security request.</Description></Field>
+        <Field><Tag>322</Tag><Name>SecurityResponseID</Name><Required>Y</Required><Type>String</Type><Description>Unique identifier of the security response.</Description></Field>
+        <Field><Tag>393</Tag><Name>TotNoRelatedSym</Name><Required>N</Required><Type>Int</Type><Description>Total number of instruments across all fragments.</Description></Field>
+        <Field><Tag>560</Tag><Name>SecurityRequestResult</Name><Required>N</Required><Type>Int</Type><Description>Result of the security request.</Description></Field>
+        <Field><Tag>893</Tag><Name>LastFragment</Name><Required>N</Required><Type>Boolean</Type><Description>Indicates whether this is the last fragment of a fragmented response.</Description></Field>
+        <Field><Tag>715</Tag><Name>ClearingBusinessDate</Name><Required>N</Required><Type>LocalMktDate</Type><Description>Clearing business date.</Description></Field>
+        <Field><Tag>311</Tag><Name>UnderlyingSymbol</Name><Required>N</Required><Type>String</Type><Description>Symbol of the underlying instrument.</Description></Field>
+        <Field><Tag>309</Tag><Name>UnderlyingSecurityID</Name><Required>N</Required><Type>String</Type><Description>Identifier of the underlying instrument.</Description></Field>
+        <Field><Tag>305</Tag><Name>UnderlyingSecurityIDSource</Name><Required>N</Required><Type>String</Type><Description>Source of the UnderlyingSecurityID.</Description></Field>
+        <Field><Tag>308</Tag><Name>UnderlyingSecurityExchange</Name><Required>N</Required><Type>Exchange</Type><Description>Exchange of the underlying instrument.</Description></Field>
+        <Field><Tag>435</Tag><Name>UnderlyingCouponRate</Name><Required>N</Required><Type>Percentage</Type><Description>Coupon rate of the underlying instrument.</Description></Field>
+        <Field><Tag>246</Tag><Name>UnderlyingFactor</Name><Required>N</Required><Type>float</Type><Description>Factor applied to the underlying instrument.</Description></Field>
+        <Field><Tag>1248</Tag><Name>DerivativeCFICode</Name><Required>N</Required><Type>String</Type><Description>CFI code of the derivative security.</Description></Field>
+        <Field><Tag>1247</Tag><Name>DerivativeSecurityType</Name><Required>N</Required><Type>String</Type><Description>Type of the derivative security.</Description></Field>
+        <Field><Tag>1279</Tag><Name>DerivativeSecurityGroup</Name><Required>N</Required><Type>String</Type><Description>Group the derivative security belongs to.</Description></Field>
+        <Field><Tag>1272</Tag><Name>DerivativeSecurityDesc</Name><Required>N</Required><Type>String</Type><Description>Description of the derivative security.</Description></Field>
+        <Field><Tag>1267</Tag><Name>DerivativePriceQuoteCurrency</Name><Required>N</Required><Type>Currency</Type><Description>Price quote currency of the derivative security.</Description></Field>
+        <Field><Tag>1251</Tag><Name>DerivativeMinPriceIncrement</Name><Required>N</Required><Type>float</Type><Description>Minimum price increment of the derivative security.</Description></Field>
+        <Field><Tag>1252</Tag><Name>DerivativeMaturityMonthYear</Name><Required>N</Required><Type>MonthYear</Type><Description>Expiration month and year of the derivative security.</Description></Field>
+        <Field><Tag>1253</Tag><Name>DerivativeMaturityDate</Name><Required>N</Required><Type>LocalMktDate</Type><Description>Maturity date of the derivative security.</Description></Field>
+        <Field><Tag>1266</Tag><Name>DerivativeSecurityExchange</Name><Required>N</Required><Type>Exchange</Type><Description>Exchange of the derivative security.</Description></Field>
+        <Field><Tag>1287</Tag><Name>DerivativeEventType</Name><Required>N</Required><Type>Int</Type><Description>Type of derivative security event.</Description></Field>
+        <Field><Tag>1288</Tag><Name>DerivativeEventDate</Name><Required>N</Required><Type>LocalMktDate</Type><Description>Date of the derivative security event.</Description></Field>
+        <Group><Name>NoMarketSegments</Name><Required>N</Required></Group>
+        <Group><Name>NoRelatedSym</Name><Required>N</Required></Group>
+      </Fields>
+    </Message>
+
+    <!-- Derivative Security List Request -->
+    <Message><Name>Derivative Security List Request</Name><MsgType>z</MsgType><Category>app</Category><Origin>Client</Origin>
+      <Fields>
+        <Field><Tag>320</Tag><Name>SecurityReqID</Name><Required>Y</Required><Type>String</Type><Description>Unique identifier of the security request.</Description></Field>
+        <Field><Tag>263</Tag><Name>SubscriptionRequestType</Name><Required>N</Required><Type>char</Type><Description>Type of subscription request.</Description></Field>
+        <Field><Tag>559</Tag><Name>SecurityListRequestType</Name><Required>N</Required><Type>Int</Type><Description>Type of security list request.</Description></Field>
+        <Field><Tag>1301</Tag><Name>MarketID</Name><Required>N</Required><Type>String</Type><Description>Identifier of the market.</Description></Field>
+        <Field><Tag>1300</Tag><Name>MarketSegmentID</Name><Required>N</Required><Type>String</Type><Description>Identifier of the market segment.</Description></Field>
+      </Fields>
+    </Message>
+
+    <!-- Security Status -->
+    <Message><Name>Security Status</Name><MsgType>f</MsgType><Category>app</Category><Origin>Exchange</Origin>
+      <Fields>
+        <Field><Tag>324</Tag><Name>SecurityStatusReqID</Name><Required>N</Required><Type>String</Type><Description>Unique identifier of the security status request.</Description></Field>
+        <Field><Tag>55</Tag><Name>Symbol</Name><Required>Y</Required><Type>String</Type><Description>Symbol of the instrument.</Description></Field>
+        <Field><Tag>48</Tag><Name>SecurityID</Name><Required>N</Required><Type>String</Type><Description>Instrument identifier.</Description></Field>
+        <Field><Tag>22</Tag><Name>SecurityIDSource</Name><Required>N</Required><Type>String</Type><Description>Source of the SecurityID.</Description></Field>
+        <Field><Tag>75</Tag><Name>TradeDate</Name><Required>N</Required><Type>LocalMktDate</Type><Description>Trade date. Format: YYYYMMDD.</Description></Field>
+        <Field><Tag>326</Tag><Name>SecurityTradingStatus</Name><Required>N</Required><Type>Int</Type><Description>Trading status of the security.</Description></Field>
+        <Field><Tag>327</Tag><Name>HaltReason</Name><Required>N</Required><Type>char</Type><Description>Reason the security was halted.</Description></Field>
+        <Field><Tag>461</Tag><Name>CFICode</Name><Required>N</Required><Type>String</Type><Description>CFI code of the instrument.</Description></Field>
+        <Field><Tag>58</Tag><Name>Text</Name><Required>N</Required><Type>String</Type><Description>Free text. Length restricted to 128 characters.</Description></Field>
+      </Fields>
+    </Message>
+
+    <!-- Trading Session Status Request -->
+    <Message><Name>Trading Session Status Request</Name><MsgType>g</MsgType><Category>app</Category><Origin>Client</Origin>
+      <Fields>
+        <Field><Tag>335</Tag><Name>TradSesReqID</Name><Required>Y</Required><Type>String</Type><Description>Unique identifier of the trading session status request.</Description></Field>
+        <Field><Tag>1301</Tag><Name>MarketID</Name><Required>N</Required><Type>String</Type><Description>Identifier of the market.</Description></Field>
+        <Field><Tag>1300</Tag><Name>MarketSegmentID</Name><Required>N</Required><Type>String</Type><Description>Identifier of the market segment.</Description></Field>
+        <Field><Tag>263</Tag><Name>SubscriptionRequestType</Name><Required>N</Required><Type>char</Type><Description>Type of subscription request.</Description></Field>
+      </Fields>
+    </Message>
+
+    <!-- Trading Session Status -->
+    <Message><Name>Trading Session Status</Name><MsgType>h</MsgType><Category>app</Category><Origin>Exchange</Origin>
+      <Fields>
+        <Field><Tag>335</Tag><Name>TradSesReqID</Name><Required>N</Required><Type>String</Type><Description>Unique identifier of the trading session status request.</Description></Field>
+        <Field><Tag>336</Tag><Name>TradingSessionID</Name><Required>Y</Required><Type>String</Type><Description>Identifier of the trading session.</Description></Field>
+        <Field><Tag>1301</Tag><Name>MarketID</Name><Required>N</Required><Type>String</Type><Description>Identifier of the market.</Description></Field>
+        <Field><Tag>1300</Tag><Name>MarketSegmentID</Name><Required>N</Required><Type>String</Type><Description>Identifier of the market segment.</Description></Field>
+        <Field><Tag>75</Tag><Name>TradeDate</Name><Required>N</Required><Type>LocalMktDate</Type><Description>Trade date. Format: YYYYMMDD.</Description></Field>
+        <Field><Tag>58</Tag><Name>Text</Name><Required>N</Required><Type>String</Type><Description>Free text. Length restricted to 128 characters.</Description></Field>
+      </Fields>
+    </Message>
+
+    <!-- News -->
+    <Message><Name>News</Name><MsgType>B</MsgType><Category>app</Category><Origin>Exchange</Origin>
+      <Fields>
+        <Field><Tag>148</Tag><Name>Headline</Name><Required>Y</Required><Type>String</Type><Description>Headline of the news item.</Description></Field>
+        <Field><Tag>42</Tag><Name>OrigTime</Name><Required>N</Required><Type>UTCTimestamp</Type><Description>Time the news item was originated.</Description></Field>
+        <Group><Name>NoLinesOfText</Name><Required>N</Required></Group>
+      </Fields>
+    </Message>
+
+  </Messages>
+
+  <Groups>
+
+    <!-- NoPartyIDs (453) -->
+    <Group>
+      <Name>NoPartyIDs</Name>
+      <AnchorTag>453</AnchorTag>
+      <Fields>
+        <Field><Tag>448</Tag><Name>PartyID</Name><Required>Y</Required><Type>String</Type><Description>Party identifier.</Description></Field>
+        <Field><Tag>447</Tag><Name>PartyIDSource</Name><Required>N</Required><Type>char</Type><Description>Source of the PartyID.</Description></Field>
+        <Field><Tag>452</Tag><Name>PartyRole</Name><Required>Y</Required><Type>Int</Type><Description>Role of the specified PartyID.</Description></Field>
+      </Fields>
+    </Group>
+
+    <!-- NoMDEntryTypes (267) -->
+    <Group>
+      <Name>NoMDEntryTypes</Name>
+      <AnchorTag>267</AnchorTag>
+      <Fields>
+        <Field><Tag>269</Tag><Name>MDEntryType</Name><Required>Y</Required><Type>char</Type><Description>Type of market data entry.</Description></Field>
+      </Fields>
+    </Group>
+
+    <!-- NoRelatedSym (146) -->
+    <Group>
+      <Name>NoRelatedSym</Name>
+      <AnchorTag>146</AnchorTag>
+      <Fields>
+        <Field><Tag>55</Tag><Name>Symbol</Name><Required>Y</Required><Type>String</Type><Description>Symbol of the instrument.</Description></Field>
+        <Field><Tag>48</Tag><Name>SecurityID</Name><Required>N</Required><Type>String</Type><Description>Instrument identifier.</Description></Field>
+        <Field><Tag>22</Tag><Name>SecurityIDSource</Name><Required>N</Required><Type>String</Type><Description>Source of the SecurityID.</Description></Field>
+        <Field><Tag>54</Tag><Name>Side</Name><Required>N</Required><Type>char</Type><Description>Side of order. Valid values: 1 = Buy, 2 = Sell.</Description></Field>
+        <Field><Tag>38</Tag><Name>OrderQty</Name><Required>N</Required><Type>Qty</Type><Description>Order quantity.</Description></Field>
+        <Field><Tag>207</Tag><Name>SecurityExchange</Name><Required>N</Required><Type>Exchange</Type><Description>Exchange the instrument trades on.</Description></Field>
+        <Field><Tag>461</Tag><Name>CFICode</Name><Required>N</Required><Type>String</Type><Description>CFI code of the instrument.</Description></Field>
+        <Field><Tag>1151</Tag><Name>SecurityGroup</Name><Required>N</Required><Type>String</Type><Description>Group the instrument belongs to.</Description></Field>
+        <Field><Tag>107</Tag><Name>SecurityDesc</Name><Required>N</Required><Type>String</Type><Description>Description of the instrument.</Description></Field>
+        <Field><Tag>969</Tag><Name>MinPriceIncrement</Name><Required>N</Required><Type>float</Type><Description>Minimum price increment of the instrument.</Description></Field>
+        <Field><Tag>15</Tag><Name>Currency</Name><Required>N</Required><Type>Currency</Type><Description>Currency of the instrument.</Description></Field>
+        <Field><Tag>1378</Tag><Name>MultilegPriceMethod</Name><Required>N</Required><Type>Int</Type><Description>Method used to price the multileg instrument.</Description></Field>
+        <Field><Tag>200</Tag><Name>MaturityMonthYear</Name><Required>N</Required><Type>MonthYear</Type><Description>Expiration month and year. Format: YYYYMM.</Description></Field>
+        <Field><Tag>541</Tag><Name>MaturityDate</Name><Required>N</Required><Type>LocalMktDate</Type><Description>Maturity date of the instrument.</Description></Field>
+        <Field><Tag>1079</Tag><Name>MaturityTime</Name><Required>N</Required><Type>UTCTimestamp</Type><Description>Maturity time of the instrument.</Description></Field>
+        <Field><Tag>223</Tag><Name>CouponRate</Name><Required>N</Required><Type>Percentage</Type><Description>Coupon rate of the instrument.</Description></Field>
+        <Field><Tag>231</Tag><Name>ContractMultiplier</Name><Required>N</Required><Type>float</Type><Description>Contract multiplier of the instrument.</Description></Field>
+        <Field><Tag>202</Tag><Name>StrikePrice</Name><Required>N</Required><Type>Price</Type><Description>Strike price of the option.</Description></Field>
+        <Group><Name>NoLegs</Name><Required>N</Required></Group>
+        <Group><Name>NoInstrAttrib</Name><Required>N</Required></Group>
+        <Group><Name>NoLotTypeRules</Name><Required>N</Required></Group>
+      </Fields>
+    </Group>
+
+    <!-- NoMarketSegments (1310) -->
+    <Group>
+      <Name>NoMarketSegments</Name>
+      <AnchorTag>1310</AnchorTag>
+      <Fields>
+        <Field><Tag>1301</Tag><Name>MarketID</Name><Required>Y</Required><Type>String</Type><Description>Identifier of the market.</Description></Field>
+        <Field><Tag>1300</Tag><Name>MarketSegmentID</Name><Required>N</Required><Type>String</Type><Description>Identifier of the market segment.</Description></Field>
+      </Fields>
+    </Group>
+
+    <!-- NoTradeSeqNoSeries (7565) -->
+    <Group>
+      <Name>NoTradeSeqNoSeries</Name>
+      <AnchorTag>7565</AnchorTag>
+      <Fields>
+        <Field><Tag>7555</Tag><Name>TradeSeqNoSeries</Name><Required>Y</Required><Type>String</Type><Description>Asx 24 trade sequence number series.</Description>
+          <!-- REVIEW: TradeSeqNoSeries Asx 24 specific tag 7555 -->
+        </Field>
+        <Field><Tag>7554</Tag><Name>TradeSeqNo</Name><Required>N</Required><Type>Int</Type><Description>Asx 24 trade sequence number within the series.</Description>
+          <!-- REVIEW: TradeSeqNo Asx 24 specific tag 7554 -->
+        </Field>
+      </Fields>
+    </Group>
+
+    <!-- NoMDEntries (268) -->
+    <Group>
+      <Name>NoMDEntries</Name>
+      <AnchorTag>268</AnchorTag>
+      <Fields>
+        <Field><Tag>269</Tag><Name>MDEntryType</Name><Required>Y</Required><Type>char</Type><Description>Type of market data entry.</Description></Field>
+        <Field><Tag>279</Tag><Name>MDUpdateAction</Name><Required>N</Required><Type>char</Type><Description>Type of market data update action.</Description></Field>
+        <Field><Tag>83</Tag><Name>RptSeq</Name><Required>N</Required><Type>Int</Type><Description>Sequence number of the market data report per instrument.</Description></Field>
+        <Field><Tag>278</Tag><Name>MDEntryID</Name><Required>N</Required><Type>String</Type><Description>Identifier of the market data entry.</Description></Field>
+        <Field><Tag>55</Tag><Name>Symbol</Name><Required>N</Required><Type>String</Type><Description>Symbol of the instrument.</Description></Field>
+        <Field><Tag>48</Tag><Name>SecurityID</Name><Required>N</Required><Type>String</Type><Description>Instrument identifier.</Description></Field>
+        <Field><Tag>22</Tag><Name>SecurityIDSource</Name><Required>N</Required><Type>String</Type><Description>Source of the SecurityID.</Description></Field>
+        <Field><Tag>461</Tag><Name>CFICode</Name><Required>N</Required><Type>String</Type><Description>CFI code of the instrument.</Description></Field>
+        <Field><Tag>1023</Tag><Name>MDPriceLevel</Name><Required>N</Required><Type>Int</Type><Description>Price level of the entry within the book.</Description></Field>
+        <Field><Tag>290</Tag><Name>MDEntryPositionNo</Name><Required>N</Required><Type>Int</Type><Description>Position of the entry within the price level.</Description></Field>
+        <Field><Tag>346</Tag><Name>NumberOfOrders</Name><Required>N</Required><Type>Int</Type><Description>Number of orders at the price level.</Description></Field>
+        <Field><Tag>270</Tag><Name>MDEntryPx</Name><Required>N</Required><Type>Price</Type><Description>Price of the market data entry.</Description></Field>
+        <Field><Tag>271</Tag><Name>MDEntrySize</Name><Required>N</Required><Type>Qty</Type><Description>Quantity of the market data entry.</Description></Field>
+        <Field><Tag>272</Tag><Name>MDEntryDate</Name><Required>N</Required><Type>UTCDateOnly</Type><Description>Date of the market data entry.</Description></Field>
+        <Field><Tag>273</Tag><Name>MDEntryTime</Name><Required>N</Required><Type>UTCTimeOnly</Type><Description>Time of the market data entry.</Description></Field>
+        <Field><Tag>276</Tag><Name>QuoteCondition</Name><Required>N</Required><Type>MultipleValueString</Type><Description>Condition of the quote.</Description></Field>
+        <Field><Tag>277</Tag><Name>TradeCondition</Name><Required>N</Required><Type>MultipleValueString</Type><Description>Condition of the trade.</Description></Field>
+        <Field><Tag>574</Tag><Name>MatchType</Name><Required>N</Required><Type>String</Type><Description>The point in the matching process at which this trade was matched.</Description></Field>
+        <Field><Tag>828</Tag><Name>TrdType</Name><Required>N</Required><Type>Int</Type><Description>Type of trade.</Description></Field>
+        <Field><Tag>811</Tag><Name>PriceDelta</Name><Required>N</Required><Type>float</Type><Description>Price delta of the instrument.</Description></Field>
+        <Field><Tag>1188</Tag><Name>Volatility</Name><Required>N</Required><Type>float</Type><Description>Volatility of the instrument.</Description></Field>
+        <Field><Tag>7555</Tag><Name>TradeSeqNoSeries</Name><Required>N</Required><Type>String</Type><Description>Asx 24 trade sequence number series.</Description>
+          <!-- REVIEW: TradeSeqNoSeries Asx 24 specific tag 7555 -->
+        </Field>
+        <Field><Tag>7554</Tag><Name>TradeSeqNo</Name><Required>N</Required><Type>Int</Type><Description>Asx 24 trade sequence number within the series.</Description>
+          <!-- REVIEW: TradeSeqNo Asx 24 specific tag 7554 -->
+        </Field>
+      </Fields>
+    </Group>
+
+    <!-- NoTickRules (1205) -->
+    <Group>
+      <Name>NoTickRules</Name>
+      <AnchorTag>1205</AnchorTag>
+      <Fields>
+        <Field><Tag>1206</Tag><Name>StartTickPriceRange</Name><Required>Y</Required><Type>Price</Type><Description>Start of the tick price range.</Description></Field>
+        <Field><Tag>1208</Tag><Name>TickIncrement</Name><Required>N</Required><Type>Price</Type><Description>Tick increment within the price range.</Description></Field>
+      </Fields>
+    </Group>
+
+    <!-- NoLegs (555) -->
+    <Group>
+      <Name>NoLegs</Name>
+      <AnchorTag>555</AnchorTag>
+      <Fields>
+        <Field><Tag>600</Tag><Name>LegSymbol</Name><Required>Y</Required><Type>String</Type><Description>Symbol of the individual leg.</Description></Field>
+        <Field><Tag>602</Tag><Name>LegSecurityID</Name><Required>N</Required><Type>String</Type><Description>Security identifier of the individual leg.</Description></Field>
+        <Field><Tag>603</Tag><Name>LegSecurityIDSource</Name><Required>N</Required><Type>String</Type><Description>Source of the LegSecurityID.</Description></Field>
+        <Field><Tag>623</Tag><Name>LegRatioQty</Name><Required>N</Required><Type>Qty</Type><Description>Ratio of quantity for this leg.</Description></Field>
+        <Field><Tag>624</Tag><Name>LegSide</Name><Required>N</Required><Type>char</Type><Description>Side of the individual leg.</Description></Field>
+        <Field><Tag>566</Tag><Name>LegPrice</Name><Required>N</Required><Type>Price</Type><Description>Price of the individual leg.</Description></Field>
+      </Fields>
+    </Group>
+
+    <!-- NoInstrAttrib (870) -->
+    <Group>
+      <Name>NoInstrAttrib</Name>
+      <AnchorTag>870</AnchorTag>
+      <Fields>
+        <Field><Tag>870</Tag><Name>NoInstrAttrib</Name><Required>Y</Required><Type>NumInGroup</Type><Description>Number of instrument attributes.</Description></Field>
+      </Fields>
+      <!-- REVIEW: instrument attribute member tags not extractable from the source tables -->
+    </Group>
+
+    <!-- NoLotTypeRules (1234) -->
+    <Group>
+      <Name>NoLotTypeRules</Name>
+      <AnchorTag>1234</AnchorTag>
+      <Fields>
+        <Field><Tag>1234</Tag><Name>NoLotTypeRules</Name><Required>Y</Required><Type>NumInGroup</Type><Description>Number of lot type rules.</Description></Field>
+      </Fields>
+      <!-- REVIEW: lot type rule member tags not extractable from the source tables -->
+    </Group>
+
+    <!-- NoLinesOfText (33) -->
+    <Group>
+      <Name>NoLinesOfText</Name>
+      <AnchorTag>33</AnchorTag>
+      <Fields>
+        <Field><Tag>58</Tag><Name>Text</Name><Required>Y</Required><Type>String</Type><Description>Free text. Length restricted to 128 characters.</Description></Field>
+      </Fields>
+    </Group>
+
+  </Groups>
+
+  <Values>
+
+    <!-- BeginString (8) static. Source: "Always FIXT.1.1. First field in the message." -->
+    <Value>
+      <Type>BeginString</Type>
+      <Enum>FIXT.1.1</Enum>
+      <Kind>Static</Kind>
+      <Description>FIXT 1.1</Description>
+    </Value>
+
+    <Value><Type>Side</Type><Enum>1</Enum><Description>Buy</Description></Value>
+    <Value><Type>Side</Type><Enum>2</Enum><Description>Sell</Description></Value>
+    <Value><Type>MDUpdateType</Type><Enum>1</Enum><Description>Incremental Refresh</Description></Value>
+
+  </Values>
+
+</OmiFixPdf>
