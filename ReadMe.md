@@ -8,6 +8,10 @@ Omi Xml Specifications are the exchange protocol specification xml files that ca
 
 The specification xmls in this repository are published copies of the original protocol specifications — they are not generated. If you find an error in a specification, updates are welcome as pull requests.
 
+| Specification Files |
+| --- |
+| 332 |
+
 ## Testing
 
 [![Validate](https://github.com/Open-Markets-Initiative/omi-xml-specifications/actions/workflows/validate.yml/badge.svg)](https://github.com/Open-Markets-Initiative/omi-xml-specifications/actions/workflows/validate.yml)
