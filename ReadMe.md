@@ -21,7 +21,7 @@ The Open Markets Initiative (Omi) is a group of technologists dedicated to enhan
 Other generated code can be found at [Omi Projects](https://github.com/Open-Markets-Initiative/Directory/tree/main/Projects "Open Markets Initiative Projects"); for Omi rules and regulations, see [Omi Directory](https://github.com/Open-Markets-Initiative/Directory "Open Markets Initiative Directory").
 ## Organizations
 
-> [24X][24X.Directory] · [A2X][A2X.Directory] · [Aquis][Aquis.Directory] · [Asx][Asx.Directory] · [B3][B3.Directory] · [Bist][Bist.Directory] · [BlueOceanAts][BlueOceanAts.Directory] · [CixAts][CixAts.Directory] · [Cme][Cme.Directory] · [Coinbase][Coinbase.Directory] · [Iex][Iex.Directory] · [Memx][Memx.Directory] · [OtcMarkets][OtcMarkets.Directory]
+> [24X][24X.Directory] · [A2X][A2X.Directory] · [Aquis][Aquis.Directory] · [Asx][Asx.Directory] · [B3][B3.Directory] · [Bist][Bist.Directory] · [BlueOceanAts][BlueOceanAts.Directory] · [CixAts][CixAts.Directory] · [Cme][Cme.Directory] · [Coinbase][Coinbase.Directory] · [Eurex][Eurex.Directory] · [Euronext][Euronext.Directory] · [Iex][Iex.Directory] · [Memx][Memx.Directory] · [OtcMarkets][OtcMarkets.Directory]
 
 ## Exchanges
 
@@ -29,7 +29,7 @@ Other generated code can be found at [Omi Projects](https://github.com/Open-Mark
 
 ## Platforms
 
-> [CixAts CixAspen][CixAspen.Platform] · [Cme Globex][Globex.Platform]
+> [CixAts CixAspen][CixAspen.Platform] · [Cme Globex][Globex.Platform] · [Euronext Optiq][Optiq.Platform] · [Eurex T7][T7.Platform]
 
 ## Related Definitions
 
@@ -65,6 +65,8 @@ Enjoy.
 [CixAts.Directory]: https://github.com/Open-Markets-Initiative/omi-xml-specifications/tree/main/CixAts "CIX Trading Inc."
 [Cme.Directory]: https://github.com/Open-Markets-Initiative/omi-xml-specifications/tree/main/Cme "CME Group"
 [Coinbase.Directory]: https://github.com/Open-Markets-Initiative/omi-xml-specifications/tree/main/Coinbase "Coinbase"
+[Eurex.Directory]: https://github.com/Open-Markets-Initiative/omi-xml-specifications/tree/main/Eurex "Eurex Exchange"
+[Euronext.Directory]: https://github.com/Open-Markets-Initiative/omi-xml-specifications/tree/main/Euronext "Euronext"
 [Iex.Directory]: https://github.com/Open-Markets-Initiative/omi-xml-specifications/tree/main/Iex "Investors Exchange"
 [Memx.Directory]: https://github.com/Open-Markets-Initiative/omi-xml-specifications/tree/main/Memx "The Members Exchange"
 [OtcMarkets.Directory]: https://github.com/Open-Markets-Initiative/omi-xml-specifications/tree/main/OtcMarkets "OTC Markets Group"
@@ -86,7 +88,9 @@ Enjoy.
 [MemxEquities.Exchange]: https://github.com/Open-Markets-Initiative/Directory/tree/main/Organizations/Memx/Protocols/MemxEquities "Memx Equities"
 [MemxOptions.Exchange]: https://github.com/Open-Markets-Initiative/Directory/tree/main/Organizations/Memx/Protocols/MemxOptions "Memx Options"
 [MoonAts.Ats]: https://github.com/Open-Markets-Initiative/Directory/tree/main/Organizations/OtcMarkets/Protocols/MoonAts "MOON ATS"
+[Optiq.Platform]: https://github.com/Open-Markets-Initiative/Directory/tree/main/Organizations/Euronext/Protocols/Optiq "Euronext Optiq"
 [Overnight.Ats]: https://github.com/Open-Markets-Initiative/Directory/tree/main/Organizations/OtcMarkets/Protocols/Overnight "OTC Link Overnight OTC"
+[T7.Platform]: https://github.com/Open-Markets-Initiative/Directory/tree/main/Organizations/Eurex/Protocols/T7 "T7"
 [Kaitai.Definitions.Repository]: https://github.com/Open-Markets-Initiative/omi-kaitai-struct-definitions "Omi Kaitai Struct Definitions"
 [Dfdl.Definitions.Repository]: https://github.com/Open-Markets-Initiative/omi-dfdl-definitions "Omi DFDL Definitions"
 [P4.Definitions.Repository]: https://github.com/Open-Markets-Initiative/omi-p4-definitions "Omi P4 Definitions"
