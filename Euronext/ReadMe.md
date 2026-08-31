@@ -13,6 +13,7 @@
 | Optiq | DropCopyGateway | Sbe | 6.64 | [files](Euronext.Optiq.DropCopyGateway.Sbe.v6.64/) |
 | Optiq | DropCopyGateway | Sbe | 6.65 | [files](Euronext.Optiq.DropCopyGateway.Sbe.v6.65/) |
 | Optiq | DropCopyGateway | Sbe | 6.67 | [files](Euronext.Optiq.DropCopyGateway.Sbe.v6.67/) |
+| Optiq | DropCopyGateway | Sbe | 6.69 | [files](Euronext.Optiq.DropCopyGateway.Sbe.v6.69/) |
 | Optiq | MarketDataGateway | Sbe | 3.0 | [files](Euronext.Optiq.MarketDataGateway.Sbe.v3.0/) |
 | Optiq | MarketDataGateway | Sbe | 3.1 | [files](Euronext.Optiq.MarketDataGateway.Sbe.v3.1/) |
 | Optiq | MarketDataGateway | Sbe | 4.0 | [files](Euronext.Optiq.MarketDataGateway.Sbe.v4.0/) |
@@ -52,6 +53,7 @@
 | Optiq | MarketDataGateway | Sbe | 6.64 | [files](Euronext.Optiq.MarketDataGateway.Sbe.v6.64/) |
 | Optiq | MarketDataGateway | Sbe | 6.65 | [files](Euronext.Optiq.MarketDataGateway.Sbe.v6.65/) |
 | Optiq | MarketDataGateway | Sbe | 6.67 | [files](Euronext.Optiq.MarketDataGateway.Sbe.v6.67/) |
+| Optiq | MarketDataGateway | Sbe | 6.69 | [files](Euronext.Optiq.MarketDataGateway.Sbe.v6.69/) |
 | Optiq | OrderEntryGateway | Sbe | 1.3 | [files](Euronext.Optiq.OrderEntryGateway.Sbe.v1.3/) |
 | Optiq | OrderEntryGateway | Sbe | 2.0 | [files](Euronext.Optiq.OrderEntryGateway.Sbe.v2.0/) |
 | Optiq | OrderEntryGateway | Sbe | 2.1 | [files](Euronext.Optiq.OrderEntryGateway.Sbe.v2.1/) |
@@ -91,6 +93,7 @@
 | Optiq | OrderEntryGateway | Sbe | 6.64 | [files](Euronext.Optiq.OrderEntryGateway.Sbe.v6.64/) |
 | Optiq | OrderEntryGateway | Sbe | 6.65 | [files](Euronext.Optiq.OrderEntryGateway.Sbe.v6.65/) |
 | Optiq | OrderEntryGateway | Sbe | 6.67 | [files](Euronext.Optiq.OrderEntryGateway.Sbe.v6.67/) |
+| Optiq | OrderEntryGateway | Sbe | 6.69 | [files](Euronext.Optiq.OrderEntryGateway.Sbe.v6.69/) |
 
 
 Euronext: [website](https://www.euronext.com "Go to Euronext")
