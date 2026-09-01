@@ -1,0 +1,851 @@
+<OmiFixPdf>
+
+  <!-- Japannext FIX Drop Copy Specification (Equities) v2.03. A listen only Fix session
+       mirroring the execution reports of the equities trading session, including those
+       for orders entered over Ouch. CopyMsgIndicator marks a report as a copy. -->
+
+  <Header>
+    <Fields>
+      <Field>
+        <Tag>8</Tag>
+        <Name>BeginString</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+        <Description>Always the first field. Value FIX.4.2.</Description>
+      </Field>
+      <Field>
+        <Tag>9</Tag>
+        <Name>BodyLength</Name>
+        <Required>Y</Required>
+        <Type>Length</Type>
+        <Fixed>Y</Fixed>
+        <Description>Message length in bytes, from the field after BodyLength up to and including the delimiter preceding CheckSum.</Description>
+      </Field>
+      <Field>
+        <Tag>35</Tag>
+        <Name>MsgType</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+        <Description>Message type. Always the third field.</Description>
+      </Field>
+      <Field>
+        <Tag>34</Tag>
+        <Name>MsgSeqNum</Name>
+        <Required>Y</Required>
+        <Type>SeqNum</Type>
+        <Description>Message sequence number.</Description>
+      </Field>
+      <Field>
+        <Tag>49</Tag>
+        <Name>SenderCompID</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Description>Identifier of the sending firm.</Description>
+      </Field>
+      <Field>
+        <Tag>50</Tag>
+        <Name>SenderSubID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Description>Sub identifier of the sending firm.</Description>
+      </Field>
+      <Field>
+        <Tag>56</Tag>
+        <Name>TargetCompID</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Description>Identifier of the receiving party.</Description>
+      </Field>
+      <Field>
+        <Tag>57</Tag>
+        <Name>TargetSubID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Description>Sub identifier of the receiving party.</Description>
+      </Field>
+      <Field>
+        <Tag>52</Tag>
+        <Name>SendingTime</Name>
+        <Required>Y</Required>
+        <Type>UTCTimestamp</Type>
+        <Description>Time of message transmission.</Description>
+      </Field>
+      <Field>
+        <Tag>122</Tag>
+        <Name>OrigSendingTime</Name>
+        <Required>N</Required>
+        <Type>UTCTimestamp</Type>
+        <Description>Original sending time, required when PossDupFlag is Y.</Description>
+      </Field>
+    </Fields>
+  </Header>
+  <Trailer>
+    <Fields>
+      <Field>
+        <Tag>10</Tag>
+        <Name>CheckSum</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+        <Description>Always the last field of the message.</Description>
+      </Field>
+    </Fields>
+  </Trailer>
+
+  <Messages>
+
+    <Message>
+      <Name>Logon</Name>
+      <MsgType>A</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>98</Tag>
+          <Name>EncryptMethod</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Encryption method. 0 means none.</Description>
+        </Field>
+        <Field>
+          <Tag>108</Tag>
+          <Name>HeartBtInt</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Heartbeat interval in seconds.</Description>
+        </Field>
+        <Field>
+          <Tag>141</Tag>
+          <Name>ResetSeqNumFlag</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>Y resets sequence numbers on both sides of the session.</Description>
+        </Field>
+        <Field>
+          <Tag>553</Tag>
+          <Name>Username</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Session user name.</Description>
+        </Field>
+        <Field>
+          <Tag>554</Tag>
+          <Name>Password</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Session password.</Description>
+        </Field>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>Heartbeat</Name>
+      <MsgType>0</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>112</Tag>
+          <Name>TestReqID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Test request identifier.</Description>
+        </Field>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>Test Request</Name>
+      <MsgType>1</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>112</Tag>
+          <Name>TestReqID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Test request identifier.</Description>
+        </Field>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>Resend Request</Name>
+      <MsgType>2</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>7</Tag>
+          <Name>BeginSeqNo</Name>
+          <Required>Y</Required>
+          <Type>SeqNum</Type>
+          <Description>First message of the range to resend.</Description>
+        </Field>
+        <Field>
+          <Tag>16</Tag>
+          <Name>EndSeqNo</Name>
+          <Required>Y</Required>
+          <Type>SeqNum</Type>
+          <Description>Last message of the range to resend.</Description>
+        </Field>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>Reject</Name>
+      <MsgType>3</MsgType>
+      <Category>admin</Category>
+      <Origin>Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>45</Tag>
+          <Name>RefSeqNum</Name>
+          <Required>Y</Required>
+          <Type>SeqNum</Type>
+          <Description>MsgSeqNum of the rejected message.</Description>
+        </Field>
+        <Field>
+          <Tag>371</Tag>
+          <Name>RefTagID</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Tag number of the field causing the rejection.</Description>
+        </Field>
+        <Field>
+          <Tag>372</Tag>
+          <Name>RefMsgType</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>MsgType of the rejected message.</Description>
+        </Field>
+        <Field>
+          <Tag>373</Tag>
+          <Name>SessionRejectReason</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Reason the message was rejected at the session level.</Description>
+        </Field>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Free text, carrying the reason on a rejection.</Description>
+        </Field>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>Sequence Reset</Name>
+      <MsgType>4</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>36</Tag>
+          <Name>NewSeqNo</Name>
+          <Required>Y</Required>
+          <Type>SeqNum</Type>
+          <Description>Sequence number the receiver should expect next.</Description>
+        </Field>
+        <Field>
+          <Tag>123</Tag>
+          <Name>GapFillFlag</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>Y fills a gap in place of messages that are not resent, N resets the sequence outright.</Description>
+        </Field>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>Logout</Name>
+      <MsgType>5</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Free text, carrying the reason on a rejection.</Description>
+        </Field>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>Execution Report</Name>
+      <MsgType>8</MsgType>
+      <Category>app</Category>
+      <Origin>Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>1</Tag>
+          <Name>Account</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Account mnemonic, assigned by the firm.</Description>
+        </Field>
+        <Field>
+          <Tag>6</Tag>
+          <Name>AvgPx</Name>
+          <Required>Y</Required>
+          <Type>Price</Type>
+          <Description>Average price of the fills on this order.</Description>
+        </Field>
+        <Field>
+          <Tag>11</Tag>
+          <Name>ClOrdID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Unique identifier of the order, assigned by the firm.</Description>
+        </Field>
+        <Field>
+          <Tag>14</Tag>
+          <Name>CumQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>Quantity of the order filled so far.</Description>
+        </Field>
+        <Field>
+          <Tag>17</Tag>
+          <Name>ExecID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Unique identifier of this execution report.</Description>
+        </Field>
+        <Field>
+          <Tag>20</Tag>
+          <Name>ExecTransType</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Transaction type of the report.</Description>
+        </Field>
+        <Field>
+          <Tag>31</Tag>
+          <Name>LastPx</Name>
+          <Required>C</Required>
+          <Type>Price</Type>
+          <Description>Price of this fill, present on a trade.</Description>
+        </Field>
+        <Field>
+          <Tag>32</Tag>
+          <Name>LastShares</Name>
+          <Required>C</Required>
+          <Type>Qty</Type>
+          <Description>Quantity of this fill, present on a trade.</Description>
+        </Field>
+        <Field>
+          <Tag>37</Tag>
+          <Name>OrderID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Order identifier assigned by the venue.</Description>
+        </Field>
+        <Field>
+          <Tag>38</Tag>
+          <Name>OrderQty</Name>
+          <Required>C</Required>
+          <Type>Qty</Type>
+          <Description>Order quantity.</Description>
+        </Field>
+        <Field>
+          <Tag>39</Tag>
+          <Name>OrdStatus</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Current state of the order.</Description>
+        </Field>
+        <Field>
+          <Tag>40</Tag>
+          <Name>OrdType</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Order type.</Description>
+        </Field>
+        <Field>
+          <Tag>41</Tag>
+          <Name>OrigClOrdID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>ClOrdID of the order being cancelled or replaced.</Description>
+        </Field>
+        <Field>
+          <Tag>44</Tag>
+          <Name>Price</Name>
+          <Required>C</Required>
+          <Type>Price</Type>
+          <Description>Order price. Required for limit orders.</Description>
+        </Field>
+        <Field>
+          <Tag>47</Tag>
+          <Name>Rule80A</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>Capacity of the firm placing the order. Absence of the field is read as principal.</Description>
+        </Field>
+        <Field>
+          <Tag>54</Tag>
+          <Name>Side</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Side of the order.</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Instrument identifier.</Description>
+        </Field>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Free text, carrying the reason on a rejection.</Description>
+        </Field>
+        <Field>
+          <Tag>59</Tag>
+          <Name>TimeInForce</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>Time qualifier of the order.</Description>
+        </Field>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>Y</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Time the transaction was generated.</Description>
+        </Field>
+        <Field>
+          <Tag>109</Tag>
+          <Name>ClientID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Client identifier.</Description>
+        </Field>
+        <Field>
+          <Tag>110</Tag>
+          <Name>MinQty</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Minimum quantity to be executed.</Description>
+        </Field>
+        <Field>
+          <Tag>150</Tag>
+          <Name>ExecType</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Type of execution this report conveys.</Description>
+        </Field>
+        <Field>
+          <Tag>151</Tag>
+          <Name>LeavesQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>Quantity still open on the order.</Description>
+        </Field>
+        <Field>
+          <Tag>378</Tag>
+          <Name>ExecRestatementReason</Name>
+          <Required>C</Required>
+          <Type>Int</Type>
+          <Description>Why the order was restated, present when the venue cancels an order itself.</Description>
+        </Field>
+        <Field>
+          <Tag>544</Tag>
+          <Name>CashMargin</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>Whether the order is cash, margin open or margin close.</Description>
+        </Field>
+        <Field>
+          <Tag>797</Tag>
+          <Name>CopyMsgIndicator</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>Y marks the report as a copy of one delivered on the trading session.</Description>
+        </Field>
+        <Field>
+          <Tag>851</Tag>
+          <Name>LastLiquidityInd</Name>
+          <Required>C</Required>
+          <Type>Int</Type>
+          <Description>Whether this fill added or removed liquidity, present on a trade.</Description>
+        </Field>
+        <Field>
+          <Tag>880</Tag>
+          <Name>TrdMatchID</Name>
+          <Required>C</Required>
+          <Type>String</Type>
+          <Description>Identifier of the match this fill belongs to, present on a trade.</Description>
+        </Field>
+        <Field>
+          <Tag>8060</Tag>
+          <Name>OrderClassification</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>Japannext user defined field classifying the order.</Description>
+        </Field>
+        <Field>
+          <Tag>8214</Tag>
+          <Name>MarginTransactionType</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>Japannext user defined field carrying the margin transaction type.</Description>
+        </Field>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>Business Message Reject</Name>
+      <MsgType>j</MsgType>
+      <Category>app</Category>
+      <Origin>Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>45</Tag>
+          <Name>RefSeqNum</Name>
+          <Required>Y</Required>
+          <Type>SeqNum</Type>
+          <Description>MsgSeqNum of the rejected message.</Description>
+        </Field>
+        <Field>
+          <Tag>372</Tag>
+          <Name>RefMsgType</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>MsgType of the rejected message.</Description>
+        </Field>
+        <Field>
+          <Tag>379</Tag>
+          <Name>BusinessRejectRefID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Identifier of the rejected message.</Description>
+        </Field>
+        <Field>
+          <Tag>380</Tag>
+          <Name>BusinessRejectReason</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Reason the application message was rejected.</Description>
+        </Field>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Free text, carrying the reason on a rejection.</Description>
+        </Field>
+      </Fields>
+    </Message>
+  </Messages>
+
+  <Values>
+
+    <Value>
+      <Type>EncryptMethod</Type>
+      <Enum>0</Enum>
+      <Description>None</Description>
+    </Value>
+
+    <Value>
+      <Type>ExecInst</Type>
+      <Enum>6</Enum>
+      <Description>Participate, do not initiate, post only</Description>
+    </Value>
+    <Value>
+      <Type>ExecInst</Type>
+      <Enum>x</Enum>
+      <Description>Ignore notional value checks</Description>
+    </Value>
+
+    <Value>
+      <Type>HandlInst</Type>
+      <Enum>1</Enum>
+      <Description>Automated execution order, private, no broker intervention</Description>
+    </Value>
+
+    <Value>
+      <Type>OrdType</Type>
+      <Enum>2</Enum>
+      <Description>Limit</Description>
+    </Value>
+
+    <Value>
+      <Type>Rule80A</Type>
+      <Enum>A</Enum>
+      <Description>Agency</Description>
+    </Value>
+    <Value>
+      <Type>Rule80A</Type>
+      <Enum>P</Enum>
+      <Description>Principal</Description>
+    </Value>
+
+    <Value>
+      <Type>Side</Type>
+      <Enum>1</Enum>
+      <Description>Buy</Description>
+    </Value>
+    <Value>
+      <Type>Side</Type>
+      <Enum>2</Enum>
+      <Description>Sell</Description>
+    </Value>
+
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>0</Enum>
+      <Description>Day</Description>
+    </Value>
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>3</Enum>
+      <Description>Immediate or cancel</Description>
+    </Value>
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>4</Enum>
+      <Description>Fill or kill</Description>
+    </Value>
+
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>0</Enum>
+      <Description>New</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>1</Enum>
+      <Description>Partially filled</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>2</Enum>
+      <Description>Filled</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>4</Enum>
+      <Description>Canceled</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>5</Enum>
+      <Description>Replaced</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>6</Enum>
+      <Description>Pending cancel</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>8</Enum>
+      <Description>Rejected</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>A</Enum>
+      <Description>Pending new</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>E</Enum>
+      <Description>Pending replace</Description>
+    </Value>
+
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>0</Enum>
+      <Description>New</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>2</Enum>
+      <Description>Fill</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>4</Enum>
+      <Description>Canceled</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>5</Enum>
+      <Description>Replaced</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>6</Enum>
+      <Description>Pending cancel</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>8</Enum>
+      <Description>Rejected</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>A</Enum>
+      <Description>Pending new</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>E</Enum>
+      <Description>Pending replace</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>I</Enum>
+      <Description>Order status</Description>
+    </Value>
+
+    <Value>
+      <Type>ExecTransType</Type>
+      <Enum>0</Enum>
+      <Description>New</Description>
+    </Value>
+    <Value>
+      <Type>ExecTransType</Type>
+      <Enum>3</Enum>
+      <Description>Status</Description>
+    </Value>
+
+    <Value>
+      <Type>ExecRestatementReason</Type>
+      <Enum>12</Enum>
+      <Description>Cancel on connection loss</Description>
+    </Value>
+    <Value>
+      <Type>ExecRestatementReason</Type>
+      <Enum>100</Enum>
+      <Description>Trade prevention</Description>
+    </Value>
+
+    <Value>
+      <Type>LastLiquidityInd</Type>
+      <Enum>1</Enum>
+      <Description>Added liquidity</Description>
+    </Value>
+    <Value>
+      <Type>LastLiquidityInd</Type>
+      <Enum>2</Enum>
+      <Description>Removed liquidity</Description>
+    </Value>
+
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>0</Enum>
+      <Description>Invalid tag number</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>1</Enum>
+      <Description>Required tag missing</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>2</Enum>
+      <Description>Tag not defined for this message type</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>3</Enum>
+      <Description>Undefined tag</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>4</Enum>
+      <Description>Tag specified without a value</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>5</Enum>
+      <Description>Value is incorrect for this tag</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>6</Enum>
+      <Description>Incorrect data format for value</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>9</Enum>
+      <Description>CompID problem</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>10</Enum>
+      <Description>SendingTime accuracy problem</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>11</Enum>
+      <Description>Invalid MsgType</Description>
+    </Value>
+
+    <Value>
+      <Type>BusinessRejectReason</Type>
+      <Enum>0</Enum>
+      <Description>Other</Description>
+    </Value>
+    <Value>
+      <Type>BusinessRejectReason</Type>
+      <Enum>3</Enum>
+      <Description>Unsupported message type</Description>
+    </Value>
+    <Value>
+      <Type>BusinessRejectReason</Type>
+      <Enum>5</Enum>
+      <Description>Conditionally required field missing</Description>
+    </Value>
+
+    <Value>
+      <Type>Side</Type>
+      <Enum>5</Enum>
+      <Description>Sell short</Description>
+    </Value>
+    <Value>
+      <Type>Side</Type>
+      <Enum>6</Enum>
+      <Description>Sell short exempt</Description>
+    </Value>
+
+    <Value>
+      <Type>CashMargin</Type>
+      <Enum>1</Enum>
+      <Description>Cash</Description>
+    </Value>
+    <Value>
+      <Type>CashMargin</Type>
+      <Enum>2</Enum>
+      <Description>Margin open</Description>
+    </Value>
+    <Value>
+      <Type>CashMargin</Type>
+      <Enum>3</Enum>
+      <Description>Margin close</Description>
+    </Value>
+
+    <Value>
+      <Type>MarginTransactionType</Type>
+      <Enum>1</Enum>
+      <Description>Negotiable</Description>
+    </Value>
+    <Value>
+      <Type>MarginTransactionType</Type>
+      <Enum>2</Enum>
+      <Description>Standardized</Description>
+    </Value>
+
+    <Value>
+      <Type>CopyMsgIndicator</Type>
+      <Enum>Y</Enum>
+      <Description>The report copies one delivered on the trading session</Description>
+    </Value>
+
+  </Values>
+
+</OmiFixPdf>
