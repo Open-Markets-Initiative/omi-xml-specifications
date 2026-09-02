@@ -10,7 +10,7 @@ The specification xmls in this repository are published copies of the original p
 
 | Specification Files |
 | --- |
-| 332 |
+| 345 |
 
 ## Testing
 
@@ -25,11 +25,11 @@ The Open Markets Initiative (Omi) is a group of technologists dedicated to enhan
 Other generated code can be found at [Omi Projects](https://github.com/Open-Markets-Initiative/Directory/tree/main/Projects "Open Markets Initiative Projects"); for Omi rules and regulations, see [Omi Directory](https://github.com/Open-Markets-Initiative/Directory "Open Markets Initiative Directory").
 ## Organizations
 
-> [24X][24X.Directory] · [A2X][A2X.Directory] · [Aquis][Aquis.Directory] · [Asx][Asx.Directory] · [B3][B3.Directory] · [Bist][Bist.Directory] · [BlueOceanAts][BlueOceanAts.Directory] · [CixAts][CixAts.Directory] · [Cme][Cme.Directory] · [Coinbase][Coinbase.Directory] · [Eurex][Eurex.Directory] · [Euronext][Euronext.Directory] · [Iex][Iex.Directory] · [Memx][Memx.Directory] · [OtcMarkets][OtcMarkets.Directory]
+> [24X][24X.Directory] · [A2X][A2X.Directory] · [Aquis][Aquis.Directory] · [Asx][Asx.Directory] · [B3][B3.Directory] · [Bist][Bist.Directory] · [BlueOceanAts][BlueOceanAts.Directory] · [CixAts][CixAts.Directory] · [Cme][Cme.Directory] · [Coinbase][Coinbase.Directory] · [Eurex][Eurex.Directory] · [Euronext][Euronext.Directory] · [Iex][Iex.Directory] · [Jnx][Jnx.Directory] · [Memx][Memx.Directory] · [OtcMarkets][OtcMarkets.Directory]
 
 ## Exchanges
 
-> [24XEquities][24XEquities.Exchange] · [AquisEquities][AquisEquities.Exchange] · [AsxDerivatives][AsxDerivatives.Exchange] · [AsxSecurities][AsxSecurities.Exchange] · [B3Derivatives][B3Derivatives.Exchange] · [BlueEquities][BlueEquities.Ats] · [BorsaIstanbul][BorsaIstanbul.Exchange] · [CoinbaseDerivatives][CoinbaseDerivatives.Exchange] · [Deribit][Deribit.Exchange] · [IexEquities][IexEquities.Exchange] · [IexOptions][IexOptions.Exchange] · [LinkAts][LinkAts.Ats] · [LinkNqb][LinkNqb.Ats] · [MemxEquities][MemxEquities.Exchange] · [MemxOptions][MemxOptions.Exchange] · [MoonAts][MoonAts.Ats] · [Overnight][Overnight.Ats]
+> [24XEquities][24XEquities.Exchange] · [AquisEquities][AquisEquities.Exchange] · [AsxDerivatives][AsxDerivatives.Exchange] · [AsxSecurities][AsxSecurities.Exchange] · [B3Derivatives][B3Derivatives.Exchange] · [BlueEquities][BlueEquities.Ats] · [BorsaIstanbul][BorsaIstanbul.Exchange] · [CoinbaseDerivatives][CoinbaseDerivatives.Exchange] · [Deribit][Deribit.Exchange] · [IexEquities][IexEquities.Exchange] · [IexOptions][IexOptions.Exchange] · [JnxBonds][JnxBonds.Exchange] · [JnxEquities][JnxEquities.Exchange] · [LinkAts][LinkAts.Ats] · [LinkNqb][LinkNqb.Ats] · [MemxEquities][MemxEquities.Exchange] · [MemxOptions][MemxOptions.Exchange] · [MoonAts][MoonAts.Ats] · [Overnight][Overnight.Ats]
 
 ## Platforms
 
@@ -72,6 +72,7 @@ Enjoy.
 [Eurex.Directory]: https://github.com/Open-Markets-Initiative/omi-xml-specifications/tree/main/Eurex "Eurex Exchange"
 [Euronext.Directory]: https://github.com/Open-Markets-Initiative/omi-xml-specifications/tree/main/Euronext "Euronext"
 [Iex.Directory]: https://github.com/Open-Markets-Initiative/omi-xml-specifications/tree/main/Iex "Investors Exchange"
+[Jnx.Directory]: https://github.com/Open-Markets-Initiative/omi-xml-specifications/tree/main/Jnx "Japannext Securities"
 [Memx.Directory]: https://github.com/Open-Markets-Initiative/omi-xml-specifications/tree/main/Memx "The Members Exchange"
 [OtcMarkets.Directory]: https://github.com/Open-Markets-Initiative/omi-xml-specifications/tree/main/OtcMarkets "OTC Markets Group"
 [24XEquities.Exchange]: https://github.com/Open-Markets-Initiative/Directory/tree/main/Organizations/24X/Protocols/24XEquities "24X Equities"
@@ -87,6 +88,8 @@ Enjoy.
 [Globex.Platform]: https://github.com/Open-Markets-Initiative/Directory/tree/main/Organizations/Cme/Protocols/Globex "CME Globex"
 [IexEquities.Exchange]: https://github.com/Open-Markets-Initiative/Directory/tree/main/Organizations/Iex/Protocols/IexEquities "IEX Equities"
 [IexOptions.Exchange]: https://github.com/Open-Markets-Initiative/Directory/tree/main/Organizations/Iex/Protocols/IexOptions "IEX Options"
+[JnxBonds.Exchange]: https://github.com/Open-Markets-Initiative/Directory/tree/main/Organizations/Jnx/Protocols/JnxBonds "Japannext Bonds"
+[JnxEquities.Exchange]: https://github.com/Open-Markets-Initiative/Directory/tree/main/Organizations/Jnx/Protocols/JnxEquities "Japannext Equities"
 [LinkAts.Ats]: https://github.com/Open-Markets-Initiative/Directory/tree/main/Organizations/OtcMarkets/Protocols/LinkAts "OTC Link ATS"
 [LinkNqb.Ats]: https://github.com/Open-Markets-Initiative/Directory/tree/main/Organizations/OtcMarkets/Protocols/LinkNqb "OTC Link NQB"
 [MemxEquities.Exchange]: https://github.com/Open-Markets-Initiative/Directory/tree/main/Organizations/Memx/Protocols/MemxEquities "Memx Equities"
