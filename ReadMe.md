@@ -10,7 +10,7 @@ The specification xmls in this repository are published copies of the original p
 
 | Specification Files |
 | --- |
-| 368 |
+| 375 |
 
 ## Testing
 
@@ -25,11 +25,11 @@ The Open Markets Initiative (Omi) is a group of technologists dedicated to enhan
 Other generated code can be found at [Omi Projects](https://github.com/Open-Markets-Initiative/Directory/tree/main/Projects "Open Markets Initiative Projects"); for Omi rules and regulations, see [Omi Directory](https://github.com/Open-Markets-Initiative/Directory "Open Markets Initiative Directory").
 ## Organizations
 
-> [24X][24X.Directory] · [A2X][A2X.Directory] · [Aquis][Aquis.Directory] · [Asx][Asx.Directory] · [B3][B3.Directory] · [Bist][Bist.Directory] · [BlueOceanAts][BlueOceanAts.Directory] · [Bse][Bse.Directory] · [CixAts][CixAts.Directory] · [Cme][Cme.Directory] · [Coinbase][Coinbase.Directory] · [Eurex][Eurex.Directory] · [Euronext][Euronext.Directory] · [Iex][Iex.Directory] · [Jnx][Jnx.Directory] · [Memx][Memx.Directory] · [Nasdaq][Nasdaq.Directory] · [Nse][Nse.Directory] · [OtcMarkets][OtcMarkets.Directory]
+> [24X][24X.Directory] · [A2X][A2X.Directory] · [Aquis][Aquis.Directory] · [Asx][Asx.Directory] · [B3][B3.Directory] · [Bist][Bist.Directory] · [Biva][Biva.Directory] · [BlueOceanAts][BlueOceanAts.Directory] · [Bse][Bse.Directory] · [CixAts][CixAts.Directory] · [Cme][Cme.Directory] · [Coinbase][Coinbase.Directory] · [Eurex][Eurex.Directory] · [Euronext][Euronext.Directory] · [Iex][Iex.Directory] · [Jnx][Jnx.Directory] · [Memx][Memx.Directory] · [Nasdaq][Nasdaq.Directory] · [Nse][Nse.Directory] · [OtcMarkets][OtcMarkets.Directory]
 
 ## Exchanges
 
-> [24XEquities][24XEquities.Exchange] · [AquisEquities][AquisEquities.Exchange] · [AsxDerivatives][AsxDerivatives.Exchange] · [AsxSecurities][AsxSecurities.Exchange] · [B3Derivatives][B3Derivatives.Exchange] · [BlueEquities][BlueEquities.Ats] · [BorsaIstanbul][BorsaIstanbul.Exchange] · [BseIndia][BseIndia.Exchange] · [CoinbaseDerivatives][CoinbaseDerivatives.Exchange] · [Deribit][Deribit.Exchange] · [IexEquities][IexEquities.Exchange] · [IexOptions][IexOptions.Exchange] · [JnxBonds][JnxBonds.Exchange] · [JnxEquities][JnxEquities.Exchange] · [LinkAts][LinkAts.Ats] · [LinkNqb][LinkNqb.Ats] · [MemxEquities][MemxEquities.Exchange] · [MemxOptions][MemxOptions.Exchange] · [MoonAts][MoonAts.Ats] · [NordicEquities][NordicEquities.Exchange] · [NseCd][NseCd.Exchange] · [NseCm][NseCm.Exchange] · [NseCom][NseCom.Exchange] · [NseFo][NseFo.Exchange] · [Overnight][Overnight.Ats]
+> [24XEquities][24XEquities.Exchange] · [AquisEquities][AquisEquities.Exchange] · [AsxDerivatives][AsxDerivatives.Exchange] · [AsxSecurities][AsxSecurities.Exchange] · [B3Derivatives][B3Derivatives.Exchange] · [BivaEquities][BivaEquities.Exchange] · [BlueEquities][BlueEquities.Ats] · [BorsaIstanbul][BorsaIstanbul.Exchange] · [BseIndia][BseIndia.Exchange] · [CoinbaseDerivatives][CoinbaseDerivatives.Exchange] · [Deribit][Deribit.Exchange] · [IexEquities][IexEquities.Exchange] · [IexOptions][IexOptions.Exchange] · [JnxBonds][JnxBonds.Exchange] · [JnxEquities][JnxEquities.Exchange] · [LinkAts][LinkAts.Ats] · [LinkNqb][LinkNqb.Ats] · [MemxEquities][MemxEquities.Exchange] · [MemxOptions][MemxOptions.Exchange] · [MoonAts][MoonAts.Ats] · [NordicEquities][NordicEquities.Exchange] · [NseCd][NseCd.Exchange] · [NseCm][NseCm.Exchange] · [NseCom][NseCom.Exchange] · [NseFo][NseFo.Exchange] · [Overnight][Overnight.Ats]
 
 ## Platforms
 
@@ -65,6 +65,7 @@ Enjoy.
 [Asx.Directory]: https://github.com/Open-Markets-Initiative/omi-xml-specifications/tree/main/Asx "Australian Securities Exchange"
 [B3.Directory]: https://github.com/Open-Markets-Initiative/omi-xml-specifications/tree/main/B3 "Brasil, Bolsa, Balcão"
 [Bist.Directory]: https://github.com/Open-Markets-Initiative/omi-xml-specifications/tree/main/Bist "Borsa İstanbul A.Ş."
+[Biva.Directory]: https://github.com/Open-Markets-Initiative/omi-xml-specifications/tree/main/Biva "Bolsa Institucional de Valores"
 [BlueOceanAts.Directory]: https://github.com/Open-Markets-Initiative/omi-xml-specifications/tree/main/BlueOceanAts "Blue Ocean Technologies"
 [Bse.Directory]: https://github.com/Open-Markets-Initiative/omi-xml-specifications/tree/main/Bse "BSE Limited"
 [CixAts.Directory]: https://github.com/Open-Markets-Initiative/omi-xml-specifications/tree/main/CixAts "CIX Trading Inc."
@@ -83,6 +84,7 @@ Enjoy.
 [AsxDerivatives.Exchange]: https://github.com/Open-Markets-Initiative/Directory/tree/main/Organizations/Asx/Protocols/AsxDerivatives "Asx Derivatives"
 [AsxSecurities.Exchange]: https://github.com/Open-Markets-Initiative/Directory/tree/main/Organizations/Asx/Protocols/AsxSecurities "Asx Securities"
 [B3Derivatives.Exchange]: https://github.com/Open-Markets-Initiative/Directory/tree/main/Organizations/B3/Protocols/B3Derivatives "B3 Derivatives"
+[BivaEquities.Exchange]: https://github.com/Open-Markets-Initiative/Directory/tree/main/Organizations/Biva/Protocols/BivaEquities "Biva Equities"
 [BlueEquities.Ats]: https://github.com/Open-Markets-Initiative/Directory/tree/main/Organizations/BlueOceanAts/Protocols/BlueEquities "Blue Equities"
 [BorsaIstanbul.Exchange]: https://github.com/Open-Markets-Initiative/Directory/tree/main/Organizations/Bist/Protocols/BorsaIstanbul "Borsa Istanbul"
 [BseIndia.Exchange]: https://github.com/Open-Markets-Initiative/Directory/tree/main/Organizations/Bse/Protocols/BseIndia "BSE India"
