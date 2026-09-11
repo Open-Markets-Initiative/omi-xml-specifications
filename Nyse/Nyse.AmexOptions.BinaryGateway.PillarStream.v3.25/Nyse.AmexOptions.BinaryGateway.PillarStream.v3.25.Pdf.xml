@@ -1,0 +1,5553 @@
+<OmiPillarStreamPdf>
+  
+  <Messages>
+    <!-- Member Firm to Pillar -->
+
+    <!-- Session Configuration Request Message -->
+    <Message>
+      <Name>Session Configuration Request Message</Name>
+      <Dependency>Seq Msg Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>0x0220</Code>
+      <Size>Seq Msg Length</Size>
+      <Category>Technical</Category>
+      <Description>Request to update gateway session configuration settings</Description>
+      <Sequenced>Yes</Sequenced>
+      <Fields>
+        <Field>
+          <Name>Username</Name>
+          <Type>char(16)</Type>
+          <Size>16</Size>
+          <Description>Gateway session identifier (SenderCompID)</Description>
+        </Field>
+        <Field>
+          <Name>CancelOnDisconnect</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Cancel on disconnect behavior for the session</Description>
+        </Field>
+        <Field>
+          <Name>ThrottlePreference</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Queue or reject orders when throttled</Description>
+        </Field>
+        <Field>
+          <Name>SelfTradePrevention</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Session-level default self-trade prevention setting</Description>
+        </Field>
+        <Field>
+          <Name>OrderPriorityUpdateAckSubscription</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Subscription for unsolicited order priority update and repricing acknowledgements</Description>
+        </Field>
+        <Field>
+          <Name>BOLDDesignation</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Session-level default BOLD designation</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>zchar(49)</Type>
+          <Size>49</Size>
+          <Description>Reserved for future use</Description>
+        </Field>
+      </Fields>
+    </Message>
+    
+    <!-- Sequenced Filler Message -->
+    <Message>
+      <Name>Sequenced Filler Message</Name>
+      <Dependency>Seq Msg Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>0x0282</Code>
+      <Size>Seq Msg Length</Size>
+      <Category>Technical</Category>
+      <Description>This message type is used to increase the next expected sequence number of a TG stream by 1 on a given gateway
+        session.</Description>
+      <Sequenced>Yes</Sequenced>
+      <Fields/>
+    </Message>
+
+    <!-- New Order Message -->
+    <Message>
+      <Name>New Order Message</Name>
+      <Dependency>Seq Msg Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>0x0248</Code>
+      <Size>Seq Msg Length</Size>
+      <Category>Technical</Category>
+      <Description>Used to submit new single-leg or complex option orders and cancel/replace requests</Description>
+      <Sequenced>Yes</Sequenced>
+      <Fields>
+        <Field>
+          <Name>SymbolID</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Identifier of the security; both sides of a cross must match</Description>
+        </Field>
+        <Field>
+          <Name>MPID</Name>
+          <Type>zchar(4)</Type>
+          <Size>4</Size>
+          <Description>Firm identifier; must match original order on cancel/replace</Description>
+        </Field>
+        <Field>
+          <Name>MarketMaker</Name>
+          <Type>zchar(10)</Type>
+          <Size>10</Size>
+          <Description>Market maker identifier required for market maker capacity</Description>
+        </Field>
+        <Field>
+          <Name>MPSubID</Name>
+          <Type>zchar(4)</Type>
+          <Size>4</Size>
+          <Description>Customer-defined trading desk or entity identifier</Description>
+        </Field>
+        <Field>
+          <Name>ClOrdID</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Client order identifier unique per Username and MPID</Description>
+        </Field>
+        <Field>
+          <Name>OrigClOrdID</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Original client order ID for cancel/replace; zero for new orders</Description>
+        </Field>
+        <Field>
+          <Name>BitfieldOrderInstructions</Name>
+          <Type>bitfield</Type>
+          <Size>16</Size>
+          <Description>Bitfield containing order instructions, attributes, and modifiers</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Price</Type>
+          <Size>8</Size>
+          <Description>Order price; net limit price for complex orders</Description>
+        </Field>
+        <Field>
+          <Name>OrderQty</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Total order quantity</Description>
+        </Field>
+        <Field>
+          <Name>MinQty</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Minimum execution quantity; must be zero for complex orders</Description>
+        </Field>
+        <Field>
+          <Name>UserData</Name>
+          <Type>zchar(10)</Type>
+          <Size>10</Size>
+          <Description>Customer-defined free text with restricted ASCII characters</Description>
+        </Field>
+        <Field>
+          <Name>LegOpenClose</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Per-leg open or close indicators for complex orders only</Description>
+        </Field>
+        <Field>
+          <Name>AuctionID</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>CUBE auction identifier for GTX responses; zero if not used</Description>
+        </Field>
+        <Field>
+          <Name>OptionalOrderAddOn</Name>
+          <Type>struct</Type>
+          <Size>Variable</Size>
+          <Description>Optional add-on structure for additional order attributes</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Order Cancel Request Message -->
+    <Message>
+      <Name>Order Cancel Request Message</Name>
+      <Dependency>Seq Msg Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>0x0250</Code>
+      <Size>Seq Msg Length</Size>
+      <Category>Technical</Category>
+      <Description>Request to cancel a single targeted single-leg or complex order</Description>
+      <Sequenced>Yes</Sequenced>
+      <Fields>
+        <Field>
+          <Name>SymbolID</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Identifier of the security</Description>
+        </Field>
+        <Field>
+          <Name>MPID</Name>
+          <Type>zchar(4)</Type>
+          <Size>4</Size>
+          <Description>Firm identifier; must match the MPID of the order to be cancelled</Description>
+        </Field>
+        <Field>
+          <Name>ClOrdID</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Unique client order ID for this cancel request</Description>
+        </Field>
+        <Field>
+          <Name>OrigClOrdID</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>ClOrdID of the order intended for cancellation</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Order Modify Request Message -->
+    <Message>
+      <Name>Order Modify Request Message</Name>
+      <Dependency>Seq Msg Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>0x0251</Code>
+      <Size>Seq Msg Length</Size>
+      <Category>Technical</Category>
+      <Description>Request to reduce order quantity while preserving order ranking and original OrderID</Description>
+      <Sequenced>Yes</Sequenced>
+      <Fields>
+        <Field>
+          <Name>SymbolID</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Identifier of the security</Description>
+        </Field>
+        <Field>
+          <Name>MPID</Name>
+          <Type>zchar(4)</Type>
+          <Size>4</Size>
+          <Description>Firm identifier; must match the MPID of the order to be modified</Description>
+        </Field>
+        <Field>
+          <Name>ClOrdID</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Unique client order ID for this modify request</Description>
+        </Field>
+        <Field>
+          <Name>OrigClOrdID</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>ClOrdID of the order intended for modification</Description>
+        </Field>
+        <Field>
+          <Name>OrderQty</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>New desired order quantity; must be a reduction</Description>
+        </Field>
+        <Field>
+          <Name>Side</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Optional side change; zero indicates no change</Description>
+        </Field>
+        <Field>
+          <Name>LocateReqd</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Locate requirement indicator</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- New Bulk Quote Type 243 Message -->
+    <Message>
+      <Name>New Bulk Quote Type 243 Message</Name>
+      <Dependency>Seq Msg Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>0x0243</Code>
+      <Size>Seq Msg Length</Size>
+      <Category>Technical</Category>
+      <Description>Allows a market maker to submit up to 20 single-sided quotes for the same underlying in a single message</Description>
+      <Sequenced>Yes</Sequenced>
+      <Fields>
+        <Field>
+          <Name>MPID</Name>
+          <Type>zchar(4)</Type>
+          <Size>4</Size>
+          <Description>Firm identifier linked to the market maker identifier</Description>
+        </Field>
+        <Field>
+          <Name>MarketMaker</Name>
+          <Type>zchar(10)</Type>
+          <Size>10</Size>
+          <Description>Market maker identifier agreed upon with the exchange</Description>
+        </Field>
+        <Field>
+          <Name>SubID</Name>
+          <Type>zchar(4)</Type>
+          <Size>4</Size>
+          <Description>Customer-defined sub-identifier applied to all repeating group entries for STP</Description>
+        </Field>
+        <Field>
+          <Name>ClOrdID</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Client-assigned identifier for the bulk quote message</Description>
+        </Field>
+        <Field>
+          <Name>SelfTradeType</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Self-trade prevention setting applied to all quotes in the message</Description>
+        </Field>
+        <Field>
+          <Name>GroupID</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>User-defined takedown group applied to all quotes in the message</Description>
+        </Field>
+        <Field>
+          <Name>MMSentTime</Name>
+          <Type>Timestamp</Type>
+          <Size>8</Size>
+          <Description>Customer-provided sending time in nanoseconds since epoch</Description>
+        </Field>
+        <Field>
+          <Name>RepeatingGroup</Name>
+          <Type>group</Type>
+          <Size>Variable</Size>
+          <Description>One to twenty repeating quote entries</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- New Bulk Quote Type 259 Message -->
+    <Message>
+      <Name>New Bulk Quote Type 259 Message</Name>
+      <Dependency>Seq Msg Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>0x0259</Code>
+      <Size>Seq Msg Length</Size>
+      <Category>Technical</Category>
+      <Description>Allows a market maker to submit up to 20 single-sided quotes for the same underlying in a single message</Description>
+      <Sequenced>Yes</Sequenced>
+      <Fields>
+        <Field>
+          <Name>MPID</Name>
+          <Type>zchar(4)</Type>
+          <Size>4</Size>
+          <Description>Firm identifier linked to the market maker identifier</Description>
+        </Field>
+        <Field>
+          <Name>MarketMaker</Name>
+          <Type>zchar(10)</Type>
+          <Size>10</Size>
+          <Description>Market maker identifier agreed upon with the exchange</Description>
+        </Field>
+        <Field>
+          <Name>SubID</Name>
+          <Type>zchar(4)</Type>
+          <Size>4</Size>
+          <Description>Customer-defined sub-identifier applied to all repeating group entries for STP</Description>
+        </Field>
+        <Field>
+          <Name>ClOrdID</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Client-assigned identifier for the bulk quote message</Description>
+        </Field>
+        <Field>
+          <Name>SelfTradeType</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Self-trade prevention setting applied to all quotes in the message</Description>
+        </Field>
+        <Field>
+          <Name>GroupID</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>User-defined takedown group applied to all quotes in the message</Description>
+        </Field>
+        <Field>
+          <Name>MMSentTime</Name>
+          <Type>Timestamp</Type>
+          <Size>8</Size>
+          <Description>Customer-provided sending time in nanoseconds since epoch</Description>
+        </Field>
+        <Field>
+          <Name>BulkQuoteGroup</Name>
+          <Type>group</Type>
+          <Size>Variable</Size>
+          <Description>One to twenty repeating quote entries</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- New Order Cross Message -->
+    <Message>
+      <Name>New Order Cross Message</Name>
+      <Dependency>Seq Msg Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>0x0222</Code>
+      <Size>Seq Msg Length</Size>
+      <Category>Technical</Category>
+      <Description>Used to submit cross orders for single-leg or complex options</Description>
+      <Sequenced>Yes</Sequenced>
+      <Fields>
+        <Field>
+          <Name>CrossID</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Client-assigned identifier for the cross order</Description>
+        </Field>
+        <Field>
+          <Name>AllocationPct</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Percentage allocation the covered order is willing to surrender</Description>
+        </Field>
+        <Field>
+          <Name>ClearingFirmExposed</Name>
+          <Type>zchar(5)</Type>
+          <Size>5</Size>
+          <Description>Clearing firm of the exposed side of the cross</Description>
+        </Field>
+        <Field>
+          <Name>ClearingAccountExposed</Name>
+          <Type>zchar(5)</Type>
+          <Size>5</Size>
+          <Description>Clearing account of the exposed side if non-default</Description>
+        </Field>
+        <Field>
+          <Name>OptionalDataExposed</Name>
+          <Type>zchar(16)</Type>
+          <Size>16</Size>
+          <Description>Customer-defined clearing optional data for the exposed side</Description>
+        </Field>
+        <Field>
+          <Name>ClearingFirmCovered</Name>
+          <Type>zchar(5)</Type>
+          <Size>5</Size>
+          <Description>Clearing firm of the covered side of the cross</Description>
+        </Field>
+        <Field>
+          <Name>ClearingAccountCovered</Name>
+          <Type>zchar(5)</Type>
+          <Size>5</Size>
+          <Description>Clearing account of the covered side if non-default</Description>
+        </Field>
+        <Field>
+          <Name>OptionalDataCovered</Name>
+          <Type>zchar(16)</Type>
+          <Size>16</Size>
+          <Description>Customer-defined clearing optional data for the covered side</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>char(16)</Type>
+          <Size>16</Size>
+          <Description>Reserved for future use</Description>
+        </Field>
+        <Field>
+          <Name>Exposed</Name>
+          <Type>struct</Type>
+          <Size>100</Size>
+          <Description>Embedded new order message for the exposed side of the cross</Description>
+        </Field>
+        <Field>
+          <Name>Covered</Name>
+          <Type>struct</Type>
+          <Size>100</Size>
+          <Description>Embedded new order message for the covered side of the cross</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Bulk Cancel Request Type 223 Message -->
+    <Message>
+      <Name>Bulk Cancel Request Type 223 Message</Name>
+      <Dependency>Seq Msg Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>0x0223</Code>
+      <Size>Seq Msg Length</Size>
+      <Category>Technical</Category>
+      <Description>Request to cancel orders and/or market maker quotes in bulk based on specified criteria</Description>
+      <Sequenced>Yes</Sequenced>
+      <Fields>
+        <Field>
+          <Name>SymbolID</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Optional underlying symbol or options series identifier to scope cancellations</Description>
+        </Field>
+        <Field>
+          <Name>MPID</Name>
+          <Type>zchar(4)</Type>
+          <Size>4</Size>
+          <Description>Firm identifier; for market makers, linked to the specified MarketMaker</Description>
+        </Field>
+        <Field>
+          <Name>MarketMaker</Name>
+          <Type>zchar(10)</Type>
+          <Size>10</Size>
+          <Description>Market maker identifier to scope affected quotes or orders</Description>
+        </Field>
+        <Field>
+          <Name>ClOrdID</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Client-assigned unique identifier for the bulk cancel request</Description>
+        </Field>
+        <Field>
+          <Name>MMSentTime</Name>
+          <Type>Timestamp</Type>
+          <Size>8</Size>
+          <Description>Customer-provided sending time in nanoseconds since epoch</Description>
+        </Field>
+        <Field>
+          <Name>Side</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Side to cancel; zero cancels both buy and sell</Description>
+        </Field>
+        <Field>
+          <Name>GroupID</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>User-defined group identifier to scope affected quotes</Description>
+        </Field>
+        <Field>
+          <Name>TargetCancelUsername</Name>
+          <Type>char(16)</Type>
+          <Size>16</Size>
+          <Description>Optional username to scope cancellations to a specific session</Description>
+        </Field>
+        <Field>
+          <Name>BulkAction</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Specifies cancel, block and cancel, or unblock action</Description>
+        </Field>
+        <Field>
+          <Name>CancelScope</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Specifies whether orders, quotes, or both are affected</Description>
+        </Field>
+        <Field>
+          <Name>TargetCancelMPID</Name>
+          <Type>zchar(4)</Type>
+          <Size>4</Size>
+          <Description>Optional MPID to scope cancellations to a specific firm</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Bulk Cancel Request Type 224 Message -->
+    <Message>
+      <Name>Bulk Cancel Request Type 224 Message</Name>
+      <Dependency>Seq Msg Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>0x0224</Code>
+      <Size>Seq Msg Length</Size>
+      <Category>Technical</Category>
+      <Description>Request to cancel orders in bulk based on symbol, side, and user or firm criteria</Description>
+      <Sequenced>Yes</Sequenced>
+      <Fields>
+        <Field>
+          <Name>SymbolID</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Optional underlying symbol or options series identifier to scope cancellations</Description>
+        </Field>
+        <Field>
+          <Name>MPID</Name>
+          <Type>zchar(4)</Type>
+          <Size>4</Size>
+          <Description>Firm identifier</Description>
+        </Field>
+        <Field>
+          <Name>MPSubID</Name>
+          <Type>zchar(4)</Type>
+          <Size>4</Size>
+          <Description>Customer-defined sub-identifier; required for DMA sessions</Description>
+        </Field>
+        <Field>
+          <Name>ClOrdID</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Client-assigned unique identifier for the bulk cancel request</Description>
+        </Field>
+        <Field>
+          <Name>Side</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Side to cancel; zero cancels both buy and sell</Description>
+        </Field>
+        <Field>
+          <Name>TargetCancelUsername</Name>
+          <Type>char(16)</Type>
+          <Size>16</Size>
+          <Description>Optional username to scope cancellations to a specific session</Description>
+        </Field>
+        <Field>
+          <Name>BulkAction</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Specifies cancel scope for single-leg and complex orders</Description>
+        </Field>
+        <Field>
+          <Name>TargetCancelMPID</Name>
+          <Type>zchar(4)</Type>
+          <Size>4</Size>
+          <Description>Optional MPID to scope cancellations to a specific firm</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>char(20)</Type>
+          <Size>20</Size>
+          <Description>Reserved for future use</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Risk Limit Update Request Message -->
+    <Message>
+      <Name>Risk Limit Update Request Message</Name>
+      <Dependency>Seq Msg Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>0x0330</Code>
+      <Size>Seq Msg Length</Size>
+      <Category>Technical</Category>
+      <Description>Request to create, update, activate, or deactivate Pillar risk control limits for entitled risk entities</Description>
+      <Sequenced>Yes</Sequenced>
+      <Fields>
+        <Field>
+          <Name>SymbolID</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Risk entity symbol or underlying; required or optional depending on risk control type</Description>
+        </Field>
+        <Field>
+          <Name>MPID</Name>
+          <Type>zchar(4)</Type>
+          <Size>4</Size>
+          <Description>Risk entity firm identifier</Description>
+        </Field>
+        <Field>
+          <Name>MarketMaker</Name>
+          <Type>zchar(10)</Type>
+          <Size>10</Size>
+          <Description>Options market maker identifier associated with the MPID</Description>
+        </Field>
+        <Field>
+          <Name>MPSubID</Name>
+          <Type>zchar(4)</Type>
+          <Size>4</Size>
+          <Description>Risk entity sub-identifier associated with the MPID</Description>
+        </Field>
+        <Field>
+          <Name>Reserved1</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Reserved for future use</Description>
+        </Field>
+        <Field>
+          <Name>ClearingNumber</Name>
+          <Type>zchar(5)</Type>
+          <Size>5</Size>
+          <Description>Risk entity clearing number associated with the MPID</Description>
+        </Field>
+        <Field>
+          <Name>ClOrdID</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Client-assigned unique identifier for the risk limit update request</Description>
+        </Field>
+        <Field>
+          <Name>RiskUserCRD</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>CRD of the firm that owns the risk control</Description>
+        </Field>
+        <Field>
+          <Name>RiskUserType</Name>
+          <Type>char</Type>
+          <Size>1</Size>
+          <Description>Type of firm that owns the risk control</Description>
+        </Field>
+        <Field>
+          <Name>RiskControlType</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Specifies the type of risk control being configured</Description>
+        </Field>
+        <Field>
+          <Name>RiskControlActivation</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Indicates whether the risk control is enabled or disabled</Description>
+        </Field>
+        <Field>
+          <Name>USDLimit</Name>
+          <Type>i64</Type>
+          <Size>8</Size>
+          <Description>Dollar-based limit value for applicable risk control types</Description>
+        </Field>
+        <Field>
+          <Name>TimeLimit</Name>
+          <Type>i32</Type>
+          <Size>4</Size>
+          <Description>Rolling time window in microseconds for activity-based risk controls</Description>
+        </Field>
+        <Field>
+          <Name>PercentageLimit</Name>
+          <Type>i32</Type>
+          <Size>4</Size>
+          <Description>Percentage-based limit for applicable risk control types</Description>
+        </Field>
+        <Field>
+          <Name>CountLimit</Name>
+          <Type>i32</Type>
+          <Size>4</Size>
+          <Description>Count-based limit for applicable risk control types</Description>
+        </Field>
+        <Field>
+          <Name>BreachActionRequest</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Action to take when a risk limit breach occurs</Description>
+        </Field>
+        <Field>
+          <Name>IOCAttribution</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Controls inclusion or exclusion of IOC orders in activity-based calculations</Description>
+        </Field>
+        <Field>
+          <Name>RiskRangeID</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Quantity or price range identifier for the risk limit</Description>
+        </Field>
+        <Field>
+          <Name>RiskMinimumValue</Name>
+          <Type>i64</Type>
+          <Size>8</Size>
+          <Description>Minimum value threshold for applying the risk control</Description>
+        </Field>
+        <Field>
+          <Name>PriceScale</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Decimal scale applied to USD-based limits</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>zchar(190)</Type>
+          <Size>190</Size>
+          <Description>Reserved for future use</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Risk Action Request Message -->
+    <Message>
+      <Name>Risk Action Request Message</Name>
+      <Dependency>Seq Msg Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>0x0331</Code>
+      <Size>Seq Msg Length</Size>
+      <Category>Technical</Category>
+      <Description>Request to query risk entities, invoke kill switch actions, or approve reinstatement for Pillar risk controls</Description>
+      <Sequenced>Yes</Sequenced>
+      <Fields>
+        <Field>
+          <Name>SymbolID</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Risk entity symbol or underlying; required for specific risk actions and control types</Description>
+        </Field>
+        <Field>
+          <Name>MPID</Name>
+          <Type>zchar(4)</Type>
+          <Size>4</Size>
+          <Description>Risk entity firm identifier</Description>
+        </Field>
+        <Field>
+          <Name>MarketMaker</Name>
+          <Type>zchar(10)</Type>
+          <Size>10</Size>
+          <Description>Options market maker identifier associated with the MPID</Description>
+        </Field>
+        <Field>
+          <Name>MPSubID</Name>
+          <Type>zchar(4)</Type>
+          <Size>4</Size>
+          <Description>Risk entity sub-identifier associated with the MPID</Description>
+        </Field>
+        <Field>
+          <Name>Reserved1</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Reserved for future use</Description>
+        </Field>
+        <Field>
+          <Name>ClearingNumber</Name>
+          <Type>zchar(5)</Type>
+          <Size>5</Size>
+          <Description>Risk entity clearing number associated with the MPID</Description>
+        </Field>
+        <Field>
+          <Name>ClOrdID</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Client-assigned unique identifier for the risk action request</Description>
+        </Field>
+        <Field>
+          <Name>RiskUserCRD</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>CRD of the firm that owns the risk control</Description>
+        </Field>
+        <Field>
+          <Name>RiskUserType</Name>
+          <Type>char</Type>
+          <Size>1</Size>
+          <Description>Type of firm that owns the risk control</Description>
+        </Field>
+        <Field>
+          <Name>RiskControlType</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Specifies the risk control type being acted upon</Description>
+        </Field>
+        <Field>
+          <Name>RiskActionType</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Specifies the risk action to perform</Description>
+        </Field>
+        <Field>
+          <Name>RiskRangeID</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Quantity or price range identifier applicable to the risk control</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>zchar(199)</Type>
+          <Size>199</Size>
+          <Description>Reserved for future use</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- New Complex Series Request Message -->
+    <Message>
+      <Name>New Complex Series Request Message</Name>
+      <Dependency>Seq Msg Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>0x0357</Code>
+      <Size>Seq Msg Length</Size>
+      <Category>Technical</Category>
+      <Description>Request to create a new complex options series with up to twelve legs</Description>
+      <Sequenced>Yes</Sequenced>
+      <Fields>
+        <Field>
+          <Name>ClOrdID</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Client-assigned unique identifier for the complex series request</Description>
+        </Field>
+        <Field>
+          <Name>MPID</Name>
+          <Type>zchar(4)</Type>
+          <Size>4</Size>
+          <Description>Firm identifier submitting the complex series request</Description>
+        </Field>
+        <Field>
+          <Name>ComplexSeriesLegGroup</Name>
+          <Type>group</Type>
+          <Size>Variable</Size>
+          <Description>Repeating group defining each leg of the complex series</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Pillar to Member Firm -->
+
+    <!-- Underlying Symbol Reference Data Message -->
+    <Message>
+      <Name>Underlying Symbol Reference Data Message</Name>
+      <Dependency>Seq Msg Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>0x0233</Code>
+      <Size>Seq Msg Length</Size>
+      <Category>Technical</Category>
+      <Description>Publishes reference data for each underlying symbol configured for trading</Description>
+      <Sequenced>Yes</Sequenced>
+      <Fields>
+        <Field>
+          <Name>TransactTime</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Exchange application time</Description>
+        </Field>
+        <Field>
+          <Name>SymbolID</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Identification number assigned to the security</Description>
+        </Field>
+        <Field>
+          <Name>NYSESymbol</Name>
+          <Type>char(24)</Type>
+          <Size>24</Size>
+          <Description>Pillar market data symbology</Description>
+        </Field>
+        <Field>
+          <Name>ListedMIC</Name>
+          <Type>zchar(4)</Type>
+          <Size>4</Size>
+          <Description>Market Identifier Code of the primary market</Description>
+        </Field>
+        <Field>
+          <Name>UnderlyingType</Name>
+          <Type>char</Type>
+          <Size>1</Size>
+          <Description>Type of the underlying security</Description>
+        </Field>
+        <Field>
+          <Name>MaxOrderPrice</Name>
+          <Type>Price</Type>
+          <Size>8</Size>
+          <Description>Maximum allowable order entry price</Description>
+        </Field>
+        <Field>
+          <Name>MPVClassID</Name>
+          <Type>u16</Type>
+          <Size>2</Size>
+          <Description>Identification number of the MPV class</Description>
+        </Field>
+        <Field>
+          <Name>TestSymbolIndicator</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Indicates whether the symbol is a production or test symbol</Description>
+        </Field>
+        <Field>
+          <Name>ChannelID</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Transaction channel identifier of the underlying</Description>
+        </Field>
+        <Field>
+          <Name>LegalWidthMultiplier</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Multiplier applied to standard legal width auctions and quoting obligations</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Series Reference Data Message -->
+    <Message>
+      <Name>Series Reference Data Message</Name>
+      <Dependency>Seq Msg Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>0x0234</Code>
+      <Size>Seq Msg Length</Size>
+      <Category>Technical</Category>
+      <Description>Publishes reference data for each options series, including series index and symbology required for order entry</Description>
+      <Sequenced>Yes</Sequenced>
+      <Fields>
+        <Field>
+          <Name>TransactTime</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Exchange application time</Description>
+        </Field>
+        <Field>
+          <Name>SeriesIndex</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Options series index used for order entry</Description>
+        </Field>
+        <Field>
+          <Name>SymbolID</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Underlying symbol identifier</Description>
+        </Field>
+        <Field>
+          <Name>OCCSymbolRoot</Name>
+          <Type>char(24)</Type>
+          <Size>24</Size>
+          <Description>OCC root symbol for the option series</Description>
+        </Field>
+        <Field>
+          <Name>PutOrCall</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Indicates whether the option is a put or a call</Description>
+        </Field>
+        <Field>
+          <Name>StrikePrice</Name>
+          <Type>uPrice</Type>
+          <Size>8</Size>
+          <Description>Strike price of the option series</Description>
+        </Field>
+        <Field>
+          <Name>MaturityDate</Name>
+          <Type>zchar(8)</Type>
+          <Size>8</Size>
+          <Description>Maturity date of the option in YYYYMMDD format</Description>
+        </Field>
+        <Field>
+          <Name>ContractMultiplier</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Number of underlying shares per option contract</Description>
+        </Field>
+        <Field>
+          <Name>SeriesType</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Indicates whether the series is standard or another type</Description>
+        </Field>
+        <Field>
+          <Name>ClosingOnlyIndicator</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Indicates whether the series is closing-only</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Minimum Price Variant Class Reference Data Message -->
+    <Message>
+      <Name>Minimum Price Variant Class Reference Data Message</Name>
+      <Dependency>Seq Msg Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>0x0230</Code>
+      <Size>Seq Msg Length</Size>
+      <Category>Technical</Category>
+      <Description>Defines a minimum price variant class and its identifying attributes</Description>
+      <Sequenced>Yes</Sequenced>
+      <Fields>
+        <Field>
+          <Name>TransactTime</Name>
+          <Type>Timestamp</Type>
+          <Size>8</Size>
+          <Description>Exchange application time</Description>
+        </Field>
+        <Field>
+          <Name>MPVClassName</Name>
+          <Type>zchar(20)</Type>
+          <Size>20</Size>
+          <Description>Name of the minimum price variant class</Description>
+        </Field>
+        <Field>
+          <Name>MPVClassID</Name>
+          <Type>u16</Type>
+          <Size>2</Size>
+          <Description>Identification number assigned to the MPV class</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Minimum Price Variant Level Reference Data Message -->
+    <Message>
+      <Name>Minimum Price Variant Level Reference Data Message</Name>
+      <Dependency>Seq Msg Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>0x0231</Code>
+      <Size>Seq Msg Length</Size>
+      <Category>Technical</Category>
+      <Description>Defines one or more minimum price variant levels within a single MPV class</Description>
+      <Sequenced>Yes</Sequenced>
+      <Fields>
+        <Field>
+          <Name>TransactTime</Name>
+          <Type>Timestamp</Type>
+          <Size>8</Size>
+          <Description>Exchange application time</Description>
+        </Field>
+        <Field>
+          <Name>MPVLevelDefinition</Name>
+          <Type>group</Type>
+          <Size>50</Size>
+          <Description>Repeating group defining individual MPV levels for the class</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- MPID Configuration Message -->
+    <Message>
+      <Name>MPID Configuration Message</Name>
+      <Dependency>Seq Msg Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>0x0272</Code>
+      <Size>Seq Msg Length</Size>
+      <Category>Technical</Category>
+      <Description>Publishes the current configuration and status of each MPID configured on a gateway session</Description>
+      <Sequenced>Yes</Sequenced>
+      <Fields>
+        <Field>
+          <Name>TransactTime</Name>
+          <Type>Timestamp</Type>
+          <Size>8</Size>
+          <Description>Exchange application time</Description>
+        </Field>
+        <Field>
+          <Name>MPIDStatus</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Status of the MPID</Description>
+        </Field>
+        <Field>
+          <Name>MPID</Name>
+          <Type>zchar(4)</Type>
+          <Size>4</Size>
+          <Description>Firm identifier MPID</Description>
+        </Field>
+        <Field>
+          <Name>Username</Name>
+          <Type>char(16)</Type>
+          <Size>16</Size>
+          <Description>Gateway session identifier (SenderCompID)</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>char(50)</Type>
+          <Size>50</Size>
+          <Description>Reserved for future use</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Options Market Maker Symbol Appointment Reference Data Message -->
+    <Message>
+      <Name>Options Market Maker Symbol Appointment Reference Data Message</Name>
+      <Dependency>Seq Msg Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>0x0833</Code>
+      <Size>Seq Msg Length</Size>
+      <Category>Technical</Category>
+      <Description>Publishes appointment information for market makers for each appointed underlying symbol</Description>
+      <Sequenced>Yes</Sequenced>
+      <Fields>
+        <Field>
+          <Name>TransactTime</Name>
+          <Type>Timestamp</Type>
+          <Size>8</Size>
+          <Description>Exchange application time</Description>
+        </Field>
+        <Field>
+          <Name>SymbolID</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Underlying symbol index</Description>
+        </Field>
+        <Field>
+          <Name>NYSESymbol</Name>
+          <Type>char(24)</Type>
+          <Size>24</Size>
+          <Description>Underlying symbol NYSE symbology</Description>
+        </Field>
+        <Field>
+          <Name>MarketMaker</Name>
+          <Type>zchar(10)</Type>
+          <Size>10</Size>
+          <Description>Alphanumeric market maker or LMM identifier</Description>
+        </Field>
+        <Field>
+          <Name>MPID</Name>
+          <Type>zchar(4)</Type>
+          <Size>4</Size>
+          <Description>Market maker MPID</Description>
+        </Field>
+        <Field>
+          <Name>MMType</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Market maker role/type for the appointed symbol</Description>
+        </Field>
+        <Field>
+          <Name>AppointmentStatus</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Indicates whether the market maker is appointed for the underlying symbol</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>char(50)</Type>
+          <Size>50</Size>
+          <Description>Reserved for future use</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Session Configuration Acknowledgement Message -->
+    <Message>
+      <Name>Session Configuration Acknowledgement Message</Name>
+      <Dependency>Seq Msg Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>0x0221</Code>
+      <Size>Seq Msg Length</Size>
+      <Category>Technical</Category>
+      <Description>Provides the current configured session settings and acknowledgement status for a session configuration request</Description>
+      <Sequenced>Yes</Sequenced>
+      <Fields>
+        <Field>
+          <Name>TransactTime</Name>
+          <Type>Timestamp</Type>
+          <Size>8</Size>
+          <Description>Exchange application time</Description>
+        </Field>
+        <Field>
+          <Name>UserSessionType</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Permission type assigned to the gateway session</Description>
+        </Field>
+        <Field>
+          <Name>UserSessionStatus</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Status of the gateway session</Description>
+        </Field>
+        <Field>
+          <Name>Username</Name>
+          <Type>char(16)</Type>
+          <Size>16</Size>
+          <Description>Gateway session identifier (SenderCompID)</Description>
+        </Field>
+        <Field>
+          <Name>MIC</Name>
+          <Type>char(4)</Type>
+          <Size>4</Size>
+          <Description>Market Identifier Code of the connected market</Description>
+        </Field>
+        <Field>
+          <Name>CancelOnDisconnect</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Cancel-on-disconnect configuration for the session</Description>
+        </Field>
+        <Field>
+          <Name>ThrottlePreference</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Behavior when inbound messages are throttled</Description>
+        </Field>
+        <Field>
+          <Name>ThrottleWindow</Name>
+          <Type>u16</Type>
+          <Size>2</Size>
+          <Description>Time window in milliseconds over which throttling is enforced</Description>
+        </Field>
+        <Field>
+          <Name>ThrottleThreshold</Name>
+          <Type>u16</Type>
+          <Size>2</Size>
+          <Description>Maximum number of inbound messages allowed in the throttle window</Description>
+        </Field>
+        <Field>
+          <Name>SymbolEligibility</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Session-level permission controlling eligible symbol types</Description>
+        </Field>
+        <Field>
+          <Name>MaxOrderQuantity</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Maximum allowable order quantity for the session</Description>
+        </Field>
+        <Field>
+          <Name>SelfTradePrevention</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Session-level default self-trade prevention behavior</Description>
+        </Field>
+        <Field>
+          <Name>OrderPriorityUpdateAckSubscription</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Subscription preference for unsolicited order priority and repricing acknowledgements</Description>
+        </Field>
+        <Field>
+          <Name>AckStatus</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Status of the session configuration acknowledgement</Description>
+        </Field>
+        <Field>
+          <Name>BOLDDesignation</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Session-level default BOLD designation for NYSE American Options</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>zchar(49)</Type>
+          <Size>49</Size>
+          <Description>Reserved for future use</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Order and Cancel/Replace Acknowledgement Message -->
+    <Message>
+      <Name>Order and Cancel/Replace Acknowledgement Message</Name>
+      <Dependency>Seq Msg Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>0x0269</Code>
+      <Size>Seq Msg Length</Size>
+      <Category>Technical</Category>
+      <Description>Order and Cancel/Replace Acknowledgement Message</Description>
+      <Sequenced>Yes</Sequenced>
+      <Fields>
+        <Field>
+          <Name>SymbolID</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Identification number assigned to the security</Description>
+        </Field>
+        <Field>
+          <Name>MPID</Name>
+          <Type>zchar(4)</Type>
+          <Size>4</Size>
+          <Description>Firm identifier MPID</Description>
+        </Field>
+        <Field>
+          <Name>MarketMaker</Name>
+          <Type>zchar(10)</Type>
+          <Size>10</Size>
+          <Description>Market maker identifier required for market maker capacity</Description>
+        </Field>
+        <Field>
+          <Name>MPSubID</Name>
+          <Type>zchar(4)</Type>
+          <Size>4</Size>
+          <Description>Customer-defined sub-identifier</Description>
+        </Field>
+        <Field>
+          <Name>ClOrdID</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Client-assigned identifier of the inbound request</Description>
+        </Field>
+        <Field>
+          <Name>OrigClOrdID</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Original client order ID of the referenced order</Description>
+        </Field>
+        <Field>
+          <Name>BitfieldOrderInstructions</Name>
+          <Type>u128</Type>
+          <Size>16</Size>
+          <Description>Bitfield containing order attributes and modifiers</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Price</Type>
+          <Size>8</Size>
+          <Description>Order price or net limit price for complex orders</Description>
+        </Field>
+        <Field>
+          <Name>OrderQty</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Total order quantity</Description>
+        </Field>
+        <Field>
+          <Name>MinQty</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Minimum quantity; zero indicates no MinQty</Description>
+        </Field>
+        <Field>
+          <Name>UserData</Name>
+          <Type>zchar(10)</Type>
+          <Size>10</Size>
+          <Description>Customer-defined data with restricted ASCII characters</Description>
+        </Field>
+        <Field>
+          <Name>TransactTime</Name>
+          <Type>Timestamp</Type>
+          <Size>8</Size>
+          <Description>Exchange application time</Description>
+        </Field>
+        <Field>
+          <Name>OrderID</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Exchange-assigned identifier of the most recent order</Description>
+        </Field>
+        <Field>
+          <Name>LeavesQty</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Remaining quantity open on the order</Description>
+        </Field>
+        <Field>
+          <Name>WorkingPrice</Name>
+          <Type>Price</Type>
+          <Size>8</Size>
+          <Description>Current working price, which may differ from display price</Description>
+        </Field>
+        <Field>
+          <Name>WorkingAwayFromDisplay</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Indicates whether working price differs from display price</Description>
+        </Field>
+        <Field>
+          <Name>PreLiquidityIndicator</Name>
+          <Type>zchar(4)</Type>
+          <Size>4</Size>
+          <Description>Pre-liquidity status indicator</Description>
+        </Field>
+        <Field>
+          <Name>ReasonCode</Name>
+          <Type>u16</Type>
+          <Size>2</Size>
+          <Description>Matching engine reason code qualifying the event</Description>
+        </Field>
+        <Field>
+          <Name>AckType</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Acknowledgement event type</Description>
+        </Field>
+        <Field>
+          <Name>BitfieldFlowIndicator</Name>
+          <Type>bitfield</Type>
+          <Size>1</Size>
+          <Description>Bitfield indicating whether the inbound message was throttled</Description>
+        </Field>
+        <Field>
+          <Name>LegOpenClose</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Per-leg open or close indicators for complex orders only</Description>
+        </Field>
+        <Field>
+          <Name>AuctionID</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>CUBE auction identifier for GTX targeting</Description>
+        </Field>
+        <Field>
+          <Name>OptionalOrderAddOn</Name>
+          <Type>struct</Type>
+          <Size>Variable</Size>
+          <Description>Optional add-on echoed back if present on the order</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Bulk Quote Acknowledgment Type 294 Message -->
+    <Message>
+      <Name>Bulk Quote Acknowledgment Type 294 Message</Name>
+      <Dependency>Seq Msg Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>0x0294</Code>
+      <Size>Seq Msg Length</Size>
+      <Category>Technical</Category>
+      <Description>Bulk Quote Acknowledgment Message</Description>
+      <Sequenced>Yes</Sequenced>
+      <Fields>
+        <Field>
+          <Name>TransactTime</Name>
+          <Type>Timestamp</Type>
+          <Size>8</Size>
+          <Description>Exchange application time</Description>
+        </Field>
+        <Field>
+          <Name>MPID</Name>
+          <Type>zchar(4)</Type>
+          <Size>4</Size>
+          <Description>Firm identifier MPID</Description>
+        </Field>
+        <Field>
+          <Name>MarketMaker</Name>
+          <Type>zchar(10)</Type>
+          <Size>10</Size>
+          <Description>Market Maker identifier associated with the MPID</Description>
+        </Field>
+        <Field>
+          <Name>SubID</Name>
+          <Type>zchar(4)</Type>
+          <Size>4</Size>
+          <Description>SubID applied for Self-Trade Prevention</Description>
+        </Field>
+        <Field>
+          <Name>ClOrdID</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Client-assigned identifier for the bulk quote message</Description>
+        </Field>
+        <Field>
+          <Name>BitfieldFlowIndicator</Name>
+          <Type>bitfield</Type>
+          <Size>1</Size>
+          <Description>Indicates whether the inbound message was throttled</Description>
+        </Field>
+        <Field>
+          <Name>SelfTradeType</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Self-trade prevention setting received on the bulk quote</Description>
+        </Field>
+        <Field>
+          <Name>GroupID</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>User-defined group identifier applied to all quote messages</Description>
+        </Field>
+        <Field>
+          <Name>RepeatingGroups</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Number of repeating quote acknowledgement groups included</Description>
+        </Field>
+        <Field>
+          <Name>QuoteAckGroup294</Name>
+          <Type>struct</Type>
+          <Size>Variable</Size>
+          <Description>Repeating group containing per-quote acknowledgement details</Description>
+        </Field>  
+      </Fields>
+    </Message>
+
+    <!-- Bulk Quote Acknowledgment Type 308 Message -->
+    <Message>
+      <Name>Bulk Quote Acknowledgment Message</Name>
+      <Dependency>Seq Msg Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>0x0308</Code>
+      <Size>Seq Msg Length</Size>
+      <Category>Technical</Category>
+      <Description>Bulk Quote Acknowledgment Message</Description>
+      <Sequenced>Yes</Sequenced>
+      <Fields>
+        <Field>
+          <Name>TransactTime</Name>
+          <Type>Timestamp</Type>
+          <Size>8</Size>
+          <Description>Exchange application time</Description>
+        </Field>
+        <Field>
+          <Name>MPID</Name>
+          <Type>zchar(4)</Type>
+          <Size>4</Size>
+          <Description>Firm identifier MPID</Description>
+        </Field>
+        <Field>
+          <Name>MarketMaker</Name>
+          <Type>zchar(10)</Type>
+          <Size>10</Size>
+          <Description>Market Maker identifier associated with the MPID</Description>
+        </Field>
+        <Field>
+          <Name>SubID</Name>
+          <Type>zchar(4)</Type>
+          <Size>4</Size>
+          <Description>SubID applied for Self-Trade Prevention</Description>
+        </Field>
+        <Field>
+          <Name>ClOrdID</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Client-assigned identifier for the bulk quote message</Description>
+        </Field>
+        <Field>
+          <Name>BitfieldFlowIndicator</Name>
+          <Type>bitfield</Type>
+          <Size>1</Size>
+          <Description>Indicates whether the inbound message was throttled</Description>
+        </Field>
+        <Field>
+          <Name>SelfTradeType</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Self-trade prevention setting received on the bulk quote</Description>
+        </Field>
+        <Field>
+          <Name>GroupID</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>User-defined group identifier applied to all quote messages</Description>
+        </Field>
+        <Field>
+          <Name>RepeatingGroups</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Number of repeating quote acknowledgement groups included</Description>
+        </Field>
+        <Field>
+          <Name>QuoteAckGroup308</Name>
+          <Type>struct</Type>
+          <Size>Variable</Size>
+          <Description>Repeating group containing per-quote acknowledgement details including OrderID</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Order Single/Complex Modify/Cancel Request Acknowledgment and UROUT Message -->
+    <Message>
+      <Name>Order Single/Complex Modify/Cancel Request Acknowledgment and UROUT Message</Name>
+      <Dependency>Seq Msg Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>0x0278</Code>
+      <Size>Seq Msg Length</Size>
+      <Category>Technical</Category>
+      <Description>Order Single/Complex Modify/Cancel Request Acknowledgment and UROUT Message</Description>
+      <Sequenced>Yes</Sequenced>
+      <Fields>
+        <Field>
+          <Name>TransactTime</Name>
+          <Type>Timestamp</Type>
+          <Size>8</Size>
+          <Description>Exchange application time</Description>
+        </Field>
+        <Field>
+          <Name>SymbolID</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Identification number assigned to the security</Description>
+        </Field>
+        <Field>
+          <Name>MPID</Name>
+          <Type>zchar(4)</Type>
+          <Size>4</Size>
+          <Description>Firm identifier MPID</Description>
+        </Field>
+        <Field>
+          <Name>OrderID</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Exchange-assigned identifier of the most recent order</Description>
+        </Field>
+        <Field>
+          <Name>RefClOrdID</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Client-assigned identifier referencing the incoming modify, cancel, or bulk cancel request</Description>
+        </Field>
+        <Field>
+          <Name>OrigClOrdID</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Original client order identifier of the referenced order</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Price</Type>
+          <Size>8</Size>
+          <Description>Order price or net limit price for complex orders</Description>
+        </Field>
+        <Field>
+          <Name>OrderQty</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Order quantity; set to zero for Bulk Cancel acknowledgements</Description>
+        </Field>
+        <Field>
+          <Name>LeavesQty</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Remaining open quantity</Description>
+        </Field>
+        <Field>
+          <Name>Side</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Side of the order</Description>
+        </Field>
+        <Field>
+          <Name>LocateReqd</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Locate requirement for sell short orders</Description>
+        </Field>
+        <Field>
+          <Name>ReasonCode</Name>
+          <Type>u16</Type>
+          <Size>2</Size>
+          <Description>Matching engine reason code qualifying the event</Description>
+        </Field>
+        <Field>
+          <Name>AckType</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Acknowledgement type indicating modify, cancel, UROUT, or billable cancel</Description>
+        </Field>
+        <Field>
+          <Name>BitfieldFlowIndicator</Name>
+          <Type>bitfield</Type>
+          <Size>1</Size>
+          <Description>Bitfield indicating whether the inbound message was throttled</Description>
+        </Field>
+        <Field>
+          <Name>UserData</Name>
+          <Type>zchar(10)</Type>
+          <Size>10</Size>
+          <Description>Customer-defined data with restricted ASCII characters</Description>
+        </Field>
+        <Field>
+          <Name>GroupID</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>User-defined group identifier applicable to Bulk Cancel acknowledgements</Description>
+        </Field>
+        <Field>
+          <Name>MarketMaker</Name>
+          <Type>zchar(10)</Type>
+          <Size>10</Size>
+          <Description>Market Maker identifier associated with the MPID</Description>
+        </Field>
+        <Field>
+          <Name>TargetCancelUsername</Name>
+          <Type>char(16)</Type>
+          <Size>16</Size>
+          <Description>Username targeted for cancellation in Bulk Cancel acknowledgements</Description>
+        </Field>
+        <Field>
+          <Name>TargetCancelMPID</Name>
+          <Type>zchar(4)</Type>
+          <Size>4</Size>
+          <Description>MPID targeted for cancellation in Bulk Cancel acknowledgements</Description>
+        </Field>
+        <Field>
+          <Name>BulkAction</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Bulk cancel, block, or unblock action</Description>
+        </Field>
+        <Field>
+          <Name>CancelScope</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Scope of the bulk cancel action</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Order Priority Update Acknowledgment Message -->
+    <Message>
+      <Name>Order Priority Update Acknowledgment Message</Name>
+      <Dependency>Seq Msg Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>0x0268</Code>
+      <Size>Seq Msg Length</Size>
+      <Category>Technical</Category>
+      <Description>Order Priority Update Acknowledgment Message</Description>
+      <Sequenced>Yes</Sequenced>
+      <Fields>
+        <Field>
+          <Name>TransactTime</Name>
+          <Type>Timestamp</Type>
+          <Size>8</Size>
+          <Description>Exchange application time</Description>
+        </Field>
+        <Field>
+          <Name>SymbolID</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Identification number assigned to the security</Description>
+        </Field>
+        <Field>
+          <Name>MPID</Name>
+          <Type>zchar(4)</Type>
+          <Size>4</Size>
+          <Description>Firm identifier MPID</Description>
+        </Field>
+        <Field>
+          <Name>OrderID</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Exchange-assigned identifier of the most recent order</Description>
+        </Field>
+        <Field>
+          <Name>ClOrdID</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Client-assigned identifier of the order</Description>
+        </Field>
+        <Field>
+          <Name>WorkingPrice</Name>
+          <Type>Price</Type>
+          <Size>8</Size>
+          <Description>Current working price of the order</Description>
+        </Field>
+        <Field>
+          <Name>OrderQty</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Displayed or remaining quantity depending on AckType</Description>
+        </Field>
+        <Field>
+          <Name>WorkingAwayFromDisplay</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Indicates whether working price differs from display price</Description>
+        </Field>
+        <Field>
+          <Name>PreLiquidityIndicator</Name>
+          <Type>zchar(4)</Type>
+          <Size>4</Size>
+          <Description>Pre-liquidity status indicator</Description>
+        </Field>
+        <Field>
+          <Name>AckType</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Order priority update acknowledgment type</Description>
+        </Field>
+        <Field>
+          <Name>UserData</Name>
+          <Type>zchar(10)</Type>
+          <Size>10</Size>
+          <Description>Customer-defined data with restricted ASCII characters</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Execution Report Message -->
+    <Message>
+      <Name>Execution Report Message</Name>
+      <Dependency>Seq Msg Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>0x0295</Code>
+      <Size>Seq Msg Length</Size>
+      <Category>Technical</Category>
+      <Description>Execution Report Message</Description>
+      <Sequenced>Yes</Sequenced>
+      <Fields>
+        <Field>
+          <Name>TransactTime</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Exchange application time</Description>
+        </Field>
+        <Field>
+          <Name>SymbolID</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Identification number assigned to the security</Description>
+        </Field>
+        <Field>
+          <Name>MPID</Name>
+          <Type>zchar(4)</Type>
+          <Size>4</Size>
+          <Description>Firm Identifier – MPID</Description>
+        </Field>
+        <Field>
+          <Name>OrderID</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Exchange-assigned identifier of the most recent order</Description>
+        </Field>
+        <Field>
+          <Name>ClOrdID</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Client-assigned unique identifier of the order</Description>
+        </Field>
+        <Field>
+          <Name>DealID</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Exchange-assigned transaction identifier for both sides of a trade</Description>
+        </Field>
+        <Field>
+          <Name>LastPx</Name>
+          <Type>Price</Type>
+          <Size>8</Size>
+          <Description>Price of the current fill or partial fill</Description>
+        </Field>
+        <Field>
+          <Name>LeavesQty</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Remaining quantity after the execution</Description>
+        </Field>
+        <Field>
+          <Name>CumQty</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Total executed quantity for the order</Description>
+        </Field>
+        <Field>
+          <Name>LastQty</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Quantity executed in this execution event</Description>
+        </Field>
+        <Field>
+          <Name>LiquidityIndicator</Name>
+          <Type>zchar(4)</Type>
+          <Size>4</Size>
+          <Description>Liquidity indicator for the execution</Description>
+        </Field>
+        <Field>
+          <Name>MultilegReportingType</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Indicates single-leg, multi-leg, or individual leg execution</Description>
+        </Field>
+        <Field>
+          <Name>Reserved1</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Reserved for future use</Description>
+        </Field>
+        <Field>
+          <Name>Reserved2</Name>
+          <Type>u16</Type>
+          <Size>2</Size>
+          <Description>Reserved for future use</Description>
+        </Field>
+        <Field>
+          <Name>LocateReqd</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Locate requirement indicator for sell short orders</Description>
+        </Field>
+        <Field>
+          <Name>ParticipantType</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Participant classification</Description>
+        </Field>
+        <Field>
+          <Name>ReasonCode</Name>
+          <Type>u16</Type>
+          <Size>2</Size>
+          <Description>Matching engine reason code</Description>
+        </Field>
+        <Field>
+          <Name>UserData</Name>
+          <Type>zchar(10)</Type>
+          <Size>10</Size>
+          <Description>Customer-defined data</Description>
+        </Field>
+        <Field>
+          <Name>Side</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Side of the order</Description>
+        </Field>
+        <Field>
+          <Name>MarketMaker</Name>
+          <Type>zchar(10)</Type>
+          <Size>10</Size>
+          <Description>Market Maker identifier associated with the order</Description>
+        </Field>
+        <Field>
+          <Name>ContraMarketMaker</Name>
+          <Type>zchar(10)</Type>
+          <Size>10</Size>
+          <Description>Contra party Market Maker identifier</Description>
+        </Field>
+        <Field>
+          <Name>ContraClearingFirm</Name>
+          <Type>zchar(5)</Type>
+          <Size>5</Size>
+          <Description>Contra party clearing firm number</Description>
+        </Field>
+        <Field>
+          <Name>ContraMPID</Name>
+          <Type>zchar(4)</Type>
+          <Size>4</Size>
+          <Description>Contra party MPID</Description>
+        </Field>
+        <Field>
+          <Name>ContraOpenClose</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Contra side open/close indicator</Description>
+        </Field>
+        <Field>
+          <Name>ContraCustomerOrFirm</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Contra side capacity</Description>
+        </Field>
+        <Field>
+          <Name>ContraClearingAccount</Name>
+          <Type>zchar(5)</Type>
+          <Size>5</Size>
+          <Description>Contra party clearing account</Description>
+        </Field>
+        <Field>
+          <Name>ContraCrossType</Name>
+          <Type>u16</Type>
+          <Size>2</Size>
+          <Description>Cross type of the contra side</Description>
+        </Field>
+        <Field>
+          <Name>ContraCoveredOrUncovered</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Identifies exposed or covered side for contra</Description>
+        </Field>
+        <Field>
+          <Name>CoveredOrUncovered</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Identifies exposed or covered side of this order</Description>
+        </Field>
+        <Field>
+          <Name>CrossID</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Firm-assigned Cross identifier</Description>
+        </Field>
+        <Field>
+          <Name>OpenClose</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Sender’s open/close position</Description>
+        </Field>
+        <Field>
+          <Name>OptionalOrderAddOn</Name>
+          <Type>struct</Type>
+          <Size>var</Size>
+          <Description>Optional execution report add-on data structure</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Trade Bust/Correct Message -->
+    <Message>
+      <Name>Trade Bust/Correct Message</Name>
+      <Dependency>Seq Msg Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>0x0293</Code>
+      <Size>Seq Msg Length</Size>
+      <Category>Technical</Category>
+      <Description>Trade Bust/Correct Message</Description>
+      <Sequenced>Yes</Sequenced>
+      <Fields>
+        <Field>
+          <Name>TransactTime</Name>
+          <Type>Timestamp</Type>
+          <Size>8</Size>
+          <Description>Exchange application time.</Description>
+        </Field>
+        <Field>
+          <Name>SymbolID</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Identification number assigned to the security.</Description>
+        </Field>
+        <Field>
+          <Name>MPID</Name>
+          <Type>zchar(4)</Type>
+          <Size>4</Size>
+          <Description>Firm Identifier – MPID as entered on the originally executed order.</Description>
+        </Field>
+        <Field>
+          <Name>OrderID</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>OrderID of the order originally executed in the transaction that is busted or corrected.
+          </Description>
+        </Field>
+        <Field>
+          <Name>ClOrdID</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>ClOrdID of the order originally executed in the transaction that is busted or corrected.
+          </Description>
+        </Field>
+        <Field>
+          <Name>RefSeqMsgID</Name>
+          <Type>struct</Type>
+          <Size>16</Size>
+          <Description>SeqMsgID of the original Execution Report that is busted or corrected.</Description>
+        </Field>
+        <Field>
+          <Name>DealID</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Busts: original DealID. Corrections: new DealID for the corrected transaction.</Description>
+        </Field>
+        <Field>
+          <Name>LastPx</Name>
+          <Type>Price</Type>
+          <Size>8</Size>
+          <Description>Busts: original execution price. Corrections: corrected execution price.</Description>
+        </Field>
+        <Field>
+          <Name>LastQty</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Busts: original execution quantity. Corrections: corrected execution quantity.</Description>
+        </Field>
+        <Field>
+          <Name>ReasonCode</Name>
+          <Type>u16</Type>
+          <Size>2</Size>
+          <Description>Reason code qualifying the bust or correction event.</Description>
+        </Field>
+        <Field>
+          <Name>UserData</Name>
+          <Type>zchar(10)</Type>
+          <Size>10</Size>
+          <Description>Customer defined data.</Description>
+        </Field>
+        <Field>
+          <Name>BustCorrectIndicator</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>BustCorrectIndicator enum</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Application Layer Reject Message -->
+    <Message>
+      <Name>Application Layer Reject Message</Name>
+      <Dependency>Seq Msg Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>0x0267</Code>
+      <Size>Seq Msg Length</Size>
+      <Category>Technical</Category>
+      <Description>Application Layer Reject Message</Description>
+      <Sequenced>Yes</Sequenced>
+      <Fields>
+        <Field>
+          <Name>TransactTime</Name>
+          <Type>Timestamp</Type>
+          <Size>8</Size>
+          <Description>Exchange application time.</Description>
+        </Field>
+        <Field>
+          <Name>SymbolID</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Identification number assigned to the security.</Description>
+        </Field>
+        <Field>
+          <Name>MPID</Name>
+          <Type>zchar(4)</Type>
+          <Size>4</Size>
+          <Description>Firm Identifier – MPID.</Description>
+        </Field>
+        <Field>
+          <Name>ClOrdID</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>ClOrdID of the rejected incoming message.</Description>
+        </Field>
+        <Field>
+          <Name>ReasonCode</Name>
+          <Type>u16</Type>
+          <Size>2</Size>
+          <Description>Reason code identifying why the request was rejected.</Description>
+        </Field>
+        <Field>
+          <Name>RejectType</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Identifies the type of request message that was rejected.</Description>
+        </Field>
+        <Field>
+          <Name>UserData</Name>
+          <Type>zchar(10)</Type>
+          <Size>10</Size>
+          <Description>Customer defined data.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>char(4)</Type>
+          <Size>4</Size>
+          <Description>Reserved for future use.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Risk Control Acknowledgement Message -->
+    <Message>
+      <Name>Risk Control Acknowledgement Message</Name>
+      <Dependency>Seq Msg Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>0x0332</Code>
+      <Size>Seq Msg Length</Size>
+      <Category>Technical</Category>
+      <Description>Risk Control Acknowledgement Message</Description>
+      <Sequenced>Yes</Sequenced>
+      <Fields>
+        <Field>
+          <Name>SymbolID</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Risk Entity symbol or underlying symbol.</Description>
+        </Field>
+        <Field>
+          <Name>MPID</Name>
+          <Type>zchar(4)</Type>
+          <Size>4</Size>
+          <Description>Risk Entity firm identifier.</Description>
+        </Field>
+        <Field>
+          <Name>MarketMaker</Name>
+          <Type>zchar(10)</Type>
+          <Size>10</Size>
+          <Description>Options Market Maker identifier associated with the MPID.</Description>
+        </Field>
+        <Field>
+          <Name>MPSubID</Name>
+          <Type>zchar(4)</Type>
+          <Size>4</Size>
+          <Description>Risk Entity SubID.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved1</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Reserved for future use.</Description>
+        </Field>
+        <Field>
+          <Name>ClearingNumber</Name>
+          <Type>zchar(5)</Type>
+          <Size>5</Size>
+          <Description>Risk Entity clearing number.</Description>
+        </Field>
+        <Field>
+          <Name>ClOrdID</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Unique ID of the corresponding risk request or 0 for unsolicited acks.</Description>
+        </Field>
+        <Field>
+          <Name>RiskAckType</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>RiskAckType enum</Description>
+        </Field>
+        <Field>
+          <Name>RiskUserCRD</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>CRD of the Risk User.</Description>
+        </Field>
+        <Field>
+          <Name>RiskUserType</Name>
+          <Type>char</Type>
+          <Size>1</Size>
+          <Description>Risk User type: E, C, or O.</Description>
+        </Field>
+        <Field>
+          <Name>RiskControlType</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Risk control type being acknowledged.</Description>
+        </Field>
+        <Field>
+          <Name>RiskControlActivation</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>RiskControlActivation enum</Description>
+        </Field>
+        <Field>
+          <Name>RiskActionType</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Risk action associated with this acknowledgement.</Description>
+        </Field>
+        <Field>
+          <Name>USDLimit</Name>
+          <Type>i64</Type>
+          <Size>8</Size>
+          <Description>Configured USD limit.</Description>
+        </Field>
+        <Field>
+          <Name>TimeLimit</Name>
+          <Type>i32</Type>
+          <Size>4</Size>
+          <Description>Configured rolling time window in microseconds.</Description>
+        </Field>
+        <Field>
+          <Name>PercentageLimit</Name>
+          <Type>i32</Type>
+          <Size>4</Size>
+          <Description>Configured percentage limit.</Description>
+        </Field>
+        <Field>
+          <Name>CountLimit</Name>
+          <Type>i32</Type>
+          <Size>4</Size>
+          <Description>Configured count limit.</Description>
+        </Field>
+        <Field>
+          <Name>BreachActionResponse</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Breach handling action applied.</Description>
+        </Field>
+        <Field>
+          <Name>IOCAttribution</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>IOC/GTX attribution handling.</Description>
+        </Field>
+        <Field>
+          <Name>USDCalculation1</Name>
+          <Type>i64</Type>
+          <Size>8</Size>
+          <Description>USD calculation – Open ALL orders.</Description>
+        </Field>
+        <Field>
+          <Name>USDCalculation2</Name>
+          <Type>i64</Type>
+          <Size>8</Size>
+          <Description>USD calculation – Open auction orders.</Description>
+        </Field>
+        <Field>
+          <Name>USDCalculation3</Name>
+          <Type>i64</Type>
+          <Size>8</Size>
+          <Description>USD calculation – Executed ALL orders.</Description>
+        </Field>
+        <Field>
+          <Name>USDCalculation4</Name>
+          <Type>i64</Type>
+          <Size>8</Size>
+          <Description>USD calculation – Executed auction orders.</Description>
+        </Field>
+        <Field>
+          <Name>CountCalculation</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Current calculated count value.</Description>
+        </Field>
+        <Field>
+          <Name>BlockedByBreachIndicator</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Indicates breach-based blocking status.</Description>
+        </Field>
+        <Field>
+          <Name>BlockedByKillSwitchIndicator</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Indicates kill-switch blocking status.</Description>
+        </Field>
+        <Field>
+          <Name>ReinstatementRequiredBySelf</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Indicates whether self reinstatement approval is required.</Description>
+        </Field>
+        <Field>
+          <Name>ReinstatementRequiredByOther</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Indicates whether other Risk User approval is required.</Description>
+        </Field>
+        <Field>
+          <Name>RiskRangeID</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Risk range identifier.</Description>
+        </Field>
+        <Field>
+          <Name>RiskMinimumValue</Name>
+          <Type>i64</Type>
+          <Size>8</Size>
+          <Description>Minimum value threshold for applying the risk control.</Description>
+        </Field>
+        <Field>
+          <Name>PriceScale</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Decimal scaling for USD limits.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>zchar(190)</Type>
+          <Size>190</Size>
+          <Description>Reserved for future use.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Risk Control Alert -->
+    <Message>
+      <Name>Risk Control Alert Message</Name>
+      <Dependency>Seq Msg Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>0x0333</Code>
+      <Size>Seq Msg Length</Size>
+      <Category>Technical</Category>
+      <Description>Risk Control Alert Message</Description>
+      <Sequenced>Yes</Sequenced>
+      <Fields>
+        <Field>
+          <Name>SymbolID</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Risk Entity symbol or underlying symbol.</Description>
+        </Field>
+        <Field>
+          <Name>MPID</Name>
+          <Type>zchar(4)</Type>
+          <Size>4</Size>
+          <Description>Risk Entity firm identifier.</Description>
+        </Field>
+        <Field>
+          <Name>MarketMaker</Name>
+          <Type>zchar(10)</Type>
+          <Size>10</Size>
+          <Description>Options Market Maker identifier.</Description>
+        </Field>
+        <Field>
+          <Name>MPSubID</Name>
+          <Type>zchar(4)</Type>
+          <Size>4</Size>
+          <Description>Risk Entity SubID.</Description>
+        </Field>
+        <Field>
+          <Name>ClearingNumber</Name>
+          <Type>zchar(5)</Type>
+          <Size>5</Size>
+          <Description>Risk Entity clearing number.</Description>
+        </Field>
+        <Field>
+          <Name>RiskUserCRD</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>CRD of firm receiving the alert.</Description>
+        </Field>
+        <Field>
+          <Name>RiskUserType</Name>
+          <Type>char</Type>
+          <Size>1</Size>
+          <Description>Type of risk user receiving the alert.</Description>
+        </Field>
+        <Field>
+          <Name>RiskControlType</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Risk control type that triggered the alert.</Description>
+        </Field>
+        <Field>
+          <Name>USDLimit</Name>
+          <Type>i64</Type>
+          <Size>8</Size>
+          <Description>US dollar limit for applicable risk controls.</Description>
+        </Field>
+        <Field>
+          <Name>TimeLimit</Name>
+          <Type>i32</Type>
+          <Size>4</Size>
+          <Description>Microsecond rolling time window.</Description>
+        </Field>
+        <Field>
+          <Name>PercentageLimit</Name>
+          <Type>i32</Type>
+          <Size>4</Size>
+          <Description>Percentage limit for applicable risk controls.</Description>
+        </Field>
+        <Field>
+          <Name>CountLimit</Name>
+          <Type>i32</Type>
+          <Size>4</Size>
+          <Description>Count-based risk limit.</Description>
+        </Field>
+        <Field>
+          <Name>BreachActionResponse</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Action taken by Pillar upon breach.</Description>
+        </Field>
+        <Field>
+          <Name>IOCAttribution</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>IOC inclusion/exclusion for calculations.</Description>
+        </Field>
+        <Field>
+          <Name>USDCalculation1</Name>
+          <Type>i64</Type>
+          <Size>8</Size>
+          <Description>Open ALL ORDERS calculation.</Description>
+        </Field>
+        <Field>
+          <Name>USDCalculation2</Name>
+          <Type>i64</Type>
+          <Size>8</Size>
+          <Description>Open AUCTION ORDERS calculation.</Description>
+        </Field>
+        <Field>
+          <Name>USDCalculation3</Name>
+          <Type>i64</Type>
+          <Size>8</Size>
+          <Description>Executed ALL ORDERS calculation.</Description>
+        </Field>
+        <Field>
+          <Name>USDCalculation4</Name>
+          <Type>i64</Type>
+          <Size>8</Size>
+          <Description>Executed AUCTION ORDERS calculation.</Description>
+        </Field>
+        <Field>
+          <Name>CountCalculation</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Current breach count calculation.</Description>
+        </Field>
+        <Field>
+          <Name>RiskActionType</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Risk action associated with the alert.</Description>
+        </Field>
+        <Field>
+          <Name>ThresholdBreachLevel</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Threshold level that was breached.</Description>
+        </Field>
+        <Field>
+          <Name>BlockedByBreachIndicator</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Indicates block due to breach.</Description>
+        </Field>
+        <Field>
+          <Name>BlockedByKillSwitchIndicator</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Indicates block due to kill switch.</Description>
+        </Field>
+        <Field>
+          <Name>ReinstatementRequiredBySelf</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Self reinstatement approval required.</Description>
+        </Field>
+        <Field>
+          <Name>ReinstatementRequiredByOther</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Other risk user reinstatement approval required.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>zchar(200)</Type>
+          <Size>200</Size>
+          <Description>Reserved for future use.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Complex Series Request Acknowledgement -->
+    <Message>
+      <Name>Complex Series Request Acknowledgement Message</Name>
+      <Dependency>Seq Msg Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>0x0358</Code>
+      <Size>Seq Msg Length</Size>
+      <Category>Technical</Category>
+      <Description>Complex Series Request Acknowledgement Message</Description>
+      <Sequenced>Yes</Sequenced>
+      <Fields>
+        <Field>
+          <Name>TransactTime</Name>
+          <Type>Timestamp</Type>
+          <Size>8</Size>
+          <Description>Exchange application time.</Description>
+        </Field>
+        <Field>
+          <Name>ClOrdID</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Unique ID of the message as assigned by the firm.</Description>
+        </Field>
+        <Field>
+          <Name>ReasonCode</Name>
+          <Type>u16</Type>
+          <Size>2</Size>
+          <Description>Reason code qualifying the acknowledgement result.</Description>
+        </Field>
+        <Field>
+          <Name>SymbolID</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Symbol ID of the complex instrument.</Description>
+        </Field>
+        <Field>
+          <Name>Side</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Side of the complex series (default Buy).</Description>
+        </Field>
+        <Field>
+          <Name>RepeatingGroups</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Number of leg repeating groups.</Description>
+        </Field>
+        <Field>
+          <Name>LegGroup</Name>
+          <Type>group</Type>
+          <Size>7</Size>
+          <Description>Repeating group</Description>
+        </Field>
+      </Fields>
+    </Message>
+    
+  </Messages>
+
+  <Structs>
+    
+    <!-- OptionalOrderAddOn -->
+    <Struct>
+      <Name>OptionalOrderAddOn</Name>
+      <Description>Optional add-on data that may be appended to order or cancel/replace requests by order-sending firms</Description>
+      <Fields>
+        <Field>
+          <Name>Sub Msg Header</Name>
+          <Type>struct</Type>
+          <Size>4</Size>
+          <Description>Message Header</Description>
+        </Field>
+        <Field>
+          <Name>StopPx</Name>
+          <Type>Price</Type>
+          <Size>8</Size>
+          <Description>Trigger price for stop and stop limit orders; must be zero for complex orders</Description>
+        </Field>
+        <Field>
+          <Name>MaxFloor</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Maximum floor quantity; must be zero for complex orders</Description>
+        </Field>
+        <Field>
+          <Name>DeliverToCompID</Name>
+          <Type>zchar(5)</Type>
+          <Size>5</Size>
+          <Description>Market maker MPID for directed or PFOF orders, or override default routing</Description>
+        </Field>
+        <Field>
+          <Name>ClearingFirm</Name>
+          <Type>zchar(5)</Type>
+          <Size>5</Size>
+          <Description>Clearing number of CMTA</Description>
+        </Field>
+        <Field>
+          <Name>OptionalData</Name>
+          <Type>zchar(16)</Type>
+          <Size>16</Size>
+          <Description>Customer-defined clearing optional data with restricted ASCII characters</Description>
+        </Field>
+        <Field>
+          <Name>ClearingAccount</Name>
+          <Type>zchar(5)</Type>
+          <Size>5</Size>
+          <Description>OCC clearing account number if non-default is required</Description>
+        </Field>
+      </Fields>
+    </Struct>
+
+    <!-- Exposed -->
+    <Struct>
+      <Name>Exposed</Name>
+      <Description>UEmbedded new order message for the exposed side of the cross</Description>
+      <Fields>
+        <Field>
+          <Name>Sub Msg Header</Name>
+          <Type>struct</Type>
+          <Size>4</Size>
+          <Description>Message Header</Description>
+        </Field>
+        <Field>
+          <Name>SymbolID</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Identifier of the security; both sides of a cross must match</Description>
+        </Field>
+        <Field>
+          <Name>MPID</Name>
+          <Type>zchar(4)</Type>
+          <Size>4</Size>
+          <Description>Firm identifier; must match original order on cancel/replace</Description>
+        </Field>
+        <Field>
+          <Name>MarketMaker</Name>
+          <Type>zchar(10)</Type>
+          <Size>10</Size>
+          <Description>Market maker identifier required for market maker capacity</Description>
+        </Field>
+        <Field>
+          <Name>MPSubID</Name>
+          <Type>zchar(4)</Type>
+          <Size>4</Size>
+          <Description>Customer-defined trading desk or entity identifier</Description>
+        </Field>
+        <Field>
+          <Name>ClOrdID</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Client order identifier unique per Username and MPID</Description>
+        </Field>
+        <Field>
+          <Name>OrigClOrdID</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Original client order ID for cancel/replace; zero for new orders</Description>
+        </Field>
+        <Field>
+          <Name>BitfieldOrderInstructions</Name>
+          <Type>bitfield</Type>
+          <Size>16</Size>
+          <Description>Bitfield containing order instructions, attributes, and modifiers</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Price</Type>
+          <Size>8</Size>
+          <Description>Order price; net limit price for complex orders</Description>
+        </Field>
+        <Field>
+          <Name>OrderQty</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Total order quantity</Description>
+        </Field>
+        <Field>
+          <Name>MinQty</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Minimum execution quantity; must be zero for complex orders</Description>
+        </Field>
+        <Field>
+          <Name>UserData</Name>
+          <Type>zchar(10)</Type>
+          <Size>10</Size>
+          <Description>Customer-defined free text with restricted ASCII characters</Description>
+        </Field>
+        <Field>
+          <Name>LegOpenClose</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Per-leg open or close indicators for complex orders only</Description>
+        </Field>
+        <Field>
+          <Name>AuctionID</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>CUBE auction identifier for GTX responses; zero if not used</Description>
+        </Field>
+        <Field>
+          <Name>OptionalOrderAddOn</Name>
+          <Type>struct</Type>
+          <Size>Variable</Size>
+          <Description>Optional add-on structure for additional order attributes</Description>
+        </Field>
+      </Fields>
+    </Struct>
+
+    <!-- Covered -->
+    <Struct>
+      <Name>Covered</Name>
+      <Description>UEmbedded new order message for the exposed side of the cross</Description>
+      <Fields>
+        <Field>
+          <Name>Sub Msg Header</Name>
+          <Type>struct</Type>
+          <Size>4</Size>
+          <Description>Message Header</Description>
+        </Field>
+        <Field>
+          <Name>SymbolID</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Identifier of the security; both sides of a cross must match</Description>
+        </Field>
+        <Field>
+          <Name>MPID</Name>
+          <Type>zchar(4)</Type>
+          <Size>4</Size>
+          <Description>Firm identifier; must match original order on cancel/replace</Description>
+        </Field>
+        <Field>
+          <Name>MarketMaker</Name>
+          <Type>zchar(10)</Type>
+          <Size>10</Size>
+          <Description>Market maker identifier required for market maker capacity</Description>
+        </Field>
+        <Field>
+          <Name>MPSubID</Name>
+          <Type>zchar(4)</Type>
+          <Size>4</Size>
+          <Description>Customer-defined trading desk or entity identifier</Description>
+        </Field>
+        <Field>
+          <Name>ClOrdID</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Client order identifier unique per Username and MPID</Description>
+        </Field>
+        <Field>
+          <Name>OrigClOrdID</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Original client order ID for cancel/replace; zero for new orders</Description>
+        </Field>
+        <Field>
+          <Name>BitfieldOrderInstructions</Name>
+          <Type>bitfield</Type>
+          <Size>16</Size>
+          <Description>Bitfield containing order instructions, attributes, and modifiers</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Price</Type>
+          <Size>8</Size>
+          <Description>Order price; net limit price for complex orders</Description>
+        </Field>
+        <Field>
+          <Name>OrderQty</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Total order quantity</Description>
+        </Field>
+        <Field>
+          <Name>MinQty</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Minimum execution quantity; must be zero for complex orders</Description>
+        </Field>
+        <Field>
+          <Name>UserData</Name>
+          <Type>zchar(10)</Type>
+          <Size>10</Size>
+          <Description>Customer-defined free text with restricted ASCII characters</Description>
+        </Field>
+        <Field>
+          <Name>LegOpenClose</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Per-leg open or close indicators for complex orders only</Description>
+        </Field>
+        <Field>
+          <Name>AuctionID</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>CUBE auction identifier for GTX responses; zero if not used</Description>
+        </Field>
+        <Field>
+          <Name>OptionalOrderAddOn</Name>
+          <Type>struct</Type>
+          <Size>Variable</Size>
+          <Description>Optional add-on structure for additional order attributes</Description>
+        </Field>
+      </Fields>
+    </Struct>
+    
+  </Structs>
+
+  <Groups>
+
+    <!-- QuoteRequestGroup -->
+    <Group>
+      <Name>QuoteRequestGroup</Name>
+      <Description>Repeating group containing one to twenty single-sided market maker quotes</Description>
+      <Fields>
+        <Field>
+          <Name>SeriesIndex</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Identifier of the options series</Description>
+        </Field>
+        <Field>
+          <Name>BitfieldQuoteInst</Name>
+          <Type>bitfield</Type>
+          <Size>1</Size>
+          <Description>Bitfield containing quote side and market maker quote type</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Price</Type>
+          <Size>8</Size>
+          <Description>Quote price</Description>
+        </Field>
+        <Field>
+          <Name>OrderQty</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Quote quantity</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+    <!-- QuoteAckGroup -->
+    <Group>
+      <Name>QuoteAckGroup</Name>
+      <Description>Quote acknowledgment structure for Bulk Quote acknowledgments</Description>
+      <Dependency>Repeating Groups</Dependency>
+      <Fields>
+        <Field>
+          <Name>SeriesIndex</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Options series identifier</Description>
+        </Field>
+        <Field>
+          <Name>Side</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Side of the quote (Buy or Sell)</Description>
+        </Field>
+        <Field>
+          <Name>AckType</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Acknowledgement type for the individual quote</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Price</Type>
+          <Size>8</Size>
+          <Description>Working price of the quote</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Quote quantity</Description>
+        </Field>
+        <Field>
+          <Name>ReasonCode</Name>
+          <Type>u16</Type>
+          <Size>2</Size>
+          <Description>Processing outcome reason code</Description>
+        </Field>
+        <Field>
+          <Name>WorkingAwayFromDisplay</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Indicates whether working price differs from display price</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+    <!-- QuoteAckWithIdGroup -->
+    <Group>
+      <Name>QuoteAckWithIdGroup</Name>
+      <Description>Quote acknowledgment structure including OrderID for Bulk Quote acknowledgments</Description>
+      <Dependency>Repeating Groups</Dependency>
+      <Fields>
+        <Field>
+          <Name>SeriesIndex</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Options series identifier</Description>
+        </Field>
+        <Field>
+          <Name>Side</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Side of the quote (Buy or Sell)</Description>
+        </Field>
+        <Field>
+          <Name>AckType</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Acknowledgement type for the individual quote</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Price</Type>
+          <Size>8</Size>
+          <Description>Working price of the quote</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Quote quantity</Description>
+        </Field>
+        <Field>
+          <Name>ReasonCode</Name>
+          <Type>u16</Type>
+          <Size>2</Size>
+          <Description>Processing outcome reason code</Description>
+        </Field>
+        <Field>
+          <Name>WorkingAwayFromDisplay</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Indicates whether working price differs from display price</Description>
+        </Field>
+        <Field>
+          <Name>OrderID</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Exchange-assigned identifier of the most recent order</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+    <!-- ComplexSeriesLegGroup -->
+    <Group>
+      <Name>ComplexSeriesLegGroup</Name>
+      <Description>Repeating group defining each leg of the complex series</Description>
+      <Fields>
+        <Field>
+          <Name>LegSymbolID</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Identifier of the leg security</Description>
+        </Field>
+        <Field>
+          <Name>LegRatioQty</Name>
+          <Type>u16</Type>
+          <Size>2</Size>
+          <Description>Quantity ratio for the leg used to derive leg order quantity</Description>
+        </Field>
+        <Field>
+          <Name>LegSide</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Side of the leg</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+    <!-- MPVLevelDefinition -->
+    <Group>
+      <Name>MPVLevelDefinition</Name>
+      <Description>Defines a single minimum price variant level within an MPV class</Description>
+      <Fields>
+        <Field>
+          <Name>MPVLevelName</Name>
+          <Type>char(24)</Type>
+          <Size>24</Size>
+          <Description>Name of the minimum price variant level</Description>
+        </Field>
+        <Field>
+          <Name>OrderEntryLimitPrice</Name>
+          <Type>uPrice</Type>
+          <Size>8</Size>
+          <Description>Order entry limit price range for this MPV level</Description>
+        </Field>
+        <Field>
+          <Name>QuotingMPV</Name>
+          <Type>uPrice</Type>
+          <Size>8</Size>
+          <Description>Quoting minimum price variation for this MPV level</Description>
+        </Field>
+        <Field>
+          <Name>TradingMPV</Name>
+          <Type>uPrice</Type>
+          <Size>8</Size>
+          <Description>Trading minimum price variation for this MPV level</Description>
+        </Field>
+        <Field>
+          <Name>MPVClassID</Name>
+          <Type>u16</Type>
+          <Size>2</Size>
+          <Description>Identification number assigned to the MPV class</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+    <!-- LegGroup -->
+    <Group>
+      <Name>LegGroup</Name>
+      <Description>Complex Series Request Acknowledgement repeating groups</Description>
+      <Dependency>Repeating Groups</Dependency>
+      <Fields>
+        <Field>
+          <Name>LegSymbolID</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Identification number assigned to the option series.</Description>
+        </Field>
+        <Field>
+          <Name>LegRatioQty</Name>
+          <Type>u16</Type>
+          <Size>2</Size>
+          <Description>Quantity ratio for this leg</Description>
+        </Field>
+        <Field>
+          <Name>LegSide</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Side of the leg</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+  </Groups>
+  
+  <Bitfields>
+
+    <!-- SingleLegBitfieldOrderInstructions -->
+    <Bitfield>
+      <Name>SingleLegBitfieldOrderInstructions</Name>
+      <Description>Order instructions, attributes, and modifiers for single-leg options</Description>
+      <Fields>
+        <Field>
+          <Name>Reserved</Name>
+          <Bits>34</Bits>
+          <Description>Reserved for future use</Description>
+        </Field>
+        <Field>
+          <Name>SecurityType</Name>
+          <Bits>5</Bits>
+          <Description>Identifies the security type</Description>
+        </Field>
+        <Field>
+          <Name>CustomerOrFirm</Name>
+          <Bits>5</Bits>
+          <Description>Indicates sender capacity</Description>
+        </Field>
+        <Field>
+          <Name>OpenClose</Name>
+          <Bits>2</Bits>
+          <Description>Indicates open or close position</Description>
+        </Field>
+        <Field>
+          <Name>SubIDIndicator</Name>
+          <Bits>5</Bits>
+          <Description>Controls MPSubID usage for risk and self-trade prevention</Description>
+        </Field>
+        <Field>
+          <Name>SpecialOrdType</Name>
+          <Bits>5</Bits>
+          <Description>Specifies special order handling or auction types</Description>
+        </Field>
+        <Field>
+          <Name>LocateReqd</Name>
+          <Bits>2</Bits>
+          <Description>Indicates whether a locate is required</Description>
+        </Field>
+        <Field>
+          <Name>RetailIndicator</Name>
+          <Bits>5</Bits>
+          <Description>Marks order as retail or non-retail</Description>
+        </Field>
+        <Field>
+          <Name>AttributedQuote</Name>
+          <Bits>5</Bits>
+          <Description>Controls attribution and BOLD exposure</Description>
+        </Field>
+        <Field>
+          <Name>OrderCapacity</Name>
+          <Bits>5</Bits>
+          <Description>Defines order capacity</Description>
+        </Field>
+        <Field>
+          <Name>InterestType</Name>
+          <Bits>5</Bits>
+          <Description>Specifies market maker or special interest type</Description>
+        </Field>
+        <Field>
+          <Name>TradingSessionID</Name>
+          <Bits>5</Bits>
+          <Description>Specifies eligible trading sessions</Description>
+        </Field>
+        <Field>
+          <Name>TimeInForce</Name>
+          <Bits>5</Bits>
+          <Description>Defines order duration</Description>
+        </Field>
+        <Field>
+          <Name>ProactiveIfLocked</Name>
+          <Bits>5</Bits>
+          <Description>Controls proactive routing behavior</Description>
+        </Field>
+        <Field>
+          <Name>SelfTradeType</Name>
+          <Bits>5</Bits>
+          <Description>Defines self-trade prevention behavior</Description>
+        </Field>
+        <Field>
+          <Name>CancelInsteadOfReprice</Name>
+          <Bits>5</Bits>
+          <Description>Specifies cancel versus reprice behavior</Description>
+        </Field>
+        <Field>
+          <Name>RoutingInst</Name>
+          <Bits>5</Bits>
+          <Description>Defines routing instructions</Description>
+        </Field>
+        <Field>
+          <Name>ExtendedExecInst</Name>
+          <Bits>5</Bits>
+          <Description>Specifies extended execution instructions</Description>
+        </Field>
+        <Field>
+          <Name>ExecInst</Name>
+          <Bits>5</Bits>
+          <Description>Defines execution instructions</Description>
+        </Field>
+        <Field>
+          <Name>OrdType</Name>
+          <Bits>5</Bits>
+          <Description>Specifies order type</Description>
+        </Field>
+        <Field>
+          <Name>Side</Name>
+          <Bits>5</Bits>
+          <Description>Specifies order side</Description>
+        </Field>
+      </Fields>
+    </Bitfield>
+
+    <!-- ComplexBitfieldOrderInstructions -->
+    <Bitfield>
+      <Name>ComplexBitfieldOrderInstructions</Name>
+      <Description>Order instructions, attributes, and modifiers for complex options</Description>
+      <Fields>
+        <Field>
+          <Name>Reserved</Name>
+          <Bits>34</Bits>
+          <Description>Reserved for future use</Description>
+        </Field>
+        <Field>
+          <Name>SecurityType</Name>
+          <Bits>5</Bits>
+          <Description>Security type, complex options only</Description>
+        </Field>
+        <Field>
+          <Name>CustomerOrFirm</Name>
+          <Bits>5</Bits>
+          <Description>Sender capacity</Description>
+        </Field>
+        <Field>
+          <Name>OpenClose</Name>
+          <Bits>2</Bits>
+          <Description>Open or close position</Description>
+        </Field>
+        <Field>
+          <Name>SubIDIndicator</Name>
+          <Bits>5</Bits>
+          <Description>MPSubID usage for risk and self-trade prevention</Description>
+        </Field>
+        <Field>
+          <Name>SpecialOrdType</Name>
+          <Bits>5</Bits>
+          <Description>Special order or auction type</Description>
+        </Field>
+        <Field>
+          <Name>LocateReqd</Name>
+          <Bits>2</Bits>
+          <Description>Locate requirement indicator</Description>
+        </Field>
+        <Field>
+          <Name>RetailIndicator</Name>
+          <Bits>5</Bits>
+          <Description>Retail order indicator</Description>
+        </Field>
+        <Field>
+          <Name>AttributedQuote</Name>
+          <Bits>5</Bits>
+          <Description>Attribution and BOLD behavior</Description>
+        </Field>
+        <Field>
+          <Name>OrderCapacity</Name>
+          <Bits>5</Bits>
+          <Description>Order capacity</Description>
+        </Field>
+        <Field>
+          <Name>InterestType</Name>
+          <Bits>5</Bits>
+          <Description>Market maker or special interest type</Description>
+        </Field>
+        <Field>
+          <Name>TradingSessionID</Name>
+          <Bits>5</Bits>
+          <Description>Eligible trading sessions</Description>
+        </Field>
+        <Field>
+          <Name>TimeInForce</Name>
+          <Bits>5</Bits>
+          <Description>Order duration</Description>
+        </Field>
+        <Field>
+          <Name>ProactiveIfLocked</Name>
+          <Bits>5</Bits>
+          <Description>Proactive behavior when locked</Description>
+        </Field>
+        <Field>
+          <Name>SelfTradeType</Name>
+          <Bits>5</Bits>
+          <Description>Self-trade prevention behavior</Description>
+        </Field>
+        <Field>
+          <Name>CancelInsteadOfReprice</Name>
+          <Bits>5</Bits>
+          <Description>Cancel versus reprice behavior</Description>
+        </Field>
+        <Field>
+          <Name>RoutingInst</Name>
+          <Bits>5</Bits>
+          <Description>Routing instructions for complex orders</Description>
+        </Field>
+        <Field>
+          <Name>ExtendedExecInst</Name>
+          <Bits>5</Bits>
+          <Description>Extended execution instructions</Description>
+        </Field>
+        <Field>
+          <Name>ExecInst</Name>
+          <Bits>5</Bits>
+          <Description>Execution instructions</Description>
+        </Field>
+        <Field>
+          <Name>OrdType</Name>
+          <Bits>5</Bits>
+          <Description>Order type</Description>
+        </Field>
+        <Field>
+          <Name>Side</Name>
+          <Bits>5</Bits>
+          <Description>Order side</Description>
+        </Field>
+      </Fields>
+    </Bitfield>
+
+    <!-- BitfieldQuoteInst -->
+    <Bitfield>
+      <Name>BitfieldQuoteInst</Name>
+      <Description>Quote instructions, attributes, and modifiers for market maker quotes</Description>
+      <Fields>
+        <Field>
+          <Name>Side</Name>
+          <Bits>2</Bits>
+          <Description>Quote side</Description>
+        </Field>
+        <Field>
+          <Name>MMQuoteType</Name>
+          <Bits>3</Bits>
+          <Description>Market maker quote type</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Bits>3</Bits>
+          <Description>Reserved for future use</Description>
+        </Field>
+      </Fields>
+    </Bitfield>
+
+    <!-- BitfieldFlowIndicator -->
+    <Bitfield>
+      <Name>BitfieldFlowIndicator</Name>
+      <Description>Indicates whether the inbound message was throttled</Description>
+      <Fields>
+        <Field>
+          <Name>Throttled</Name>
+          <Bits>1</Bits>
+          <Description>Indicates if inbound message was throttled</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Bits>7</Bits>
+          <Description>Reserved for future use</Description>
+        </Field>
+      </Fields>
+    </Bitfield>
+
+  </Bitfields>
+  
+  <Enums>
+
+    <!-- LegOpenClose -->
+    <Enum>
+      <Name>LegOpenClose</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>Open</Name>
+          <Description>Open</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Close</Name>
+          <Description>Close</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- MultilegReportingType -->
+    <Enum>
+      <Name>MultilegReportingType</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>SingleLegSecurity</Name>
+          <Description>Single-leg security</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>IndividualLegOfMultiLegSecurity</Name>
+          <Description>Individual leg of a multi-leg security</Description>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>MultiLegSecurity</Name>
+          <Description>Multi-leg security</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- ContraOpenClose -->
+    <Enum>
+      <Name>ContraOpenClose</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>NotApplicable</Name>
+          <Description>Not Applicable</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Open</Name>
+          <Description>Open</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Close</Name>
+          <Description>Close</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- ContraCustomerOrFirm -->
+    <Enum>
+      <Name>ContraCustomerOrFirm</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>NotApplicable</Name>
+          <Description>Not Applicable</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Customer</Name>
+          <Description>Customer</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Firm</Name>
+          <Description>Firm</Description>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Broker</Name>
+          <Description>Broker</Description>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>MarketMaker</Name>
+          <Description>Market Maker</Description>
+        </Value>
+        <Value>
+          <Data>5</Data>
+          <Name>AwayMarketMaker</Name>
+          <Description>Away Market Maker</Description>
+        </Value>
+        <Value>
+          <Data>6</Data>
+          <Name>ProfCustomer</Name>
+          <Description>Prof customer</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- ContraCrossType -->
+    <Enum>
+      <Name>ContraCrossType</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>NotApplicable</Name>
+          <Description>Not Applicable</Description>
+        </Value>
+        <Value>
+          <Data>5</Data>
+          <Name>PriceImprovementCUBE</Name>
+          <Description>Price Improvement CUBE</Description>
+        </Value>
+        <Value>
+          <Data>7</Data>
+          <Name>AONCUBESolicitation</Name>
+          <Description>AON CUBE (Solicitation)</Description>
+        </Value>
+        <Value>
+          <Data>10</Data>
+          <Name>QCC</Name>
+          <Description>QCC</Description>
+        </Value>
+        <Value>
+          <Data>11</Data>
+          <Name>CustomerToCustomerCross</Name>
+          <Description>Customer to Customer Cross</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- CoveredOrUncovered -->
+    <Enum>
+      <Name>CoveredOrUncovered</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>NotApplicable</Name>
+          <Description>Not Applicable</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Exposed</Name>
+          <Description>Exposed</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Covered</Name>
+          <Description>Covered</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- ContraCoveredOrUncovered -->
+    <Enum>
+      <Name>ContraCoveredOrUncovered</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>NotApplicable</Name>
+          <Description>Not Applicable</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Exposed</Name>
+          <Description>Exposed</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Covered</Name>
+          <Description>Covered</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- BustCorrectIndicator -->
+    <Enum>
+      <Name>BustCorrectIndicator</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>TradeBust</Name>
+          <Description>Trade Bust</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>TradeCorrection</Name>
+          <Description>Trade Correction</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- BreachActionResponse -->
+    <Enum>
+      <Name>BreachActionResponse</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>NotApplicable</Name>
+          <Description>Not Applicable</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>NotificationsOnly</Name>
+          <Description>Notifications Only</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>CancelNonAuctionOrdersAndBlock</Name>
+          <Description>Cancel Non-Auction Orders and Block</Description>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Block</Name>
+          <Description>Block</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- BlockedByBreachIndicator -->
+    <Enum>
+      <Name>BlockedByBreachIndicator</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>NotBlockedByBreach</Name>
+          <Description>Not Blocked by Breach</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>BlockedByBreach</Name>
+          <Description>Blocked by Breach</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>BlockedByArbitrageCheck</Name>
+          <Description>Blocked by Arbitrage Check (Options Market Maker only)</Description>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>BlockedByIntrinsicValueCheck</Name>
+          <Description>Blocked by Intrinsic Value Check (Options Market Maker only)</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- BlockedByKillSwitchIndicator -->
+    <Enum>
+      <Name>BlockedByKillSwitchIndicator</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>NotBlockedByKillSwitch</Name>
+          <Description>Not Blocked by Kill Switch</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>BlockedByKillSwitch</Name>
+          <Description>Blocked by Kill Switch</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- ReinstatementRequiredBySelf -->
+    <Enum>
+      <Name>ReinstatementRequiredBySelf</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>NotRequired</Name>
+          <Description>Not Required</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Required</Name>
+          <Description>Required</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- ReinstatementRequiredByOther -->
+    <Enum>
+      <Name>ReinstatementRequiredByOther</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>NotRequired</Name>
+          <Description>Not Required</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Required</Name>
+          <Description>Required</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- LegSide -->
+    <Enum>
+      <Name>LegSide</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Buy</Name>
+          <Description>Buy</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Sell</Name>
+          <Description>Sell</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- ParticipantType -->
+    <Enum>
+      <Name>ParticipantType</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>NotApplicable</Name>
+          <Description>Not applicable</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- SelfTradePrevention -->
+    <Enum>
+      <Name>SelfTradePrevention</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>NoSelfTradePrevention</Name>
+          <Description>No self trade prevention</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>CancelNewest</Name>
+          <Description>Cancel newest order</Description>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>CancelOldest</Name>
+          <Description>Cancel oldest order</Description>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>CancelBoth</Name>
+          <Description>Cancel both orders</Description>
+        </Value>
+<!--        <Value>-->
+<!--          <Data>5</Data>-->
+<!--          <Name>CancelDecrement</Name>-->
+<!--          <Description>Cancel decrement</Description>-->
+<!--        </Value>-->
+      </Values>
+    </Enum>
+
+    <!-- MIC -->
+    <Enum>
+      <Name>MIC</Name>
+      <Values>
+        <Value>
+          <Data>AMXO</Data>
+          <Name>NYSE American Options</Name>
+          <Description>NYSE American Options</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- BOLDDesignation -->
+    <Enum>
+      <Name>BOLDDesignation</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>NotApplicable</Name>
+          <Description>Not applicable or do not change default</Description>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>ExposeOrderInfoOnly</Name>
+          <Description>BOLD expose order information only</Description>
+        </Value>
+        <Value>
+          <Data>5</Data>
+          <Name>ExposeOrderInfoAndCapacity</Name>
+          <Description>BOLD expose order information and capacity</Description>
+        </Value>
+        <Value>
+          <Data>6</Data>
+          <Name>ExposeOrderInfoAndParticipantID</Name>
+          <Description>BOLD expose order information and participant ID</Description>
+        </Value>
+        <Value>
+          <Data>7</Data>
+          <Name>ExposeOrderInfoCapacityAndParticipantID</Name>
+          <Description>BOLD expose order information, capacity, and participant ID</Description>
+        </Value>
+        <Value>
+          <Data>8</Data>
+          <Name>NoBOLDDefaulting</Name>
+          <Description>No BOLD designation defaulting</Description>
+        </Value>
+      </Values>
+    </Enum>
+    
+    <!-- CancelOnDisconnect -->
+    <Enum>
+      <Name>CancelOnDisconnect</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>CancelDayOrders</Name>
+          <Description>Enable cancel on disconnect for day orders only, with standard exclusions</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>CancelAllOrders</Name>
+          <Description>Enable cancel on disconnect for all orders in the session</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- ThrottlePreference -->
+    <Enum>
+      <Name>ThrottlePreference</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>QueueWhenThrottled</Name>
+          <Description>Queue orders when throttled</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>RejectWhenThrottled</Name>
+          <Description>Reject orders when throttled</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- OrderPriorityUpdateAckSubscription -->
+    <Enum>
+      <Name>OrderPriorityUpdateAckSubscription</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>NotSubscribed</Name>
+          <Description>No unsolicited order priority update or repricing acknowledgements</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>OrderPriorityUpdateOnly</Name>
+          <Description>Receive unsolicited order priority update acknowledgements</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>OrderPriorityUpdateAndRepricing</Name>
+          <Description>Receive unsolicited order priority update and repricing acknowledgements</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- BulkAction -->
+    <Enum>
+      <Name>BulkAction</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>NotApplicable</Name>
+          <Description>No bulk action specified</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>CancelSingleLegOnly</Name>
+          <Description>Cancel single-leg orders only</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>CancelComplexOnly</Name>
+          <Description>Cancel complex orders only</Description>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>CancelSingleAndComplex</Name>
+          <Description>Cancel both single-leg and complex orders</Description>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>BlockAndCancel</Name>
+          <Description>Block future quotes and cancel existing ones (Market Maker sessions only)</Description>
+        </Value>
+        <Value>
+          <Data>5</Data>
+          <Name>Unblock</Name>
+          <Description>Unblock previously blocked quotes (Market Maker sessions only)</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- CancelScope -->
+    <Enum>
+      <Name>CancelScope</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>OrdersOnly</Name>
+          <Description>Cancel orders only</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>QuotesOnly</Name>
+          <Description>Cancel options market maker quotes only</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>OrdersAndQuotes</Name>
+          <Description>Cancel both orders and market maker quotes</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- RiskUserType -->
+    <Enum>
+      <Name>RiskUserType</Name>
+      <Values>
+        <Value>
+          <Data>E</Data>
+          <Name>EnteringFirm</Name>
+          <Description>Entering firm owns the risk control</Description>
+        </Value>
+        <Value>
+          <Data>C</Data>
+          <Name>ClearingFirm</Name>
+          <Description>Clearing firm owns the risk control</Description>
+        </Value>
+        <Value>
+          <Data>O</Data>
+          <Name>OptionsMarketMakerFirm</Name>
+          <Description>Options market maker firm owns the risk control</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- RiskControlType -->
+    <Enum>
+      <Name>RiskControlType</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>NotApplicable</Name>
+          <Description>Not applicable</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>SingleOrderMaxQty</Name>
+          <Description>Single order maximum quantity</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>SingleOrderMaxNotional</Name>
+          <Description>Single order maximum notional value</Description>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>GrossCreditExecuted</Name>
+          <Description>Gross credit executed</Description>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>GrossCreditOpen</Name>
+          <Description>Gross credit open</Description>
+        </Value>
+        <Value>
+          <Data>5</Data>
+          <Name>GrossCreditOpenAndExecuted</Name>
+          <Description>Gross credit open plus executed</Description>
+        </Value>
+        <Value>
+          <Data>6</Data>
+          <Name>MaximumDuplicativeOrders</Name>
+          <Description>Maximum duplicative orders</Description>
+        </Value>
+        <Value>
+          <Data>8</Data>
+          <Name>ActivityRollingTransaction</Name>
+          <Description>Activity-based rolling transaction limit</Description>
+        </Value>
+        <Value>
+          <Data>9</Data>
+          <Name>ActivityRollingVolume</Name>
+          <Description>Activity-based rolling volume limit</Description>
+        </Value>
+        <Value>
+          <Data>10</Data>
+          <Name>ActivityRollingPercentage</Name>
+          <Description>Activity-based rolling percentage limit</Description>
+        </Value>
+        <Value>
+          <Data>11</Data>
+          <Name>GlobalRiskMitigationProtection</Name>
+          <Description>Global risk mitigation protection</Description>
+        </Value>
+        <Value>
+          <Data>13</Data>
+          <Name>RejectMarketOrders</Name>
+          <Description>Reject market orders except MOO and MOC</Description>
+        </Value>
+        <Value>
+          <Data>14</Data>
+          <Name>RejectMOOAndMOC</Name>
+          <Description>Reject MOO and MOC orders</Description>
+        </Value>
+        <Value>
+          <Data>19</Data>
+          <Name>RejectRestrictedSymbol</Name>
+          <Description>Reject orders for restricted symbol</Description>
+        </Value>
+        <!--        <Value>-->
+        <!--          <Data>20</Data>-->
+        <!--          <Name>RejectSellShortForSymbol</Name>-->
+        <!--          <Description>Reject sell short orders for symbol</Description>-->
+        <!--        </Value>-->
+        <!--        <Value>-->
+        <!--          <Data>21</Data>-->
+        <!--          <Name>RejectSellShortExemptForSymbol</Name>-->
+        <!--          <Description>Reject sell short exempt orders for symbol</Description>-->
+        <!--        </Value>-->
+        <!--        <Value>-->
+        <!--          <Data>22</Data>-->
+        <!--          <Name>SingleOrderMaxQtyPctADV</Name>-->
+        <!--          <Description>Single order max quantity as percentage of symbol ADV</Description>-->
+        <!--        </Value>-->
+        <!--        <Value>-->
+        <!--          <Data>23</Data>-->
+        <!--          <Name>LimitOrderPriceProtectionEquitiesCustom</Name>-->
+        <!--          <Description>Limit order price protection equities custom limits</Description>-->
+        <!--        </Value>-->
+        <!--        <Value>-->
+        <!--          <Data>24</Data>-->
+        <!--          <Name>LimitOrderPriceProtectionEquitiesEarlyLate</Name>-->
+        <!--          <Description>Limit order price protection equities early/late trading multiplier</Description>-->
+        <!--        </Value>-->
+        <!--        <Value>-->
+        <!--          <Data>25</Data>-->
+        <!--          <Name>LimitOrderPriceProtectionEquitiesClosing</Name>-->
+        <!--          <Description>Limit order price protection equities closing-only multiplier</Description>-->
+        <!--        </Value>-->
+        <Value>
+          <Data>26</Data>
+          <Name>LimitOrderPriceProtectionOptionsSingleLeg</Name>
+          <Description>Limit order price protection options single-leg custom limits</Description>
+        </Value>
+        <Value>
+          <Data>27</Data>
+          <Name>LimitOrderPriceProtectionOptionsComplex</Name>
+          <Description>Limit order price protection options complex custom limits</Description>
+        </Value>
+        <!--        <Value>-->
+        <!--          <Data>28</Data>-->
+        <!--          <Name>RequireLocateBroker</Name>-->
+        <!--          <Description>Require locate broker on sell short orders</Description>-->
+        <!--        </Value>-->
+        <Value>
+          <Data>29</Data>
+          <Name>OrderRateThreshold</Name>
+          <Description>Order rate threshold across all symbols</Description>
+        </Value>
+        <Value>
+          <Data>30</Data>
+          <Name>RejectISOIOC</Name>
+          <Description>Reject ISO IOC orders</Description>
+        </Value>
+        <Value>
+          <Data>31</Data>
+          <Name>RejectISODay</Name>
+          <Description>Reject ISO Day orders</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- RiskControlActivation -->
+    <Enum>
+      <Name>RiskControlActivation</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>Off</Name>
+          <Description>Risk control turned off</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>On</Name>
+          <Description>Risk control turned on</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- BreachActionRequest -->
+    <Enum>
+      <Name>BreachActionRequest</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>NotApplicable</Name>
+          <Description>No breach action</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>NotificationsOnly</Name>
+          <Description>Send notifications only</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>CancelAndBlock</Name>
+          <Description>Cancel non-auction orders and block further activity</Description>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>BlockOnly</Name>
+          <Description>Block further activity only</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- IOCAttribution -->
+    <Enum>
+      <Name>IOCAttribution</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>NotApplicable</Name>
+          <Description>Not applicable</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>IncludeIOC</Name>
+          <Description>Include IOC orders in activity-based calculations</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>ExcludeIOC</Name>
+          <Description>Exclude IOC orders from activity-based calculations</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- PriceScale -->
+    <Enum>
+      <Name>PriceScale</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>NoDecimals</Name>
+          <Description>Value interpreted as integer</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>TwoDecimals</Name>
+          <Description>Value interpreted with two decimal places</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- RiskActionType -->
+    <Enum>
+      <Name>RiskActionType</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>NotApplicable</Name>
+          <Description>No action specified</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Query</Name>
+          <Description>Query risk entity for current risk control configuration, calculations, and status</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>KillSwitchBlock</Name>
+          <Description>Invoke kill switch block action</Description>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>KillSwitchUnblock</Name>
+          <Description>Invoke kill switch unblock action</Description>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>KillSwitchCancelAuctionOrders</Name>
+          <Description>Cancel auction orders via kill switch</Description>
+        </Value>
+        <Value>
+          <Data>5</Data>
+          <Name>KillSwitchCancelNonAuctionOrders</Name>
+          <Description>Cancel non-auction orders via kill switch</Description>
+        </Value>
+        <Value>
+          <Data>6</Data>
+          <Name>KillSwitchCancelGTCOrders</Name>
+          <Description>Cancel good-til-cancel orders via kill switch</Description>
+        </Value>
+        <Value>
+          <Data>7</Data>
+          <Name>ApproveReinstatement</Name>
+          <Description>Approve reinstatement following a block breach</Description>
+        </Value>
+        <Value>
+          <Data>8</Data>
+          <Name>RiskEntityReinstated</Name>
+          <Description>All reinstatement approvals received and processed</Description>
+        </Value>
+<!--        <Value>-->
+<!--          <Data>9</Data>-->
+<!--          <Name>AddSymbolLevelRiskEntity</Name>-->
+<!--          <Description>Add symbol-level risk entity</Description>-->
+<!--        </Value>-->
+<!--        <Value>-->
+<!--          <Data>10</Data>-->
+<!--          <Name>RemoveSymbolLevelRiskEntity</Name>-->
+<!--          <Description>Remove symbol-level risk entity</Description>-->
+<!--        </Value>-->
+      </Values>
+    </Enum>
+
+    <!-- UnderlyingType -->
+    <Enum>
+      <Name>UnderlyingType</Name>
+      <Values>
+        <Value><Data>A</Data><Name>ADR</Name><Description>American Depositary Receipt</Description></Value>
+        <Value><Data>C</Data><Name>CommonStock</Name><Description>Common stock</Description></Value>
+        <Value><Data>D</Data><Name>Debentures</Name><Description>Debentures</Description></Value>
+        <Value><Data>E</Data><Name>ETF</Name><Description>Exchange traded fund</Description></Value>
+        <Value><Data>F</Data><Name>Foreign</Name><Description>Foreign security</Description></Value>
+        <Value><Data>H</Data><Name>ADS</Name><Description>American Depositary Shares</Description></Value>
+        <Value><Data>I</Data><Name>Units</Name><Description>Units</Description></Value>
+        <Value><Data>M</Data><Name>Miscellaneous</Name><Description>Miscellaneous others</Description></Value>
+        <Value><Data>L</Data><Name>IndexLinkedNotes</Name><Description>Index linked notes</Description></Value>
+        <Value><Data>N</Data><Name>Bonds</Name><Description>Bonds</Description></Value>
+        <Value><Data>O</Data><Name>OrdinaryShares</Name><Description>Ordinary shares</Description></Value>
+        <Value><Data>P</Data><Name>PreferredStock</Name><Description>Preferred stock</Description></Value>
+        <Value><Data>R</Data><Name>Rights</Name><Description>Rights</Description></Value>
+        <Value><Data>S</Data><Name>BeneficiaryInterest</Name><Description>Beneficiary interest</Description></Value>
+        <Value><Data>T</Data><Name>StructuredNotes</Name><Description>Structured notes</Description></Value>
+        <Value><Data>U</Data><Name>ClosedEndFund</Name><Description>Closed end fund</Description></Value>
+        <Value><Data>W</Data><Name>Warrant</Name><Description>Warrant</Description></Value>
+        <Value><Data>X</Data><Name>Index</Name><Description>Index</Description></Value>
+        <Value><Data>Z</Data><Name>Options</Name><Description>Options</Description></Value>
+      </Values>
+    </Enum>
+
+    <!-- TestSymbolIndicator -->
+    <Enum>
+      <Name>TestSymbolIndicator</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>Production</Name>
+          <Description>Production symbol</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Test</Name>
+          <Description>Test symbol</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- PutOrCall -->
+    <Enum>
+      <Name>PutOrCall</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>Put</Name>
+          <Description>Put option</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Call</Name>
+          <Description>Call option</Description>
+        </Value>
+      </Values>
+    </Enum>
+    
+    <!-- SeriesType -->
+    <Enum>
+      <Name>SeriesType</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>Standard</Name>
+          <Description>Standard option series</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- ClosingOnlyIndicator -->
+    <Enum>
+      <Name>ClosingOnlyIndicator</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>StandardSeries</Name>
+          <Description>Standard series</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>ClosingOnlySeries</Name>
+          <Description>Closing-only series</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- MPIDStatus -->
+    <Enum>
+      <Name>MPIDStatus</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Active</Name>
+          <Description>MPID is active</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Inactive</Name>
+          <Description>MPID is inactive</Description>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Prospect</Name>
+          <Description>MPID is in prospect status</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- MMType -->
+    <Enum>
+      <Name>MMType</Name>
+      <Values>
+<!--        <Value>-->
+<!--          <Data>1</Data>-->
+<!--          <Name>NYSEArcaOptionsLeadMarketMaker</Name>-->
+<!--          <Description>NYSE Arca Options Lead Market Maker</Description>-->
+<!--        </Value>-->
+<!--        <Value>-->
+<!--          <Data>2</Data>-->
+<!--          <Name>NYSEArcaOptionsMarketMaker</Name>-->
+<!--          <Description>NYSE Arca Options Market Maker</Description>-->
+<!--        </Value>-->
+        <Value>
+          <Data>1</Data>
+          <Name>NYSEAmericanOptionsMarketMaker</Name>
+          <Description>NYSE American Options Market Maker</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>NYSEAmericanOptionsSpecialist</Name>
+          <Description>NYSE American Options Specialist</Description>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>NYSEAmericanOptionseSpecialist</Name>
+          <Description>NYSE American Options e-Specialist</Description>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>NYSEAmericanOptionsDOMM</Name>
+          <Description>NYSE American Options DOMM</Description>
+        </Value>
+        <Value>
+          <Data>5</Data>
+          <Name>NYSEAmericanOptionsSpecialistAndDOMM</Name>
+          <Description>NYSE American Options Specialist and DOMM</Description>
+        </Value>
+        <Value>
+          <Data>6</Data>
+          <Name>NYSEAmericanOptionseSpecialistAndDOMM</Name>
+          <Description>NYSE American Options e-Specialist and DOMM</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- AppointmentStatus -->
+    <Enum>
+      <Name>AppointmentStatus</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>NotAppointed</Name>
+          <Description>Not appointed for the underlying symbol</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Appointed</Name>
+          <Description>Appointed for the underlying symbol</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- UserSessionType -->
+    <Enum>
+      <Name>UserSessionType</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Customer</Name>
+          <Description>Customer and/or Equities Market Maker session</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>ServiceBureau</Name>
+          <Description>Service Bureau session</Description>
+        </Value>
+<!--        <Value>-->
+<!--          <Data>3</Data>-->
+<!--          <Name>DMM</Name>-->
+<!--          <Description>Designated Market Maker session</Description>-->
+<!--        </Value>-->
+        <Value>
+          <Data>4</Data>
+          <Name>OptionsMarketMaker</Name>
+          <Description>Options Market Maker session</Description>
+        </Value>
+        <Value>
+          <Data>12</Data>
+          <Name>RiskAdmin</Name>
+          <Description>Risk Administrator session</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- UserSessionStatus -->
+    <Enum>
+      <Name>UserSessionStatus</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Active</Name>
+          <Description>Permission to open read/write streams</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Inactive</Name>
+          <Description>Permission to open read-only streams</Description>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Prospect</Name>
+          <Description>Prospect status with read-only access</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- SymbolEligibility -->
+    <Enum>
+      <Name>SymbolEligibility</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>AllSymbols</Name>
+          <Description>Production and Test symbols allowed</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>TestSymbolsOnly</Name>
+          <Description>Only Test symbols allowed</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- AckStatus -->
+    <Enum>
+      <Name>AckStatus</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>Unsolicited</Name>
+          <Description>Start-of-day or unsolicited acknowledgement</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>UserRequestValid</Name>
+          <Description>User request accepted</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>UserRequestInvalid</Name>
+          <Description>User request rejected</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- AckType -->
+    <Enum>
+      <Name>AckType</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>NewInterest</Name>
+          <Description>New Interest acknowledgement</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>OrderPriorityUpdateNewOrderID</Name>
+          <Description>Order priority update with new OrderID</Description>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>OrderPriorityUpdateSameOrderID</Name>
+          <Description>Order priority update with same OrderID</Description>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>BulkCancelAck</Name>
+          <Description>Bulk cancel acknowledgement</Description>
+        </Value>
+        <Value>
+          <Data>5</Data>
+          <Name>PendingCancel</Name>
+          <Description>Cancel request is pending</Description>
+        </Value>
+        <Value>
+          <Data>6</Data>
+          <Name>PendingReplace</Name>
+          <Description>Cancel/Replace request is pending</Description>
+        </Value>
+        <Value>
+          <Data>7</Data>
+          <Name>PendingModify</Name>
+          <Description>Modify request is pending</Description>
+        </Value>
+        <Value>
+          <Data>8</Data>
+          <Name>Replaced</Name>
+          <Description>Order successfully replaced</Description>
+        </Value>
+        <Value>
+          <Data>9</Data>
+          <Name>Modified</Name>
+          <Description>Order successfully modified</Description>
+        </Value>
+        <!--        <Value>-->
+        <!--          <Data>10</Data>-->
+        <!--          <Name>EligibleForCross</Name>-->
+        <!--          <Description>Order eligible for cross</Description>-->
+        <!--        </Value>-->
+        <Value>
+          <Data>11</Data>
+          <Name>Canceled</Name>
+          <Description>Order canceled</Description>
+        </Value>
+        <Value>
+          <Data>12</Data>
+          <Name>DoneForDay</Name>
+          <Description>Order done for day</Description>
+        </Value>
+        <!--        <Value>-->
+        <!--          <Data>13</Data>-->
+        <!--          <Name>BillableCancelAddingLiquidity</Name>-->
+        <!--          <Description>Billable cancel while adding liquidity</Description>-->
+        <!--        </Value>-->
+        <!--        <Value>-->
+        <!--          <Data>14</Data>-->
+        <!--          <Name>BillableCancelRemovingLiquidity</Name>-->
+        <!--          <Description>Billable cancel while removing liquidity</Description>-->
+        <!--        </Value>-->
+        <!--        <Value>-->
+        <!--          <Data>15</Data>-->
+        <!--          <Name>BillableCancelSubdollarAddingLiquidity</Name>-->
+        <!--          <Description>Billable subdollar cancel while adding liquidity</Description>-->
+        <!--        </Value>-->
+        <!--        <Value>-->
+        <!--          <Data>16</Data>-->
+        <!--          <Name>BillableCancelSubdollarRemovingLiquidity</Name>-->
+        <!--          <Description>Billable subdollar cancel while removing liquidity</Description>-->
+        <!--        </Value>-->
+        <Value>
+          <Data>17</Data>
+          <Name>GTCRenewalOrRestatement</Name>
+          <Description>GTC renewal or restatement</Description>
+        </Value>
+        <Value>
+          <Data>18</Data>
+          <Name>IndividualMarketMakerQuoteReject</Name>
+          <Description>individual Market Maker quote Reject</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- WorkingAwayFromDisplay -->
+    <Enum>
+      <Name>WorkingAwayFromDisplay</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>EqualToDisplayPrice</Name>
+          <Description>Working price equals display price</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>AwayFromDisplayPrice</Name>
+          <Description>Working price differs from display price</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- PreLiquidityIndicator -->
+    <Enum>
+      <Name>PreLiquidityIndicator</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>None</Name>
+          <Description>No pre-liquidity condition</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>LocalMarketCandidate</Name>
+          <Description>Candidate for setting a new displayed bid or offer on the local market</Description>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>JoinNBBOCandidate</Name>
+          <Description>Candidate for joining the NBBO</Description>
+        </Value>
+        <Value>
+          <Data>5</Data>
+          <Name>SetNBBOCandidate</Name>
+          <Description>Candidate for setting the NBBO</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- SecurityType -->
+    <Enum>
+      <Name>SecurityType</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>NotApplicable</Name>
+          <Description>Not applicable</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>OPT</Name>
+          <Description>Option</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>MLEG</Name>
+          <Description>Multi-leg instrument</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- CustomerOrFirm -->
+    <Enum>
+      <Name>CustomerOrFirm</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>NotApplicable</Name>
+          <Description>Not applicable</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Customer</Name>
+          <Description>Customer</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>OptionsFirm</Name>
+          <Description>Options firm</Description>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>OptionsBroker</Name>
+          <Description>Options broker</Description>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>OptionsMarketMaker</Name>
+          <Description>Options market maker</Description>
+        </Value>
+        <Value>
+          <Data>5</Data>
+          <Name>OptionsAwayMarketMaker</Name>
+          <Description>Options away market maker</Description>
+        </Value>
+        <Value>
+          <Data>6</Data>
+          <Name>ProfCustomer</Name>
+          <Description>Professional customer</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- OpenClose -->
+    <Enum>
+      <Name>OpenClose</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>NotApplicable</Name>
+          <Description>Not applicable</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Open</Name>
+          <Description>Open position</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Close</Name>
+          <Description>Close position</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- SubIDIndicator -->
+    <Enum>
+      <Name>SubIDIndicator</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>RiskAndSTP</Name>
+          <Description>Use MPSubID for both pre-trade risk controls and self-trade prevention</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>RiskOnly</Name>
+          <Description>Use MPSubID for pre-trade risk controls only; self-trade prevention at MPID level</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- SpecialOrdType -->
+    <Enum>
+      <Name>SpecialOrdType</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>None</Name>
+          <Description>No special order type</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>DMMOpenReopenClose</Name>
+          <Description>DMM open, re-open, or close with or without auction</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>DMMPreAuction</Name>
+          <Description>DMM pre-auction</Description>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>DMMAfterAuction</Name>
+          <Description>DMM after-auction</Description>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>QCT</Name>
+          <Description>Qualified contingent trade</Description>
+        </Value>
+        <Value>
+          <Data>5</Data>
+          <Name>PriceImprovementCUBE</Name>
+          <Description>Price Improvement CUBE</Description>
+        </Value>
+        <Value>
+          <Data>7</Data>
+          <Name>AONCUBE</Name>
+          <Description>All-or-none CUBE solicitation</Description>
+        </Value>
+        <Value>
+          <Data>9</Data>
+          <Name>Cabinet</Name>
+          <Description>Cabinet order</Description>
+        </Value>
+        <Value>
+          <Data>10</Data>
+          <Name>QCC</Name>
+          <Description>Qualified contingent cross</Description>
+        </Value>
+        <Value>
+          <Data>11</Data>
+          <Name>CustomerToCustomerCross</Name>
+          <Description>Customer to customer cross</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- LocateReqd -->
+    <Enum>
+      <Name>LocateReqd</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>NoLocateReqd</Name>
+          <Description>No locate required</Description>
+        </Value>
+<!--        <Value>-->
+<!--          <Data>1</Data>-->
+<!--          <Name>LocateReqForSSH</Name>-->
+<!--          <Description>Locate required for SSH orders</Description>-->
+<!--        </Value>-->
+      </Values>
+    </Enum>
+
+    <!-- RetailIndicator -->
+    <Enum>
+      <Name>RetailIndicator</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>NotRetail</Name>
+          <Description>Not a retail order</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>RetailOrder</Name>
+          <Description>Retail order</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- AttributedQuote -->
+    <Enum>
+      <Name>AttributedQuote</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>NotAttributed</Name>
+          <Description>Not attributed or use current session configuration</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>AttributedMarketData</Name>
+          <Description>Attributed for market data feeds</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>IncludeBrokerVolume</Name>
+          <Description>Include in broker volume</Description>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>AttributedAndBrokerVolume</Name>
+          <Description>Attributed for market data feeds and include in broker volume</Description>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>BOLDExposeInfoOnly</Name>
+          <Description>BOLD expose order information only</Description>
+        </Value>
+        <Value>
+          <Data>5</Data>
+          <Name>BOLDExposeInfoAndCapacity</Name>
+          <Description>BOLD expose order information and capacity</Description>
+        </Value>
+        <Value>
+          <Data>6</Data>
+          <Name>BOLDExposeInfoAndParticipantID</Name>
+          <Description>BOLD expose order information and participant ID</Description>
+        </Value>
+        <Value>
+          <Data>7</Data>
+          <Name>BOLDExposeInfoCapacityAndParticipantID</Name>
+          <Description>BOLD expose order information, capacity, and participant ID</Description>
+        </Value>
+        <Value>
+          <Data>8</Data>
+          <Name>DoNotBOLD</Name>
+          <Description>Do not BOLD</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- OrderCapacity -->
+    <Enum>
+      <Name>OrderCapacity</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>NotApplicable</Name>
+          <Description>Not applicable</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Agency</Name>
+          <Description>Agency</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Principal</Name>
+          <Description>Principal</Description>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>RisklessPrincipal</Name>
+          <Description>Riskless principal</Description>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>ErrorAccount</Name>
+          <Description>Error account (NYSE Floor Broker only)</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- InterestType -->
+    <Enum>
+      <Name>InterestType</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>None</Name>
+          <Description>No interest type</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>OptionsMarketMakerQuote</Name>
+          <Description>Options market maker quote</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Reserved</Name>
+          <Description>Reserved for future use</Description>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Reserved</Name>
+          <Description>Reserved for future use</Description>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>QOrder</Name>
+          <Description>Q-Order</Description>
+        </Value>
+        <Value>
+          <Data>5</Data>
+          <Name>CapitalCommitmentOrder</Name>
+          <Description>Capital Commitment Order (CCO)</Description>
+        </Value>
+        <Value>
+          <Data>6</Data>
+          <Name>CapitalCommitmentOrderPartialContra</Name>
+          <Description>Capital Commitment Order partial fill contra-side</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- TradingSessionID -->
+    <Enum>
+      <Name>TradingSessionID</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Early</Name>
+          <Description>Early trading session</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Core</Name>
+          <Description>Core trading session</Description>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Late</Name>
+          <Description>Late trading session</Description>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>EarlyAndCore</Name>
+          <Description>Early and core trading sessions</Description>
+        </Value>
+        <Value>
+          <Data>5</Data>
+          <Name>CoreAndLate</Name>
+          <Description>Core and late trading sessions</Description>
+        </Value>
+        <Value>
+          <Data>6</Data>
+          <Name>EarlyCoreAndLate</Name>
+          <Description>Early, core, and late trading sessions</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- TimeInForce -->
+    <Enum>
+      <Name>TimeInForce</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Day</Name>
+          <Description>Day order</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>IOC</Name>
+          <Description>Immediate or cancel</Description>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>AtTheOpening</Name>
+          <Description>At the opening</Description>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>OnClose</Name>
+          <Description>On close</Description>
+        </Value>
+        <Value>
+          <Data>5</Data>
+          <Name>GTX</Name>
+          <Description>Good till crossing</Description>
+        </Value>
+        <Value>
+          <Data>6</Data>
+          <Name>GTC</Name>
+          <Description>Good till canceled</Description>
+        </Value>
+        <Value>
+          <Data>7</Data>
+          <Name>FOK</Name>
+          <Description>Fill or kill</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- ProactiveIfLocked -->
+    <Enum>
+      <Name>ProactiveIfLocked</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>None</Name>
+          <Description>No proactive behavior</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>ProactiveRoute</Name>
+          <Description>Proactively route order when locked</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>ProactiveTradeNonDisplay</Name>
+          <Description>Proactively trade non-displayed liquidity when locked</Description>
+        </Value>
+      </Values>
+    </Enum>
+    
+    <!-- SelfTradeType -->
+    <Enum>
+      <Name>SelfTradeType</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>UseSessionConfiguration</Name>
+          <Description>Use session configuration self-trade prevention setting</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>NoSelfTradePrevention</Name>
+          <Description>No self-trade prevention</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>CancelNewest</Name>
+          <Description>Cancel newest order</Description>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>CancelOldest</Name>
+          <Description>Cancel oldest order</Description>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>CancelBoth</Name>
+          <Description>Cancel both orders</Description>
+        </Value>
+<!--        <Value>-->
+<!--          <Data>5</Data>-->
+<!--          <Name>CancelDecrement</Name>-->
+<!--          <Description>Cancel and decrement order</Description>-->
+<!--        </Value>-->
+      </Values>
+    </Enum>
+
+    <!-- CancelInsteadOfReprice -->
+    <Enum>
+      <Name>CancelInsteadOfReprice</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>NotApplicable</Name>
+          <Description>Follow default order behavior</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>CancelForLULD</Name>
+          <Description>Cancel order instead of repricing for LULD only</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>CancelIfNoNBBOOrLULD</Name>
+          <Description>Cancel if order does not set NBBO on arrival or requires LULD reprice</Description>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>CancelForAnyReason</Name>
+          <Description>Cancel order instead of repricing for any reason</Description>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>RepriceOnceThenCancel</Name>
+          <Description>Allow one reprice, then cancel instead of repricing</Description>
+        </Value>
+        <Value>
+          <Data>5</Data>
+          <Name>CancelNBBOAndAnyReason</Name>
+          <Description>Combination of cancel if no NBBO or LULD and cancel for any reason</Description>
+        </Value>
+        <Value>
+          <Data>6</Data>
+          <Name>CancelNBBOAndRepriceOnce</Name>
+          <Description>Combination of cancel if no NBBO or LULD and reprice once then cancel</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- RoutingInst -->
+    <Enum>
+      <Name>RoutingInst</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>None</Name>
+          <Description>No routing instruction</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>NonRoutable</Name>
+          <Description>Non-routable</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Routable</Name>
+          <Description>Routable</Description>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>DirectedPrimaryOnly</Name>
+          <Description>Directed to primary market only</Description>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>DirectedAndRoutable</Name>
+          <Description>Directed to primary market and routable</Description>
+        </Value>
+        <Value>
+          <Data>5</Data>
+          <Name>PrimaryUntil945</Name>
+          <Description>Primary market until 9:45</Description>
+        </Value>
+        <Value>
+          <Data>6</Data>
+          <Name>PrimaryAfter355</Name>
+          <Description>Primary market after 3:55</Description>
+        </Value>
+        <Value>
+          <Data>7</Data>
+          <Name>PrimaryUntil945AndAfter355</Name>
+          <Description>Primary market until 9:45 and after 3:55</Description>
+        </Value>
+        <Value>
+          <Data>8</Data>
+          <Name>MinimumFill</Name>
+          <Description>Minimum fill, requires MinQty</Description>
+        </Value>
+        <Value>
+          <Data>9</Data>
+          <Name>ComplexBookOnly</Name>
+          <Description>Complex book only, non-legging complex order</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- ExtendedExecInst -->
+    <Enum>
+      <Name>ExtendedExecInst</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>None</Name>
+          <Description>No extended execution instruction</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>AddLiquidityOnly</Name>
+          <Description>Add liquidity only (ALO)</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>NoTradeAgainstMPL</Name>
+          <Description>No trade against MPL</Description>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>NoRouteToIOI</Name>
+          <Description>No route to IOI</Description>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>NoTradeAgainstMPLAndNoRouteToIOI</Name>
+          <Description>No trade against MPL and no route to IOI</Description>
+        </Value>
+        <Value>
+          <Data>5</Data>
+          <Name>RetailOrderType1</Name>
+          <Description>Retail order type 1</Description>
+        </Value>
+        <Value>
+          <Data>6</Data>
+          <Name>RetailOrderType2</Name>
+          <Description>Retail order type 2</Description>
+        </Value>
+        <Value>
+          <Data>7</Data>
+          <Name>RetailProvider</Name>
+          <Description>Retail provider</Description>
+        </Value>
+        <Value>
+          <Data>8</Data>
+          <Name>ImbalanceOffset</Name>
+          <Description>Imbalance offset</Description>
+        </Value>
+        <Value>
+          <Data>9</Data>
+          <Name>DiscretionaryPeg</Name>
+          <Description>Discretionary peg</Description>
+        </Value>
+        <Value>
+          <Data>10</Data>
+          <Name>DarkPrimaryPeg</Name>
+          <Description>Dark non-displayed primary peg</Description>
+        </Value>
+        <Value>
+          <Data>11</Data>
+          <Name>Reserved</Name>
+          <Description>Reserved for future use</Description>
+        </Value>
+        <Value>
+          <Data>12</Data>
+          <Name>Reserved</Name>
+          <Description>Reserved for future use</Description>
+        </Value>
+        <Value>
+          <Data>13</Data>
+          <Name>AddLiquidityOnlyNonTaking</Name>
+          <Description>Add liquidity only non-taking ALO</Description>
+        </Value>
+        <Value>
+          <Data>14</Data>
+          <Name>IssuerDirectOffering</Name>
+          <Description>Issuer direct offering</Description>
+        </Value>
+        <Value>
+          <Data>17</Data>
+          <Name>ComplexOrderAuction</Name>
+          <Description>Complex order auction</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- ExecInst -->
+    <Enum>
+      <Name>ExecInst</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>None</Name>
+          <Description>No execution instruction</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Reserved</Name>
+          <Description>Reserved for future use</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Reserved</Name>
+          <Description>Reserved for future use</Description>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>TrackingOrder</Name>
+          <Description>Tracking order</Description>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>ISO</Name>
+          <Description>Intermarket sweep order</Description>
+        </Value>
+        <Value>
+          <Data>5</Data>
+          <Name>PrimaryPeg</Name>
+          <Description>Primary peg</Description>
+        </Value>
+        <Value>
+          <Data>6</Data>
+          <Name>MarketPeg</Name>
+          <Description>Market peg</Description>
+        </Value>
+        <Value>
+          <Data>7</Data>
+          <Name>MidpointLiquidity</Name>
+          <Description>Midpoint liquidity</Description>
+        </Value>
+        <Value>
+          <Data>8</Data>
+          <Name>NonDisplayed</Name>
+          <Description>Non-displayed retail price improvement or limit order</Description>
+        </Value>
+        <Value>
+          <Data>9</Data>
+          <Name>TradeAtISO</Name>
+          <Description>Trade-at intermarket sweep order</Description>
+        </Value>
+        <Value>
+          <Data>10</Data>
+          <Name>LastSalePeg</Name>
+          <Description>Last sale peg</Description>
+        </Value>
+        <Value>
+          <Data>11</Data>
+          <Name>Reserved</Name>
+          <Description>Reserved for future use</Description>
+        </Value>
+        <Value>
+          <Data>12</Data>
+          <Name>Reserved</Name>
+          <Description>Reserved for future use</Description>
+        </Value>
+        <Value>
+          <Data>13</Data>
+          <Name>AllOrNone</Name>
+          <Description>All-or-none</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- OrdType -->
+    <Enum>
+      <Name>OrdType</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Market</Name>
+          <Description>Market order</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Limit</Name>
+          <Description>Limit order</Description>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>InsideLimit</Name>
+          <Description>Inside limit order</Description>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>Pegged</Name>
+          <Description>Pegged order</Description>
+        </Value>
+        <Value>
+          <Data>5</Data>
+          <Name>Stop</Name>
+          <Description>Stop order</Description>
+        </Value>
+        <Value>
+          <Data>6</Data>
+          <Name>StopLimit</Name>
+          <Description>Stop limit order</Description>
+        </Value>
+        <Value>
+          <Data>9</Data>
+          <Name>AutoMatchLimit</Name>
+          <Description>AutoMatch limit order</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Side -->
+    <Enum>
+      <Name>Side</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>no change in Side</Name>
+          <Description>no change in Side</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Buy</Name>
+          <Description>Buy</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Sell</Name>
+          <Description>Sell</Description>
+        </Value>
+<!--        <Value>-->
+<!--          <Data>3</Data>-->
+<!--          <Name>SellShort</Name>-->
+<!--          <Description>Sell short</Description>-->
+<!--        </Value>-->
+<!--        <Value>-->
+<!--          <Data>4</Data>-->
+<!--          <Name>SellShortExempt</Name>-->
+<!--          <Description>Sell short exempt</Description>-->
+<!--        </Value>-->
+<!--        <Value>-->
+<!--          <Data>5</Data>-->
+<!--          <Name>Cross</Name>-->
+<!--          <Description>Cross</Description>-->
+<!--        </Value>-->
+<!--        <Value>-->
+<!--          <Data>6</Data>-->
+<!--          <Name>CrossShort</Name>-->
+<!--          <Description>Cross short</Description>-->
+<!--        </Value>-->
+<!--        <Value>-->
+<!--          <Data>7</Data>-->
+<!--          <Name>CrossShortExempt</Name>-->
+<!--          <Description>Cross short exempt</Description>-->
+<!--        </Value>-->
+      </Values>
+    </Enum>
+
+    <!-- MMQuoteType -->
+    <Enum>
+      <Name>MMQuoteType</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>Standard</Name>
+          <Description>Standard market maker quote</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Repricing</Name>
+          <Description>Repricing quote</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>AddLiquidityOnlyNonTaking</Name>
+          <Description>Add liquidity only non-taking quote</Description>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Reserved</Name>
+          <Description>Reserved for future use</Description>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>RepricingAddLiquidityOnlyNonTaking</Name>
+          <Description>Repricing add liquidity only non-taking quote</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Throttled -->
+    <Enum>
+      <Name>Throttled</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>NotThrottled</Name>
+          <Description>Inbound message was not throttled</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Throttled</Name>
+          <Description>Inbound message was throttled</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- RejectType -->
+    <Enum>
+      <Name>RejectType</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>OrderOrCancelReplaceReject</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>ModifyRequestReject</Name>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>CancelRequestReject</Name>
+        </Value>
+<!--        <Value>-->
+<!--          <Data>4</Data>-->
+<!--          <Name>BulkCancelRequestReject</Name>-->
+<!--        </Value>-->
+        <Value>
+          <Data>5</Data>
+          <Name>NewBulkQuoteReject</Name>
+        </Value>
+<!--        <Value>-->
+<!--          <Data>6</Data>-->
+<!--          <Name>ManualActionResponseReject</Name>-->
+<!--        </Value>-->
+        <Value>
+          <Data>7</Data>
+          <Name>RiskLimitUpdateRequestReject</Name>
+        </Value>
+        <Value>
+          <Data>8</Data>
+          <Name>BulkCancelRequestRejectOptions</Name>
+        </Value>
+        <Value>
+          <Data>9</Data>
+          <Name>CrossOrderReject</Name>
+        </Value>
+        <Value>
+          <Data>10</Data>
+          <Name>NewComplexSeriesRequestReject</Name>
+        </Value>
+        <Value>
+          <Data>11</Data>
+          <Name>RiskActionRequestReject</Name></Value>
+      </Values>
+    </Enum>
+
+    <!-- ThresholdBreachLevel -->
+    <Enum>
+      <Name>ThresholdBreachLevel</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>NotApplicable</Name>
+        </Value>
+<!--        <Value>-->
+<!--          <Data>1</Data>-->
+<!--          <Name>GreaterThan50Percent</Name>-->
+<!--        </Value>-->
+<!--        <Value>-->
+<!--          <Data>2</Data>-->
+<!--          <Name>GreaterThan75Percent</Name>-->
+<!--        </Value>-->
+<!--        <Value>-->
+<!--          <Data>3</Data>-->
+<!--          <Name>GreaterThan90Percent</Name>-->
+<!--        </Value>-->
+        <Value>
+          <Data>4</Data>
+          <Name>GreaterThan100Percent</Name>
+        </Value>
+      </Values>
+    </Enum>
+    
+  </Enums>
+  
+</OmiPillarStreamPdf>

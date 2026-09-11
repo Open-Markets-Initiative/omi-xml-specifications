@@ -7,6 +7,7 @@
 | --- | --- | --- | --- | --- |
 |  | CommonHeader | Udp | 1.1 | [files](BlueOceanAts.CommonHeader.Udp.v1.1/) |
 | BlueEquities | DropCopy | Fix | 1.13 | [files](BlueOceanAts.BlueEquities.DropCopy.Fix.v1.13.1/) |
+| BlueEquities | Memo | Sbe | 1.13 | [files](BlueOceanAts.BlueEquities.Memo.Sbe.v1.13/) |
 | BlueEquities | MemoirDepthFeed | Sbe | 1.3 | [files](BlueOceanAts.BlueEquities.MemoirDepthFeed.Sbe.v1.3/) |
 | BlueEquities | MemoirLastSale | Sbe | 1.3 | [files](BlueOceanAts.BlueEquities.MemoirLastSale.Sbe.v1.3/) |
 | BlueEquities | MemoirTopOfBook | Sbe | 1.3 | [files](BlueOceanAts.BlueEquities.MemoirTopOfBook.Sbe.v1.3/) |

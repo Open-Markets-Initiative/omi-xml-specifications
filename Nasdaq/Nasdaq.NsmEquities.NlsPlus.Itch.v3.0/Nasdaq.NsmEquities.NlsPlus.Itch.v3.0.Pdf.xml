@@ -1,0 +1,2997 @@
+<OmiItchNsmEquitiesPdf>
+
+  <!--
+    Nasdaq Nls Plus 3.0, transcribed from NLSPlusSpecification3.0.
+
+    Nls Plus opens every message with its tracking number and timestamp and carries the message
+    type at offset 8, so all three sit in the message header supplied by
+    Mold.Udp64.NlsPlus.v1.0.Source.xml. Each message below therefore begins at offset 9, with the
+    first field the specification lists after the type. Nls 4.0 moves the type to offset 0 and is
+    transcribed separately against Mold.Udp64.v1.0.
+
+    Every message here was checked to sum to the total the specification's own offset tables give,
+    and the five messages the corpus captures (S, T, t, H, Y) sum to exactly the lengths MoldUdp64
+    declared on the wire: 10, 49, 53, 24 and 18 bytes.
+
+    One fidelity note: the NextShares Nav Offset Amount fields are published as "Signed Price (4)",
+    but the loader normalizes anything matching "Price (n)" to an unsigned big endian integer, so
+    the sign is not modelled. NextShares was discontinued and 4.0 drops these messages, so nothing
+    on the wire exercises them.
+  -->
+
+  <Messages>
+
+    <!-- System Event Message -->
+    <Message>
+      <Name>System Event Message</Name>
+      <Dependency>messagetype</Dependency>
+      <Branch>payload</Branch>
+      <Code>S</Code>
+      <Category>Technical</Category>
+      <Description>System Event Messages is used to signal key market or data feed control events.</Description>
+      <Fields>
+        <Field>
+          <Name>Event Code</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Denotes the Nls Plus type of system event for which the message is being generated</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Trade Report Message -->
+    <Message>
+      <Name>Trade Report Message</Name>
+      <Dependency>messagetype</Dependency>
+      <Branch>payload</Branch>
+      <Code>T</Code>
+      <Category>Trade</Category>
+      <Description>Relays Nasdaq execution system and Trf trade transactions reported for the current business day. Nasdaq reports only one side of a trade execution on the Nls Plus feed.</Description>
+      <Fields>
+        <Field>
+          <Name>Originating Market Center Identifier</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Denotes the Nasdaq market system that generated the trade report message</Description>
+        </Field>
+        <Field>
+          <Name>Issue Symbol</Name>
+          <Type>Alphanumeric</Type>
+          <Size>8</Size>
+          <Description>Denotes the Nasdaq-assigned issue symbol of the security for which the trade report is being generated</Description>
+        </Field>
+        <Field>
+          <Name>Security Class</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Indicates the primary listing market for the issue</Description>
+        </Field>
+        <Field>
+          <Name>Trade Control Number</Name>
+          <Type>Alphanumeric</Type>
+          <Size>10</Size>
+          <Description>Indicates the source's internal control number associated with the given trade transaction</Description>
+        </Field>
+        <Field>
+          <Name>Trade Price</Name>
+          <Type>Price (4)</Type>
+          <Size>4</Size>
+          <Description>The price associated with the trade transaction being reported</Description>
+        </Field>
+        <Field>
+          <Name>Trade Size</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Indicates the reported number of shares on the trade transaction</Description>
+        </Field>
+        <Field>
+          <Name>Sale Condition Modifier</Name>
+          <Type>struct</Type>
+          <Size>4</Size>
+          <Description>Sale condition modifier consisting of four levels</Description>
+        </Field>
+        <Field>
+          <Name>Consolidated Volume</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Reflects the volume for the Issue Symbol as reported on the consolidated market data feed at the time the trade message was generated</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Long Form Trade Report Message -->
+    <Message>
+      <Name>Long Form Trade Report Message</Name>
+      <Dependency>messagetype</Dependency>
+      <Branch>payload</Branch>
+      <Code>t</Code>
+      <Category>Trade</Category>
+      <Description>Trade Report carrying an eight byte trade price, used when the price breaches the maximum value the four byte form can carry.</Description>
+      <Fields>
+        <Field>
+          <Name>Originating Market Center Identifier</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Denotes the Nasdaq market system that generated the trade report message</Description>
+        </Field>
+        <Field>
+          <Name>Issue Symbol</Name>
+          <Type>Alphanumeric</Type>
+          <Size>8</Size>
+          <Description>Denotes the Nasdaq-assigned issue symbol of the security for which the trade report is being generated</Description>
+        </Field>
+        <Field>
+          <Name>Security Class</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Indicates the primary listing market for the issue</Description>
+        </Field>
+        <Field>
+          <Name>Trade Control Number</Name>
+          <Type>Alphanumeric</Type>
+          <Size>10</Size>
+          <Description>Indicates the source's internal control number associated with the given trade transaction</Description>
+        </Field>
+        <Field>
+          <Name>Trade Price</Name>
+          <Type>Price (4)</Type>
+          <Size>8</Size>
+          <Description>The price associated with the trade transaction being reported</Description>
+        </Field>
+        <Field>
+          <Name>Trade Size</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Indicates the reported number of shares on the trade transaction</Description>
+        </Field>
+        <Field>
+          <Name>Sale Condition Modifier</Name>
+          <Type>struct</Type>
+          <Size>4</Size>
+          <Description>Sale condition modifier consisting of four levels</Description>
+        </Field>
+        <Field>
+          <Name>Consolidated Volume</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Reflects the volume for the Issue Symbol as reported on the consolidated market data feed at the time the trade message was generated</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- NextShares Trade Report Message -->
+    <Message>
+      <Name>NextShares Trade Report Message</Name>
+      <Dependency>messagetype</Dependency>
+      <Branch>payload</Branch>
+      <Code>M</Code>
+      <Category>Trade</Category>
+      <Description>Relays trade transactions for NextShares exchange traded managed funds, reported as a proxy price with the Nav offset to apply to it.</Description>
+      <Fields>
+        <Field>
+          <Name>Originating Market Center Identifier</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Denotes the Nasdaq market system that generated the trade report message</Description>
+        </Field>
+        <Field>
+          <Name>NextShares Symbol</Name>
+          <Type>Alphanumeric</Type>
+          <Size>8</Size>
+          <Description>Denotes the NextShares symbol for which the trade report is being generated</Description>
+        </Field>
+        <Field>
+          <Name>Security Class</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Indicates the primary listing market for the issue</Description>
+        </Field>
+        <Field>
+          <Name>Trade Control Number</Name>
+          <Type>Alphanumeric</Type>
+          <Size>10</Size>
+          <Description>Indicates the source's internal control number associated with the given trade transaction</Description>
+        </Field>
+        <Field>
+          <Name>Proxy Price</Name>
+          <Type>Price (4)</Type>
+          <Size>4</Size>
+          <Description>Reported proxy price for the transaction</Description>
+        </Field>
+        <Field>
+          <Name>Trade Size</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Indicates the reported number of shares on the trade transaction</Description>
+        </Field>
+        <Field>
+          <Name>Nav Offset Amount</Name>
+          <Type>Signed Price (4)</Type>
+          <Size>4</Size>
+          <Description>The Nav offset that should be applied to the Proxy Price</Description>
+        </Field>
+        <Field>
+          <Name>Sale Condition Modifier</Name>
+          <Type>struct</Type>
+          <Size>4</Size>
+          <Description>Sale condition modifier consisting of four levels</Description>
+        </Field>
+        <Field>
+          <Name>Consolidated Volume</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Reflects the volume for the Issue Symbol as reported on the consolidated market data feed at the time the trade message was generated</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Trade Cancel Error Message -->
+    <Message>
+      <Name>Trade Cancel Error Message</Name>
+      <Dependency>messagetype</Dependency>
+      <Branch>payload</Branch>
+      <Code>X</Code>
+      <Category>Trade</Category>
+      <Description>Indicates that a previously reported trade transaction has been cancelled or was reported in error.</Description>
+      <Fields>
+        <Field>
+          <Name>Originating Market Center Identifier</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Denotes the Nasdaq market system that generated the original trade report message</Description>
+        </Field>
+        <Field>
+          <Name>Issue Symbol</Name>
+          <Type>Alphanumeric</Type>
+          <Size>8</Size>
+          <Description>Denotes the Nasdaq-assigned issue symbol of the security for which the cancellation is being generated</Description>
+        </Field>
+        <Field>
+          <Name>Security Class</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Indicates the primary listing market for the issue</Description>
+        </Field>
+        <Field>
+          <Name>Original Trade Control Number</Name>
+          <Type>Alphanumeric</Type>
+          <Size>10</Size>
+          <Description>Indicates the source's internal control number associated with the original trade transaction</Description>
+        </Field>
+        <Field>
+          <Name>Original Trade Price</Name>
+          <Type>Price (4)</Type>
+          <Size>4</Size>
+          <Description>The price reported on the original trade transaction</Description>
+        </Field>
+        <Field>
+          <Name>Original Trade Size</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>The number of shares reported on the original trade transaction</Description>
+        </Field>
+        <Field>
+          <Name>Original Sale Condition Modifier</Name>
+          <Type>struct</Type>
+          <Size>4</Size>
+          <Description>The sale condition modifier reported on the original trade transaction</Description>
+        </Field>
+        <Field>
+          <Name>Consolidated Volume</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Reflects the volume for the Issue Symbol as reported on the consolidated market data feed at the time the message was generated</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Long Form Trade Cancel Error Message -->
+    <Message>
+      <Name>Long Form Trade Cancel Error Message</Name>
+      <Dependency>messagetype</Dependency>
+      <Branch>payload</Branch>
+      <Code>x</Code>
+      <Category>Trade</Category>
+      <Description>Trade Cancel/Error carrying an eight byte original trade price.</Description>
+      <Fields>
+        <Field>
+          <Name>Originating Market Center Identifier</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Denotes the Nasdaq market system that generated the original trade report message</Description>
+        </Field>
+        <Field>
+          <Name>Issue Symbol</Name>
+          <Type>Alphanumeric</Type>
+          <Size>8</Size>
+          <Description>Denotes the Nasdaq-assigned issue symbol of the security for which the cancellation is being generated</Description>
+        </Field>
+        <Field>
+          <Name>Security Class</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Indicates the primary listing market for the issue</Description>
+        </Field>
+        <Field>
+          <Name>Original Trade Control Number</Name>
+          <Type>Alphanumeric</Type>
+          <Size>10</Size>
+          <Description>Indicates the source's internal control number associated with the original trade transaction</Description>
+        </Field>
+        <Field>
+          <Name>Original Trade Price</Name>
+          <Type>Price (4)</Type>
+          <Size>8</Size>
+          <Description>The price reported on the original trade transaction</Description>
+        </Field>
+        <Field>
+          <Name>Original Trade Size</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>The number of shares reported on the original trade transaction</Description>
+        </Field>
+        <Field>
+          <Name>Original Sale Condition Modifier</Name>
+          <Type>struct</Type>
+          <Size>4</Size>
+          <Description>The sale condition modifier reported on the original trade transaction</Description>
+        </Field>
+        <Field>
+          <Name>Consolidated Volume</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Reflects the volume for the Issue Symbol as reported on the consolidated market data feed at the time the message was generated</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- NextShares Trade Cancel Error Message -->
+    <Message>
+      <Name>NextShares Trade Cancel Error Message</Name>
+      <Dependency>messagetype</Dependency>
+      <Branch>payload</Branch>
+      <Code>O</Code>
+      <Category>Trade</Category>
+      <Description>Indicates that a previously reported NextShares trade transaction has been cancelled or was reported in error.</Description>
+      <Fields>
+        <Field>
+          <Name>Market Center</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Denotes the Nasdaq market system that generated the original trade report message</Description>
+        </Field>
+        <Field>
+          <Name>Issue Symbol</Name>
+          <Type>Alphanumeric</Type>
+          <Size>8</Size>
+          <Description>Denotes the NextShares symbol for which the cancellation is being generated</Description>
+        </Field>
+        <Field>
+          <Name>Security Class</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Indicates the primary listing market for the issue</Description>
+        </Field>
+        <Field>
+          <Name>Original Trade Control Number</Name>
+          <Type>Alphanumeric</Type>
+          <Size>10</Size>
+          <Description>Indicates the source's internal control number associated with the original trade transaction</Description>
+        </Field>
+        <Field>
+          <Name>Original Proxy Price</Name>
+          <Type>Price (4)</Type>
+          <Size>4</Size>
+          <Description>The proxy price reported on the original trade transaction</Description>
+        </Field>
+        <Field>
+          <Name>Original Nav Offset Amount</Name>
+          <Type>Signed Price (4)</Type>
+          <Size>4</Size>
+          <Description>The Nav offset originally applied to the Proxy Price</Description>
+        </Field>
+        <Field>
+          <Name>Original Trade Size</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>The number of shares reported on the original trade transaction</Description>
+        </Field>
+        <Field>
+          <Name>Original Sale Condition Modifier</Name>
+          <Type>struct</Type>
+          <Size>4</Size>
+          <Description>The sale condition modifier reported on the original trade transaction</Description>
+        </Field>
+        <Field>
+          <Name>Consolidated Volume</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Reflects the volume for the Issue Symbol as reported on the consolidated market data feed at the time the message was generated</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Trade Correction Message -->
+    <Message>
+      <Name>Trade Correction Message</Name>
+      <Dependency>messagetype</Dependency>
+      <Branch>payload</Branch>
+      <Code>C</Code>
+      <Category>Trade</Category>
+      <Description>Indicates that a previously reported trade transaction has been corrected, carrying both the original and the corrected transaction.</Description>
+      <Fields>
+        <Field>
+          <Name>Originating Market Center Identifier</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Denotes the Nasdaq market system that generated the original trade report message</Description>
+        </Field>
+        <Field>
+          <Name>Issue Symbol</Name>
+          <Type>Alphanumeric</Type>
+          <Size>8</Size>
+          <Description>Denotes the Nasdaq-assigned issue symbol of the security for which the correction is being generated</Description>
+        </Field>
+        <Field>
+          <Name>Security Class</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Indicates the primary listing market for the issue</Description>
+        </Field>
+        <Field>
+          <Name>Original Trade Control Number</Name>
+          <Type>Alphanumeric</Type>
+          <Size>10</Size>
+          <Description>Indicates the source's internal control number associated with the original trade transaction</Description>
+        </Field>
+        <Field>
+          <Name>Original Trade Price</Name>
+          <Type>Price (4)</Type>
+          <Size>4</Size>
+          <Description>The price reported on the original trade transaction</Description>
+        </Field>
+        <Field>
+          <Name>Original Trade Size</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>The number of shares reported on the original trade transaction</Description>
+        </Field>
+        <Field>
+          <Name>Original Sale Condition Modifier</Name>
+          <Type>struct</Type>
+          <Size>4</Size>
+          <Description>The sale condition modifier reported on the original trade transaction</Description>
+        </Field>
+        <Field>
+          <Name>Corrected Trade Control Number</Name>
+          <Type>Alphanumeric</Type>
+          <Size>10</Size>
+          <Description>Indicates the source's internal control number associated with the corrected trade transaction</Description>
+        </Field>
+        <Field>
+          <Name>Corrected Trade Price</Name>
+          <Type>Price (4)</Type>
+          <Size>4</Size>
+          <Description>The price reported on the corrected trade transaction</Description>
+        </Field>
+        <Field>
+          <Name>Corrected Trade Size</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>The number of shares reported on the corrected trade transaction</Description>
+        </Field>
+        <Field>
+          <Name>Corrected Sale Condition Modifier</Name>
+          <Type>struct</Type>
+          <Size>4</Size>
+          <Description>The sale condition modifier reported on the corrected trade transaction</Description>
+        </Field>
+        <Field>
+          <Name>Consolidated Volume</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Reflects the volume for the Issue Symbol as reported on the consolidated market data feed at the time the message was generated</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Long Form Trade Correction Message -->
+    <Message>
+      <Name>Long Form Trade Correction Message</Name>
+      <Dependency>messagetype</Dependency>
+      <Branch>payload</Branch>
+      <Code>c</Code>
+      <Category>Trade</Category>
+      <Description>Trade Correction carrying eight byte original and corrected trade prices.</Description>
+      <Fields>
+        <Field>
+          <Name>Originating Market Center Identifier</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Denotes the Nasdaq market system that generated the original trade report message</Description>
+        </Field>
+        <Field>
+          <Name>Issue Symbol</Name>
+          <Type>Alphanumeric</Type>
+          <Size>8</Size>
+          <Description>Denotes the Nasdaq-assigned issue symbol of the security for which the correction is being generated</Description>
+        </Field>
+        <Field>
+          <Name>Security Class</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Indicates the primary listing market for the issue</Description>
+        </Field>
+        <Field>
+          <Name>Original Trade Control Number</Name>
+          <Type>Alphanumeric</Type>
+          <Size>10</Size>
+          <Description>Indicates the source's internal control number associated with the original trade transaction</Description>
+        </Field>
+        <Field>
+          <Name>Original Trade Price</Name>
+          <Type>Price (4)</Type>
+          <Size>8</Size>
+          <Description>The price reported on the original trade transaction</Description>
+        </Field>
+        <Field>
+          <Name>Original Trade Size</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>The number of shares reported on the original trade transaction</Description>
+        </Field>
+        <Field>
+          <Name>Original Sale Condition Modifier</Name>
+          <Type>struct</Type>
+          <Size>4</Size>
+          <Description>The sale condition modifier reported on the original trade transaction</Description>
+        </Field>
+        <Field>
+          <Name>Corrected Trade Control Number</Name>
+          <Type>Alphanumeric</Type>
+          <Size>10</Size>
+          <Description>Indicates the source's internal control number associated with the corrected trade transaction</Description>
+        </Field>
+        <Field>
+          <Name>Corrected Trade Price</Name>
+          <Type>Price (4)</Type>
+          <Size>8</Size>
+          <Description>The price reported on the corrected trade transaction</Description>
+        </Field>
+        <Field>
+          <Name>Corrected Trade Size</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>The number of shares reported on the corrected trade transaction</Description>
+        </Field>
+        <Field>
+          <Name>Corrected Sale Condition Modifier</Name>
+          <Type>struct</Type>
+          <Size>4</Size>
+          <Description>The sale condition modifier reported on the corrected trade transaction</Description>
+        </Field>
+        <Field>
+          <Name>Consolidated Volume</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Reflects the volume for the Issue Symbol as reported on the consolidated market data feed at the time the message was generated</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- NextShares Trade Correction Message -->
+    <Message>
+      <Name>NextShares Trade Correction Message</Name>
+      <Dependency>messagetype</Dependency>
+      <Branch>payload</Branch>
+      <Code>Z</Code>
+      <Category>Trade</Category>
+      <Description>Indicates that a previously reported NextShares trade transaction has been corrected.</Description>
+      <Fields>
+        <Field>
+          <Name>Market Center</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Denotes the Nasdaq market system that generated the original trade report message</Description>
+        </Field>
+        <Field>
+          <Name>Issue Symbol</Name>
+          <Type>Alphanumeric</Type>
+          <Size>8</Size>
+          <Description>Denotes the NextShares symbol for which the correction is being generated</Description>
+        </Field>
+        <Field>
+          <Name>Security Class</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Indicates the primary listing market for the issue</Description>
+        </Field>
+        <Field>
+          <Name>Original Trade Control Number</Name>
+          <Type>Alphanumeric</Type>
+          <Size>10</Size>
+          <Description>Indicates the source's internal control number associated with the original trade transaction</Description>
+        </Field>
+        <Field>
+          <Name>Original Proxy Price</Name>
+          <Type>Price (4)</Type>
+          <Size>4</Size>
+          <Description>The proxy price reported on the original trade transaction</Description>
+        </Field>
+        <Field>
+          <Name>Original Nav Offset Amount</Name>
+          <Type>Signed Price (4)</Type>
+          <Size>4</Size>
+          <Description>The Nav offset originally applied to the Proxy Price</Description>
+        </Field>
+        <Field>
+          <Name>Original Trade Size</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>The number of shares reported on the original trade transaction</Description>
+        </Field>
+        <Field>
+          <Name>Original Sale Condition Modifier</Name>
+          <Type>struct</Type>
+          <Size>4</Size>
+          <Description>The sale condition modifier reported on the original trade transaction</Description>
+        </Field>
+        <Field>
+          <Name>Corrected Trade Control Number</Name>
+          <Type>Alphanumeric</Type>
+          <Size>10</Size>
+          <Description>Indicates the source's internal control number associated with the corrected trade transaction</Description>
+        </Field>
+        <Field>
+          <Name>Corrected Proxy Price</Name>
+          <Type>Price (4)</Type>
+          <Size>4</Size>
+          <Description>The proxy price reported on the corrected trade transaction</Description>
+        </Field>
+        <Field>
+          <Name>Corrected Nav Offset Amount</Name>
+          <Type>Signed Price (4)</Type>
+          <Size>4</Size>
+          <Description>The corrected Nav offset applied to the Proxy Price</Description>
+        </Field>
+        <Field>
+          <Name>Corrected Trade Size</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>The number of shares reported on the corrected trade transaction</Description>
+        </Field>
+        <Field>
+          <Name>Corrected Sale Condition Modifier</Name>
+          <Type>struct</Type>
+          <Size>4</Size>
+          <Description>The sale condition modifier reported on the corrected trade transaction</Description>
+        </Field>
+        <Field>
+          <Name>Consolidated Volume</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Reflects the volume for the Issue Symbol as reported on the consolidated market data feed at the time the message was generated</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Stock Trading Action Message -->
+    <Message>
+      <Name>Stock Trading Action Message</Name>
+      <Dependency>messagetype</Dependency>
+      <Branch>payload</Branch>
+      <Code>H</Code>
+      <Category>Administrative</Category>
+      <Description>Indicates the current trading status of a security to the trading community. Clients should initialize all securities as halted at the start of the session.</Description>
+      <Fields>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Reserved for future use; space filled in the initial release</Description>
+        </Field>
+        <Field>
+          <Name>Issue Symbol</Name>
+          <Type>Alphanumeric</Type>
+          <Size>8</Size>
+          <Description>Nasdaq-assigned indicator for the issue for which the trading action message is being generated</Description>
+        </Field>
+        <Field>
+          <Name>Security Class</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Indicates the primary listing market for the issue</Description>
+        </Field>
+        <Field>
+          <Name>Current Trading State</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Reflects the current trading state for the issue</Description>
+        </Field>
+        <Field>
+          <Name>Reason</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Reflects the Market Ops or Market Watch code for the trading state change</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Stock Directory Message -->
+    <Message>
+      <Name>Stock Directory Message</Name>
+      <Dependency>messagetype</Dependency>
+      <Branch>payload</Branch>
+      <Code>R</Code>
+      <Category>Administrative</Category>
+      <Description>Identifies the securities eligible for the trading session, disseminated at the start of each day.</Description>
+      <Fields>
+        <Field>
+          <Name>Stock</Name>
+          <Type>Alphanumeric</Type>
+          <Size>8</Size>
+          <Description>Denotes the security symbol for the issue in the Nasdaq execution system</Description>
+        </Field>
+        <Field>
+          <Name>Market Category</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Indicates the listing market or listing market tier for the issue</Description>
+        </Field>
+        <Field>
+          <Name>Financial Status Indicator</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>For Nasdaq listed issues, denotes when an issue is flagged as deficient, delinquent, bankrupt or in a compliance period</Description>
+        </Field>
+        <Field>
+          <Name>Round Lot Size</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Denotes the number of shares that represent a round lot for the issue</Description>
+        </Field>
+        <Field>
+          <Name>Round Lots Only</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Indicates if Nasdaq system limits order entry for the issue</Description>
+        </Field>
+        <Field>
+          <Name>Issue Classification</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Identifies the security class for the issue as assigned by Nasdaq</Description>
+        </Field>
+        <Field>
+          <Name>Issue Sub Type</Name>
+          <Type>Alphanumeric</Type>
+          <Size>2</Size>
+          <Description>Identifies the security sub type for the issue as assigned by Nasdaq</Description>
+        </Field>
+        <Field>
+          <Name>Authenticity</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Denotes if an issue or quoting participant record is set up in Nasdaq systems in a live, test or demo state</Description>
+        </Field>
+        <Field>
+          <Name>Short Sale Threshold Indicator</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Indicates if a security is subject to mandatory close-out of short sales under Sec Rule 203(b)(3)</Description>
+        </Field>
+        <Field>
+          <Name>Ipo Flag</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Indicates if the Nasdaq security is set up for Ipo release</Description>
+        </Field>
+        <Field>
+          <Name>Luld Reference Price Tier</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Indicates which Limit Up / Limit Down price band calculation parameter is to be used for the instrument</Description>
+        </Field>
+        <Field>
+          <Name>Etp Flag</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Indicates whether the security is an exchange traded product</Description>
+        </Field>
+        <Field>
+          <Name>Etp Leverage Factor</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Tracks the integral relationship of the Etp to the underlying index</Description>
+        </Field>
+        <Field>
+          <Name>Inverse Indicator</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Indicates the directional relationship between the Etp and the underlying index</Description>
+        </Field>
+        <Field>
+          <Name>Bloomberg Id</Name>
+          <Type>Alphanumeric</Type>
+          <Size>12</Size>
+          <Description>Bloomberg global identifier for the issue</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Reg SHO Short Sale Price Test Restricted Indicator Message -->
+    <Message>
+      <Name>Reg SHO Short Sale Price Test Restricted Indicator Message</Name>
+      <Dependency>messagetype</Dependency>
+      <Branch>payload</Branch>
+      <Code>Y</Code>
+      <Category>Administrative</Category>
+      <Description>Indicates the Reg Sho short sale price test restriction status for an issue, under Rule 201 of Regulation Sho.</Description>
+      <Fields>
+        <Field>
+          <Name>Issue Symbol</Name>
+          <Type>Alphanumeric</Type>
+          <Size>8</Size>
+          <Description>Denotes the issue symbol for which the restriction is being generated</Description>
+        </Field>
+        <Field>
+          <Name>Reg Sho Action</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Denotes the Reg Sho short sale price test restriction status for the issue</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Adjusted Closing Price Message -->
+    <Message>
+      <Name>Adjusted Closing Price Message</Name>
+      <Dependency>messagetype</Dependency>
+      <Branch>payload</Branch>
+      <Code>G</Code>
+      <Category>Administrative</Category>
+      <Description>Denotes the adjusted previous close price to be used for intraday net change calculations.</Description>
+      <Fields>
+        <Field>
+          <Name>Issue Symbol</Name>
+          <Type>Alphanumeric</Type>
+          <Size>8</Size>
+          <Description>Denotes the issue symbol for which the adjusted closing price is being generated</Description>
+        </Field>
+        <Field>
+          <Name>Security Class</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Indicates the primary listing market for the issue</Description>
+        </Field>
+        <Field>
+          <Name>Adjusted Closing Price</Name>
+          <Type>Price (4)</Type>
+          <Size>4</Size>
+          <Description>Denotes the adjusted previous close price for the issue</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Long Form Adjusted Closing Price Message -->
+    <Message>
+      <Name>Long Form Adjusted Closing Price Message</Name>
+      <Dependency>messagetype</Dependency>
+      <Branch>payload</Branch>
+      <Code>g</Code>
+      <Category>Administrative</Category>
+      <Description>Adjusted Closing Price carrying an eight byte price.</Description>
+      <Fields>
+        <Field>
+          <Name>Issue Symbol</Name>
+          <Type>Alphanumeric</Type>
+          <Size>8</Size>
+          <Description>Denotes the issue symbol for which the adjusted closing price is being generated</Description>
+        </Field>
+        <Field>
+          <Name>Security Class</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Indicates the primary listing market for the issue</Description>
+        </Field>
+        <Field>
+          <Name>Adjusted Closing Price</Name>
+          <Type>Price (4)</Type>
+          <Size>8</Size>
+          <Description>Denotes the adjusted previous close price for the issue</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- End of Day Trade Summary Message -->
+    <Message>
+      <Name>End of Day Trade Summary Message</Name>
+      <Dependency>messagetype</Dependency>
+      <Branch>payload</Branch>
+      <Code>J</Code>
+      <Category>Administrative</Category>
+      <Description>Summarises the consolidated trading activity for an issue at the end of the trading day.</Description>
+      <Fields>
+        <Field>
+          <Name>Issue Symbol</Name>
+          <Type>Alphanumeric</Type>
+          <Size>8</Size>
+          <Description>Denotes the issue symbol for which the summary is being generated</Description>
+        </Field>
+        <Field>
+          <Name>Market Category</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Indicates the listing market or listing market tier for the issue</Description>
+        </Field>
+        <Field>
+          <Name>Consolidated High Price</Name>
+          <Type>Price (4)</Type>
+          <Size>4</Size>
+          <Description>The consolidated high price for the issue for the trading day</Description>
+        </Field>
+        <Field>
+          <Name>Consolidated Low Price</Name>
+          <Type>Price (4)</Type>
+          <Size>4</Size>
+          <Description>The consolidated low price for the issue for the trading day</Description>
+        </Field>
+        <Field>
+          <Name>Consolidated Closing Price</Name>
+          <Type>Price (4)</Type>
+          <Size>4</Size>
+          <Description>The consolidated closing price for the issue for the trading day</Description>
+        </Field>
+        <Field>
+          <Name>Consolidated Volume</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>The consolidated volume for the issue for the trading day</Description>
+        </Field>
+        <Field>
+          <Name>Consolidated Open Price</Name>
+          <Type>Price (4)</Type>
+          <Size>4</Size>
+          <Description>The consolidated opening price for the issue for the trading day</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Long Form End of Day Trade Summary Message -->
+    <Message>
+      <Name>Long Form End of Day Trade Summary Message</Name>
+      <Dependency>messagetype</Dependency>
+      <Branch>payload</Branch>
+      <Code>j</Code>
+      <Category>Administrative</Category>
+      <Description>End of Day Trade Summary carrying eight byte prices.</Description>
+      <Fields>
+        <Field>
+          <Name>Issue Symbol</Name>
+          <Type>Alphanumeric</Type>
+          <Size>8</Size>
+          <Description>Denotes the issue symbol for which the summary is being generated</Description>
+        </Field>
+        <Field>
+          <Name>Market Category</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Indicates the listing market or listing market tier for the issue</Description>
+        </Field>
+        <Field>
+          <Name>Consolidated High Price</Name>
+          <Type>Price (4)</Type>
+          <Size>8</Size>
+          <Description>The consolidated high price for the issue for the trading day</Description>
+        </Field>
+        <Field>
+          <Name>Consolidated Low Price</Name>
+          <Type>Price (4)</Type>
+          <Size>8</Size>
+          <Description>The consolidated low price for the issue for the trading day</Description>
+        </Field>
+        <Field>
+          <Name>Consolidated Closing Price</Name>
+          <Type>Price (4)</Type>
+          <Size>8</Size>
+          <Description>The consolidated closing price for the issue for the trading day</Description>
+        </Field>
+        <Field>
+          <Name>Consolidated Volume</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>The consolidated volume for the issue for the trading day</Description>
+        </Field>
+        <Field>
+          <Name>Consolidated Open Price</Name>
+          <Type>Price (4)</Type>
+          <Size>8</Size>
+          <Description>The consolidated opening price for the issue for the trading day</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- NextShares End of Day Trade Summary Message -->
+    <Message>
+      <Name>NextShares End of Day Trade Summary Message</Name>
+      <Dependency>messagetype</Dependency>
+      <Branch>payload</Branch>
+      <Code>N</Code>
+      <Category>Administrative</Category>
+      <Description>Summarises the consolidated trading activity for a NextShares issue, each price paired with the Nav offset to apply to it.</Description>
+      <Fields>
+        <Field>
+          <Name>Issue Symbol</Name>
+          <Type>Alphanumeric</Type>
+          <Size>8</Size>
+          <Description>Denotes the NextShares symbol for which the summary is being generated</Description>
+        </Field>
+        <Field>
+          <Name>Market Category</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Indicates the listing market or listing market tier for the issue</Description>
+        </Field>
+        <Field>
+          <Name>Consolidated High Price</Name>
+          <Type>Price (4)</Type>
+          <Size>4</Size>
+          <Description>The consolidated high proxy price for the issue for the trading day</Description>
+        </Field>
+        <Field>
+          <Name>Nav Offset Amount High</Name>
+          <Type>Signed Price (4)</Type>
+          <Size>4</Size>
+          <Description>The Nav offset that should be applied to the consolidated high proxy price</Description>
+        </Field>
+        <Field>
+          <Name>Consolidated Low Price</Name>
+          <Type>Price (4)</Type>
+          <Size>4</Size>
+          <Description>The consolidated low proxy price for the issue for the trading day</Description>
+        </Field>
+        <Field>
+          <Name>Nav Offset Amount Low</Name>
+          <Type>Signed Price (4)</Type>
+          <Size>4</Size>
+          <Description>The Nav offset that should be applied to the consolidated low proxy price</Description>
+        </Field>
+        <Field>
+          <Name>Consolidated Closing Price</Name>
+          <Type>Price (4)</Type>
+          <Size>4</Size>
+          <Description>The consolidated closing proxy price for the issue for the trading day</Description>
+        </Field>
+        <Field>
+          <Name>Nav Offset Amount Closing</Name>
+          <Type>Signed Price (4)</Type>
+          <Size>4</Size>
+          <Description>The Nav offset that should be applied to the consolidated closing proxy price</Description>
+        </Field>
+        <Field>
+          <Name>Consolidated Volume</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>The consolidated volume for the issue for the trading day</Description>
+        </Field>
+        <Field>
+          <Name>Consolidated Open Price</Name>
+          <Type>Price (4)</Type>
+          <Size>4</Size>
+          <Description>The consolidated opening proxy price for the issue for the trading day</Description>
+        </Field>
+        <Field>
+          <Name>Nav Offset Amount Open</Name>
+          <Type>Signed Price (4)</Type>
+          <Size>4</Size>
+          <Description>The Nav offset that should be applied to the consolidated opening proxy price</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- IPO Information Message -->
+    <Message>
+      <Name>IPO Information Message</Name>
+      <Dependency>messagetype</Dependency>
+      <Branch>payload</Branch>
+      <Code>I</Code>
+      <Category>Administrative</Category>
+      <Description>Denotes the reference price to be used for intraday net change calculations for an issue.</Description>
+      <Fields>
+        <Field>
+          <Name>Issue Symbol</Name>
+          <Type>Alphanumeric</Type>
+          <Size>8</Size>
+          <Description>Denotes the issue symbol for which the reference price is being generated</Description>
+        </Field>
+        <Field>
+          <Name>Security Class</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Indicates the primary listing market for the issue</Description>
+        </Field>
+        <Field>
+          <Name>Reference For Net Change</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Indicates the basis of the reference price for net change calculations</Description>
+        </Field>
+        <Field>
+          <Name>Reference Price</Name>
+          <Type>Price (4)</Type>
+          <Size>4</Size>
+          <Description>Denotes the reference price to be used for intraday net change calculations</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- MWCB Decline Level Message -->
+    <Message>
+      <Name>MWCB Decline Level Message</Name>
+      <Dependency>messagetype</Dependency>
+      <Branch>payload</Branch>
+      <Code>V</Code>
+      <Category>Administrative</Category>
+      <Description>Informs the market of the daily market wide circuit breaker decline levels, disseminated at the start of the trading day.</Description>
+      <Fields>
+        <Field>
+          <Name>Level 1</Name>
+          <Type>Price (8)</Type>
+          <Size>8</Size>
+          <Description>Denotes the Mwcb Level 1 value</Description>
+        </Field>
+        <Field>
+          <Name>Level 2</Name>
+          <Type>Price (8)</Type>
+          <Size>8</Size>
+          <Description>Denotes the Mwcb Level 2 value</Description>
+        </Field>
+        <Field>
+          <Name>Level 3</Name>
+          <Type>Price (8)</Type>
+          <Size>8</Size>
+          <Description>Denotes the Mwcb Level 3 value</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- MWCB Status Message -->
+    <Message>
+      <Name>MWCB Status Message</Name>
+      <Dependency>messagetype</Dependency>
+      <Branch>payload</Branch>
+      <Code>W</Code>
+      <Category>Administrative</Category>
+      <Description>Informs the market that a market wide circuit breaker decline level has been breached.</Description>
+      <Fields>
+        <Field>
+          <Name>Breached Level</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Denotes the Mwcb level that was breached</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- IPO Quoting Period Update Message -->
+    <Message>
+      <Name>IPO Quoting Period Update Message</Name>
+      <Dependency>messagetype</Dependency>
+      <Branch>payload</Branch>
+      <Code>K</Code>
+      <Category>Administrative</Category>
+      <Description>Indicates the anticipated Ipo quotation release time of a security.</Description>
+      <Fields>
+        <Field>
+          <Name>Stock</Name>
+          <Type>Alphanumeric</Type>
+          <Size>8</Size>
+          <Description>Denotes the security symbol for the issue in the Nasdaq execution system</Description>
+        </Field>
+        <Field>
+          <Name>IPO Quotation Release Time</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Denotes the Ipo release time, in seconds since midnight, for quotation to the nearest second</Description>
+        </Field>
+        <Field>
+          <Name>IPO Quotation Release Qualifier</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Denotes whether the release time is anticipated or the release has been cancelled or postponed</Description>
+        </Field>
+        <Field>
+          <Name>IPO Price</Name>
+          <Type>Price (4)</Type>
+          <Size>4</Size>
+          <Description>Denotes the Ipo price to be used for intraday net change calculations</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Operational Halt Message -->
+    <Message>
+      <Name>Operational Halt Message</Name>
+      <Dependency>messagetype</Dependency>
+      <Branch>payload</Branch>
+      <Code>h</Code>
+      <Category>Administrative</Category>
+      <Description>Indicates the current operational status of a security to the trading community. An operational halt is specific to the market centre for which it is declared and does not interrupt trading of the instrument on any other market place.</Description>
+      <Fields>
+        <Field>
+          <Name>Stock</Name>
+          <Type>Alpha</Type>
+          <Size>8</Size>
+          <Description>Denotes the security symbol for the issue in the Nasdaq execution system</Description>
+        </Field>
+        <Field>
+          <Name>Market Code</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>Denotes the market centre for which the operational halt is declared</Description>
+        </Field>
+        <Field>
+          <Name>Operational Halt Action</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>Denotes whether the issue is operationally halted on the identified market or has resumed trading</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+  </Messages>
+
+  <!--
+    The sale condition modifier is four bytes, and the specification documents each of them: a
+    settlement type, a Reg Nms trade through exemption, an extended hours or sold code, and a
+    special sale condition. Declaring it as a struct puts those four bytes in the model rather
+    than a four character string, which is what lets each byte carry its own code list.
+
+    The cancel, error and correction messages carry the same four bytes under their own names, so
+    each gets its own struct: a struct is referenced by a field of the same name.
+  -->
+
+  <Structs>
+
+    <Struct>
+      <Name>Sale Condition Modifier</Name>
+      <Description>Sale condition modifier, consisting of four levels</Description>
+      <Fields>
+        <Field>
+          <Name>Settlement Type</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Used for Settlement Type information</Description>
+        </Field>
+        <Field>
+          <Name>Trade Through Exemption</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Used for Sec Regulation Nms Trade Through Exemption codes</Description>
+        </Field>
+        <Field>
+          <Name>Extended Hours Or Sold Code</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Used for Extended Hours or Sold codes</Description>
+        </Field>
+        <Field>
+          <Name>Special Sale Condition</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Used for special sale condition codes. This field is case sensitive</Description>
+        </Field>
+      </Fields>
+    </Struct>
+
+    <Struct>
+      <Name>Original Sale Condition Modifier</Name>
+      <Description>The sale condition modifier reported on the original trade transaction</Description>
+      <Fields>
+        <Field>
+          <Name>Original Settlement Type</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Used for Settlement Type information</Description>
+        </Field>
+        <Field>
+          <Name>Original Trade Through Exemption</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Used for Sec Regulation Nms Trade Through Exemption codes</Description>
+        </Field>
+        <Field>
+          <Name>Original Extended Hours Or Sold Code</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Used for Extended Hours or Sold codes</Description>
+        </Field>
+        <Field>
+          <Name>Original Special Sale Condition</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Used for special sale condition codes. This field is case sensitive</Description>
+        </Field>
+      </Fields>
+    </Struct>
+
+    <Struct>
+      <Name>Corrected Sale Condition Modifier</Name>
+      <Description>The sale condition modifier reported on the corrected trade transaction</Description>
+      <Fields>
+        <Field>
+          <Name>Corrected Settlement Type</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Used for Settlement Type information</Description>
+        </Field>
+        <Field>
+          <Name>Corrected Trade Through Exemption</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Used for Sec Regulation Nms Trade Through Exemption codes</Description>
+        </Field>
+        <Field>
+          <Name>Corrected Extended Hours Or Sold Code</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Used for Extended Hours or Sold codes</Description>
+        </Field>
+        <Field>
+          <Name>Corrected Special Sale Condition</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Used for special sale condition codes. This field is case sensitive</Description>
+        </Field>
+      </Fields>
+    </Struct>
+
+  </Structs>
+
+  <Enums>
+
+    <!-- Event Code -->
+    <Enum>
+      <Name>Event Code</Name>
+      <Values>
+        <Value>
+          <Data>O</Data>
+          <Name>Start of Transmissions</Name>
+          <Description>Denotes that the Nls Plus system has started its daily transmission schedule.</Description>
+        </Value>
+        <Value>
+          <Data>S</Data>
+          <Name>Start of System Hours</Name>
+          <Description>This message indicates that Nasdaq is open and ready to start accepting orders.</Description>
+        </Value>
+        <Value>
+          <Data>Q</Data>
+          <Name>Start of Market Hours</Name>
+          <Description>Denotes the start of the regular US market session.</Description>
+        </Value>
+        <Value>
+          <Data>M</Data>
+          <Name>End of Market Hours</Name>
+          <Description>Denotes the end of the regular US session.</Description>
+        </Value>
+        <Value>
+          <Data>E</Data>
+          <Name>End of System Hours</Name>
+          <Description>Indicates that Nasdaq is now closed and will not accept any new orders today.</Description>
+        </Value>
+        <Value>
+          <Data>C</Data>
+          <Name>End of Transmissions</Name>
+          <Description>Denotes that the Nls Plus system has ended its daily transmission schedule.</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Originating Market Center Identifier -->
+    <Enum>
+      <Name>Originating Market Center Identifier</Name>
+      <Values>
+        <Value>
+          <Data>Q</Data>
+          <Name>Nasdaq</Name>
+          <Description>The Nasdaq Stock Market</Description>
+        </Value>
+        <Value>
+          <Data>L</Data>
+          <Name>TRF Carteret</Name>
+          <Description>Nasdaq/FINRA Trade Reporting Facility (TRF) Carteret</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>TRF Chicago</Name>
+          <Description>Nasdaq/FINRA Trade Reporting Facility (TRF) Chicago</Description>
+        </Value>
+        <Value>
+          <Data>B</Data>
+          <Name>BX</Name>
+          <Description>Nasdaq BX</Description>
+        </Value>
+        <Value>
+          <Data>X</Data>
+          <Name>PSX</Name>
+          <Description>Nasdaq PSX</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Market Center, carried by the NextShares cancel and correction messages -->
+    <Enum>
+      <Name>Market Center</Name>
+      <Values>
+        <Value>
+          <Data>Q</Data>
+          <Name>Nasdaq</Name>
+          <Description>Nasdaq execution system</Description>
+        </Value>
+        <Value>
+          <Data>L</Data>
+          <Name>TRF Carteret</Name>
+          <Description>Nasdaq/FINRA Trade Reporting Facility (TRF)</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>TRF Chicago</Name>
+          <Description>Nasdaq/FINRA Trade Reporting Facility (TRF) Chicago</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Security Class -->
+    <Enum>
+      <Name>Security Class</Name>
+      <Values>
+        <Value>
+          <Data>Q</Data>
+          <Name>Nasdaq</Name>
+          <Description>Nasdaq</Description>
+        </Value>
+        <Value>
+          <Data>N</Data>
+          <Name>NYSE</Name>
+          <Description>New York Stock Exchange</Description>
+        </Value>
+        <Value>
+          <Data>A</Data>
+          <Name>NYSE American</Name>
+          <Description>NYSE American</Description>
+        </Value>
+        <Value>
+          <Data>P</Data>
+          <Name>NYSE Arca</Name>
+          <Description>NYSE Arca</Description>
+        </Value>
+        <Value>
+          <Data>M</Data>
+          <Name>NYSE Texas</Name>
+          <Description>NYSE Texas</Description>
+        </Value>
+        <Value>
+          <Data>Z</Data>
+          <Name>BATS</Name>
+          <Description>BATS</Description>
+        </Value>
+        <Value>
+          <Data>V</Data>
+          <Name>IEX</Name>
+          <Description>Investors' Exchange, LLC</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Market Category -->
+    <Enum>
+      <Name>Market Category</Name>
+      <Values>
+        <Value>
+          <Data>Q</Data>
+          <Name>Nasdaq Global Select Market</Name>
+          <Description>Nasdaq Global Select Market</Description>
+        </Value>
+        <Value>
+          <Data>G</Data>
+          <Name>Nasdaq Global Market</Name>
+          <Description>Nasdaq Global Market</Description>
+        </Value>
+        <Value>
+          <Data>S</Data>
+          <Name>Nasdaq Capital Market</Name>
+          <Description>Nasdaq Capital Market</Description>
+        </Value>
+        <Value>
+          <Data>N</Data>
+          <Name>NYSE</Name>
+          <Description>New York Stock Exchange</Description>
+        </Value>
+        <Value>
+          <Data>A</Data>
+          <Name>NYSE American</Name>
+          <Description>NYSE American</Description>
+        </Value>
+        <Value>
+          <Data>P</Data>
+          <Name>NYSE Arca</Name>
+          <Description>NYSE Arca</Description>
+        </Value>
+        <Value>
+          <Data>M</Data>
+          <Name>NYSE Texas</Name>
+          <Description>NYSE Texas</Description>
+        </Value>
+        <Value>
+          <Data>Z</Data>
+          <Name>BATS</Name>
+          <Description>BATS Z Exchange</Description>
+        </Value>
+        <Value>
+          <Data>V</Data>
+          <Name>IEX</Name>
+          <Description>Investors' Exchange, LLC</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Financial Status Indicator -->
+    <Enum>
+      <Name>Financial Status Indicator</Name>
+      <Values>
+        <Value>
+          <Data>D</Data>
+          <Name>Deficient</Name>
+          <Description>Deficient</Description>
+        </Value>
+        <Value>
+          <Data>E</Data>
+          <Name>Delinquent</Name>
+          <Description>Delinquent</Description>
+        </Value>
+        <Value>
+          <Data>Q</Data>
+          <Name>Bankrupt</Name>
+          <Description>Bankrupt</Description>
+        </Value>
+        <Value>
+          <Data>S</Data>
+          <Name>Suspended</Name>
+          <Description>Suspended</Description>
+        </Value>
+        <Value>
+          <Data>G</Data>
+          <Name>Deficient and Bankrupt</Name>
+          <Description>Deficient and Bankrupt</Description>
+        </Value>
+        <Value>
+          <Data>H</Data>
+          <Name>Deficient and Delinquent</Name>
+          <Description>Deficient and Delinquent</Description>
+        </Value>
+        <Value>
+          <Data>J</Data>
+          <Name>Delinquent and Bankrupt</Name>
+          <Description>Delinquent and Bankrupt</Description>
+        </Value>
+        <Value>
+          <Data>K</Data>
+          <Name>Deficient Delinquent and Bankrupt</Name>
+          <Description>Deficient, Delinquent and Bankrupt</Description>
+        </Value>
+        <Value>
+          <Data>C</Data>
+          <Name>Creations or Redemptions Suspended</Name>
+          <Description>Creations and/or Redemptions Suspended for Exchange Traded Product</Description>
+        </Value>
+        <Value>
+          <Data>N</Data>
+          <Name>Normal</Name>
+          <Description>Normal (Default): Issuer is not Deficient, Delinquent, or Bankrupt</Description>
+        </Value>
+        <Value>
+          <Data>" "</Data>
+          <Name>Not Available</Name>
+          <Description>Not available. Firms should refer to Siac feeds for the code if needed</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Round Lots Only -->
+    <Enum>
+      <Name>Round Lots Only</Name>
+      <Values>
+        <Value>
+          <Data>Y</Data>
+          <Name>Round Lots Only</Name>
+          <Description>Nasdaq system only accepts round lot orders for this security</Description>
+        </Value>
+        <Value>
+          <Data>N</Data>
+          <Name>No Restriction</Name>
+          <Description>Nasdaq system does not have any order size restrictions for this security. Odd and mixed lot orders are allowed</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Authenticity -->
+    <Enum>
+      <Name>Authenticity</Name>
+      <Values>
+        <Value>
+          <Data>P</Data>
+          <Name>Production</Name>
+          <Description>Live/Production</Description>
+        </Value>
+        <Value>
+          <Data>T</Data>
+          <Name>Test</Name>
+          <Description>Test</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Short Sale Threshold Indicator -->
+    <Enum>
+      <Name>Short Sale Threshold Indicator</Name>
+      <Values>
+        <Value>
+          <Data>Y</Data>
+          <Name>Restricted</Name>
+          <Description>Issue is restricted under Sec Rule 203(b)(3)</Description>
+        </Value>
+        <Value>
+          <Data>N</Data>
+          <Name>Not Restricted</Name>
+          <Description>Issue is not restricted</Description>
+        </Value>
+        <Value>
+          <Data>" "</Data>
+          <Name>Not Available</Name>
+          <Description>Threshold Indicator not available</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Ipo Flag -->
+    <Enum>
+      <Name>Ipo Flag</Name>
+      <Values>
+        <Value>
+          <Data>Y</Data>
+          <Name>New Ipo</Name>
+          <Description>Nasdaq listed instrument is set up as a new Ipo security</Description>
+        </Value>
+        <Value>
+          <Data>N</Data>
+          <Name>Not New Ipo</Name>
+          <Description>Nasdaq listed instrument is not set up as a new Ipo security</Description>
+        </Value>
+        <Value>
+          <Data>" "</Data>
+          <Name>Not Available</Name>
+          <Description>Not available</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Luld Reference Price Tier -->
+    <Enum>
+      <Name>Luld Reference Price Tier</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Tier 1</Name>
+          <Description>Tier 1 Nms Stocks and select Etps</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Tier 2</Name>
+          <Description>Tier 2 Nms Stocks</Description>
+        </Value>
+        <Value>
+          <Data>" "</Data>
+          <Name>Not Applicable</Name>
+          <Description>Not applicable</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Etp Flag -->
+    <Enum>
+      <Name>Etp Flag</Name>
+      <Values>
+        <Value>
+          <Data>Y</Data>
+          <Name>Etp</Name>
+          <Description>Instrument is an Etp</Description>
+        </Value>
+        <Value>
+          <Data>N</Data>
+          <Name>Not Etp</Name>
+          <Description>Instrument is not an Etp</Description>
+        </Value>
+        <Value>
+          <Data>" "</Data>
+          <Name>Not Available</Name>
+          <Description>Not available</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Inverse Indicator -->
+    <Enum>
+      <Name>Inverse Indicator</Name>
+      <Values>
+        <Value>
+          <Data>Y</Data>
+          <Name>Inverse</Name>
+          <Description>Etp is an Inverse Etp</Description>
+        </Value>
+        <Value>
+          <Data>N</Data>
+          <Name>Not Inverse</Name>
+          <Description>Etp is not an Inverse Etp</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Current Trading State -->
+    <Enum>
+      <Name>Current Trading State</Name>
+      <Values>
+        <Value>
+          <Data>H</Data>
+          <Name>Halted</Name>
+          <Description>Halt in effect across all US equity exchanges</Description>
+        </Value>
+        <Value>
+          <Data>P</Data>
+          <Name>Paused</Name>
+          <Description>Paused across all US equity markets and Sros, Nasdaq listed securities only</Description>
+        </Value>
+        <Value>
+          <Data>Q</Data>
+          <Name>Quotation Only</Name>
+          <Description>Quote only period in effect across all US equity exchanges</Description>
+        </Value>
+        <Value>
+          <Data>T</Data>
+          <Name>Trading</Name>
+          <Description>Trading on the Nasdaq market</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Reg Sho Action -->
+    <Enum>
+      <Name>Reg Sho Action</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>No Price Test</Name>
+          <Description>No price test in place</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Restriction In Effect</Name>
+          <Description>Reg Sho short sale price test restriction in effect due to an intra-day price drop in the security</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Restriction Remains</Name>
+          <Description>Reg Sho short sale price test restriction remains in effect</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Reference For Net Change -->
+    <Enum>
+      <Name>Reference For Net Change</Name>
+      <Values>
+        <Value>
+          <Data>F</Data>
+          <Name>First Trade Price</Name>
+          <Description>First Trade Price</Description>
+        </Value>
+        <Value>
+          <Data>W</Data>
+          <Name>Underwriter Price</Name>
+          <Description>Underwriter Price</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Breached Level -->
+    <Enum>
+      <Name>Breached Level</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Level 1</Name>
+          <Description>Level 1</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Level 2</Name>
+          <Description>Level 2</Description>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Level 3</Name>
+          <Description>Level 3</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- IPO Quotation Release Qualifier -->
+    <Enum>
+      <Name>IPO Quotation Release Qualifier</Name>
+      <Values>
+        <Value>
+          <Data>A</Data>
+          <Name>Anticipated</Name>
+          <Description>Anticipated quotation release time, used when Nasdaq Market Operations initially enters the Ipo instrument for release</Description>
+        </Value>
+        <Value>
+          <Data>C</Data>
+          <Name>Cancelled</Name>
+          <Description>Ipo release cancelled or postponed</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Market Code -->
+    <Enum>
+      <Name>Market Code</Name>
+      <Values>
+        <Value>
+          <Data>Q</Data>
+          <Name>Nasdaq</Name>
+          <Description>Nasdaq</Description>
+        </Value>
+        <Value>
+          <Data>B</Data>
+          <Name>BX</Name>
+          <Description>BX</Description>
+        </Value>
+        <Value>
+          <Data>X</Data>
+          <Name>PSX</Name>
+          <Description>PSX</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Operational Halt Action -->
+    <Enum>
+      <Name>Operational Halt Action</Name>
+      <Values>
+        <Value>
+          <Data>H</Data>
+          <Name>Halted</Name>
+          <Description>Operationally halted on the identified market</Description>
+        </Value>
+        <Value>
+          <Data>T</Data>
+          <Name>Trading</Name>
+          <Description>Operational halt has been lifted and trading resumed</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Trading Halt Reason Code, Appendix D -->
+    <Enum>
+      <Name>Trading Halt Reason Code</Name>
+      <Values>
+        <Value>
+          <Data>T1</Data>
+          <Name>Halt News Pending</Name>
+          <Description>Halt News Pending</Description>
+        </Value>
+        <Value>
+          <Data>T2</Data>
+          <Name>Halt News Disseminated</Name>
+          <Description>Halt News Disseminated</Description>
+        </Value>
+        <Value>
+          <Data>T5</Data>
+          <Name>Single Stock Trading Pause</Name>
+          <Description>Single Stock Trading Pause In Effect</Description>
+        </Value>
+        <Value>
+          <Data>T6</Data>
+          <Name>Extraordinary Market Activity</Name>
+          <Description>Regulatory Halt for Extraordinary Market Activity</Description>
+        </Value>
+        <Value>
+          <Data>T8</Data>
+          <Name>Halt Etf</Name>
+          <Description>Halt Etf</Description>
+        </Value>
+        <Value>
+          <Data>T12</Data>
+          <Name>Information Requested</Name>
+          <Description>Trading Halted for information requested by the listing market</Description>
+        </Value>
+        <Value>
+          <Data>H4</Data>
+          <Name>Halt Non Compliance</Name>
+          <Description>Halt Non-Compliance</Description>
+        </Value>
+        <Value>
+          <Data>H9</Data>
+          <Name>Halt Filings Not Current</Name>
+          <Description>Halt Filings Not Current</Description>
+        </Value>
+        <Value>
+          <Data>H10</Data>
+          <Name>Halt Sec Trading Suspension</Name>
+          <Description>Halt Sec Trading Suspension</Description>
+        </Value>
+        <Value>
+          <Data>H11</Data>
+          <Name>Halt Regulatory Concern</Name>
+          <Description>Halt Regulatory Concern</Description>
+        </Value>
+        <Value>
+          <Data>O1</Data>
+          <Name>Operations Halt</Name>
+          <Description>Operations Halt, contact Market Operations</Description>
+        </Value>
+        <Value>
+          <Data>LUDP</Data>
+          <Name>Volatility Trading Pause</Name>
+          <Description>Volatility Trading Pause</Description>
+        </Value>
+        <Value>
+          <Data>LUDS</Data>
+          <Name>Volatility Trading Pause Straddle</Name>
+          <Description>Volatility Trading Pause, Straddle Condition</Description>
+        </Value>
+        <Value>
+          <Data>MWC1</Data>
+          <Name>Circuit Breaker Level 1</Name>
+          <Description>Market Wide Circuit Breaker Halt, Level 1</Description>
+        </Value>
+        <Value>
+          <Data>MWC2</Data>
+          <Name>Circuit Breaker Level 2</Name>
+          <Description>Market Wide Circuit Breaker Halt, Level 2</Description>
+        </Value>
+        <Value>
+          <Data>MWC3</Data>
+          <Name>Circuit Breaker Level 3</Name>
+          <Description>Market Wide Circuit Breaker Halt, Level 3</Description>
+        </Value>
+        <Value>
+          <Data>MWC0</Data>
+          <Name>Circuit Breaker Carry Over</Name>
+          <Description>Market Wide Circuit Breaker Halt, carried over from the previous day</Description>
+        </Value>
+        <Value>
+          <Data>IPO1</Data>
+          <Name>Ipo Not Yet Trading</Name>
+          <Description>Ipo Issue Not Yet Trading</Description>
+        </Value>
+        <Value>
+          <Data>M1</Data>
+          <Name>Corporate Action</Name>
+          <Description>Corporate Action</Description>
+        </Value>
+        <Value>
+          <Data>M2</Data>
+          <Name>Quotation Not Available</Name>
+          <Description>Quotation Not Available</Description>
+        </Value>
+        <Value>
+          <Data>" "</Data>
+          <Name>Reason Not Available</Name>
+          <Description>Reason Not Available</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Trading Resumption Reason Code, Appendix D -->
+    <Enum>
+      <Name>Trading Resumption Reason Code</Name>
+      <Values>
+        <Value>
+          <Data>T3</Data>
+          <Name>News And Resumption Times</Name>
+          <Description>News and Resumption Times</Description>
+        </Value>
+        <Value>
+          <Data>T7</Data>
+          <Name>Quotation Only Period</Name>
+          <Description>Single Stock Trading Pause, Quotation Only Period</Description>
+        </Value>
+        <Value>
+          <Data>R4</Data>
+          <Name>Qualifications Resolved</Name>
+          <Description>Qualifications Issues Reviewed and Resolved, Quotations and Trading to Resume</Description>
+        </Value>
+        <Value>
+          <Data>R9</Data>
+          <Name>Filing Requirements Satisfied</Name>
+          <Description>Filing Requirements Satisfied and Resolved, Quotations and Trading to Resume</Description>
+        </Value>
+        <Value>
+          <Data>C3</Data>
+          <Name>Issuer News Not Forthcoming</Name>
+          <Description>Issuer News Not Forthcoming, Quotations and Trading to Resume</Description>
+        </Value>
+        <Value>
+          <Data>C4</Data>
+          <Name>Qualifications Halt Ended</Name>
+          <Description>Qualifications Halt ended, Maintenance Requirements Met, Resume</Description>
+        </Value>
+        <Value>
+          <Data>C9</Data>
+          <Name>Qualifications Halt Concluded</Name>
+          <Description>Qualifications Halt Concluded, Filings Met, Quotes and Trades to Resume</Description>
+        </Value>
+        <Value>
+          <Data>C11</Data>
+          <Name>Trade Halt Concluded</Name>
+          <Description>Trade Halt Concluded By Other Regulatory Authority, Quotes and Trades Resume</Description>
+        </Value>
+        <Value>
+          <Data>MWCQ</Data>
+          <Name>Circuit Breaker Resumption</Name>
+          <Description>Market Wide Circuit Breaker Resumption</Description>
+        </Value>
+        <Value>
+          <Data>R1</Data>
+          <Name>New Issue Available</Name>
+          <Description>New Issue Available</Description>
+        </Value>
+        <Value>
+          <Data>R2</Data>
+          <Name>Issue Available</Name>
+          <Description>Issue Available</Description>
+        </Value>
+        <Value>
+          <Data>IPOQ</Data>
+          <Name>Ipo Released For Quotation</Name>
+          <Description>Ipo Security Released for Quotation, Nasdaq securities only</Description>
+        </Value>
+        <Value>
+          <Data>IPOE</Data>
+          <Name>Ipo Positioning Window Extension</Name>
+          <Description>Ipo Security Positioning Window Extension, Nasdaq securities only</Description>
+        </Value>
+        <Value>
+          <Data>" "</Data>
+          <Name>Reason Not Available</Name>
+          <Description>Reason Not Available</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Issue Classification, Appendix E -->
+    <Enum>
+      <Name>Issue Classification</Name>
+      <Values>
+        <Value>
+          <Data>A</Data>
+          <Name>American Depositary Share</Name>
+          <Description>American Depositary Share</Description>
+        </Value>
+        <Value>
+          <Data>B</Data>
+          <Name>Bond</Name>
+          <Description>Bond</Description>
+        </Value>
+        <Value>
+          <Data>C</Data>
+          <Name>Common Stock</Name>
+          <Description>Common Stock</Description>
+        </Value>
+        <Value>
+          <Data>F</Data>
+          <Name>Depository Receipt</Name>
+          <Description>Depository Receipt</Description>
+        </Value>
+        <Value>
+          <Data>I</Data>
+          <Name>Rule 144A</Name>
+          <Description>144A</Description>
+        </Value>
+        <Value>
+          <Data>L</Data>
+          <Name>Limited Partnership</Name>
+          <Description>Limited Partnership</Description>
+        </Value>
+        <Value>
+          <Data>N</Data>
+          <Name>Notes</Name>
+          <Description>Notes</Description>
+        </Value>
+        <Value>
+          <Data>O</Data>
+          <Name>Ordinary Share</Name>
+          <Description>Ordinary Share</Description>
+        </Value>
+        <Value>
+          <Data>P</Data>
+          <Name>Preferred Stock</Name>
+          <Description>Preferred Stock</Description>
+        </Value>
+        <Value>
+          <Data>Q</Data>
+          <Name>Other Securities</Name>
+          <Description>Other Securities</Description>
+        </Value>
+        <Value>
+          <Data>R</Data>
+          <Name>Right</Name>
+          <Description>Right</Description>
+        </Value>
+        <Value>
+          <Data>S</Data>
+          <Name>Shares of Beneficial Interest</Name>
+          <Description>Shares of Beneficial Interest</Description>
+        </Value>
+        <Value>
+          <Data>T</Data>
+          <Name>Convertible Debenture</Name>
+          <Description>Convertible Debenture</Description>
+        </Value>
+        <Value>
+          <Data>U</Data>
+          <Name>Unit</Name>
+          <Description>Unit</Description>
+        </Value>
+        <Value>
+          <Data>V</Data>
+          <Name>Units of Beneficial Interest</Name>
+          <Description>Units of Beneficial Interest</Description>
+        </Value>
+        <Value>
+          <Data>W</Data>
+          <Name>Warrant</Name>
+          <Description>Warrant</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- The four bytes of Sale Condition Modifier, each its own code list. The messages carry the
+         field whole, as the four character string the wire presents; these record what each byte
+         of it means. Level 4 is case sensitive: lower case o and x are not the same codes as O
+         and X in level 2. -->
+
+    <!-- Settlement Type, settlement type -->
+    <Enum>
+      <Name>Settlement Type</Name>
+      <Values>
+        <Value>
+          <Data>@</Data>
+          <Name>Regular Settlement</Name>
+          <Description>Regular Settlement</Description>
+        </Value>
+        <Value>
+          <Data>C</Data>
+          <Name>Cash Settlement</Name>
+          <Description>Cash Settlement</Description>
+        </Value>
+        <Value>
+          <Data>N</Data>
+          <Name>Next Day Settlement</Name>
+          <Description>Next Day Settlement</Description>
+        </Value>
+        <Value>
+          <Data>R</Data>
+          <Name>Seller Settlement</Name>
+          <Description>Seller Settlement</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Trade Through Exemption, Sec Regulation Nms trade through exemption -->
+    <Enum>
+      <Name>Trade Through Exemption</Name>
+      <Values>
+        <Value>
+          <Data>F</Data>
+          <Name>Intermarket Sweep</Name>
+          <Description>Intermarket Sweep</Description>
+        </Value>
+        <Value>
+          <Data>O</Data>
+          <Name>Opening Print</Name>
+          <Description>Opening Print</Description>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>Derivative Priced</Name>
+          <Description>Derivative Priced</Description>
+        </Value>
+        <Value>
+          <Data>5</Data>
+          <Name>Re Opening Print</Name>
+          <Description>Re-Opening Print</Description>
+        </Value>
+        <Value>
+          <Data>6</Data>
+          <Name>Closing Print</Name>
+          <Description>Closing Print</Description>
+        </Value>
+        <Value>
+          <Data>7</Data>
+          <Name>Qualified Contingent Trade</Name>
+          <Description>Qualified Contingent Trade (QCT)</Description>
+        </Value>
+        <Value>
+          <Data>" "</Data>
+          <Name>Not Applicable</Name>
+          <Description>Not applicable</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Extended Hours Or Sold Code, extended hours or sold codes -->
+    <Enum>
+      <Name>Extended Hours Or Sold Code</Name>
+      <Values>
+        <Value>
+          <Data>T</Data>
+          <Name>Extended Hours Trade</Name>
+          <Description>Extended Hours Trade</Description>
+        </Value>
+        <Value>
+          <Data>U</Data>
+          <Name>Extended Hours Trade Reported Late</Name>
+          <Description>Extended Hours Trade, Reported Late or Out of Sequence</Description>
+        </Value>
+        <Value>
+          <Data>L</Data>
+          <Name>Sold Last</Name>
+          <Description>Sold Last, Reported Late But In Sequence</Description>
+        </Value>
+        <Value>
+          <Data>Z</Data>
+          <Name>Sold Out Of Sequence</Name>
+          <Description>Sold, Out of Sequence</Description>
+        </Value>
+        <Value>
+          <Data>" "</Data>
+          <Name>Not Applicable</Name>
+          <Description>Not applicable</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Special Sale Condition, special sale condition codes, case sensitive -->
+    <Enum>
+      <Name>Special Sale Condition</Name>
+      <Values>
+        <Value>
+          <Data>A</Data>
+          <Name>Acquisition</Name>
+          <Description>Acquisition</Description>
+        </Value>
+        <Value>
+          <Data>B</Data>
+          <Name>Bunched</Name>
+          <Description>Bunched</Description>
+        </Value>
+        <Value>
+          <Data>D</Data>
+          <Name>Distribution</Name>
+          <Description>Distribution</Description>
+        </Value>
+        <Value>
+          <Data>H</Data>
+          <Name>Price Variation Transaction</Name>
+          <Description>Price Variation Transaction</Description>
+        </Value>
+        <Value>
+          <Data>M</Data>
+          <Name>Nasdaq Official Close Price</Name>
+          <Description>Nasdaq Official Close Price (NOCP)</Description>
+        </Value>
+        <Value>
+          <Data>P</Data>
+          <Name>Prior Reference Price</Name>
+          <Description>Prior Reference Price</Description>
+        </Value>
+        <Value>
+          <Data>Q</Data>
+          <Name>Nasdaq Official Opening Price</Name>
+          <Description>Nasdaq Official Opening Price (NOOP)</Description>
+        </Value>
+        <Value>
+          <Data>S</Data>
+          <Name>Split Trade</Name>
+          <Description>Split Trade</Description>
+        </Value>
+        <Value>
+          <Data>V</Data>
+          <Name>Contingent Trade</Name>
+          <Description>Contingent Trade</Description>
+        </Value>
+        <Value>
+          <Data>W</Data>
+          <Name>Average Price Trade</Name>
+          <Description>Average Price Trade. Nls Plus uses this code for all Average Price Trades regardless of listing market</Description>
+        </Value>
+        <Value>
+          <Data>X</Data>
+          <Name>Cross Trade</Name>
+          <Description>Cross Trade</Description>
+        </Value>
+        <Value>
+          <Data>o</Data>
+          <Name>Odd Lot Execution</Name>
+          <Description>Odd lot execution</Description>
+        </Value>
+        <Value>
+          <Data>x</Data>
+          <Name>Odd Lot Cross Execution</Name>
+          <Description>Odd Lot Cross execution</Description>
+        </Value>
+        <Value>
+          <Data>" "</Data>
+          <Name>Not Applicable</Name>
+          <Description>Not applicable</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Issue Sub Type, Appendix F -->
+    <Enum>
+      <Name>Issue Sub Type</Name>
+      <Values>
+        <Value>
+          <Data>A</Data>
+          <Name>Preferred Trust Securities</Name>
+          <Description>Preferred Trust Securities</Description>
+        </Value>
+        <Value>
+          <Data>AI</Data>
+          <Name>Alpha Index Etns</Name>
+          <Description>Alpha Index ETNs</Description>
+        </Value>
+        <Value>
+          <Data>B</Data>
+          <Name>Index Based Derivative</Name>
+          <Description>Index Based Derivative</Description>
+        </Value>
+        <Value>
+          <Data>C</Data>
+          <Name>Common Shares</Name>
+          <Description>Common Shares</Description>
+        </Value>
+        <Value>
+          <Data>CB</Data>
+          <Name>Commodity Based Trust Shares</Name>
+          <Description>Commodity Based Trust Shares</Description>
+        </Value>
+        <Value>
+          <Data>CF</Data>
+          <Name>Commodity Futures Trust Shares</Name>
+          <Description>Commodity Futures Trust Shares</Description>
+        </Value>
+        <Value>
+          <Data>CL</Data>
+          <Name>Commodity Linked Securities</Name>
+          <Description>Commodity-Linked Securities</Description>
+        </Value>
+        <Value>
+          <Data>CM</Data>
+          <Name>Commodity Index Trust Shares</Name>
+          <Description>Commodity Index Trust Shares</Description>
+        </Value>
+        <Value>
+          <Data>CO</Data>
+          <Name>Collateralized Mortgage Obligation</Name>
+          <Description>Collateralized Mortgage Obligation</Description>
+        </Value>
+        <Value>
+          <Data>CT</Data>
+          <Name>Currency Trust Shares</Name>
+          <Description>Currency Trust Shares</Description>
+        </Value>
+        <Value>
+          <Data>CU</Data>
+          <Name>Commodity Currency Linked Securities</Name>
+          <Description>Commodity-Currency-Linked Securities</Description>
+        </Value>
+        <Value>
+          <Data>CW</Data>
+          <Name>Currency Warrants</Name>
+          <Description>Currency Warrants</Description>
+        </Value>
+        <Value>
+          <Data>D</Data>
+          <Name>Global Depositary Shares</Name>
+          <Description>Global Depositary Shares</Description>
+        </Value>
+        <Value>
+          <Data>E</Data>
+          <Name>Etf Portfolio Depositary Receipt</Name>
+          <Description>ETF-Portfolio Depositary Receipt</Description>
+        </Value>
+        <Value>
+          <Data>EG</Data>
+          <Name>Equity Gold Shares</Name>
+          <Description>Equity Gold Shares</Description>
+        </Value>
+        <Value>
+          <Data>EI</Data>
+          <Name>Etn Equity Index Linked Securities</Name>
+          <Description>ETN-Equity Index-Linked Securities</Description>
+        </Value>
+        <Value>
+          <Data>EM</Data>
+          <Name>Exchange Traded Managed Funds</Name>
+          <Description>Exchange Traded Managed Funds</Description>
+        </Value>
+        <Value>
+          <Data>EN</Data>
+          <Name>Exchange Traded Notes</Name>
+          <Description>Exchange Traded Notes</Description>
+        </Value>
+        <Value>
+          <Data>EU</Data>
+          <Name>Equity Units</Name>
+          <Description>Equity Units</Description>
+        </Value>
+        <Value>
+          <Data>F</Data>
+          <Name>Holdrs</Name>
+          <Description>HOLDRS</Description>
+        </Value>
+        <Value>
+          <Data>FI</Data>
+          <Name>Etn Fixed Income Linked Securities</Name>
+          <Description>ETN-Fixed Income-Linked Securities</Description>
+        </Value>
+        <Value>
+          <Data>FL</Data>
+          <Name>Etn Futures Linked Securities</Name>
+          <Description>ETN-Futures-Linked Securities</Description>
+        </Value>
+        <Value>
+          <Data>G</Data>
+          <Name>Global Shares</Name>
+          <Description>Global Shares</Description>
+        </Value>
+        <Value>
+          <Data>I</Data>
+          <Name>Etf Index Fund Shares</Name>
+          <Description>ETF-Index Fund Shares</Description>
+        </Value>
+        <Value>
+          <Data>IR</Data>
+          <Name>Interest Rate</Name>
+          <Description>Interest Rate</Description>
+        </Value>
+        <Value>
+          <Data>IW</Data>
+          <Name>Index Warrant</Name>
+          <Description>Index Warrant</Description>
+        </Value>
+        <Value>
+          <Data>IX</Data>
+          <Name>Index Linked Exchangeable Notes</Name>
+          <Description>Index-Linked Exchangeable Notes</Description>
+        </Value>
+        <Value>
+          <Data>J</Data>
+          <Name>Corporate Backed Trust Security</Name>
+          <Description>Corporate Backed Trust Security</Description>
+        </Value>
+        <Value>
+          <Data>L</Data>
+          <Name>Contingent Litigation Right</Name>
+          <Description>Contingent Litigation Right</Description>
+        </Value>
+        <Value>
+          <Data>LL</Data>
+          <Name>Limited Liability Company</Name>
+          <Description>Identifies securities of companies that are set up as a Limited Liability Company (LLC)</Description>
+        </Value>
+        <Value>
+          <Data>M</Data>
+          <Name>Equity Based Derivative</Name>
+          <Description>Equity-Based Derivative</Description>
+        </Value>
+        <Value>
+          <Data>MF</Data>
+          <Name>Managed Fund Shares</Name>
+          <Description>Managed Fund Shares</Description>
+        </Value>
+        <Value>
+          <Data>ML</Data>
+          <Name>Etn Multi Factor Index Linked Securities</Name>
+          <Description>ETN-Multi-Factor Index-Linked Securities</Description>
+        </Value>
+        <Value>
+          <Data>MT</Data>
+          <Name>Managed Trust Securities</Name>
+          <Description>Managed Trust Securities</Description>
+        </Value>
+        <Value>
+          <Data>N</Data>
+          <Name>Ny Registry Shares</Name>
+          <Description>NY Registry Shares</Description>
+        </Value>
+        <Value>
+          <Data>O</Data>
+          <Name>Open Ended Mutual Fund</Name>
+          <Description>Open Ended Mutual Fund</Description>
+        </Value>
+        <Value>
+          <Data>P</Data>
+          <Name>Privately Held Security</Name>
+          <Description>Privately Held Security</Description>
+        </Value>
+        <Value>
+          <Data>PP</Data>
+          <Name>Poison Pill</Name>
+          <Description>Poison Pill</Description>
+        </Value>
+        <Value>
+          <Data>PU</Data>
+          <Name>Partnership Units</Name>
+          <Description>Partnership Units</Description>
+        </Value>
+        <Value>
+          <Data>Q</Data>
+          <Name>Closed End Funds</Name>
+          <Description>Closed-End Funds</Description>
+        </Value>
+        <Value>
+          <Data>R</Data>
+          <Name>Reg S</Name>
+          <Description>Reg-S</Description>
+        </Value>
+        <Value>
+          <Data>RC</Data>
+          <Name>Commodity Redeemable Commodity Linked Securities</Name>
+          <Description>Commodity-Redeemable Commodity-Linked Securities</Description>
+        </Value>
+        <Value>
+          <Data>RF</Data>
+          <Name>Etn Redeemable Futures Linked Securities</Name>
+          <Description>ETN-Redeemable Futures-Linked Securities</Description>
+        </Value>
+        <Value>
+          <Data>RT</Data>
+          <Name>Reit</Name>
+          <Description>REIT</Description>
+        </Value>
+        <Value>
+          <Data>RU</Data>
+          <Name>Commodity Redeemable Currency Linked Securities</Name>
+          <Description>Commodity-Redeemable Currency-Linked Securities</Description>
+        </Value>
+        <Value>
+          <Data>S</Data>
+          <Name>Seed</Name>
+          <Description>SEED</Description>
+        </Value>
+        <Value>
+          <Data>SC</Data>
+          <Name>Spot Rate Closing</Name>
+          <Description>Spot Rate Closing</Description>
+        </Value>
+        <Value>
+          <Data>SI</Data>
+          <Name>Spot Rate Intraday</Name>
+          <Description>Spot Rate Intraday</Description>
+        </Value>
+        <Value>
+          <Data>T</Data>
+          <Name>Tracking Stock</Name>
+          <Description>Tracking Stock</Description>
+        </Value>
+        <Value>
+          <Data>TC</Data>
+          <Name>Trust Certificates</Name>
+          <Description>Trust Certificates</Description>
+        </Value>
+        <Value>
+          <Data>TU</Data>
+          <Name>Trust Units</Name>
+          <Description>Trust Units</Description>
+        </Value>
+        <Value>
+          <Data>U</Data>
+          <Name>Portal</Name>
+          <Description>Portal</Description>
+        </Value>
+        <Value>
+          <Data>V</Data>
+          <Name>Contingent Value Right</Name>
+          <Description>Contingent Value Right</Description>
+        </Value>
+        <Value>
+          <Data>W</Data>
+          <Name>Trust Issued Receipts</Name>
+          <Description>Trust Issued Receipts</Description>
+        </Value>
+        <Value>
+          <Data>WC</Data>
+          <Name>World Currency Option</Name>
+          <Description>World Currency Option</Description>
+        </Value>
+        <Value>
+          <Data>X</Data>
+          <Name>Trust</Name>
+          <Description>Trust</Description>
+        </Value>
+        <Value>
+          <Data>Y</Data>
+          <Name>Other</Name>
+          <Description>Other</Description>
+        </Value>
+        <Value>
+          <Data>Z</Data>
+          <Name>Not Applicable</Name>
+          <Description>Not Applicable</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Original Settlement Type -->
+    <Enum>
+      <Name>Original Settlement Type</Name>
+      <Values>
+        <Value>
+          <Data>@</Data>
+          <Name>Regular Settlement</Name>
+          <Description>Regular Settlement</Description>
+        </Value>
+        <Value>
+          <Data>C</Data>
+          <Name>Cash Settlement</Name>
+          <Description>Cash Settlement</Description>
+        </Value>
+        <Value>
+          <Data>N</Data>
+          <Name>Next Day Settlement</Name>
+          <Description>Next Day Settlement</Description>
+        </Value>
+        <Value>
+          <Data>R</Data>
+          <Name>Seller Settlement</Name>
+          <Description>Seller Settlement</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Original Trade Through Exemption -->
+    <Enum>
+      <Name>Original Trade Through Exemption</Name>
+      <Values>
+        <Value>
+          <Data>F</Data>
+          <Name>Intermarket Sweep</Name>
+          <Description>Intermarket Sweep</Description>
+        </Value>
+        <Value>
+          <Data>O</Data>
+          <Name>Opening Print</Name>
+          <Description>Opening Print</Description>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>Derivative Priced</Name>
+          <Description>Derivative Priced</Description>
+        </Value>
+        <Value>
+          <Data>5</Data>
+          <Name>Re Opening Print</Name>
+          <Description>Re-Opening Print</Description>
+        </Value>
+        <Value>
+          <Data>6</Data>
+          <Name>Closing Print</Name>
+          <Description>Closing Print</Description>
+        </Value>
+        <Value>
+          <Data>7</Data>
+          <Name>Qualified Contingent Trade</Name>
+          <Description>Qualified Contingent Trade (QCT)</Description>
+        </Value>
+        <Value>
+          <Data>" "</Data>
+          <Name>Not Applicable</Name>
+          <Description>Not applicable</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Original Extended Hours Or Sold Code -->
+    <Enum>
+      <Name>Original Extended Hours Or Sold Code</Name>
+      <Values>
+        <Value>
+          <Data>T</Data>
+          <Name>Extended Hours Trade</Name>
+          <Description>Extended Hours Trade</Description>
+        </Value>
+        <Value>
+          <Data>U</Data>
+          <Name>Extended Hours Trade Reported Late</Name>
+          <Description>Extended Hours Trade, Reported Late or Out of Sequence</Description>
+        </Value>
+        <Value>
+          <Data>L</Data>
+          <Name>Sold Last</Name>
+          <Description>Sold Last, Reported Late But In Sequence</Description>
+        </Value>
+        <Value>
+          <Data>Z</Data>
+          <Name>Sold Out Of Sequence</Name>
+          <Description>Sold, Out of Sequence</Description>
+        </Value>
+        <Value>
+          <Data>" "</Data>
+          <Name>Not Applicable</Name>
+          <Description>Not applicable</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Original Special Sale Condition -->
+    <Enum>
+      <Name>Original Special Sale Condition</Name>
+      <Values>
+        <Value>
+          <Data>A</Data>
+          <Name>Acquisition</Name>
+          <Description>Acquisition</Description>
+        </Value>
+        <Value>
+          <Data>B</Data>
+          <Name>Bunched</Name>
+          <Description>Bunched</Description>
+        </Value>
+        <Value>
+          <Data>D</Data>
+          <Name>Distribution</Name>
+          <Description>Distribution</Description>
+        </Value>
+        <Value>
+          <Data>H</Data>
+          <Name>Price Variation Transaction</Name>
+          <Description>Price Variation Transaction</Description>
+        </Value>
+        <Value>
+          <Data>M</Data>
+          <Name>Nasdaq Official Close Price</Name>
+          <Description>Nasdaq Official Close Price (NOCP)</Description>
+        </Value>
+        <Value>
+          <Data>P</Data>
+          <Name>Prior Reference Price</Name>
+          <Description>Prior Reference Price</Description>
+        </Value>
+        <Value>
+          <Data>Q</Data>
+          <Name>Nasdaq Official Opening Price</Name>
+          <Description>Nasdaq Official Opening Price (NOOP)</Description>
+        </Value>
+        <Value>
+          <Data>S</Data>
+          <Name>Split Trade</Name>
+          <Description>Split Trade</Description>
+        </Value>
+        <Value>
+          <Data>V</Data>
+          <Name>Contingent Trade</Name>
+          <Description>Contingent Trade</Description>
+        </Value>
+        <Value>
+          <Data>W</Data>
+          <Name>Average Price Trade</Name>
+          <Description>Average Price Trade. Nls Plus uses this code for all Average Price Trades regardless of listing market</Description>
+        </Value>
+        <Value>
+          <Data>X</Data>
+          <Name>Cross Trade</Name>
+          <Description>Cross Trade</Description>
+        </Value>
+        <Value>
+          <Data>o</Data>
+          <Name>Odd Lot Execution</Name>
+          <Description>Odd lot execution</Description>
+        </Value>
+        <Value>
+          <Data>x</Data>
+          <Name>Odd Lot Cross Execution</Name>
+          <Description>Odd Lot Cross execution</Description>
+        </Value>
+        <Value>
+          <Data>" "</Data>
+          <Name>Not Applicable</Name>
+          <Description>Not applicable</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Corrected Settlement Type -->
+    <Enum>
+      <Name>Corrected Settlement Type</Name>
+      <Values>
+        <Value>
+          <Data>@</Data>
+          <Name>Regular Settlement</Name>
+          <Description>Regular Settlement</Description>
+        </Value>
+        <Value>
+          <Data>C</Data>
+          <Name>Cash Settlement</Name>
+          <Description>Cash Settlement</Description>
+        </Value>
+        <Value>
+          <Data>N</Data>
+          <Name>Next Day Settlement</Name>
+          <Description>Next Day Settlement</Description>
+        </Value>
+        <Value>
+          <Data>R</Data>
+          <Name>Seller Settlement</Name>
+          <Description>Seller Settlement</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Corrected Trade Through Exemption -->
+    <Enum>
+      <Name>Corrected Trade Through Exemption</Name>
+      <Values>
+        <Value>
+          <Data>F</Data>
+          <Name>Intermarket Sweep</Name>
+          <Description>Intermarket Sweep</Description>
+        </Value>
+        <Value>
+          <Data>O</Data>
+          <Name>Opening Print</Name>
+          <Description>Opening Print</Description>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>Derivative Priced</Name>
+          <Description>Derivative Priced</Description>
+        </Value>
+        <Value>
+          <Data>5</Data>
+          <Name>Re Opening Print</Name>
+          <Description>Re-Opening Print</Description>
+        </Value>
+        <Value>
+          <Data>6</Data>
+          <Name>Closing Print</Name>
+          <Description>Closing Print</Description>
+        </Value>
+        <Value>
+          <Data>7</Data>
+          <Name>Qualified Contingent Trade</Name>
+          <Description>Qualified Contingent Trade (QCT)</Description>
+        </Value>
+        <Value>
+          <Data>" "</Data>
+          <Name>Not Applicable</Name>
+          <Description>Not applicable</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Corrected Extended Hours Or Sold Code -->
+    <Enum>
+      <Name>Corrected Extended Hours Or Sold Code</Name>
+      <Values>
+        <Value>
+          <Data>T</Data>
+          <Name>Extended Hours Trade</Name>
+          <Description>Extended Hours Trade</Description>
+        </Value>
+        <Value>
+          <Data>U</Data>
+          <Name>Extended Hours Trade Reported Late</Name>
+          <Description>Extended Hours Trade, Reported Late or Out of Sequence</Description>
+        </Value>
+        <Value>
+          <Data>L</Data>
+          <Name>Sold Last</Name>
+          <Description>Sold Last, Reported Late But In Sequence</Description>
+        </Value>
+        <Value>
+          <Data>Z</Data>
+          <Name>Sold Out Of Sequence</Name>
+          <Description>Sold, Out of Sequence</Description>
+        </Value>
+        <Value>
+          <Data>" "</Data>
+          <Name>Not Applicable</Name>
+          <Description>Not applicable</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Corrected Special Sale Condition -->
+    <Enum>
+      <Name>Corrected Special Sale Condition</Name>
+      <Values>
+        <Value>
+          <Data>A</Data>
+          <Name>Acquisition</Name>
+          <Description>Acquisition</Description>
+        </Value>
+        <Value>
+          <Data>B</Data>
+          <Name>Bunched</Name>
+          <Description>Bunched</Description>
+        </Value>
+        <Value>
+          <Data>D</Data>
+          <Name>Distribution</Name>
+          <Description>Distribution</Description>
+        </Value>
+        <Value>
+          <Data>H</Data>
+          <Name>Price Variation Transaction</Name>
+          <Description>Price Variation Transaction</Description>
+        </Value>
+        <Value>
+          <Data>M</Data>
+          <Name>Nasdaq Official Close Price</Name>
+          <Description>Nasdaq Official Close Price (NOCP)</Description>
+        </Value>
+        <Value>
+          <Data>P</Data>
+          <Name>Prior Reference Price</Name>
+          <Description>Prior Reference Price</Description>
+        </Value>
+        <Value>
+          <Data>Q</Data>
+          <Name>Nasdaq Official Opening Price</Name>
+          <Description>Nasdaq Official Opening Price (NOOP)</Description>
+        </Value>
+        <Value>
+          <Data>S</Data>
+          <Name>Split Trade</Name>
+          <Description>Split Trade</Description>
+        </Value>
+        <Value>
+          <Data>V</Data>
+          <Name>Contingent Trade</Name>
+          <Description>Contingent Trade</Description>
+        </Value>
+        <Value>
+          <Data>W</Data>
+          <Name>Average Price Trade</Name>
+          <Description>Average Price Trade. Nls Plus uses this code for all Average Price Trades regardless of listing market</Description>
+        </Value>
+        <Value>
+          <Data>X</Data>
+          <Name>Cross Trade</Name>
+          <Description>Cross Trade</Description>
+        </Value>
+        <Value>
+          <Data>o</Data>
+          <Name>Odd Lot Execution</Name>
+          <Description>Odd lot execution</Description>
+        </Value>
+        <Value>
+          <Data>x</Data>
+          <Name>Odd Lot Cross Execution</Name>
+          <Description>Odd Lot Cross execution</Description>
+        </Value>
+        <Value>
+          <Data>" "</Data>
+          <Name>Not Applicable</Name>
+          <Description>Not applicable</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+  </Enums>
+
+</OmiItchNsmEquitiesPdf>
