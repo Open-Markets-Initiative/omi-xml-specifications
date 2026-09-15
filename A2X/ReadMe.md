@@ -1,4 +1,4 @@
-[![A2X](https://github.com/Open-Markets-Initiative/Directory/blob/main/Organizations/A2X/Images/Logo.png)](https://www.a2x.co.za)
+[![A2X](https://github.com/Open-Markets-Initiative/Open-Markets-Initiative/blob/main/Organizations/A2X/Images/Logo.png)](https://www.a2x.co.za)
 
 
 ## A2X Markets

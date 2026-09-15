@@ -1,4 +1,4 @@
-[![Bist](https://github.com/Open-Markets-Initiative/Directory/blob/main/Organizations/Bist/Images/Logo.png)](https://www.borsaistanbul.com/en)
+[![Bist](https://github.com/Open-Markets-Initiative/Open-Markets-Initiative/blob/main/Organizations/Bist/Images/Logo.png)](https://www.borsaistanbul.com/en)
 
 
 ## Borsa İstanbul A.Ş.

@@ -1,4 +1,4 @@
-[![Iex](https://github.com/Open-Markets-Initiative/Directory/blob/main/Organizations/Iex/Images/Logo.png)](https://www.iexexchange.io)
+[![Iex](https://github.com/Open-Markets-Initiative/Open-Markets-Initiative/blob/main/Organizations/Iex/Images/Logo.png)](https://www.iex.io)
 
 
 ## Investors Exchange
@@ -23,5 +23,5 @@
 | IexOptions | Session | Sbe | 1.0 | [files](Iex.IexOptions.Session.Sbe.v1.0/) |
 
 
-Iex: [website](https://www.iexexchange.io "Go to Investors Exchange")
+Iex: [website](https://www.iex.io "Go to Investors Exchange")
 

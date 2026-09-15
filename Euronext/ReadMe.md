@@ -1,4 +1,4 @@
-[![Euronext](https://github.com/Open-Markets-Initiative/Directory/blob/main/Organizations/Euronext/Images/Logo.png)](https://www.euronext.com)
+[![Euronext](https://github.com/Open-Markets-Initiative/Open-Markets-Initiative/blob/main/Organizations/Euronext/Images/Logo.png)](https://www.euronext.com)
 
 
 ## Euronext

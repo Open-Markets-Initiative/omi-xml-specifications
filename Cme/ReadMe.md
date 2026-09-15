@@ -1,4 +1,4 @@
-[![Cme](https://github.com/Open-Markets-Initiative/Directory/blob/main/Organizations/Cme/Images/Logo.png)](http://www.cmegroup.com)
+[![Cme](https://github.com/Open-Markets-Initiative/Open-Markets-Initiative/blob/main/Organizations/Cme/Images/Logo.png)](https://www.cmegroup.com)
 
 
 ## CME Group
@@ -29,5 +29,5 @@
 | Globex | Streamlined | Sbe | 5.9 | [files](Cme.Globex.Streamlined.Sbe.v5.9/) |
 
 
-Cme: [website](http://www.cmegroup.com "Go to CME Group")
+Cme: [website](https://www.cmegroup.com "Go to CME Group")
 
