@@ -19,7 +19,6 @@
 | IexEquities | Tops | Snap | 1.6 | [files](Iex.IexEquities.Tops.Snap.v1.6/) |
 | IexOptions | BinaryOrderEntry | Sbe | 1.02 | [files](Iex.IexOptions.BinaryOrderEntry.Sbe.v1.02/) |
 | IexOptions | MarketData | Sbe | 1.03 | [files](Iex.IexOptions.MarketData.Sbe.v1.03/) |
-| IexOptions | OrderEntry | Fix | 1.01 | [files](Iex.IexOptions.OrderEntry.Fix.v1.01/) |
 | IexOptions | Session | Sbe | 1.0 | [files](Iex.IexOptions.Session.Sbe.v1.0/) |
 
 
