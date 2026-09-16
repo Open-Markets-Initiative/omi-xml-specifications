@@ -1,5 +1,96 @@
 <OmiFixPdf>
-  <Header>
+  <Header Name="Client">
+    <Fields>
+      <Field>
+        <Tag>8</Tag>
+        <Name>BeginString</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+        <Description>Identifies beginning of new message and protocol version. ALWAYS the first field in the message. Must be set to 4.2</Description>
+      </Field>
+      <Field>
+        <Tag>9</Tag>
+        <Name>BodyLength</Name>
+        <Required>Y</Required>
+        <Type>Length</Type>
+        <Fixed>Y</Fixed>
+        <Description>Message length, in bytes, forward to the CheckSum field. ALWAYS the second field in the message.</Description>
+      </Field>
+      <Field>
+        <Tag>35</Tag>
+        <Name>MsgType</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+        <Description>Defines message type. ALWAYS the third field in the message.</Description>
+      </Field>
+      <Field>
+        <Tag>34</Tag>
+        <Name>MsgSeqNum</Name>
+        <Required>Y</Required>
+        <Type>Int</Type>
+        <Description>Integer message sequence number. The first message of the day starts with sequence number = 1.</Description>
+      </Field>
+      <Field>
+        <Tag>43</Tag>
+        <Name>PossDupFlag</Name>
+        <Required>N</Required>
+        <Type>Boolean</Type>
+        <Description>Indicates possible retransmission of message with this sequence number.</Description>
+      </Field>
+      <Field>
+        <Tag>52</Tag>
+        <Name>SendingTime</Name>
+        <Required>Y</Required>
+        <Type>UTCTimestamp</Type>
+        <Description>Time of message transmission, in UTC.</Description>
+      </Field>
+      <Field>
+        <Tag>49</Tag>
+        <Name>SenderCompID</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Description>Assigned value used to identify the firm sending the message.</Description>
+      </Field>
+      <Field>
+        <Tag>56</Tag>
+        <Name>TargetCompID</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Description>Assigned value used to identify the receiving firm.</Description>
+      </Field>
+      <Field>
+        <Tag>50</Tag>
+        <Name>SenderSubID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Description>Value assigned by the firm sending the message.</Description>
+      </Field>
+      <Field>
+        <Tag>115</Tag>
+        <Name>OnBehalfOfCompID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Description>Assigned value used to identify the firm originating the message if it was delivered by a third party. This field is not echoed back.</Description>
+      </Field>
+      <Field>
+        <Tag>116</Tag>
+        <Name>OnBehalfOfSubID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Description>Assigned value used to identify a specific message originator (i.e. trader) if the message was delivered by a third party. This field is not echoed back.</Description>
+      </Field>
+      <Field>
+        <Tag>128</Tag>
+        <Name>DeliverToCompID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Description>Will echo the SenderCompID of the session that originated the order. Only present on Drop Copy connections.</Description>
+      </Field>
+    </Fields>
+  </Header>
+  <Header Name="Exchange">
     <Fields>
       <Field>
         <Tag>8</Tag>
@@ -111,7 +202,7 @@
       <Name>Logon</Name>
       <MsgType>A</MsgType>
       <Category>admin</Category>
-      <Origin>Firm, Exchange</Origin>
+      <Origin>Client,Exchange</Origin>
       <Description>The Logon message must be the first message received by CIX after the TCP connection is established by the member. CIX will close the TCP socket after 5 seconds if no Logon message is received.</Description>
       <Fields>
         <Field>
@@ -135,7 +226,7 @@
       <Name>Heartbeat</Name>
       <MsgType>0</MsgType>
       <Category>admin</Category>
-      <Origin>Firm, Exchange</Origin>
+      <Origin>Client,Exchange</Origin>
       <Description>The heartbeat maintains the FIX connection during periods of inactivity. A heartbeat message is sent only if no other message has been sent during the preceding HeartbeatInterval.</Description>
       <Fields />
     </Message>
@@ -144,7 +235,7 @@
       <Name>TestRequest</Name>
       <MsgType>1</MsgType>
       <Category>admin</Category>
-      <Origin>Firm, Exchange</Origin>
+      <Origin>Client,Exchange</Origin>
       <Description>The test request message forces a heartbeat from the opposing application.</Description>
       <Fields />
     </Message>
@@ -153,7 +244,7 @@
       <Name>ResendRequest</Name>
       <MsgType>2</MsgType>
       <Category>admin</Category>
-      <Origin>Firm, Exchange</Origin>
+      <Origin>Client,Exchange</Origin>
       <Description>The resend request is sent by the receiving application to initiate the retransmission of messages.</Description>
       <Fields>
         <Field>
@@ -208,7 +299,7 @@
       <Name>SequenceReset</Name>
       <MsgType>4</MsgType>
       <Category>admin</Category>
-      <Origin>Firm, Exchange</Origin>
+      <Origin>Client,Exchange</Origin>
       <Description>The Sequence Reset message is used by the sending application to reset the incoming sequence number on the opposing side.</Description>
       <Fields>
         <Field>
@@ -232,7 +323,7 @@
       <Name>Logout</Name>
       <MsgType>5</MsgType>
       <Category>admin</Category>
-      <Origin>Firm, Exchange</Origin>
+      <Origin>Client,Exchange</Origin>
       <Description>The logout message initiates or confirms the termination of the FIX session.</Description>
       <Fields>
         <Field>
@@ -250,7 +341,7 @@
       <Name>NewOrderSingle</Name>
       <MsgType>D</MsgType>
       <Category>app</Category>
-      <Origin>Firm</Origin>
+      <Origin>Client</Origin>
       <Description>New Order Single. If a New Order Single is received with invalid values or missing required tags, an Execution Report message will be sent in response with a rejected OrdStatus. Upon receipt of an accepted New Order message, an ack message will be sent out with a new OrdStatus per FIX standards.</Description>
       <Fields>
         <Field>
@@ -526,7 +617,7 @@
       <Name>OrderCancelRequest</Name>
       <MsgType>F</MsgType>
       <Category>app</Category>
-      <Origin>Firm</Origin>
+      <Origin>Client</Origin>
       <Description>Request to fully cancel the remaining open shares on the order.</Description>
       <Fields>
         <Field>
@@ -585,7 +676,7 @@
       <Name>OrderCancelReplaceRequest</Name>
       <MsgType>G</MsgType>
       <Category>app</Category>
-      <Origin>Firm</Origin>
+      <Origin>Client</Origin>
       <Description>Request to modify the parameters of an existing open order.</Description>
       <Fields>
         <Field>

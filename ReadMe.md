@@ -10,7 +10,7 @@ The specification xmls in this repository are published copies of the original p
 
 | Specification Files |
 | --- |
-| 492 |
+| 496 |
 
 ## Testing
 
@@ -25,7 +25,7 @@ The Open Markets Initiative (Omi) is a group of technologists dedicated to enhan
 Other generated code can be found at [Omi Projects](https://github.com/Open-Markets-Initiative/Directory/tree/main/Projects "Open Markets Initiative Projects"); for Omi rules and regulations, see [Omi Directory](https://github.com/Open-Markets-Initiative/Directory "Open Markets Initiative Directory").
 ## Organizations
 
-> [24X][24X.Directory] · [A2X][A2X.Directory] · [Aquis][Aquis.Directory] · [Asx][Asx.Directory] · [B3][B3.Directory] · [Bist][Bist.Directory] · [Biva][Biva.Directory] · [BlueOceanAts][BlueOceanAts.Directory] · [Bse][Bse.Directory] · [CixAts][CixAts.Directory] · [Cme][Cme.Directory] · [Coinbase][Coinbase.Directory] · [Eurex][Eurex.Directory] · [Euronext][Euronext.Directory] · [Ice][Ice.Directory] · [Iex][Iex.Directory] · [Jnx][Jnx.Directory] · [Memx][Memx.Directory] · [Nasdaq][Nasdaq.Directory] · [Nse][Nse.Directory] · [Nyse][Nyse.Directory] · [OtcMarkets][OtcMarkets.Directory] · [Siac][Siac.Directory]
+> [24X][24X.Directory] · [A2X][A2X.Directory] · [Aquis][Aquis.Directory] · [Asx][Asx.Directory] · [B3][B3.Directory] · [Bist][Bist.Directory] · [Biva][Biva.Directory] · [BlueOceanAts][BlueOceanAts.Directory] · [Bse][Bse.Directory] · [CixAts][CixAts.Directory] · [Cme][Cme.Directory] · [Coinbase][Coinbase.Directory] · [Eurex][Eurex.Directory] · [Euronext][Euronext.Directory] · [Ice][Ice.Directory] · [Iex][Iex.Directory] · [Jnx][Jnx.Directory] · [Jpx][Jpx.Directory] · [Memx][Memx.Directory] · [Nasdaq][Nasdaq.Directory] · [Nse][Nse.Directory] · [Nyse][Nyse.Directory] · [OtcMarkets][OtcMarkets.Directory] · [Siac][Siac.Directory]
 
 ## Exchanges
 
@@ -81,6 +81,7 @@ Enjoy.
 [Ice.Directory]: https://github.com/Open-Markets-Initiative/omi-xml-specifications/tree/main/Ice "Intercontinental Exchange"
 [Iex.Directory]: https://github.com/Open-Markets-Initiative/omi-xml-specifications/tree/main/Iex "Investors Exchange"
 [Jnx.Directory]: https://github.com/Open-Markets-Initiative/omi-xml-specifications/tree/main/Jnx "Japannext Securities"
+[Jpx.Directory]: https://github.com/Open-Markets-Initiative/omi-xml-specifications/tree/main/Jpx "Japan Exchange Group"
 [Memx.Directory]: https://github.com/Open-Markets-Initiative/omi-xml-specifications/tree/main/Memx "The Members Exchange"
 [Nasdaq.Directory]: https://github.com/Open-Markets-Initiative/omi-xml-specifications/tree/main/Nasdaq "National Association of Securities Dealers Automated Quotations (Nasdaq)"
 [Nse.Directory]: https://github.com/Open-Markets-Initiative/omi-xml-specifications/tree/main/Nse "National Stock Exchange of India Ltd"
