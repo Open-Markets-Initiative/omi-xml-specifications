@@ -1,0 +1,1776 @@
+<OmiFixPdf>
+
+  <!-- MIAX Futures Onyx FIX Order Interface (FOI) v1.2. FIX order entry for the Onyx futures market.
+       Order-entry core (admin + order flow). Security Definition (MsgType c/d), Order Mass Cancel
+       (MsgType q/r), and Trade Cancel/Correct (MsgType UCC) are added in a subsequent pass.
+       Tags marked "REVIEW" are MIAX-proprietary reconstructions. -->
+
+  <Header Name="Client">
+    <Fields>
+      <Field>
+        <Tag>8</Tag>
+        <Name>BeginString</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+        <Description>Always the first field in a FIX message.</Description>
+      </Field>
+      <Field>
+        <Tag>9</Tag>
+        <Name>BodyLength</Name>
+        <Required>Y</Required>
+        <Type>Length</Type>
+        <Fixed>Y</Fixed>
+        <Description>Always the second field in a FIX message. Length of the message body.</Description>
+      </Field>
+      <Field>
+        <Tag>35</Tag>
+        <Name>MsgType</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+        <Description>Always the third field in a FIX message. Defines the message type.</Description>
+      </Field>
+      <Field>
+        <Tag>34</Tag>
+        <Name>MsgSeqNum</Name>
+        <Required>Y</Required>
+        <Type>SeqNum</Type>
+        <Description>Message sequence number.</Description>
+      </Field>
+      <Field>
+        <Tag>43</Tag>
+        <Name>PossDupFlag</Name>
+        <Required>N</Required>
+        <Type>Boolean</Type>
+        <Description>Set to Y in messages during certain failure/recovery scenarios.</Description>
+      </Field>
+      <Field>
+        <Tag>49</Tag>
+        <Name>SenderCompID</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Description>Identifies the party sending the message.</Description>
+      </Field>
+      <Field>
+        <Tag>50</Tag>
+        <Name>SenderSubID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Description>Sub identifier of the party sending the message.</Description>
+      </Field>
+      <Field>
+        <Tag>52</Tag>
+        <Name>SendingTime</Name>
+        <Required>Y</Required>
+        <Type>UTCTimestamp</Type>
+        <Description>Time of message transmission in UTC. Format: YYYYMMDD-HH:MM:SS.uuu</Description>
+      </Field>
+      <Field>
+        <Tag>56</Tag>
+        <Name>TargetCompID</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Description>Identifies the party receiving the message.</Description>
+      </Field>
+      <Field>
+        <Tag>57</Tag>
+        <Name>TargetSubID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Description>Sub identifier of the party receiving the message.</Description>
+      </Field>
+      <Field>
+        <Tag>97</Tag>
+        <Name>PossResend</Name>
+        <Required>N</Required>
+        <Type>Boolean</Type>
+        <Description>Indicates a possible retransmission of a message.</Description>
+      </Field>
+      <Field>
+        <Tag>115</Tag>
+        <Name>OnBehalfOfCompID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Description>Identifies the firm on whose behalf the message is sent.</Description>
+      </Field>
+      <Field>
+        <Tag>122</Tag>
+        <Name>OrigSendingTime</Name>
+        <Required>N</Required>
+        <Type>UTCTimestamp</Type>
+        <Description>Required for resent messages. Format: YYYYMMDD-HH:MM:SS.uuu</Description>
+      </Field>
+      <Field>
+        <Tag>128</Tag>
+        <Name>DeliverToCompID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Description>Identifies the target firm for delivery.</Description>
+      </Field>
+      <Field>
+        <Tag>142</Tag>
+        <Name>SenderLocationID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Description>Identifies the sender's location (country, geographical location).</Description>
+      </Field>
+      <Field>
+        <Tag>143</Tag>
+        <Name>TargetLocationID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Description>Identifies the target's location (country, geographical location).</Description>
+      </Field>
+    </Fields>
+  </Header>
+  <Header Name="Exchange">
+    <Fields>
+      <Field>
+        <Tag>8</Tag>
+        <Name>BeginString</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+        <Description>Always the first field in a FIX message.</Description>
+      </Field>
+      <Field>
+        <Tag>9</Tag>
+        <Name>BodyLength</Name>
+        <Required>Y</Required>
+        <Type>Length</Type>
+        <Fixed>Y</Fixed>
+        <Description>Always the second field in a FIX message. Length of the message body.</Description>
+      </Field>
+      <Field>
+        <Tag>35</Tag>
+        <Name>MsgType</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+        <Description>Always the third field in a FIX message. Defines the message type.</Description>
+      </Field>
+      <Field>
+        <Tag>34</Tag>
+        <Name>MsgSeqNum</Name>
+        <Required>Y</Required>
+        <Type>SeqNum</Type>
+        <Description>Message sequence number.</Description>
+      </Field>
+      <Field>
+        <Tag>43</Tag>
+        <Name>PossDupFlag</Name>
+        <Required>N</Required>
+        <Type>Boolean</Type>
+        <Description>Set to Y in messages during certain failure/recovery scenarios.</Description>
+      </Field>
+      <Field>
+        <Tag>49</Tag>
+        <Name>SenderCompID</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Description>Identifies the party sending the message.</Description>
+      </Field>
+      <Field>
+        <Tag>50</Tag>
+        <Name>SenderSubID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Description>Sub identifier of the party sending the message.</Description>
+      </Field>
+      <Field>
+        <Tag>52</Tag>
+        <Name>SendingTime</Name>
+        <Required>Y</Required>
+        <Type>UTCTimestamp</Type>
+        <Description>Time of message transmission in UTC. Format: YYYYMMDD-HH:MM:SS.uuu</Description>
+      </Field>
+      <Field>
+        <Tag>56</Tag>
+        <Name>TargetCompID</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Description>Identifies the party receiving the message.</Description>
+      </Field>
+      <Field>
+        <Tag>57</Tag>
+        <Name>TargetSubID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Description>Sub identifier of the party receiving the message.</Description>
+      </Field>
+      <Field>
+        <Tag>97</Tag>
+        <Name>PossResend</Name>
+        <Required>N</Required>
+        <Type>Boolean</Type>
+        <Description>Indicates a possible retransmission of a message.</Description>
+      </Field>
+      <Field>
+        <Tag>115</Tag>
+        <Name>OnBehalfOfCompID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Description>Identifies the firm on whose behalf the message is sent.</Description>
+      </Field>
+      <Field>
+        <Tag>122</Tag>
+        <Name>OrigSendingTime</Name>
+        <Required>N</Required>
+        <Type>UTCTimestamp</Type>
+        <Description>Required for resent messages. Format: YYYYMMDD-HH:MM:SS.uuu</Description>
+      </Field>
+      <Field>
+        <Tag>128</Tag>
+        <Name>DeliverToCompID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Description>Identifies the target firm for delivery.</Description>
+      </Field>
+      <Field>
+        <Tag>142</Tag>
+        <Name>SenderLocationID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Description>Identifies the sender's location (country, geographical location).</Description>
+      </Field>
+      <Field>
+        <Tag>143</Tag>
+        <Name>TargetLocationID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Description>Identifies the target's location (country, geographical location).</Description>
+      </Field>
+    </Fields>
+  </Header>
+
+  <Trailer>
+    <Fields>
+      <Field>
+        <Tag>10</Tag>
+        <Name>CheckSum</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+        <Description>Always the last field of a FIX message.</Description>
+      </Field>
+    </Fields>
+  </Trailer>
+
+  <Messages>
+
+    <!-- Logon -->
+    <Message>
+      <Name>Logon</Name>
+      <MsgType>A</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>98</Tag>
+          <Name>EncryptMethod</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Encryption is not supported and this field is ignored.</Description>
+        </Field>
+        <Field>
+          <Tag>108</Tag>
+          <Name>HeartBtInt</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Heartbeat interval in seconds. Must be greater than 0 and the same value used by both sides.</Description>
+        </Field>
+        <Field>
+          <Tag>141</Tag>
+          <Name>ResetSeqNumFlag</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>Indicates both sides of a FIX session should reset sequence numbers.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Heartbeat -->
+    <Message>
+      <Name>Heartbeat</Name>
+      <MsgType>0</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>112</Tag>
+          <Name>TestReqID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Required when the heartbeat is the result of a Test Request message.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Test Request -->
+    <Message>
+      <Name>Test Request</Name>
+      <MsgType>1</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>112</Tag>
+          <Name>TestReqID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Test request identifier to be returned in the resulting Heartbeat.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Resend Request -->
+    <Message>
+      <Name>Resend Request</Name>
+      <MsgType>2</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>7</Tag>
+          <Name>BeginSeqNo</Name>
+          <Required>Y</Required>
+          <Type>SeqNum</Type>
+          <Description>Message sequence number of first message in range to be resent.</Description>
+        </Field>
+        <Field>
+          <Tag>16</Tag>
+          <Name>EndSeqNo</Name>
+          <Required>Y</Required>
+          <Type>SeqNum</Type>
+          <Description>Message sequence number of last message in range to be resent.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Reject -->
+    <Message>
+      <Name>Reject</Name>
+      <MsgType>3</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>45</Tag>
+          <Name>RefSeqNum</Name>
+          <Required>Y</Required>
+          <Type>SeqNum</Type>
+          <Description>MsgSeqNum of rejected message.</Description>
+        </Field>
+        <Field>
+          <Tag>371</Tag>
+          <Name>RefTagID</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Required if reject reason refers to a specific tag.</Description>
+        </Field>
+        <Field>
+          <Tag>372</Tag>
+          <Name>RefMsgType</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>The MsgType of the FIX message being referenced.</Description>
+        </Field>
+        <Field>
+          <Tag>373</Tag>
+          <Name>SessionRejectReason</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Code to identify reason for a session-level Reject message.</Description>
+        </Field>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Additional information regarding the reject.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Sequence Reset -->
+    <Message>
+      <Name>Sequence Reset</Name>
+      <MsgType>4</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>123</Tag>
+          <Name>GapFillFlag</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>Indicates that this message is replacing administrative or application messages which will not be resent.</Description>
+        </Field>
+        <Field>
+          <Tag>36</Tag>
+          <Name>NewSeqNo</Name>
+          <Required>Y</Required>
+          <Type>SeqNum</Type>
+          <Description>New sequence number.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Logout -->
+    <Message>
+      <Name>Logout</Name>
+      <MsgType>5</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Readable information about the logout.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- New Order Single -->
+    <Message>
+      <Name>New Order Single</Name>
+      <MsgType>D</MsgType>
+      <Category>app</Category>
+      <Origin>Client</Origin>
+      <Fields>
+        <Field>
+          <Tag>1</Tag>
+          <Name>Account</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Customer ID defined by the firms. Maximum length is 16 characters. For XMGE products up to 16 characters are passed through for clearing; for XMFE products up to 10 characters.</Description>
+        </Field>
+        <Field>
+          <Tag>11</Tag>
+          <Name>ClOrdID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Day unique identifier of the order as assigned by the firm. 20 characters or less. ASCII 33-126 allowed, except pipe. Validated unique across all open orders for the session within a matching engine.</Description>
+        </Field>
+        <Field>
+          <Tag>38</Tag>
+          <Name>OrderQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>Number of contracts specified on the order. Whole number equal to or greater than 1. Maximum size defined in Product Reference Guide and/or configured per session.</Description>
+        </Field>
+        <Field>
+          <Tag>40</Tag>
+          <Name>OrdType</Name>
+          <Required>Y</Required>
+          <Type>char</Type>
+          <Description>Valid values: 1 = Market Order, 2 = Limit Order, 3 = Stop-Market Order, 4 = Stop-Limit Order, K = Market-Limit Order, k = Market Order with Protection, s = Stop-Market Order with Protection.</Description>
+        </Field>
+        <Field>
+          <Tag>44</Tag>
+          <Name>Price</Name>
+          <Required>C</Required>
+          <Type>Price</Type>
+          <Description>Limit price for Limit and Stop-Limit orders. Ignored for order types 1, 3, K, k, and s. Trailing zeros allowed up to nine digits. Zero and negative prices supported. Price precision 7.9. Min/max price defined by Product Reference Guide.</Description>
+        </Field>
+        <Field>
+          <Tag>54</Tag>
+          <Name>Side</Name>
+          <Required>Y</Required>
+          <Type>char</Type>
+          <Description>Side of order. Valid values: 1 = Buy, 2 = Sell.</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Onyx Instrument ID.</Description>
+        </Field>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Firms may use this field to transmit instructions for clearing. The first 20 characters are passed to clearing systems unchanged. ASCII 33-126 allowed, except pipe.</Description>
+        </Field>
+        <Field>
+          <Tag>59</Tag>
+          <Name>TimeInForce</Name>
+          <Required>Y</Required>
+          <Type>char</Type>
+          <Description>Specifies how long the order remains in effect.</Description>
+        </Field>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>Y</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Time the order was initiated/released expressed in UTC. Format: YYYYMMDD-HH:MM:SS.uuu</Description>
+        </Field>
+        <Field>
+          <Tag>77</Tag>
+          <Name>OpenClose</Name>
+          <Required>N</Required>
+          <Type>char</Type>
+          <Description>Valid values: O = Open (default), C = Close.</Description>
+        </Field>
+        <Field>
+          <Tag>99</Tag>
+          <Name>StopPx</Name>
+          <Required>C</Required>
+          <Type>Price</Type>
+          <Description>Trigger price. Required for OrdType = 3, 4, or s; ignored otherwise.</Description>
+        </Field>
+        <Field>
+          <Tag>110</Tag>
+          <Name>MinQty</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Minimum fill quantity. Must be greater than 1 to be a MinQty order.</Description>
+        </Field>
+        <Field>
+          <Tag>204</Tag>
+          <Name>CustomerOrFirm</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Valid values: 0 = Customer, 1 = Firm.</Description>
+        </Field>
+        <Field>
+          <Tag>432</Tag>
+          <Name>ExpireDate</Name>
+          <Required>C</Required>
+          <Type>LocalMktDate</Type>
+          <Description>Required if TimeInForce (59) = 6 (GTD). Date of order expiration, expressed in terms of the Business Trade Date. Format: YYYYMMDD.</Description>
+        </Field>
+        <Field>
+          <Tag>1028</Tag>
+          <Name>ManualOrderIndicator</Name>
+          <Required>Y</Required>
+          <Type>Boolean</Type>
+          <Description>Valid values: Y = Manual, N = Automated.</Description>
+        </Field>
+        <Field>
+          <Tag>1031</Tag>
+          <Name>CustOrderHandlingInst</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Customer order handling instructions.</Description>
+        </Field>
+        <Field>
+          <Tag>1598</Tag>
+          <Name>SideClearingTradePriceType</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Clearing trade price type for the side.</Description>
+          <!-- REVIEW: tag 1598 read from PDF; verify vs source -->
+        </Field>
+        <Field>
+          <Tag>7699</Tag>
+          <Name>PurgeGroup</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Optional Trading Participant specified alphanumeric value 0-9, A-Z, or a-z.</Description>
+          <!-- REVIEW: PurgeGroup proprietary tag 7699 -->
+        </Field>
+        <Field>
+          <Tag>7928</Tag>
+          <Name>SelfTradeProtection</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Self-trade protection group (optional). Trading Participant specified alphanumeric value 0-9, A-Z, or a-z. Space not supported in the 3rd or 4th position.</Description>
+          <!-- REVIEW: SelfTradeProtection proprietary tag 7928 -->
+        </Field>
+        <Field>
+          <Tag>9478</Tag>
+          <Name>TradingCollarDollarValue</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Custom Dollar Value for Trading Collar Protection. When not present or zero/negative, exchange default is used.</Description>
+          <!-- REVIEW: TradingCollarDollarValue proprietary tag 9478 -->
+        </Field>
+        <Field>
+          <Tag>9702</Tag>
+          <Name>CtiCode</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Customer Type Indicator. Valid values: 1 = CTI 1 (own account), 2 = CTI 2 (proprietary account of a clearing member), 3 = CTI 3 (personal account of another market participant), 4 = CTI 4 (any transaction not meeting CTI 1, 2 or 3).</Description>
+          <!-- REVIEW: CtiCode proprietary tag 9702 -->
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Order Cancel Request -->
+    <Message>
+      <Name>Order Cancel Request</Name>
+      <MsgType>F</MsgType>
+      <Category>app</Category>
+      <Origin>Client</Origin>
+      <Fields>
+        <Field>
+          <Tag>11</Tag>
+          <Name>ClOrdID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Unique identifier of the cancel request. 20 characters or less.</Description>
+        </Field>
+        <Field>
+          <Tag>37</Tag>
+          <Name>OrderID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>OrderID assigned by MIAX Futures Onyx to the order being canceled.</Description>
+        </Field>
+        <Field>
+          <Tag>38</Tag>
+          <Name>OrderQty</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Order quantity of the order being canceled.</Description>
+        </Field>
+        <Field>
+          <Tag>41</Tag>
+          <Name>OrigClOrdID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>ClOrdID of the targeted order to cancel.</Description>
+        </Field>
+        <Field>
+          <Tag>54</Tag>
+          <Name>Side</Name>
+          <Required>Y</Required>
+          <Type>char</Type>
+          <Description>Side of the order being canceled. Valid values: 1 = Buy, 2 = Sell.</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Onyx Instrument ID.</Description>
+        </Field>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>N</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Time the cancel request was initiated. Format: YYYYMMDD-HH:MM:SS.uuu</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Order Cancel/Replace Request -->
+    <Message>
+      <Name>Order Cancel Replace Request</Name>
+      <MsgType>G</MsgType>
+      <Category>app</Category>
+      <Origin>Client</Origin>
+      <Fields>
+        <Field>
+          <Tag>11</Tag>
+          <Name>ClOrdID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Unique identifier of the replacement order.</Description>
+        </Field>
+        <Field>
+          <Tag>38</Tag>
+          <Name>OrderQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>Order quantity of the replacement order.</Description>
+        </Field>
+        <Field>
+          <Tag>40</Tag>
+          <Name>OrdType</Name>
+          <Required>Y</Required>
+          <Type>char</Type>
+          <Description>Order type of the replacement order.</Description>
+        </Field>
+        <Field>
+          <Tag>41</Tag>
+          <Name>OrigClOrdID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>ClOrdID of the targeted order to replace.</Description>
+        </Field>
+        <Field>
+          <Tag>44</Tag>
+          <Name>Price</Name>
+          <Required>C</Required>
+          <Type>Price</Type>
+          <Description>Limit price for Limit and Stop-Limit orders.</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Onyx Instrument ID.</Description>
+        </Field>
+        <Field>
+          <Tag>59</Tag>
+          <Name>TimeInForce</Name>
+          <Required>Y</Required>
+          <Type>char</Type>
+          <Description>Specifies how long the order remains in effect.</Description>
+        </Field>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>Y</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Time the request was initiated. Format: YYYYMMDD-HH:MM:SS.uuu</Description>
+        </Field>
+        <Field>
+          <Tag>77</Tag>
+          <Name>OpenClose</Name>
+          <Required>N</Required>
+          <Type>char</Type>
+          <Description>Valid values: O = Open (default), C = Close.</Description>
+        </Field>
+        <Field>
+          <Tag>99</Tag>
+          <Name>StopPx</Name>
+          <Required>C</Required>
+          <Type>Price</Type>
+          <Description>Trigger price. Required for OrdType = 3, 4, or s.</Description>
+        </Field>
+        <Field>
+          <Tag>204</Tag>
+          <Name>CustomerOrFirm</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Valid values: 0 = Customer, 1 = Firm.</Description>
+        </Field>
+        <Field>
+          <Tag>432</Tag>
+          <Name>ExpireDate</Name>
+          <Required>C</Required>
+          <Type>LocalMktDate</Type>
+          <Description>Required if TimeInForce (59) = 6 (GTD). Format: YYYYMMDD.</Description>
+        </Field>
+        <Field>
+          <Tag>1028</Tag>
+          <Name>ManualOrderIndicator</Name>
+          <Required>Y</Required>
+          <Type>Boolean</Type>
+          <Description>Valid values: Y = Manual, N = Automated.</Description>
+        </Field>
+        <Field>
+          <Tag>1031</Tag>
+          <Name>CustOrderHandlingInst</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Customer order handling instructions.</Description>
+        </Field>
+        <Field>
+          <Tag>7699</Tag>
+          <Name>PurgeGroup</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Optional Trading Participant specified alphanumeric value.</Description>
+          <!-- REVIEW: PurgeGroup proprietary tag 7699 -->
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Order Cancel Reject -->
+    <Message>
+      <Name>Order Cancel Reject</Name>
+      <MsgType>9</MsgType>
+      <Category>app</Category>
+      <Origin>Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>11</Tag>
+          <Name>ClOrdID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>ClOrdID of the cancel or cancel/replace request.</Description>
+        </Field>
+        <Field>
+          <Tag>37</Tag>
+          <Name>OrderID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>OrderID assigned by MIAX Futures Onyx.</Description>
+        </Field>
+        <Field>
+          <Tag>39</Tag>
+          <Name>OrdStatus</Name>
+          <Required>Y</Required>
+          <Type>char</Type>
+          <Description>Status of order after the Cancel Reject function is applied.</Description>
+        </Field>
+        <Field>
+          <Tag>41</Tag>
+          <Name>OrigClOrdID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>ClOrdID of the order that cannot be canceled or replaced.</Description>
+        </Field>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Text describing the rejection.</Description>
+        </Field>
+        <Field>
+          <Tag>102</Tag>
+          <Name>CxlRejReason</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Code to identify reason for cancel rejection.</Description>
+        </Field>
+        <Field>
+          <Tag>434</Tag>
+          <Name>CxlRejResponseTo</Name>
+          <Required>Y</Required>
+          <Type>char</Type>
+          <Description>Identifies the type of request the Cancel Reject is in response to. Valid values: 1 = Order Cancel Request, 2 = Order Cancel/Replace Request.</Description>
+        </Field>
+        <Field>
+          <Tag>9687</Tag>
+          <Name>OrigSession</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Originating session of the referenced order.</Description>
+          <!-- REVIEW: OrigSession proprietary tag 9687 -->
+        </Field>
+        <Field>
+          <Tag>9688</Tag>
+          <Name>OrigCompID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Originating CompID of the referenced order.</Description>
+          <!-- REVIEW: OrigCompID proprietary tag 9688 -->
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Execution Report -->
+    <Message>
+      <Name>Execution Report</Name>
+      <MsgType>8</MsgType>
+      <Category>app</Category>
+      <Origin>Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>1</Tag>
+          <Name>Account</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Customer ID as specified on the order.</Description>
+        </Field>
+        <Field>
+          <Tag>11</Tag>
+          <Name>ClOrdID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>ClOrdID of the order.</Description>
+        </Field>
+        <Field>
+          <Tag>14</Tag>
+          <Name>CumQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>Total number of contracts filled.</Description>
+        </Field>
+        <Field>
+          <Tag>17</Tag>
+          <Name>ExecID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Unique identifier of the execution report.</Description>
+        </Field>
+        <Field>
+          <Tag>20</Tag>
+          <Name>ExecTransType</Name>
+          <Required>Y</Required>
+          <Type>char</Type>
+          <Description>Identifies the trade type. Valid values: 0 = New, 3 = Status.</Description>
+        </Field>
+        <Field>
+          <Tag>31</Tag>
+          <Name>LastPx</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Price of the last fill.</Description>
+        </Field>
+        <Field>
+          <Tag>32</Tag>
+          <Name>LastShares</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Quantity of contracts on the last fill.</Description>
+        </Field>
+        <Field>
+          <Tag>37</Tag>
+          <Name>OrderID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>OrderID assigned by MIAX Futures Onyx.</Description>
+        </Field>
+        <Field>
+          <Tag>38</Tag>
+          <Name>OrderQty</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Order quantity.</Description>
+        </Field>
+        <Field>
+          <Tag>39</Tag>
+          <Name>OrdStatus</Name>
+          <Required>Y</Required>
+          <Type>char</Type>
+          <Description>Current status of an order.</Description>
+        </Field>
+        <Field>
+          <Tag>40</Tag>
+          <Name>OrdType</Name>
+          <Required>N</Required>
+          <Type>char</Type>
+          <Description>Order type.</Description>
+        </Field>
+        <Field>
+          <Tag>41</Tag>
+          <Name>OrigClOrdID</Name>
+          <Required>C</Required>
+          <Type>String</Type>
+          <Description>Original ClOrdID.</Description>
+        </Field>
+        <Field>
+          <Tag>44</Tag>
+          <Name>Price</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Order price.</Description>
+        </Field>
+        <Field>
+          <Tag>54</Tag>
+          <Name>Side</Name>
+          <Required>Y</Required>
+          <Type>char</Type>
+          <Description>Side of order. Valid values: 1 = Buy, 2 = Sell.</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Onyx Instrument ID.</Description>
+        </Field>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Error code table / freeform reason. Format: 'Error Code': 'Description'.</Description>
+        </Field>
+        <Field>
+          <Tag>59</Tag>
+          <Name>TimeInForce</Name>
+          <Required>N</Required>
+          <Type>char</Type>
+          <Description>Time in force.</Description>
+        </Field>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>N</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Time of transaction expressed in UTC.</Description>
+        </Field>
+        <Field>
+          <Tag>75</Tag>
+          <Name>TradeDate</Name>
+          <Required>N</Required>
+          <Type>LocalMktDate</Type>
+          <Description>Business trade date of the execution. Format: YYYYMMDD.</Description>
+        </Field>
+        <Field>
+          <Tag>77</Tag>
+          <Name>OpenClose</Name>
+          <Required>N</Required>
+          <Type>char</Type>
+          <Description>Valid values: O = Open, C = Close.</Description>
+        </Field>
+        <Field>
+          <Tag>103</Tag>
+          <Name>OrdRejReason</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>The reason the order was rejected.</Description>
+        </Field>
+        <Field>
+          <Tag>110</Tag>
+          <Name>MinQty</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Minimum fill quantity.</Description>
+        </Field>
+        <Field>
+          <Tag>150</Tag>
+          <Name>ExecType</Name>
+          <Required>Y</Required>
+          <Type>char</Type>
+          <Description>Identifies the type of execution report.</Description>
+        </Field>
+        <Field>
+          <Tag>151</Tag>
+          <Name>LeavesQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>Number of open contracts for further execution. LeavesQty = 0 if Canceled or Rejected, otherwise OrderQty - CumQty.</Description>
+        </Field>
+        <Field>
+          <Tag>204</Tag>
+          <Name>CustomerOrFirm</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Valid values: 0 = Customer, 1 = Firm.</Description>
+        </Field>
+        <Field>
+          <Tag>378</Tag>
+          <Name>ExecRestatementReason</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Reason for an execution report restatement.</Description>
+        </Field>
+        <Field>
+          <Tag>393</Tag>
+          <Name>TotalNumSecurities</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Total number of securities.</Description>
+        </Field>
+        <Field>
+          <Tag>432</Tag>
+          <Name>ExpireDate</Name>
+          <Required>N</Required>
+          <Type>LocalMktDate</Type>
+          <Description>Date of order expiration. Format: YYYYMMDD.</Description>
+        </Field>
+        <Field>
+          <Tag>442</Tag>
+          <Name>MultiLegReportingType</Name>
+          <Required>N</Required>
+          <Type>char</Type>
+          <Description>Indicates the type of multileg reporting. Valid values: 1 = Single Security, 2 = Individual leg of a multileg security, 3 = Multileg security.</Description>
+        </Field>
+        <Field>
+          <Tag>1003</Tag>
+          <Name>TradeID</Name>
+          <Required>C</Required>
+          <Type>String</Type>
+          <Description>The unique ID that identifies the trade at Onyx. Only available on Fill (ExecType 1 or 2) messages.</Description>
+        </Field>
+        <Field>
+          <Tag>1004</Tag>
+          <Name>ComplexTradeID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Identifier of the complex trade.</Description>
+        </Field>
+        <Field>
+          <Tag>1028</Tag>
+          <Name>ManualOrderIndicator</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>Valid values: Y = Manual, N = Automated.</Description>
+        </Field>
+        <Field>
+          <Tag>1031</Tag>
+          <Name>CustOrderHandlingInst</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Customer order handling instructions.</Description>
+        </Field>
+        <Field>
+          <Tag>1598</Tag>
+          <Name>SideClearingTradePriceType</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Clearing trade price type for the side.</Description>
+          <!-- REVIEW: tag 1598 -->
+        </Field>
+        <Field>
+          <Tag>7699</Tag>
+          <Name>PurgeGroup</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Trading Participant specified purge group value.</Description>
+          <!-- REVIEW: PurgeGroup proprietary tag 7699 -->
+        </Field>
+        <Field>
+          <Tag>7928</Tag>
+          <Name>SelfTradeProtection</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Self-trade protection group value.</Description>
+          <!-- REVIEW: SelfTradeProtection proprietary tag 7928 -->
+        </Field>
+        <Field>
+          <Tag>9478</Tag>
+          <Name>TradingCollarDollarValue</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Custom Dollar Value for Trading Collar Protection.</Description>
+          <!-- REVIEW: TradingCollarDollarValue proprietary tag 9478 -->
+        </Field>
+        <Field>
+          <Tag>9687</Tag>
+          <Name>OrigSession</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Originating session of the order.</Description>
+          <!-- REVIEW: OrigSession proprietary tag 9687 -->
+        </Field>
+        <Field>
+          <Tag>9688</Tag>
+          <Name>OrigCompID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Originating CompID of the order.</Description>
+          <!-- REVIEW: OrigCompID proprietary tag 9688 -->
+        </Field>
+        <Field>
+          <Tag>9702</Tag>
+          <Name>CtiCode</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Customer Type Indicator. Valid values: 1-4.</Description>
+          <!-- REVIEW: CtiCode proprietary tag 9702 -->
+        </Field>
+        <Field>
+          <Tag>9730</Tag>
+          <Name>TradeLiquidityIndicator</Name>
+          <Required>N</Required>
+          <Type>char</Type>
+          <Description>Indicates whether the trade added or removed liquidity.</Description>
+          <!-- REVIEW: TradeLiquidityIndicator proprietary tag 9730 -->
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Business Reject -->
+    <Message>
+      <Name>Business Reject</Name>
+      <MsgType>j</MsgType>
+      <Category>app</Category>
+      <Origin>Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>45</Tag>
+          <Name>RefSeqNum</Name>
+          <Required>Y</Required>
+          <Type>SeqNum</Type>
+          <Description>MsgSeqNum of rejected message.</Description>
+        </Field>
+        <Field>
+          <Tag>372</Tag>
+          <Name>RefMsgType</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>MsgType of the FIX message being rejected.</Description>
+        </Field>
+        <Field>
+          <Tag>379</Tag>
+          <Name>BusinessRejectRefID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>RefID of the message being rejected.</Description>
+        </Field>
+        <Field>
+          <Tag>380</Tag>
+          <Name>BusinessRejectReason</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Code to identify reason for Business rejection.</Description>
+        </Field>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Additional information regarding the reject.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Security Definition Request -->
+    <Message>
+      <Name>Security Definition Request</Name>
+      <MsgType>c</MsgType>
+      <Category>app</Category>
+      <Origin>Client</Origin>
+      <Fields>
+        <Field>
+          <Tag>320</Tag>
+          <Name>SecurityReqID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Unique identifier of the security definition request assigned by the firm.</Description>
+        </Field>
+        <Field>
+          <Tag>321</Tag>
+          <Name>SecurityRequestType</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Type of security definition request. Used to request a user-defined spread (UDS) instrument definition.</Description>
+        </Field>
+        <Group>
+          <Name>NoLegs</Name>
+          <Required>Y</Required>
+        </Group>
+      </Fields>
+    </Message>
+
+    <!-- Security Definition -->
+    <Message>
+      <Name>Security Definition</Name>
+      <MsgType>d</MsgType>
+      <Category>app</Category>
+      <Origin>Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>320</Tag>
+          <Name>SecurityReqID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>SecurityReqID of the corresponding Security Definition Request.</Description>
+        </Field>
+        <Field>
+          <Tag>322</Tag>
+          <Name>SecurityResponseID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Unique identifier of the security definition response assigned by Onyx.</Description>
+        </Field>
+        <Field>
+          <Tag>323</Tag>
+          <Name>SecurityResponseType</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Type of security definition response. Indicates acceptance or rejection of the requested instrument definition.</Description>
+        </Field>
+        <Field>
+          <Tag>9749</Tag>
+          <Name>ProductGroupCode</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Product group code of the defined instrument.</Description>
+          <!-- REVIEW: ProductGroupCode proprietary tag 9749 -->
+        </Field>
+        <Field>
+          <Tag>9751</Tag>
+          <Name>SpreadType</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Spread type of the defined instrument.</Description>
+          <!-- REVIEW: SpreadType proprietary tag 9751 -->
+        </Field>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Text describing a rejection when the requested definition is not accepted.</Description>
+        </Field>
+        <Group>
+          <Name>NoLegs</Name>
+          <Required>Y</Required>
+        </Group>
+      </Fields>
+    </Message>
+
+    <!-- Trade Cancel/Correct -->
+    <Message>
+      <Name>Trade Cancel Correct</Name>
+      <MsgType>UCC</MsgType>
+      <Category>app</Category>
+      <Origin>Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>1</Tag>
+          <Name>Account</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Customer ID as specified on the order.</Description>
+        </Field>
+        <Field>
+          <Tag>11</Tag>
+          <Name>ClOrdID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>ClOrdID of the order associated with the trade.</Description>
+        </Field>
+        <Field>
+          <Tag>17</Tag>
+          <Name>ExecID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Unique identifier of the execution report.</Description>
+        </Field>
+        <Field>
+          <Tag>20</Tag>
+          <Name>ExecTransType</Name>
+          <Required>Y</Required>
+          <Type>char</Type>
+          <Description>Identifies the trade type. Valid values: 1 = Cancel, 2 = Correct.</Description>
+        </Field>
+        <Field>
+          <Tag>31</Tag>
+          <Name>LastPx</Name>
+          <Required>Y</Required>
+          <Type>Price</Type>
+          <Description>Price of the trade being cancelled or corrected.</Description>
+        </Field>
+        <Field>
+          <Tag>32</Tag>
+          <Name>LastShares</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>Quantity of the trade being cancelled or corrected.</Description>
+        </Field>
+        <Field>
+          <Tag>37</Tag>
+          <Name>OrderID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>OrderID assigned by MIAX Futures Onyx.</Description>
+        </Field>
+        <Field>
+          <Tag>42</Tag>
+          <Name>OrigTime</Name>
+          <Required>Y</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Time of the original trade being cancelled or corrected.</Description>
+        </Field>
+        <Field>
+          <Tag>54</Tag>
+          <Name>Side</Name>
+          <Required>Y</Required>
+          <Type>char</Type>
+          <Description>Side of order. Valid values: 1 = Buy, 2 = Sell.</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Onyx Instrument ID.</Description>
+        </Field>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Additional information.</Description>
+        </Field>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>Y</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Time of the cancel/correct expressed in UTC.</Description>
+        </Field>
+        <Field>
+          <Tag>75</Tag>
+          <Name>TradeDate</Name>
+          <Required>N</Required>
+          <Type>LocalMktDate</Type>
+          <Description>Business trade date. Format: YYYYMMDD.</Description>
+        </Field>
+        <Field>
+          <Tag>1003</Tag>
+          <Name>TradeID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>The unique ID that identifies the trade at Onyx.</Description>
+        </Field>
+        <Field>
+          <Tag>9021</Tag>
+          <Name>CorrectionNum</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Trade correction number. Increments by 1 for each subsequent correction.</Description>
+          <!-- REVIEW: CorrectionNum proprietary tag 9021 -->
+        </Field>
+        <Field>
+          <Tag>9687</Tag>
+          <Name>OrigSession</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Originating session of the order.</Description>
+          <!-- REVIEW: OrigSession proprietary tag 9687 -->
+        </Field>
+        <Field>
+          <Tag>9688</Tag>
+          <Name>OrigCompID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Originating CompID of the order.</Description>
+          <!-- REVIEW: OrigCompID proprietary tag 9688 -->
+        </Field>
+        <Field>
+          <Tag>9702</Tag>
+          <Name>CtiCode</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Customer Type Indicator. Valid values: 1-4.</Description>
+          <!-- REVIEW: CtiCode proprietary tag 9702 -->
+        </Field>
+        <Field>
+          <Tag>9730</Tag>
+          <Name>TradeLiquidityIndicator</Name>
+          <Required>N</Required>
+          <Type>char</Type>
+          <Description>Indicates whether the trade added or removed liquidity.</Description>
+          <!-- REVIEW: TradeLiquidityIndicator proprietary tag 9730 -->
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Order Mass Cancel Request -->
+    <Message>
+      <Name>Order Mass Cancel Request</Name>
+      <MsgType>q</MsgType>
+      <Category>app</Category>
+      <Origin>Client</Origin>
+      <Fields>
+        <Field>
+          <Tag>11</Tag>
+          <Name>ClOrdID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Unique identifier of the mass cancel request.</Description>
+        </Field>
+        <Field>
+          <Tag>530</Tag>
+          <Name>MassCancelRequestType</Name>
+          <Required>Y</Required>
+          <Type>char</Type>
+          <Description>Type of mass cancel request.</Description>
+        </Field>
+        <Field>
+          <Tag>7699</Tag>
+          <Name>PurgeGroup</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Purge group.</Description>
+          <!-- REVIEW: PurgeGroup proprietary tag 7699 -->
+        </Field>
+        <Field>
+          <Tag>9500</Tag>
+          <Name>MassCancelScope</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Scope of the mass cancel: MPID; MPID+Product Group; or MPID+Product Group+Product Type. Determines which additional fields are required.</Description>
+          <!-- REVIEW: MassCancelScope proprietary tag 9500 -->
+        </Field>
+        <Field>
+          <Tag>9501</Tag>
+          <Name>MassCancelAction</Name>
+          <Required>C</Required>
+          <Type>Int</Type>
+          <Description>Mass cancel action to perform.</Description>
+          <!-- REVIEW: MassCancelAction proprietary tag 9501 -->
+        </Field>
+        <Field>
+          <Tag>9749</Tag>
+          <Name>ProductGroupCode</Name>
+          <Required>C</Required>
+          <Type>String</Type>
+          <Description>Required when the scope includes Product Group.</Description>
+          <!-- REVIEW: ProductGroupCode proprietary tag 9749 -->
+        </Field>
+        <Field>
+          <Tag>9750</Tag>
+          <Name>ProductType</Name>
+          <Required>C</Required>
+          <Type>char</Type>
+          <Description>Required when MassCancelScope includes Product Type. Valid values: O = Outright, S = Standard Calendar Spread, E = Equity Calendar Spread, B = Butterfly Spread.</Description>
+          <!-- REVIEW: ProductType proprietary tag 9750 -->
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Order Mass Cancel Report -->
+    <Message>
+      <Name>Order Mass Cancel Report</Name>
+      <MsgType>r</MsgType>
+      <Category>app</Category>
+      <Origin>Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>11</Tag>
+          <Name>ClOrdID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>ClOrdID provided on the Order Mass Cancel Request.</Description>
+        </Field>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>C</Required>
+          <Type>String</Type>
+          <Description>Text describing the error if the request was rejected. Not provided if the Mass Cancel Request is accepted.</Description>
+        </Field>
+        <Field>
+          <Tag>531</Tag>
+          <Name>MassCancelResponse</Name>
+          <Required>Y</Required>
+          <Type>char</Type>
+          <Description>Valid values: 0 = Order Mass Cancel Request rejected, 1 = Order Mass Cancel Request accepted.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+  </Messages>
+
+  <Groups>
+
+    <!-- NoLegs (555) -->
+    <Group>
+      <Name>NoLegs</Name>
+      <AnchorTag>555</AnchorTag>
+      <Fields>
+        <Field>
+          <Tag>602</Tag>
+          <Name>LegSecurityID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Security ID of the individual leg. Used to delimit the repeating group.</Description>
+        </Field>
+        <Field>
+          <Tag>623</Tag>
+          <Name>LegRatioQty</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>The ratio of quantity for this individual leg relative to the overall strategy.</Description>
+        </Field>
+        <Field>
+          <Tag>624</Tag>
+          <Name>LegSide</Name>
+          <Required>Y</Required>
+          <Type>char</Type>
+          <Description>The side of this individual leg. Valid values: 1 = Buy, 2 = Sell.</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+  </Groups>
+
+  <Values>
+
+    <!-- BeginString (8) static. Source: "Always the first field in a FIX message. Valid value: FIX.4.2" -->
+    <Value>
+      <Type>BeginString</Type>
+      <Enum>FIX.4.2</Enum>
+      <Kind>Static</Kind>
+      <Description>FIX 4.2</Description>
+    </Value>
+
+    <!-- OrdType -->
+    <Value>
+      <Type>OrdType</Type>
+      <Enum>1</Enum>
+      <Description>Market Order</Description>
+    </Value>
+    <Value>
+      <Type>OrdType</Type>
+      <Enum>2</Enum>
+      <Description>Limit Order</Description>
+    </Value>
+    <Value>
+      <Type>OrdType</Type>
+      <Enum>3</Enum>
+      <Description>Stop-Market Order</Description>
+    </Value>
+    <Value>
+      <Type>OrdType</Type>
+      <Enum>4</Enum>
+      <Description>Stop-Limit Order</Description>
+    </Value>
+    <Value>
+      <Type>OrdType</Type>
+      <Enum>K</Enum>
+      <Description>Market-Limit Order</Description>
+    </Value>
+    <Value>
+      <Type>OrdType</Type>
+      <Enum>k</Enum>
+      <Description>Market Order with Protection</Description>
+    </Value>
+    <Value>
+      <Type>OrdType</Type>
+      <Enum>s</Enum>
+      <Description>Stop-Market Order with Protection</Description>
+    </Value>
+
+    <!-- Side -->
+    <Value>
+      <Type>Side</Type>
+      <Enum>1</Enum>
+      <Description>Buy</Description>
+    </Value>
+    <Value>
+      <Type>Side</Type>
+      <Enum>2</Enum>
+      <Description>Sell</Description>
+    </Value>
+
+    <!-- OpenClose -->
+    <Value>
+      <Type>OpenClose</Type>
+      <Enum>O</Enum>
+      <Description>Open</Description>
+    </Value>
+    <Value>
+      <Type>OpenClose</Type>
+      <Enum>C</Enum>
+      <Description>Close</Description>
+    </Value>
+
+    <!-- CustomerOrFirm -->
+    <Value>
+      <Type>CustomerOrFirm</Type>
+      <Enum>0</Enum>
+      <Description>Customer</Description>
+    </Value>
+    <Value>
+      <Type>CustomerOrFirm</Type>
+      <Enum>1</Enum>
+      <Description>Firm</Description>
+    </Value>
+
+    <!-- ManualOrderIndicator -->
+    <Value>
+      <Type>ManualOrderIndicator</Type>
+      <Enum>Y</Enum>
+      <Description>Manual</Description>
+    </Value>
+    <Value>
+      <Type>ManualOrderIndicator</Type>
+      <Enum>N</Enum>
+      <Description>Automated</Description>
+    </Value>
+
+    <!-- CtiCode -->
+    <Value>
+      <Type>CtiCode</Type>
+      <Enum>1</Enum>
+      <Description>CTI 1: transactions initiated and executed by an individual market participant for own account or an account controlled/owned</Description>
+    </Value>
+    <Value>
+      <Type>CtiCode</Type>
+      <Enum>2</Enum>
+      <Description>CTI 2: transactions executed for the proprietary account of a clearing member</Description>
+    </Value>
+    <Value>
+      <Type>CtiCode</Type>
+      <Enum>3</Enum>
+      <Description>CTI 3: transactions executed for the personal account of another market participant</Description>
+    </Value>
+    <Value>
+      <Type>CtiCode</Type>
+      <Enum>4</Enum>
+      <Description>CTI 4: any transaction not meeting the definition of CTI 1, 2 or 3</Description>
+    </Value>
+
+    <!-- CxlRejResponseTo -->
+    <Value>
+      <Type>CxlRejResponseTo</Type>
+      <Enum>1</Enum>
+      <Description>Order Cancel Request</Description>
+    </Value>
+    <Value>
+      <Type>CxlRejResponseTo</Type>
+      <Enum>2</Enum>
+      <Description>Order Cancel/Replace Request</Description>
+    </Value>
+
+    <!-- ExecTransType -->
+    <Value>
+      <Type>ExecTransType</Type>
+      <Enum>0</Enum>
+      <Description>New</Description>
+    </Value>
+    <Value>
+      <Type>ExecTransType</Type>
+      <Enum>3</Enum>
+      <Description>Status</Description>
+    </Value>
+
+    <!-- MultiLegReportingType -->
+    <Value>
+      <Type>MultiLegReportingType</Type>
+      <Enum>1</Enum>
+      <Description>Single Security</Description>
+    </Value>
+    <Value>
+      <Type>MultiLegReportingType</Type>
+      <Enum>2</Enum>
+      <Description>Individual leg of a multileg security</Description>
+    </Value>
+    <Value>
+      <Type>MultiLegReportingType</Type>
+      <Enum>3</Enum>
+      <Description>Multileg security</Description>
+    </Value>
+
+    <!-- LegSide -->
+    <Value>
+      <Type>LegSide</Type>
+      <Enum>1</Enum>
+      <Description>Buy</Description>
+    </Value>
+    <Value>
+      <Type>LegSide</Type>
+      <Enum>2</Enum>
+      <Description>Sell</Description>
+    </Value>
+
+    <!-- ProductType -->
+    <Value>
+      <Type>ProductType</Type>
+      <Enum>O</Enum>
+      <Description>Outright</Description>
+    </Value>
+    <Value>
+      <Type>ProductType</Type>
+      <Enum>S</Enum>
+      <Description>Standard Calendar Spread</Description>
+    </Value>
+    <Value>
+      <Type>ProductType</Type>
+      <Enum>E</Enum>
+      <Description>Equity Calendar Spread</Description>
+    </Value>
+    <Value>
+      <Type>ProductType</Type>
+      <Enum>B</Enum>
+      <Description>Butterfly Spread</Description>
+    </Value>
+
+    <!-- MassCancelResponse -->
+    <Value>
+      <Type>MassCancelResponse</Type>
+      <Enum>0</Enum>
+      <Description>Order Mass Cancel Request rejected</Description>
+    </Value>
+    <Value>
+      <Type>MassCancelResponse</Type>
+      <Enum>1</Enum>
+      <Description>Order Mass Cancel Request accepted</Description>
+    </Value>
+
+  </Values>
+
+</OmiFixPdf>
