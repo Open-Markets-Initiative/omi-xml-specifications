@@ -1,0 +1,263 @@
+﻿<OmiItchNasdaqEquitiesPdf>
+
+  <!-- NsmEquities TotalView Itch 1.0 -->
+
+  <!-- Transcribed from Nasdaq TotalView ITCH (1.0).pdf, Version 1.00, updated 8/9/2006.
+       Every field is ASCII: numerics are digits right justified and space filled on the
+       left, and alpha fields are left justified and space filled on the right.
+       Sizes are characters.
+
+       Prices are NOT implied decimal in this version: a price is 20 characters, 9 whole
+       number places followed by an explicit decimal point and 10 decimal digits. The whole
+       number portion is padded on the left with spaces; the decimal portion is padded on
+       the right with zeros.
+
+       Every message begins with a 7 digit Numeric Time Stamp at offset 0, hundredths of
+       seconds past midnight Eastern Time, then the 1 character Message Type at offset 7,
+       so the message header is Time Stamp then Message Type and the fields below follow
+       at offset 8.
+
+       Display: the PDF lists only "Y" (displayed in NASDAQ) and notes the "S" value is no
+       longer supported as of the NASDAQ/INET merger, so "S" is not in the Display enum.
+       Contra Broker Code is blank filled when the executing order was entered directly
+       on NASDAQ. The Order Executed table is titled "Order Execution Message" in the PDF
+       while its section heading and Message Type note say "Order Executed Message". -->
+
+  <Messages>
+
+    <Message>
+      <Name>System Event Message</Name>
+      <Dependency>messagetype</Dependency>
+      <Branch>sequencedmessage</Branch>
+      <Code>S</Code>
+      <Description>System Event Messages signal events that affect the entire NASDAQ system.</Description>
+      <Fields>
+        <Field>
+          <Name>Event Code</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>See System Event Codes.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <Message>
+      <Name>Add Order Message</Name>
+      <Dependency>messagetype</Dependency>
+      <Branch>sequencedmessage</Branch>
+      <Code>A</Code>
+      <Description>An Add Order Message indicates that a new order has been accepted by the NASDAQ system and added onto the book. It includes a session-unique Order Reference Number assigned by NASDAQ to the order, all other fields were specified by the party who entered the order. You will not receive an Add Order Message when a non-displayed order is added to the book.</Description>
+      <Fields>
+        <Field>
+          <Name>Order Reference Number</Name>
+          <Type>Numeric</Type>
+          <Size>9</Size>
+          <Description>The unique reference number assigned to this new order. Increasing, but not necessarily sequential.</Description>
+        </Field>
+        <Field>
+          <Name>Side</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>"B" = buy order. "S" = sell order.</Description>
+        </Field>
+        <Field>
+          <Name>Shares</Name>
+          <Type>Numeric</Type>
+          <Size>9</Size>
+          <Description>Total number of shares being added to the book (may be less than the number of shares entered).</Description>
+        </Field>
+        <Field>
+          <Name>Stock</Name>
+          <Type>Alpha</Type>
+          <Size>6</Size>
+          <Description>Stock symbol right padded with spaces.</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Price</Type>
+          <Size>20</Size>
+          <Description>The limit price of the order. 9 whole number places, a decimal point, and 10 decimal digits.</Description>
+        </Field>
+        <Field>
+          <Name>Display</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>"Y" = displayed in NASDAQ. The "S" value is no longer supported as of the NASDAQ/INET merger.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <Message>
+      <Name>Order Executed Message</Name>
+      <Dependency>messagetype</Dependency>
+      <Branch>sequencedmessage</Branch>
+      <Code>E</Code>
+      <Description>This message is sent whenever an order on the book is executed in whole or in part. The execution price is always the limit price of the order already on the book.</Description>
+      <Fields>
+        <Field>
+          <Name>Order Reference Number</Name>
+          <Type>Numeric</Type>
+          <Size>9</Size>
+          <Description>The reference number of the order that was executed. References a previously sent Add Order Message.</Description>
+        </Field>
+        <Field>
+          <Name>Executed Shares</Name>
+          <Type>Numeric</Type>
+          <Size>9</Size>
+          <Description>The number of shares executed.</Description>
+        </Field>
+        <Field>
+          <Name>Match Number</Name>
+          <Type>Numeric</Type>
+          <Size>9</Size>
+          <Description>Indicates the NASDAQ generated session-unique Match Number of this execution. The match number is also referenced in the Trade Break Message.</Description>
+        </Field>
+        <Field>
+          <Name>Contra Broker Code</Name>
+          <Type>Alpha</Type>
+          <Size>4</Size>
+          <Description>The four-letter symbol of the firm that executed this order if the executing order was not entered directly on NASDAQ. Blank filled if an NASDAQ subscriber entered the executing order directly on NASDAQ.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <Message>
+      <Name>Order Cancel Message</Name>
+      <Dependency>messagetype</Dependency>
+      <Branch>sequencedmessage</Branch>
+      <Code>X</Code>
+      <Description>This message is sent whenever an order on the book is modified as a result of being canceled in whole or in part.</Description>
+      <Fields>
+        <Field>
+          <Name>Order Reference Number</Name>
+          <Type>Numeric</Type>
+          <Size>9</Size>
+          <Description>The reference number of the order being canceled or reduced. References a previously sent Add Order Message.</Description>
+        </Field>
+        <Field>
+          <Name>Canceled Shares</Name>
+          <Type>Numeric</Type>
+          <Size>9</Size>
+          <Description>The number of shares canceled.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <Message>
+      <Name>Trade Message</Name>
+      <Dependency>messagetype</Dependency>
+      <Branch>sequencedmessage</Branch>
+      <Code>P</Code>
+      <Description>The Trade Message provides information about execution events that involve orders not visible on the NASDAQ book. A Trade Message is transmitted each time a hidden order is executed in whole or in part.</Description>
+      <Fields>
+        <Field>
+          <Name>Order Reference Number</Name>
+          <Type>Numeric</Type>
+          <Size>9</Size>
+          <Description>The NASDAQ reference number of the executed order.</Description>
+        </Field>
+        <Field>
+          <Name>Side</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>"B" = buy order executed. "S" = sell order executed.</Description>
+        </Field>
+        <Field>
+          <Name>Shares</Name>
+          <Type>Numeric</Type>
+          <Size>9</Size>
+          <Description>Incremental number of shares executed.</Description>
+        </Field>
+        <Field>
+          <Name>Stock</Name>
+          <Type>Alpha</Type>
+          <Size>6</Size>
+          <Description>Stock symbol, right padded with spaces.</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Price</Type>
+          <Size>20</Size>
+          <Description>The limit (and thus execution) price of the order. 9 whole number places, a decimal point, and 10 decimal digits.</Description>
+        </Field>
+        <Field>
+          <Name>Match Number</Name>
+          <Type>Numeric</Type>
+          <Size>9</Size>
+          <Description>The NASDAQ generated session-unique Match Number for this trade. The Match Number is referenced in the Trade Break Message.</Description>
+        </Field>
+        <Field>
+          <Name>Contra Broker Code</Name>
+          <Type>Alpha</Type>
+          <Size>4</Size>
+          <Description>The four-letter symbol of the firm that executed this order if the executing order was not entered directly on NASDAQ. Blank filled if an NASDAQ subscriber entered the executing order directly on NASDAQ.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <Message>
+      <Name>Broken Trade Message</Name>
+      <Dependency>messagetype</Dependency>
+      <Branch>sequencedmessage</Branch>
+      <Code>B</Code>
+      <Description>The Broken Trade message is sent whenever an execution on NASDAQ is broken.</Description>
+      <Fields>
+        <Field>
+          <Name>Match Number</Name>
+          <Type>Numeric</Type>
+          <Size>9</Size>
+          <Description>The NASDAQ Match Number of the execution that was broken. This refers to a Match Number from a previously transmitted Order Modified - Execution Message or Trade Message.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+  </Messages>
+
+  <Enums>
+
+    <Enum>
+      <Name>Event Code</Name>
+      <Values>
+        <Value>
+          <Data>S</Data>
+          <Name>Start of Session</Name>
+          <Description>This is always the first message sent in any session. It indicates that the NASDAQ system is open and ready to start accepting orders.</Description>
+        </Value>
+        <Value>
+          <Data>E</Data>
+          <Name>End of Session</Name>
+          <Description>This is always the last message sent in any session. It indicates that the NASDAQ system is now closed and will not generate any new messages in this session. All orders that remain open in this session are now dead and should be purged from the book.</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>Side</Name>
+      <Values>
+        <Value>
+          <Data>B</Data>
+          <Name>Buy</Name>
+          <Description>Buy order.</Description>
+        </Value>
+        <Value>
+          <Data>S</Data>
+          <Name>Sell</Name>
+          <Description>Sell order.</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>Display</Name>
+      <Values>
+        <Value>
+          <Data>Y</Data>
+          <Name>Displayed</Name>
+          <Description>Displayed in NASDAQ</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+  </Enums>
+
+</OmiItchNasdaqEquitiesPdf>

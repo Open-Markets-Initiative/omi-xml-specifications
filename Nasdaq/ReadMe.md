@@ -46,6 +46,16 @@
 | NsmEquities | NoiView | Itch | 3.0.2026 | [files](Nasdaq.NsmEquities.NoiView.Itch.v3.0.2026/) |
 | NsmEquities | Orders | Ouch | 4.2 | [files](Nasdaq.NsmEquities.Orders.Ouch.v4.2/) |
 | NsmEquities | Orders | Ouch | 5.0 | [files](Nasdaq.NsmEquities.Orders.Ouch.v5.0/) |
+| NsmEquities | TotalView | Glimpse | 5.0 | [files](Nasdaq.NsmEquities.TotalView.Glimpse.v5.0/) |
+| NsmEquities | TotalView | Itch | 1.0 | [files](Nasdaq.NsmEquities.TotalView.Itch.v1.0/) |
+| NsmEquities | TotalView | Itch | 2.0 | [files](Nasdaq.NsmEquities.TotalView.Itch.v2.0/) |
+| NsmEquities | TotalView | Itch | 2.0.a | [files](Nasdaq.NsmEquities.TotalView.Itch.v2.0.a/) |
+| NsmEquities | TotalView | Itch | 3.0 | [files](Nasdaq.NsmEquities.TotalView.Itch.v3.0/) |
+| NsmEquities | TotalView | Itch | 3.1 | [files](Nasdaq.NsmEquities.TotalView.Itch.v3.1/) |
+| NsmEquities | TotalView | Itch | 3.1.f | [files](Nasdaq.NsmEquities.TotalView.Itch.v3.1.f/) |
+| NsmEquities | TotalView | Itch | 3.2 | [files](Nasdaq.NsmEquities.TotalView.Itch.v3.2/) |
+| NsmEquities | TotalView | Itch | 4.0 | [files](Nasdaq.NsmEquities.TotalView.Itch.v4.0/) |
+| NsmEquities | TotalView | Itch | 4.0.f | [files](Nasdaq.NsmEquities.TotalView.Itch.v4.0.f/) |
 | NsmEquities | TotalView | Itch | 4.1 | [files](Nasdaq.NsmEquities.TotalView.Itch.v4.1/) |
 | NsmEquities | TotalView | Itch | 5.0.2017 | [files](Nasdaq.NsmEquities.TotalView.Itch.v5.0.2017/) |
 | NsmEquities | TotalView | Itch | 5.0.2023 | [files](Nasdaq.NsmEquities.TotalView.Itch.v5.0.2023/) |
