@@ -1,0 +1,790 @@
+<OmiGtpPdf>
+
+  <Messages>
+
+    <!-- Login Request Message -->
+    <Message>
+      <Name>Login Request Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x01</Code>
+      <Category>Administrative</Category>
+      <Origin>Firm</Origin>
+      <Description>Used by the client to log in to the replay or recovery channel.</Description>
+      <Fields>
+        <Field>
+          <Name>Username</Name>
+          <Type>Alpha</Type>
+          <Size>8</Size>
+          <Description>CompID assigned to the client.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Replay Request Message -->
+    <Message>
+      <Name>Replay Request Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x03</Code>
+      <Category>Administrative</Category>
+      <Origin>Firm</Origin>
+      <Description>Used by the client to request a retransmission of messages on the replay channel.</Description>
+      <Fields>
+        <Field>
+          <Name>First Message</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Sequence number of the first message in range to be retransmitted.</Description>
+        </Field>
+        <Field>
+          <Name>Count</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Number of messages to be resent.</Description>
+        </Field>
+        <Field>
+          <Name>Request ID</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>The value set in this will be echoed back in the corresponding Replay Response. The system will not validate uniqueness of the set value.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Login Response Message -->
+    <Message>
+      <Name>Login Response Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x02</Code>
+      <Category>Administrative</Category>
+      <Origin>Exchange</Origin>
+      <Description>Used by the server to accept or reject a login request to the replay or recovery channel.</Description>
+      <Fields>
+        <Field>
+          <Name>Login Status</Name>
+          <Type>Byte</Type>
+          <Size>1</Size>
+          <Description>Status of the login request.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Replay Response Message -->
+    <Message>
+      <Name>Replay Response Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x04</Code>
+      <Category>Administrative</Category>
+      <Origin>Exchange</Origin>
+      <Description>Used by the server to respond to a retransmission request on the replay channel.</Description>
+      <Fields>
+        <Field>
+          <Name>First Message</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Sequence number of the first message in range to be retransmitted. This will be zero if Status is not 'A'.</Description>
+        </Field>
+        <Field>
+          <Name>Count</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Number of messages to be resent, not including any Replay and Recovery Complete messages. This will be zero if Status is not 'A'.</Description>
+        </Field>
+        <Field>
+          <Name>Replay Status</Name>
+          <Type>Byte</Type>
+          <Size>1</Size>
+          <Description>Status of the replay request.</Description>
+        </Field>
+        <Field>
+          <Name>Request ID</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Will include the value set as Request ID in the Replay Request message.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Replay and Recovery Complete Message -->
+    <Message>
+      <Name>Replay and Recovery Complete Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x83</Code>
+      <Category>Administrative</Category>
+      <Origin>Exchange</Origin>
+      <Description>Used by the server to indicate the successful completion of servicing a message replay or a recovery request.</Description>
+      <Fields>
+        <Field>
+          <Name>Request ID</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Will include the value set as Request ID in the Recovery Request message.</Description>
+        </Field>
+        <Field>
+          <Name>Trading Status</Name>
+          <Type>Byte</Type>
+          <Size>1</Size>
+          <Description>Current Trading status of the Instrument. Populated only when the message is sent at the end of individual order book snapshots during a trading session.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- System Event Message -->
+    <Message>
+      <Name>System Event Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x53</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Session transition is advertised via one system event message for all instruments allocated to the same multicast channel</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>UDT</Type>
+          <Size>8</Size>
+          <Description>Time the message was generated</Description>
+        </Field>
+        <Field>
+          <Name>Event Code</Name>
+          <Type>Byte</Type>
+          <Size>1</Size>
+          <Description>Session transition event.</Description>
+        </Field>
+        <Field>
+          <Name>Source Venue</Name>
+          <Type>UInt16</Type>
+          <Size>2</Size>
+          <Description>Venue from which market data is received for the instrument</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Instrument Directory Message -->
+    <Message>
+      <Name>Instrument Directory Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x70</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Used to disseminate a common and limited set of data for all configured instrument types (except strategy instruments) on the real time channels</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>UDT</Type>
+          <Size>8</Size>
+          <Description>Time the message was generated</Description>
+        </Field>
+        <Field>
+          <Name>Instrument</Name>
+          <Type>UInt64</Type>
+          <Size>8</Size>
+          <Description>GTP Instrument identifier.</Description>
+        </Field>
+        <Field>
+          <Name>ISIN</Name>
+          <Type>Alpha</Type>
+          <Size>12</Size>
+          <Description>ISIN Code of an instrument.</Description>
+        </Field>
+        <Field>
+          <Name>Allowed Book Types</Name>
+          <Type>Bit Field</Type>
+          <Size>1</Size>
+          <Description>Defines the order-book types that are allowed for the instrument. Each designated bit represents a book type. '0' means not allowed and '1' means allowed:</Description>
+        </Field>
+        <Field>
+          <Name>Source Venue</Name>
+          <Type>UInt16</Type>
+          <Size>2</Size>
+          <Description>Venue from which market data is received for the instrument.</Description>
+        </Field>
+        <Field>
+          <Name>Venue Instrument ID</Name>
+          <Type>Alpha</Type>
+          <Size>11</Size>
+          <Description>Instrument identifier used by the source venue.</Description>
+        </Field>
+        <Field>
+          <Name>Tick ID</Name>
+          <Type>Alpha</Type>
+          <Size>2</Size>
+          <Description>Not Applicable to TRADEcho</Description>
+        </Field>
+        <Field>
+          <Name>Price Band Tolerances (%)</Name>
+          <Type>Price</Type>
+          <Size>8</Size>
+          <Description>Not Applicable to TRADEcho</Description>
+        </Field>
+        <Field>
+          <Name>Dynamic Circuit Breaker Tolerances (%)</Name>
+          <Type>Price</Type>
+          <Size>8</Size>
+          <Description>Not Applicable to TRADEcho</Description>
+        </Field>
+        <Field>
+          <Name>Static Circuit Breaker Tolerances (%)</Name>
+          <Type>Price</Type>
+          <Size>8</Size>
+          <Description>Not Applicable to TRADEcho</Description>
+        </Field>
+        <Field>
+          <Name>Segment</Name>
+          <Type>Alpha</Type>
+          <Size>6</Size>
+          <Description>Segment the instrument is assigned to.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved Field</Name>
+          <Type>Alpha</Type>
+          <Size>12</Size>
+          <Description>Reserved for future use.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved Field</Name>
+          <Type>Alpha</Type>
+          <Size>11</Size>
+          <Description>Reserved for future use.</Description>
+        </Field>
+        <Field>
+          <Name>Currency</Name>
+          <Type>Alpha</Type>
+          <Size>3</Size>
+          <Description>Currency Code as per ISO 4217.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved Field</Name>
+          <Type>Byte</Type>
+          <Size>1</Size>
+          <Description>Reserved for future use.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved Field</Name>
+          <Type>Alpha</Type>
+          <Size>4</Size>
+          <Description>Reserved for future use.</Description>
+        </Field>
+        <Field>
+          <Name>Average Daily Turnover</Name>
+          <Type>Price4</Type>
+          <Size>8</Size>
+          <Description>Average Daily Turnover as reported by the Source Venue.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved Field</Name>
+          <Type>Alpha</Type>
+          <Size>8</Size>
+          <Description>Reserved for future use.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved Field</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>Reserved for future use.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved Field</Name>
+          <Type>Price</Type>
+          <Size>8</Size>
+          <Description>Reserved for future use.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved Field</Name>
+          <Type>Price</Type>
+          <Size>8</Size>
+          <Description>Reserved for future use.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Instrument Status Message -->
+    <Message>
+      <Name>Instrument Status Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x48</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>A specific instrument be subject to individual status change</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>UDT</Type>
+          <Size>8</Size>
+          <Description>Time the message was generated.</Description>
+        </Field>
+        <Field>
+          <Name>Instrument</Name>
+          <Type>UInt64</Type>
+          <Size>8</Size>
+          <Description>GTP Instrument identifier.</Description>
+        </Field>
+        <Field>
+          <Name>Source venue</Name>
+          <Type>UInt16</Type>
+          <Size>2</Size>
+          <Description>Venue from which market data is received for the instrument.</Description>
+        </Field>
+        <Field>
+          <Name>Trading Status</Name>
+          <Type>Byte</Type>
+          <Size>1</Size>
+          <Description>Trading Status of Symbol</Description>
+        </Field>
+        <Field>
+          <Name>Session Change Reason</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>Session Change Reason</Description>
+        </Field>
+        <Field>
+          <Name>New End Time</Name>
+          <Type>Time</Type>
+          <Size>6</Size>
+          <Description>Not Applicable to TRADEcho</Description>
+        </Field>
+        <Field>
+          <Name>Order Book Type</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>Order Book Type</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Order Delete Message -->
+    <Message>
+      <Name>Order Delete Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x44</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Sent to instruct recipients to delete an order from the retrospective order book</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>UDT</Type>
+          <Size>8</Size>
+          <Description>Time the message was generated</Description>
+        </Field>
+        <Field>
+          <Name>Order ID</Name>
+          <Type>UInt64</Type>
+          <Size>8</Size>
+          <Description>Unique identifier of the order.</Description>
+        </Field>
+        <Field>
+          <Name>Instrument</Name>
+          <Type>UInt64</Type>
+          <Size>8</Size>
+          <Description>GTP Instrument identifier.</Description>
+        </Field>
+        <Field>
+          <Name>Side</Name>
+          <Type>Byte</Type>
+          <Size>1</Size>
+          <Description>Side</Description>
+        </Field>
+        <Field>
+          <Name>Order Book Type</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>Order Book Type</Description>
+        </Field>
+        <Field>
+          <Name>Source venue</Name>
+          <Type>UInt16</Type>
+          <Size>2</Size>
+          <Description>Venue from which market data is received for the instrument.</Description>
+        </Field>
+        <Field>
+          <Name>Previous Price</Name>
+          <Type>Price</Type>
+          <Size>8</Size>
+          <Description>Price of the order that was deleted from the book.</Description>
+        </Field>
+        <Field>
+          <Name>Previous Quantity</Name>
+          <Type>Size</Type>
+          <Size>8</Size>
+          <Description>Quantity of the order that was deleted from the book.</Description>
+        </Field>
+        <Field>
+          <Name>Transaction Time</Name>
+          <Type>UDT</Type>
+          <Size>8</Size>
+          <Description>Not Applicable to TRADEcho</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Order Book Clear Message -->
+    <Message>
+      <Name>Order Book Clear Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x79</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Sent to instruct recipients to remove all orders from the order book for the specified instrument</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>UDT</Type>
+          <Size>8</Size>
+          <Description>Time the message was generated.</Description>
+        </Field>
+        <Field>
+          <Name>Source venue</Name>
+          <Type>UInt16</Type>
+          <Size>2</Size>
+          <Description>Venue from which market data is received for the instrument.</Description>
+        </Field>
+        <Field>
+          <Name>Instrument</Name>
+          <Type>UInt64</Type>
+          <Size>8</Size>
+          <Description>GTP Instrument identifier.</Description>
+        </Field>
+        <Field>
+          <Name>Order Book Type</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>Order Book Type</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Systematic Internaliser Quotes Message -->
+    <Message>
+      <Name>Systematic Internaliser Quotes Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x47</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Publishing systematic internaliser quotes</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>UDT</Type>
+          <Size>8</Size>
+          <Description>Time the message was generated.</Description>
+        </Field>
+        <Field>
+          <Name>Order ID</Name>
+          <Type>UInt64</Type>
+          <Size>8</Size>
+          <Description>Unique identifier of the order.</Description>
+        </Field>
+        <Field>
+          <Name>Side</Name>
+          <Type>Byte</Type>
+          <Size>1</Size>
+          <Description>Side</Description>
+        </Field>
+        <Field>
+          <Name>Size</Name>
+          <Type>Size</Type>
+          <Size>8</Size>
+          <Description>Displayed Size of the order.</Description>
+        </Field>
+        <Field>
+          <Name>Instrument</Name>
+          <Type>UInt64</Type>
+          <Size>8</Size>
+          <Description>GTP Instrument identifier.</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Price</Type>
+          <Size>8</Size>
+          <Description>Limit price of the order. Implied price if instrument trades in yield.</Description>
+        </Field>
+        <Field>
+          <Name>Yield</Name>
+          <Type>Price</Type>
+          <Size>8</Size>
+          <Description>Yield, if the instrument trades in yield.</Description>
+        </Field>
+        <Field>
+          <Name>Source venue</Name>
+          <Type>UInt16</Type>
+          <Size>2</Size>
+          <Description>Venue from which market data is received for the instrument.</Description>
+        </Field>
+        <Field>
+          <Name>Order Book Type</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>Order Book Type</Description>
+        </Field>
+        <Field>
+          <Name>Participant</Name>
+          <Type>Alpha</Type>
+          <Size>11</Size>
+          <Description>Identity of trading participant that submitted the order</Description>
+        </Field>
+        <Field>
+          <Name>Order Type</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>Order Book Type</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>Alpha</Type>
+          <Size>10</Size>
+          <Description>Reserved field.</Description>
+        </Field>
+        <Field>
+          <Name>Currency</Name>
+          <Type>Alpha</Type>
+          <Size>3</Size>
+          <Description>Currency of the SI Quote price.</Description>
+        </Field>
+        <Field>
+          <Name>Venue of Publication</Name>
+          <Type>Alpha</Type>
+          <Size>4</Size>
+          <Description>Identification of the regulatory regime under which the transaction was published. The value sent by the source venue is passed on.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+  </Messages>
+
+  <!-- Bitfields -->
+
+  <Bitfields>
+
+    <!-- Allowed Book Types -->
+    <Bitfield>
+      <Name>Allowed Book Types</Name>
+      <Description>Allowed Book Type Flags</Description>
+      <Fields>
+        <Field>
+          <Name>Unused</Name>
+          <Bits>1</Bits>
+          <Type>bit</Type>
+          <Description>Unused</Description>
+        </Field>
+        <Field>
+          <Name>SI Quote Book</Name>
+          <Bits>1</Bits>
+          <Type>bit</Type>
+          <Description>SI Quote Book</Description>
+        </Field>
+        <Field>
+          <Name>Off Book</Name>
+          <Bits>1</Bits>
+          <Type>bit</Type>
+          <Description>SI Quote Book</Description>
+        </Field>
+        <Field>
+          <Name>Unused</Name>
+          <Bits>5</Bits>
+          <Type>bit</Type>
+          <Description>Unused</Description>
+        </Field>
+      </Fields>
+    </Bitfield>
+
+  </Bitfields>
+
+  <!-- Enums -->
+
+  <Enums>
+
+    <!-- Login Status -->
+    <Enum>
+      <Name>Login Status</Name>
+      <Values>
+        <Value>
+          <Data>A</Data>
+          <Name>Login Accepted</Name>
+        </Value>
+        <Value>
+          <Data>a</Data>
+          <Name>CompID Inactive/Suspended</Name>
+        </Value>
+        <Value>
+          <Data>b</Data>
+          <Name>Login Limit Reached</Name>
+        </Value>
+        <Value>
+          <Data>c</Data>
+          <Name>Service Unavailable</Name>
+        </Value>
+        <Value>
+          <Data>d</Data>
+          <Name>Maximum Connections Limit Reached</Name>
+        </Value>
+        <Value>
+          <Data>e</Data>
+          <Name>Failed (other)</Name>
+        </Value>
+        <Value>
+          <Data>f</Data>
+          <Name>Invalid CompID or IP Address</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Replay Status -->
+    <Enum>
+      <Name>Replay Status</Name>
+      <Values>
+        <Value>
+          <Data>A</Data>
+          <Name>Request Accepted</Name>
+        </Value>
+        <Value>
+          <Data>D</Data>
+          <Name>Request Limit Reached</Name>
+        </Value>
+        <Value>
+          <Data>O</Data>
+          <Name>Out of Range</Name>
+        </Value>
+        <Value>
+          <Data>U</Data>
+          <Name>Replay Unavailable</Name>
+        </Value>
+        <Value>
+          <Data>c</Data>
+          <Name>Concurrent Limit Reached</Name>
+        </Value>
+        <Value>
+          <Data>e</Data>
+          <Name>Failed (Other)</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Event Code -->
+    <Enum>
+      <Name>Event Code</Name>
+      <Values>
+        <Value>
+          <Data>T</Data>
+          <Name>Start of Open</Name>
+        </Value>
+        <Value>
+          <Data>P</Data>
+          <Name>Start of Pre Close</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Trading Status -->
+    <Enum>
+      <Name>Trading Status</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Inactive or Underlying Suspended</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name> Suspended</Name>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Active</Name>
+        </Value>
+        <Value>
+          <Data>P</Data>
+          <Name> Regulatory Halt</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Session Change Reason -->
+    <Enum>
+      <Name>Session Change Reason</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>Scheduled Transition</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Order Book Type -->
+    <Enum>
+      <Name>Order Book Type</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>SI Quote Book</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Off Book</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Side -->
+    <Enum>
+      <Name>Side</Name>
+      <Values>
+        <Value>
+          <Data>B</Data>
+          <Name>Buy Order</Name>
+        </Value>
+        <Value>
+          <Data>S</Data>
+          <Name>Sell Order</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Order Type -->
+    <Enum>
+      <Name>Order Type</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>SI Quote</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Venue of Publication -->
+    <Enum>
+      <Name>Venue of Publication</Name>
+      <Values>
+        <Value>
+          <Data>ECHO</Data>
+          <Name>Published under UK Regulation</Name>
+        </Value>
+        <Value>
+          <Data>ECEU</Data>
+          <Name>Published under EU Regulation</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Source Venue -->
+    <Enum>
+      <Name>Source Venue</Name>
+      <Values>
+        <Value>
+          <Data>11</Data>
+          <Name>TradeEcho</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+  </Enums>
+
+</OmiGtpPdf>

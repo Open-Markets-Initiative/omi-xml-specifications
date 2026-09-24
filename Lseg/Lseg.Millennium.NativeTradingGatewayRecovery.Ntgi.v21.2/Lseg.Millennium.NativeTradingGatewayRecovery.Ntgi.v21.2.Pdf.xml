@@ -1,0 +1,2171 @@
+<OmiNativeStreamlinedPdf>
+
+  <!--
+    The Native Recovery Channel message set (MIT203 section 6).
+
+    Session administration is shared with the Real Time Channel. Missed Message
+    Request, Missed Message Request Ack and Missed Message Report exist only
+    here. The remaining messages are the server initiated application messages
+    replayed from the Order Cache; section 6.2 excludes Order Cancel Reject and
+    Business Reject, which the cache does not retain.
+
+    The client initiated application messages are absent: section 6.1 gives
+    heartbeats and Missed Message Requests as what a client sends once connected
+    to this channel. The document does not state that order entry is rejected
+    here, so that exclusion is a reading of 6.1 rather than a quoted rule.
+  -->
+
+  <!--
+    MIT203 declares Side, Passive Only Order and App ID as Int8 in some messages
+    and UInt8 in others (Side is Int8 in sections 8.4.3 and 8.4.6, UInt8 elsewhere;
+    App ID is Int8 in 8.3.5, UInt8 in 8.3.9, 8.4.6 and 8.4.8). None of the fields
+    carries a negative value, so the split reads as a documentation slip. They are
+    normalized to UInt8 here: the loader disambiguates same named fields of
+    differing type by appending it, which otherwise splits each field into two
+    names and leaves its enum unable to bind.
+  -->
+
+  <Messages>
+
+    <!-- Logon Message -->
+    <Message>
+      <Name>Logon Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>A</Code>
+      <Category>Administrative</Category>
+      <Origin>Firm</Origin>
+      <Description>Allows the client and server to establish a session.</Description>
+      <Fields>
+        <Field>
+          <Name>User Name</Name>
+          <Type>String</Type>
+          <Size>25</Size>
+          <Description>User name</Description>
+        </Field>
+        <Field>
+          <Name>Password</Name>
+          <Type>String</Type>
+          <Size>25</Size>
+          <Description>Password</Description>
+        </Field>
+        <Field>
+          <Name>New Password</Name>
+          <Type>String</Type>
+          <Size>25</Size>
+          <Description>New Password</Description>
+        </Field>
+        <Field>
+          <Name>Message Version</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>Message Version that will be used in this session.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Logon Reply Message -->
+    <Message>
+      <Name>Logon Reply Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>B</Code>
+      <Category>Administrative</Category>
+      <Origin>Exchange</Origin>
+      <Description>Allows the server to acknowledge a client's Logon.</Description>
+      <Fields>
+        <Field>
+          <Name>Reject Code</Name>
+          <Type>Int32</Type>
+          <Size>4</Size>
+          <Description>Code specifying the reason for the reject.</Description>
+        </Field>
+        <Field>
+          <Name>Password Expiry Day Count</Name>
+          <Type>String</Type>
+          <Size>30</Size>
+          <Description>The number of days before the password will expire</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Logout Message -->
+    <Message>
+      <Name>Logout Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>5</Code>
+      <Category>Administrative</Category>
+      <Origin>Firm,Exchange</Origin>
+      <Description>Allows the client and server to terminate a session.</Description>
+      <Fields>
+        <Field>
+          <Name>Reason</Name>
+          <Type>String</Type>
+          <Size>20</Size>
+          <Description>Reason for the logout.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Heartbeat Message -->
+    <Message>
+      <Name>Heartbeat Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0</Code>
+      <Category>Administrative</Category>
+      <Origin>Firm,Exchange</Origin>
+      <Description>Allows the client and server to exercise the communication line during periods of inactivity and verify that the interfaces at each end are available.</Description>
+    </Message>
+
+    <!-- Missed Message Request Message -->
+    <Message>
+      <Name>Missed Message Request Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>M</Code>
+      <Category>Administrative</Category>
+      <Origin>Firm</Origin>
+      <Description>Allows the client to subscribe to missed messages through the Recovery Channel.</Description>
+      <Fields>
+        <Field>
+          <Name>App ID</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>App ID this message relates to.</Description>
+        </Field>
+        <Field>
+          <Name>Last Msg Seq Num</Name>
+          <Type>Int32</Type>
+          <Size>4</Size>
+          <Description>Last received Sequence No.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Missed Message Request Ack Message -->
+    <Message>
+      <Name>Missed Message Request Ack Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>N</Code>
+      <Category>Administrative</Category>
+      <Origin>Exchange</Origin>
+      <Description>Allows the server to acknowledge a client's Missed Message Request.</Description>
+      <Fields>
+        <Field>
+          <Name>Missed Message Request Ack Response Type</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Missed Message Report Message -->
+    <Message>
+      <Name>Missed Message Report Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>P</Code>
+      <Category>Administrative</Category>
+      <Origin>Exchange</Origin>
+      <Description>Allows the server to communicate the result of a Missed Message Request.</Description>
+      <Fields>
+        <Field>
+          <Name>Missed Message Report Response Type</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Reject Message -->
+    <Message>
+      <Name>Reject Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>3</Code>
+      <Category>Administrative</Category>
+      <Origin>Exchange</Origin>
+      <Description>Used to reject a message that does not comply with the Native Trading Gateway messaging protocol.</Description>
+      <Fields>
+        <Field>
+          <Name>Reject Code</Name>
+          <Type>Int32</Type>
+          <Size>4</Size>
+          <Description>Code specifying the reason for the reject.</Description>
+        </Field>
+        <Field>
+          <Name>Reject Reason</Name>
+          <Type>String</Type>
+          <Size>30</Size>
+          <Description>Reject Reason.</Description>
+        </Field>
+        <Field>
+          <Name>Rejected Message Type</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>Message type of the rejected message.</Description>
+        </Field>
+        <Field>
+          <Name>Client Order ID</Name>
+          <Type>String</Type>
+          <Size>20</Size>
+          <Description>Client specified identifier of the rejected message if it is available.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- System Status Message -->
+    <Message>
+      <Name>System Status Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>n</Code>
+      <Category>Administrative</Category>
+      <Origin>Exchange</Origin>
+      <Description>Indicates service non availability of a partition, disseminated on the recovery and realtime channels.</Description>
+      <Fields>
+        <Field>
+          <Name>App ID</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>Partition ID</Description>
+        </Field>
+        <Field>
+          <Name>App Status</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Execution Report Message -->
+    <Message>
+      <Name>Execution Report Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>8</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Indicates order accepted, rejected, executed, expired, cancelled, cancel/replaced, restated or suspended, or a trade cancel.</Description>
+      <Fields>
+        <Field>
+          <Name>App ID</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>Partition ID</Description>
+        </Field>
+        <Field>
+          <Name>Sequence No</Name>
+          <Type>Int32</Type>
+          <Size>4</Size>
+          <Description>Sequence number of the message.</Description>
+        </Field>
+        <Field>
+          <Name>Execution ID</Name>
+          <Type>String</Type>
+          <Size>12</Size>
+          <Description>Unique ID of the Execution Report.</Description>
+        </Field>
+        <Field>
+          <Name>Client Order ID</Name>
+          <Type>String</Type>
+          <Size>20</Size>
+          <Description>Client specified identifier of the order.</Description>
+        </Field>
+        <Field>
+          <Name>Order ID</Name>
+          <Type>String</Type>
+          <Size>12</Size>
+          <Description>Unique identifier of the order assigned by the matching system.</Description>
+        </Field>
+        <Field>
+          <Name>Exec Type</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>The reason the Execution Report is being sent.</Description>
+        </Field>
+        <Field>
+          <Name>Execution Report Ref ID</Name>
+          <Type>String</Type>
+          <Size>12</Size>
+          <Description>Reference to the trade being cancelled or corrected.</Description>
+        </Field>
+        <Field>
+          <Name>Execution Report Order Status</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>The status of the order.</Description>
+        </Field>
+        <Field>
+          <Name>Order Reject Code</Name>
+          <Type>Int32</Type>
+          <Size>4</Size>
+          <Description>Code specifying the reason for the reject or the expiry.</Description>
+        </Field>
+        <Field>
+          <Name>Executed Price</Name>
+          <Type>Price</Type>
+          <Size>8</Size>
+          <Description>Value of this fill.</Description>
+        </Field>
+        <Field>
+          <Name>Executed Qty</Name>
+          <Type>Int32</Type>
+          <Size>4</Size>
+          <Description>Quantity that was executed in this fill.</Description>
+        </Field>
+        <Field>
+          <Name>Leaves Qty</Name>
+          <Type>Int32</Type>
+          <Size>4</Size>
+          <Description>Quantity available for further execution.</Description>
+        </Field>
+        <Field>
+          <Name>Waiver Flags/Post Trade Flags</Name>
+          <Type>Bit Field</Type>
+          <Size>1</Size>
+          <Description>Pre-trade waiver or Post Trade flag.</Description>
+        </Field>
+        <Field>
+          <Name>Display Qty</Name>
+          <Type>Int32</Type>
+          <Size>4</Size>
+          <Description>Current visible quantity.</Description>
+        </Field>
+        <Field>
+          <Name>Instrument ID</Name>
+          <Type>Int32</Type>
+          <Size>4</Size>
+          <Description>Identifier of the instrument the Execution Report is sent for.</Description>
+        </Field>
+        <Field>
+          <Name>Restatement Reason</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>Reason order was restated or cancelled.</Description>
+        </Field>
+        <Field>
+          <Name>Execution Report Pegged Exec Inst</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>The instruction for permissioning to trade against mid-priced pegged orders.</Description>
+        </Field>
+        <Field>
+          <Name>Side</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>Side of the order.</Description>
+        </Field>
+        <Field>
+          <Name>Owner Type</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>Not applicable for Quotes.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved Field 2</Name>
+          <Type>String</Type>
+          <Size>7</Size>
+          <Description>Reserved for future use.</Description>
+        </Field>
+        <Field>
+          <Name>Counterparty</Name>
+          <Type>String</Type>
+          <Size>11</Size>
+          <Description>Counterparty Firm.</Description>
+        </Field>
+        <Field>
+          <Name>Trade Liquidity Indicator</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>Whether the order added or removed liquidity.</Description>
+        </Field>
+        <Field>
+          <Name>Trade Match ID</Name>
+          <Type>UInt64</Type>
+          <Size>8</Size>
+          <Description>Identifier of the trade.</Description>
+        </Field>
+        <Field>
+          <Name>Transact Time</Name>
+          <Type>UInt64</Type>
+          <Size>8</Size>
+          <Description>Time the Execution Report was generated.</Description>
+        </Field>
+        <Field>
+          <Name>LastMarket</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>Market (Segment MIC) where execution took place.</Description>
+        </Field>
+        <Field>
+          <Name>Type Of Trade</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>Indicates whether the executed portion of a passive order during continuous trading session is visible or hidden.</Description>
+        </Field>
+        <Field>
+          <Name>Capacity</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>Capacity of the order.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved Field 4</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>Reserved for future use.</Description>
+        </Field>
+        <Field>
+          <Name>Public Order ID</Name>
+          <Type>String</Type>
+          <Size>12</Size>
+          <Description>Maintained by matching engine, will be unique for each replenishment of a particular iceberg order.</Description>
+        </Field>
+        <Field>
+          <Name>Minimum Quantity</Name>
+          <Type>Int32</Type>
+          <Size>4</Size>
+          <Description>Minimum Execution Size (MES) specified on a pegged order.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Order Mass Cancel Report Message -->
+    <Message>
+      <Name>Order Mass Cancel Report Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>r</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Indicates that a mass order cancel request was accepted or rejected.</Description>
+      <Fields>
+        <Field>
+          <Name>App ID</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>Partition ID</Description>
+        </Field>
+        <Field>
+          <Name>Sequence No</Name>
+          <Type>Int32</Type>
+          <Size>4</Size>
+          <Description>Sequence number of the message.</Description>
+        </Field>
+        <Field>
+          <Name>Client Order ID</Name>
+          <Type>String</Type>
+          <Size>20</Size>
+          <Description>Client specified identifier of mass cancel request.</Description>
+        </Field>
+        <Field>
+          <Name>Mass Cancel Response</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>Whether the Mass Cancel Request was accepted or rejected.</Description>
+        </Field>
+        <Field>
+          <Name>Mass Cancel Reject Reason</Name>
+          <Type>Int32</Type>
+          <Size>4</Size>
+          <Description>The code that identifies the reason the order mass cancel was rejected.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved Field 1</Name>
+          <Type>Int32</Type>
+          <Size>4</Size>
+          <Description>Reserved for future use.</Description>
+        </Field>
+        <Field>
+          <Name>Transact Time</Name>
+          <Type>UInt64</Type>
+          <Size>8</Size>
+          <Description>Time the order mass cancel report was generated.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved Field 2</Name>
+          <Type>String</Type>
+          <Size>10</Size>
+          <Description>Reserved for future use.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Quote Request Message -->
+    <Message>
+      <Name>Quote Request Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>a</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Carries a Request For Quote. Sent by the Requester to submit an RFQ, and by the server to deliver it to the Market Maker.</Description>
+      <Fields>
+        <Field>
+          <Name>Partition ID</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>The server will stamp the identifier of the matching partition for the instrument</Description>
+        </Field>
+        <Field>
+          <Name>Sequence Number</Name>
+          <Type>Int32</Type>
+          <Size>4</Size>
+          <Description>The server will stamp the message sequence number of the matching partition.</Description>
+        </Field>
+        <Field>
+          <Name>Quote Req ID</Name>
+          <Type>String</Type>
+          <Size>10</Size>
+          <Description>Client specified identifier of the RFQ.</Description>
+        </Field>
+        <Field>
+          <Name>Order Book</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+        </Field>
+        <Field>
+          <Name>Private Quote</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+        </Field>
+        <Field>
+          <Name>Instrument ID</Name>
+          <Type>Int32</Type>
+          <Size>4</Size>
+          <Description>Instrument ID of the instrument</Description>
+        </Field>
+        <Field>
+          <Name>Side</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>Side of the Quote Request.</Description>
+        </Field>
+        <Field>
+          <Name>Order Quantity</Name>
+          <Type>Int32</Type>
+          <Size>4</Size>
+          <Description>Quantity that the Requester is expecting to trade.</Description>
+        </Field>
+        <Field>
+          <Name>Expire Time</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Indicates the date or the time the RFQ expires, in Unix (Posix) time format (number of seconds after 1 January 1970).</Description>
+        </Field>
+        <Field>
+          <Name>Market Makers</Name>
+          <Type>String</Type>
+          <Size>60</Size>
+          <Description>Pipe separated list of Firm IDs, if it is required to target this quote request to specific Market Makers.</Description>
+        </Field>
+        <Field>
+          <Name>Contra Trader</Name>
+          <Type>String</Type>
+          <Size>11</Size>
+          <Description>For Named Models only, the server will stamp the User ID of the Requester to send to the Market Maker.</Description>
+        </Field>
+        <Field>
+          <Name>Contra Firm</Name>
+          <Type>String</Type>
+          <Size>11</Size>
+          <Description>For Named Models only, the server will stamp the Firm ID of the Requester to send to the Market Maker.</Description>
+        </Field>
+        <Field>
+          <Name>RFQ ID</Name>
+          <Type>String</Type>
+          <Size>10</Size>
+          <Description>The unique identifier of the initial RFQ automatically generated via the server.</Description>
+        </Field>
+        <Field>
+          <Name>Client ID</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Identifier of the client.</Description>
+        </Field>
+        <Field>
+          <Name>Investment Decision Maker</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Identifier of the trading member/participant who made investment decision.</Description>
+        </Field>
+        <Field>
+          <Name>Executing Trader</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Identifier of the trading member/participant who made the execution decision.</Description>
+        </Field>
+        <Field>
+          <Name>MiFID Flags</Name>
+          <Type>Bit Field</Type>
+          <Size>1</Size>
+          <Description>Flags introduced to identify DEA involvement, Algo and Liquidity provision activity.</Description>
+        </Field>
+        <Field>
+          <Name>Party Role Qualifiers</Name>
+          <Type>Bit Field</Type>
+          <Size>1</Size>
+          <Description>Provides a further qualification for the value specified via the ‘Client ID’, ‘Investment Decision Maker’ and ‘Executing Trader’ fields.</Description>
+        </Field>
+        <Field>
+          <Name>Quote Request Type</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>Indicates the type of Quote Request</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Price</Type>
+          <Size>8</Size>
+          <Description>Limit Price.</Description>
+        </Field>
+        <Field>
+          <Name>RFQ Execution Delay</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>The minimum number of seconds from the time of RFQ submission to be elapsed for the RFQ execution to be triggered automatically.</Description>
+        </Field>
+        <Field>
+          <Name>RFQ Min Quotes</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>The minimum number of market maker quotes to be available for the RFQ execution to be triggered automatically.</Description>
+        </Field>
+        <Field>
+          <Name>Account Type</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>Clearing Account Type.</Description>
+        </Field>
+        <Field>
+          <Name>Order Capacity</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>Capacity of the RFQ.</Description>
+        </Field>
+        <Field>
+          <Name>RFQ Disclose Side</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>Instructs the system whether to disclose the side of the request as stated in the Side field to the market makers or not.</Description>
+        </Field>
+        <Field>
+          <Name>Expire Time Milliseconds</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Indicates the number of milliseconds to be added to the date or the time the RFQ expires on specified in the ‘Expire Time’ field.</Description>
+        </Field>
+        <Field>
+          <Name>AutoRFQExecStrategy</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>This field will include the applicable Auto RFQ Execution Strategy ‘Sub LIS Auction with Order Book Sweep or LIS Winner Takes All’ model.</Description>
+        </Field>
+        <Field>
+          <Name>NumOfCompetitors</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>The number of competing Respondents (the total number of market maker firms) the quote request has been routed to.</Description>
+        </Field>
+        <Field>
+          <Name>Market Maker Rank</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>The rank of the market makers the request should be routed to.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Quote Status Report Message -->
+    <Message>
+      <Name>Quote Status Report Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>c</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Allows the server to communicate the status of the RFQ to the Requester.</Description>
+      <Fields>
+        <Field>
+          <Name>Partition ID</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>The server will stamp the identifier of the matching partition for the instrument.</Description>
+        </Field>
+        <Field>
+          <Name>Sequence Number</Name>
+          <Type>Int32</Type>
+          <Size>4</Size>
+          <Description>The server will stamp the message sequence number of the matching partition.</Description>
+        </Field>
+        <Field>
+          <Name>Quote Msg Id</Name>
+          <Type>String</Type>
+          <Size>20</Size>
+          <Description>Identifier specified by the client in the RFQ modification/cancellation/execution request.</Description>
+        </Field>
+        <Field>
+          <Name>Quote Req ID</Name>
+          <Type>String</Type>
+          <Size>10</Size>
+          <Description>Client specified identifier of the RFQ that is being responded to.</Description>
+        </Field>
+        <Field>
+          <Name>Quote Status</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+        </Field>
+        <Field>
+          <Name>Reject Code</Name>
+          <Type>Int32</Type>
+          <Size>4</Size>
+          <Description>Reject code.</Description>
+        </Field>
+        <Field>
+          <Name>Order Book</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+        </Field>
+        <Field>
+          <Name>Market Makers</Name>
+          <Type>String</Type>
+          <Size>60</Size>
+          <Description>Pipe separated list of MM Firm IDs where specified by Requester otherwise null.</Description>
+        </Field>
+        <Field>
+          <Name>RFQ ID</Name>
+          <Type>String</Type>
+          <Size>10</Size>
+          <Description>The unique identifier of the RFQ automatically generated via the server.</Description>
+        </Field>
+        <Field>
+          <Name>Expire Time</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Indicates the date or the time the RFQ expires, in Unix (Posix) time format (number of seconds after 1 January 1970).</Description>
+        </Field>
+        <Field>
+          <Name>Bid ID</Name>
+          <Type>String</Type>
+          <Size>12</Size>
+          <Description>Unique identifier assigned to the bid side of the quote.</Description>
+        </Field>
+        <Field>
+          <Name>Offer ID</Name>
+          <Type>String</Type>
+          <Size>12</Size>
+          <Description>Unique identifier assigned to the offer side of the quote.</Description>
+        </Field>
+        <Field>
+          <Name>Expire Time Milliseconds</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Indicates the number of milliseconds to be added to the date or time the RFQ expires on specified in the ‘Expire Time’ field.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Quote Request Reject Message -->
+    <Message>
+      <Name>Quote Request Reject Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>b</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Rejects an RFQ. Sent by the Market Maker to reject, and by the server to reject or to relay a Market Maker rejection.</Description>
+      <Fields>
+        <Field>
+          <Name>Partition ID</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>The server will stamp the identifier of the matching partition for the instrument.</Description>
+        </Field>
+        <Field>
+          <Name>Sequence Number</Name>
+          <Type>Int32</Type>
+          <Size>4</Size>
+          <Description>The server will stamp the message sequence number of the matching partition.</Description>
+        </Field>
+        <Field>
+          <Name>Quote Req ID</Name>
+          <Type>String</Type>
+          <Size>10</Size>
+          <Description>Client specified identifier of the RFQ being rejected.</Description>
+        </Field>
+        <Field>
+          <Name>Reject Code</Name>
+          <Type>Int32</Type>
+          <Size>4</Size>
+          <Description>Reject code.</Description>
+        </Field>
+        <Field>
+          <Name>Order Book</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+        </Field>
+        <Field>
+          <Name>Instrument ID</Name>
+          <Type>Int32</Type>
+          <Size>4</Size>
+          <Description>Instrument ID of the instrument</Description>
+        </Field>
+        <Field>
+          <Name>Side</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+        </Field>
+        <Field>
+          <Name>Order Quantity</Name>
+          <Type>Int32</Type>
+          <Size>4</Size>
+          <Description>Only valid when the server rejects the RFQ, with the quantity specified in the RFQ message.</Description>
+        </Field>
+        <Field>
+          <Name>Market Makers</Name>
+          <Type>String</Type>
+          <Size>60</Size>
+          <Description>Contains the pipe separated list of Market Maker Firm IDs (or null) as specified by the Requester if the message was generated by the server to reject an RFQ.</Description>
+        </Field>
+        <Field>
+          <Name>Contra Trader</Name>
+          <Type>String</Type>
+          <Size>11</Size>
+          <Description>Contains the individual Market Maker ID if the message is sent by the server to the Requester to communicate the rejection by the Market Maker.</Description>
+        </Field>
+        <Field>
+          <Name>RFQ ID</Name>
+          <Type>String</Type>
+          <Size>10</Size>
+          <Description>The unique identifier of the RFQ that was automatically generated via the server.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- RFQ Quote Message -->
+    <Message>
+      <Name>RFQ Quote Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>d</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Carries an RFQ Quote. Sent by the Market Maker to accept an RFQ, and by the server to deliver the quote to the Requester.</Description>
+      <Fields>
+        <Field>
+          <Name>Partition ID</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>The server will stamp the identifier of the matching partition for the instrument.</Description>
+        </Field>
+        <Field>
+          <Name>Sequence Number</Name>
+          <Type>Int32</Type>
+          <Size>4</Size>
+          <Description>The server will stamp the message sequence number of the matching partition.</Description>
+        </Field>
+        <Field>
+          <Name>Quote Msg ID</Name>
+          <Type>String</Type>
+          <Size>20</Size>
+          <Description>Identifier of the RFQ quote request that is being accepted.</Description>
+        </Field>
+        <Field>
+          <Name>RFQ ID</Name>
+          <Type>String</Type>
+          <Size>10</Size>
+          <Description>Unique identifier assigned to the RFQ by the system.</Description>
+        </Field>
+        <Field>
+          <Name>Instrument ID</Name>
+          <Type>Int32</Type>
+          <Size>4</Size>
+          <Description>Identifier of the instrument.</Description>
+        </Field>
+        <Field>
+          <Name>Bid Price</Name>
+          <Type>Price</Type>
+          <Size>8</Size>
+          <Description>Bid price.</Description>
+        </Field>
+        <Field>
+          <Name>Bid Quantity</Name>
+          <Type>Int32</Type>
+          <Size>4</Size>
+          <Description>Bid quantity.</Description>
+        </Field>
+        <Field>
+          <Name>Offer Price</Name>
+          <Type>Price</Type>
+          <Size>8</Size>
+          <Description>Offer price.</Description>
+        </Field>
+        <Field>
+          <Name>Offer Quantity</Name>
+          <Type>Int32</Type>
+          <Size>4</Size>
+          <Description>Offer quantity.</Description>
+        </Field>
+        <Field>
+          <Name>Auto Cancel</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>Value is specified by MM in RFQ Quote.</Description>
+        </Field>
+        <Field>
+          <Name>Market Maker</Name>
+          <Type>String</Type>
+          <Size>11</Size>
+          <Description>The Market Maker ID who is the owner of the quote.</Description>
+        </Field>
+        <Field>
+          <Name>Market Maker Firm</Name>
+          <Type>String</Type>
+          <Size>11</Size>
+          <Description>The Market Makers’ Firm ID.</Description>
+        </Field>
+        <Field>
+          <Name>Bid ID</Name>
+          <Type>String</Type>
+          <Size>12</Size>
+          <Description>Only populated for Named models.</Description>
+        </Field>
+        <!-- MIT203 section 8.4.12.2 describes this field as the Bid Side; section
+             8.4.13 defines Offer ID as the offer side of the quote. Transcribed as
+             published - to be confirmed with the exchange. -->
+        <Field>
+          <Name>Offer ID</Name>
+          <Type>String</Type>
+          <Size>12</Size>
+          <Description>System generated Order ID for the Bid Side of the RFQ.</Description>
+        </Field>
+        <Field>
+          <Name>Capacity</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>Capacity of the quote.</Description>
+        </Field>
+        <Field>
+          <Name>Clearing Account</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>Clearing Account Type.</Description>
+        </Field>
+        <Field>
+          <Name>Client ID</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Identifier of the client.</Description>
+        </Field>
+        <Field>
+          <Name>Investment Decision Maker</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Identifier of the trading member/participant who made investment decision.</Description>
+        </Field>
+        <Field>
+          <Name>Executing Trader</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Identifier of the trading member/participant who made the execution decision.</Description>
+        </Field>
+        <Field>
+          <Name>MiFID Flags</Name>
+          <Type>Bit Field</Type>
+          <Size>1</Size>
+          <Description>Flags introduced to identify DEA involvement, Algo and Liquidity provision activity.</Description>
+        </Field>
+        <Field>
+          <Name>Party Role Qualifiers</Name>
+          <Type>Bit Field</Type>
+          <Size>1</Size>
+          <Description>Provides a further qualification for the value specified via the ‘Client ID’, ‘Investment Decision Maker’ and ‘Executing Trader’ fields.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Quote Ack Message -->
+    <Message>
+      <Name>Quote Ack Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>e</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Allows the server to acknowledge a new or modified RFQ Quote to the Market Maker.</Description>
+      <Fields>
+        <Field>
+          <Name>Partition ID</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>The server will stamp the identifier of the matching partition for the instrument.</Description>
+        </Field>
+        <Field>
+          <Name>Sequence Number</Name>
+          <Type>Int32</Type>
+          <Size>4</Size>
+          <Description>The server will stamp the message sequence number of the matching partition.</Description>
+        </Field>
+        <Field>
+          <Name>Quote Msg ID</Name>
+          <Type>String</Type>
+          <Size>20</Size>
+          <Description>Market Maker specified identifier of the quote or quote cancel request the message relates to.</Description>
+        </Field>
+        <Field>
+          <Name>RFQ ID</Name>
+          <Type>String</Type>
+          <Size>10</Size>
+          <Description>Server specified identifier of the initial RFQ sent by the Requester.</Description>
+        </Field>
+        <Field>
+          <Name>Bid ID</Name>
+          <Type>String</Type>
+          <Size>12</Size>
+          <Description>Server specified identifier of the bid side of the quote/RFQ quote.</Description>
+        </Field>
+        <Field>
+          <Name>Offer ID</Name>
+          <Type>String</Type>
+          <Size>12</Size>
+          <Description>Server specified identifier of the offer side of the quote/RFQ quote.</Description>
+        </Field>
+        <Field>
+          <Name>Quote Ack Status</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+        </Field>
+        <Field>
+          <Name>Reject Code</Name>
+          <Type>Int32</Type>
+          <Size>4</Size>
+          <Description>Reason code.</Description>
+        </Field>
+        <Field>
+          <Name>Order Book</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Quote Response Message -->
+    <Message>
+      <Name>Quote Response Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>f</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Carries an RFQ response. Sent by the Requester to execute or cancel an RFQ Quote, and by the server to report quote and RFQ status.</Description>
+      <Fields>
+        <Field>
+          <Name>Partition ID</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>The server will stamp the identifier of the matching partition for the instrument.</Description>
+        </Field>
+        <Field>
+          <Name>Sequence Number</Name>
+          <Type>Int32</Type>
+          <Size>4</Size>
+          <Description>The server will stamp the message sequence number of the matching partition.</Description>
+        </Field>
+        <Field>
+          <Name>Quote Msg ID</Name>
+          <Type>String</Type>
+          <Size>20</Size>
+          <Description>The client specified identifier of the RFQ modification/cancellation/execution request.</Description>
+        </Field>
+        <Field>
+          <Name>RFQ ID</Name>
+          <Type>String</Type>
+          <Size>10</Size>
+          <Description>The unique identifier assigned to the RFQ by the system.</Description>
+        </Field>
+        <Field>
+          <Name>Quote Resp Type</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+        </Field>
+        <Field>
+          <Name>Instrument ID</Name>
+          <Type>Int32</Type>
+          <Size>4</Size>
+          <Description>Identifier of the Instrument.</Description>
+        </Field>
+        <Field>
+          <Name>Side</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>Value submitted in the RFQ.</Description>
+        </Field>
+        <Field>
+          <Name>Order Quantity</Name>
+          <Type>Int32</Type>
+          <Size>4</Size>
+          <Description>Quantity to be traded when executing a manual RFQ.</Description>
+        </Field>
+        <Field>
+          <Name>Limit Price</Name>
+          <Type>Price</Type>
+          <Size>8</Size>
+          <Description>When the quote response is used to accept a specific quote (QuoteRespType =1), the bid or offer price of the selected quote should be specified.</Description>
+        </Field>
+        <Field>
+          <Name>Order Book</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+        </Field>
+        <Field>
+          <Name>Bid ID</Name>
+          <Type>String</Type>
+          <Size>12</Size>
+          <Description>For Quote Response, about RFQ status contains the system generated Order ID for the Bid Side of the RFQ.</Description>
+        </Field>
+        <Field>
+          <Name>Offer ID</Name>
+          <Type>String</Type>
+          <Size>12</Size>
+          <Description>For Quote Response, about RFQ status contains the system generated Order ID for the Offer Side of the RFQ.</Description>
+        </Field>
+        <Field>
+          <Name>Capacity</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>Capacity of the order/quote.</Description>
+        </Field>
+        <Field>
+          <Name>Clearing Account</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>Clearing Account Type.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved Field</Name>
+          <Type>UInt64</Type>
+          <Size>8</Size>
+          <Description>Reserved for Future use</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- RFQ Execution Report Message -->
+    <Message>
+      <Name>RFQ Execution Report Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>g</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Allows the system to notify the Requester and the Market Maker about a trade or the status of the quote.</Description>
+      <Fields>
+        <Field>
+          <Name>Partition ID</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>The server will stamp the identifier of the matching partition for the instrument.</Description>
+        </Field>
+        <Field>
+          <Name>Sequence Number</Name>
+          <Type>Int32</Type>
+          <Size>4</Size>
+          <Description>The server will stamp the message sequence number of the matching partition.</Description>
+        </Field>
+        <Field>
+          <Name>Execution ID</Name>
+          <Type>String</Type>
+          <Size>12</Size>
+          <Description>Identifier of the message.</Description>
+        </Field>
+        <Field>
+          <Name>RFQ ID</Name>
+          <Type>String</Type>
+          <Size>10</Size>
+          <Description>Unique identifier assigned to RFQ by the system.</Description>
+        </Field>
+        <Field>
+          <Name>Order ID</Name>
+          <Type>String</Type>
+          <Size>12</Size>
+          <Description>Stamped with the unique identifier assigned to quote response submitted by the Requester, sent to the Requester.</Description>
+        </Field>
+        <Field>
+          <Name>Execution Type</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+        </Field>
+        <Field>
+          <Name>Trade Match ID</Name>
+          <Type>UInt64</Type>
+          <Size>8</Size>
+          <Description>Identifier of the trade.</Description>
+        </Field>
+        <Field>
+          <Name>Side</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+        </Field>
+        <Field>
+          <Name>Executed Quantity</Name>
+          <Type>Int32</Type>
+          <Size>4</Size>
+          <Description>Quantity executed.</Description>
+        </Field>
+        <Field>
+          <Name>Executed Price</Name>
+          <Type>Price</Type>
+          <Size>8</Size>
+          <Description>Price executed.</Description>
+        </Field>
+        <Field>
+          <Name>Transact Time</Name>
+          <Type>UInt64</Type>
+          <Size>8</Size>
+          <Description>Time the Execution Report was generated.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved Field 2</Name>
+          <Type>Price</Type>
+          <Size>8</Size>
+          <Description>Reserved for future use.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved Field 3</Name>
+          <Type>Price</Type>
+          <Size>8</Size>
+          <Description>Reserved for future use.</Description>
+        </Field>
+        <Field>
+          <Name>RFQ Execution Report Order Status</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+        </Field>
+        <Field>
+          <Name>Leaves Quantity</Name>
+          <Type>Int32</Type>
+          <Size>4</Size>
+          <Description>Remaining quantity of the quote.</Description>
+        </Field>
+        <Field>
+          <Name>Instrument ID</Name>
+          <Type>Int32</Type>
+          <Size>4</Size>
+          <Description>Instrument Identifier.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved field 4.</Name>
+          <Type>Price</Type>
+          <Size>8</Size>
+          <Description>Reserved field.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved field 5.</Name>
+          <Type>Price</Type>
+          <Size>8</Size>
+          <Description>Reserved field.</Description>
+        </Field>
+        <Field>
+          <Name>Contra Firm</Name>
+          <Type>String</Type>
+          <Size>11</Size>
+          <Description>Contra firm of the execution.</Description>
+        </Field>
+        <Field>
+          <Name>Capacity</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>Capacity of the order.</Description>
+        </Field>
+        <Field>
+          <Name>Clearing Account</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>Clearing Account Type.</Description>
+        </Field>
+        <Field>
+          <Name>Waiver Flags</Name>
+          <Type>Bit Field</Type>
+          <Size>1</Size>
+          <Description>Pre-trade waiver flag.</Description>
+        </Field>
+        <Field>
+          <Name>Execution Report Ref ID</Name>
+          <Type>String</Type>
+          <Size>12</Size>
+          <Description>Reference to the trade being cancelled.</Description>
+        </Field>
+        <Field>
+          <Name>Contra Order Book</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>Identifier of the order book of the contra party of an RFQ execution.</Description>
+        </Field>
+        <Field>
+          <Name>AvgPx</Name>
+          <Type>Price</Type>
+          <Size>8</Size>
+          <Description>Volume Weighted Average Price of all the executions reported so far for an RFQ on the requestor side and it will be the executed price on the quote side.</Description>
+        </Field>
+        <Field>
+          <Name>LastMarket</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>Market (Segment MIC) where execution took place.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved Field</Name>
+          <Type>String</Type>
+          <Size>7</Size>
+          <Description>Reserved</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+  </Messages>
+
+  <Bitfields>
+
+    <!-- MiFID Flags -->
+    <Bitfield>
+      <Name>MiFID Flags</Name>
+      <Description>Flags identifying Dea involvement, Algo and liquidity provision activity</Description>
+      <Fields>
+        <Field>
+          <Name>DEA Flag</Name>
+          <Bits>1</Bits>
+          <Type>bit</Type>
+          <Description>Direct electronic access involvement</Description>
+        </Field>
+        <Field>
+          <Name>Liquidity Provision</Name>
+          <Bits>1</Bits>
+          <Type>bit</Type>
+          <Description>Liquidity provision activity</Description>
+        </Field>
+        <Field>
+          <Name>ALGO</Name>
+          <Bits>1</Bits>
+          <Type>bit</Type>
+          <Description>Algorithmic trading activity</Description>
+        </Field>
+        <Field>
+          <Name>Reserved 3-7</Name>
+          <Bits>5</Bits>
+          <Type>bit</Type>
+          <Description>Reserved for future use</Description>
+        </Field>
+      </Fields>
+    </Bitfield>
+
+    <!-- Party Role Qualifiers -->
+    <Bitfield>
+      <Name>Party Role Qualifiers</Name>
+      <Description>Further qualification for the Client Id, Investment Decision Maker and Executing Trader identifiers</Description>
+      <Fields>
+        <Field>
+          <Name>Client Id Qualifier</Name>
+          <Bits>2</Bits>
+          <Type>bit</Type>
+          <Description>Qualifies the Client Id short code</Description>
+        </Field>
+        <Field>
+          <Name>Investor Information Qualifier</Name>
+          <Bits>2</Bits>
+          <Type>bit</Type>
+          <Description>Qualifies the Investment Decision Maker short code</Description>
+        </Field>
+        <Field>
+          <Name>Executing Trader Qualifier</Name>
+          <Bits>2</Bits>
+          <Type>bit</Type>
+          <Description>Qualifies the Executing Trader short code</Description>
+        </Field>
+        <Field>
+          <Name>Reserved 6-7</Name>
+          <Bits>2</Bits>
+          <Type>bit</Type>
+          <Description>Reserved for future use</Description>
+        </Field>
+      </Fields>
+    </Bitfield>
+
+    <!-- Waiver Flags/Post Trade Flags -->
+    <Bitfield>
+      <Name>Waiver Flags/Post Trade Flags</Name>
+      <Description>Pre-trade waiver and post trade flags</Description>
+      <Fields>
+        <Field>
+          <Name>Reserved Bit 0</Name>
+          <Bits>1</Bits>
+          <Type>bit</Type>
+          <Description>Reserved for future use</Description>
+        </Field>
+        <Field>
+          <Name>CLSE</Name>
+          <Bits>1</Bits>
+          <Type>bit</Type>
+          <Description>Post trade flag: trade executed during the CPX session at closing price</Description>
+        </Field>
+        <Field>
+          <Name>Reserved Bit 2</Name>
+          <Bits>1</Bits>
+          <Type>bit</Type>
+          <Description>Reserved for future use</Description>
+        </Field>
+        <Field>
+          <Name>ILQD</Name>
+          <Bits>1</Bits>
+          <Type>bit</Type>
+          <Description>Waiver flag: illiquid instrument</Description>
+        </Field>
+        <Field>
+          <Name>Reserved Bit 4</Name>
+          <Bits>1</Bits>
+          <Type>bit</Type>
+          <Description>Reserved for future use</Description>
+        </Field>
+        <Field>
+          <Name>RFPT</Name>
+          <Bits>1</Bits>
+          <Type>bit</Type>
+          <Description>Waiver flag: reference price</Description>
+        </Field>
+        <Field>
+          <Name>Reserved 6-7</Name>
+          <Bits>2</Bits>
+          <Type>bit</Type>
+          <Description>Reserved for future use</Description>
+        </Field>
+      </Fields>
+    </Bitfield>
+
+    <!-- Waiver Flags -->
+    <Bitfield>
+      <Name>Waiver Flags</Name>
+      <Description>Pre-trade waiver flags</Description>
+      <Fields>
+        <Field>
+          <Name>Reserved 0-2</Name>
+          <Bits>3</Bits>
+          <Type>bit</Type>
+          <Description>Reserved for future use</Description>
+        </Field>
+        <Field>
+          <Name>ILQD</Name>
+          <Bits>1</Bits>
+          <Type>bit</Type>
+          <Description>Waiver flag: illiquid instrument</Description>
+        </Field>
+        <Field>
+          <Name>Reserved 4-7</Name>
+          <Bits>4</Bits>
+          <Type>bit</Type>
+          <Description>Reserved for future use</Description>
+        </Field>
+      </Fields>
+    </Bitfield>
+
+  </Bitfields>
+
+  <Enums>
+    <!-- Client Id Qualifier -->
+    <Enum>
+      <Name>Client Id Qualifier</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>None</Name>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>LEI or Firm</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Algo</Name>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Natural Person</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Investor Information Qualifier -->
+    <Enum>
+      <Name>Investor Information Qualifier</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>None</Name>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>LEI or Firm</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Algo</Name>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Natural Person</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Executing Trader Qualifier -->
+    <Enum>
+      <Name>Executing Trader Qualifier</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>None</Name>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>LEI or Firm</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Algo</Name>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Natural Person</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+
+    <!-- Account Type -->
+    <Enum>
+      <Name>Account Type</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Client</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- App ID -->
+    <Enum>
+      <Name>App ID</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>System Suspended/Unknown Instrument</Name>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Partition 1</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Partition 2</Name>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Partition 3</Name>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>Partition 4</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- App Status -->
+    <Enum>
+      <Name>App Status</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Recovery service resumed</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Recovery service not available</Name>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Realtime channel to indicate Service Non Availability of a partition (due to order cache outage)</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Auto Cancel -->
+    <Enum>
+      <Name>Auto Cancel</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>Do not Cancel</Name>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Conform to user’s configuration</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- AutoRFQExecStrategy -->
+    <Enum>
+      <Name>AutoRFQExecStrategy</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Sub LIS Auction</Name>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>LIS Winner Takes All</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Capacity -->
+    <Enum>
+      <Name>Capacity</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Matched Principal (MTCH)</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Dealing on own account (DEAL)</Name>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Any other trading capacity (AOTC)</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Clearing Account -->
+    <Enum>
+      <Name>Clearing Account</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Client</Name>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>House</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Client ID -->
+    <Enum>
+      <Name>Client ID</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>None</Name>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>AGGR</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>PNAL</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Contra Order Book -->
+    <Enum>
+      <Name>Contra Order Book</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Regular</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Exec Type -->
+    <Enum>
+      <Name>Exec Type</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>New</Name>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>Cancelled</Name>
+        </Value>
+        <Value>
+          <Data>5</Data>
+          <Name>Replaced</Name>
+        </Value>
+        <Value>
+          <Data>8</Data>
+          <Name>Rejected</Name>
+        </Value>
+        <Value>
+          <Data>C</Data>
+          <Name>Expired</Name>
+        </Value>
+        <Value>
+          <Data>D</Data>
+          <Name>Restated</Name>
+        </Value>
+        <Value>
+          <Data>F</Data>
+          <Name>Trade</Name>
+        </Value>
+        <Value>
+          <Data>H</Data>
+          <Name>Trade Cancel</Name>
+        </Value>
+        <Value>
+          <Data>9</Data>
+          <Name>Suspended</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Executing Trader -->
+    <Enum>
+      <Name>Executing Trader</Name>
+      <Values>
+        <Value>
+          <Data>3</Data>
+          <Name>CLIENT</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Execution Type -->
+    <Enum>
+      <Name>Execution Type</Name>
+      <Values>
+        <Value>
+          <Data>4</Data>
+          <Name>Cancelled</Name>
+        </Value>
+        <Value>
+          <Data>C</Data>
+          <Name>Expired</Name>
+        </Value>
+        <Value>
+          <Data>D</Data>
+          <Name>Restated</Name>
+        </Value>
+        <Value>
+          <Data>F</Data>
+          <Name>Trade</Name>
+        </Value>
+        <Value>
+          <Data>H</Data>
+          <Name>Trade Cancel</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Investment Decision Maker -->
+    <Enum>
+      <Name>Investment Decision Maker</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>None</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- LastMarket -->
+    <Enum>
+      <Name>LastMarket</Name>
+      <Values>
+        <Value>
+          <Data>21</Data>
+          <Name>XLON (On Exchange LSE RM)</Name>
+        </Value>
+        <Value>
+          <Data>22</Data>
+          <Name>XLOM (On Exchange Non-AIM MTF)</Name>
+        </Value>
+        <Value>
+          <Data>23</Data>
+          <Name>AIMX (On Exchange AIM MTF)</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Mass Cancel Response -->
+    <Enum>
+      <Name>Mass Cancel Response</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>Rejected</Name>
+        </Value>
+        <Value>
+          <Data>7</Data>
+          <Name>Accepted</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Order Book -->
+    <Enum>
+      <Name>Order Book</Name>
+      <Values>
+        <Value>
+          <Data>11</Data>
+          <Name>RFQ Trades</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Order Capacity -->
+    <Enum>
+      <Name>Order Capacity</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Matched Principal (MTCH)</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Dealing on own account (DEAL)</Name>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Any other trading capacity (AOTC)</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Owner Type -->
+    <Enum>
+      <Name>Owner Type</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>Default</Name>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Retail investor</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Retail Liquidity Provider</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Private Quote -->
+    <Enum>
+      <Name>Private Quote</Name>
+      <Values>
+        <Value>
+          <Data>2</Data>
+          <Name>Private Quote</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Quote Ack Status -->
+    <Enum>
+      <Name>Quote Ack Status</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Accepted</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Rejected</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Quote Request Type -->
+    <Enum>
+      <Name>Quote Request Type</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>Manual (Named if any Market Maker IDs are specified, else Anonymous)</Name>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Automatic (Named if any Market Maker IDs are specified, else Anonymous)</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Manual (Named)</Name>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Manual (Anonymous)</Name>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>Automatic (Named)</Name>
+        </Value>
+        <Value>
+          <Data>5</Data>
+          <Name>Automatic (Anonymous)</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Quote Status -->
+    <Enum>
+      <Name>Quote Status</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Accepted</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Rejected</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- RFQ Disclose Side -->
+    <Enum>
+      <Name>RFQ Disclose Side</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>Do not disclose</Name>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Disclose</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Side -->
+    <Enum>
+      <Name>Side</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>None</Name>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Buy</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Sell</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Trade Liquidity Indicator -->
+    <Enum>
+      <Name>Trade Liquidity Indicator</Name>
+      <Values>
+        <Value>
+          <Data>A</Data>
+          <Name>Added Liquidity</Name>
+        </Value>
+        <Value>
+          <Data>R</Data>
+          <Name>Removed Liquidity</Name>
+        </Value>
+        <Value>
+          <Data>C</Data>
+          <Name>Auction</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Type Of Trade -->
+    <Enum>
+      <Name>Type Of Trade</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>Visible</Name>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Hidden</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Not Specified (for aggressive side, auction trades and RFQ trades)</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Missed Message Request Ack Response Type -->
+    <Enum>
+      <Name>Missed Message Request Ack Response Type</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>Successful</Name>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Recovery Request limit reached</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Invalid App ID</Name>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Service Unavailable</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Missed Message Report Response Type -->
+    <Enum>
+      <Name>Missed Message Report Response Type</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>Download Complete</Name>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Message limit reached</Name>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Service Unavailable</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Execution Report Order Status -->
+    <Enum>
+      <Name>Execution Report Order Status</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>New</Name>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Partially filled</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Filled</Name>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>Cancelled</Name>
+        </Value>
+        <Value>
+          <Data>6</Data>
+          <Name>Expired</Name>
+        </Value>
+        <Value>
+          <Data>8</Data>
+          <Name>Rejected</Name>
+        </Value>
+        <Value>
+          <Data>9</Data>
+          <Name>Suspended</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Execution Report Pegged Exec Inst -->
+    <Enum>
+      <Name>Execution Report Pegged Exec Inst</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Permissioned for execution against mid-priced pegged orders</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Not permissioned for execution against mid-priced pegged orders</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- RFQ Execution Report Order Status -->
+    <Enum>
+      <Name>RFQ Execution Report Order Status</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>PFill</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Fill</Name>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>Cancelled</Name>
+        </Value>
+        <Value>
+          <Data>6</Data>
+          <Name>Expired</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Quote Resp Type -->
+    <Enum>
+      <Name>Quote Resp Type</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Hit/Lift</Name>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Expired</Name>
+        </Value>
+        <Value>
+          <Data>7</Data>
+          <Name>End Trade</Name>
+        </Value>
+        <Value>
+          <Data>8</Data>
+          <Name>Timed Out</Name>
+        </Value>
+        <Value>
+          <Data>11</Data>
+          <Name>Cancelled</Name>
+        </Value>
+        <Value>
+          <Data>100</Data>
+          <Name>Replace</Name>
+        </Value>
+        <Value>
+          <Data>101</Data>
+          <Name>Executable</Name>
+        </Value>
+        <Value>
+          <Data>102</Data>
+          <Name>Make RFQ quotes public</Name>
+        </Value>
+      </Values>
+    </Enum>
+  </Enums>
+
+</OmiNativeStreamlinedPdf>

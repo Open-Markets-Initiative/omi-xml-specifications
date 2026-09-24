@@ -12,6 +12,7 @@
 | JnxBonds | Pts | Ouch | 2.01 | [files](Jnx.JnxBonds.Pts.Ouch.v2.01/) |
 | JnxEquities | DropCopy | Fix | 2.03 | [files](Jnx.JnxEquities.DropCopy.Fix.v2.03/) |
 | JnxEquities | OrderEntry | Fix | 3.00 | [files](Jnx.JnxEquities.OrderEntry.Fix.v3.00/) |
+| JnxEquities | Pts | Glimpse | 1.3 | [files](Jnx.JnxEquities.Pts.Glimpse.v1.3/) |
 | JnxEquities | Pts | Itch | 1.6 | [files](Jnx.JnxEquities.Pts.Itch.v1.6/) |
 | JnxEquities | Pts | Itch | 1.7 | [files](Jnx.JnxEquities.Pts.Itch.v1.7/) |
 | JnxEquities | Pts | Itch | 2.0 | [files](Jnx.JnxEquities.Pts.Itch.v2.0/) |
