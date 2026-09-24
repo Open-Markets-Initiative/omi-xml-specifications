@@ -43,6 +43,7 @@
 | NseCom | Snapshot | Binary | 6.9 | [files](Nse.NseCom.Snapshot.Binary.v6.9/) |
 | NseCom | Snapshot | Binary | 7.0 | [files](Nse.NseCom.Snapshot.Binary.v7.0/) |
 | NseCom | Snapshot | Binary | 7.1 | [files](Nse.NseCom.Snapshot.Binary.v7.1/) |
+| NseFo | Broadcast | NnfBcast | 9.50 | [files](Nse.NseFo.Broadcast.NnfBcast.v9.50/) |
 | NseFo | Mtbt | Binary | 6.8 | [files](Nse.NseFo.Mtbt.Binary.v6.8/) |
 | NseFo | Mtbt | Binary | 6.9 | [files](Nse.NseFo.Mtbt.Binary.v6.9/) |
 | NseFo | Mtbt | Binary | 7.0 | [files](Nse.NseFo.Mtbt.Binary.v7.0/) |

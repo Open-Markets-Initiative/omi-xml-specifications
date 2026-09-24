@@ -1,0 +1,848 @@
+﻿<OmiPitchFuturesPdf>
+
+  <Messages>
+
+    <!-- Login Message -->
+    <Message>
+      <Name>Login Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Firm</Origin>
+      <Category>Session</Category>
+      <Code>0x01</Code>
+      <Description>The Login message is the first message sent to the Spin Server by a user's process after the connection to the Spin Server is established. Failure to login before sending any other message type will result in the connection being dropped by the Spin Server. The format of the Login message for the Spin Server is identical to that of the GRP.</Description>
+      <Fields>
+        <Field>
+          <Name>SessionSubId</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>SessionSubId supplied by Cboe.</Description>
+        </Field>
+        <Field>
+          <Name>Username</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Username supplied by Cboe.</Description>
+        </Field>
+        <Field>
+          <Name>Filler</Name>
+          <Type>Alphanumeric</Type>
+          <Size>2</Size>
+          <Description>(space filled)</Description>
+        </Field>
+        <Field>
+          <Name>Password</Name>
+          <Type>Alphanumeric</Type>
+          <Size>10</Size>
+          <Description>Password supplied by Cboe.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Login Response Message -->
+    <Message>
+      <Name>Login Response Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Session</Category>
+      <Code>0x02</Code>
+      <Description>The Login Response message is sent by the Spin Server to a user's process in response to a Login message.</Description>
+      <Fields>
+        <Field>
+          <Name>Login Response Status</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Accepted or reason for reject.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Spin Image Available Message -->
+    <Message>
+      <Name>Spin Image Available Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x80</Code>
+      <Description>The Spin Image Available message is sent once per second and indicates through what sequence number a spin is available.</Description>
+      <Fields>
+        <Field>
+          <Name>Sequence</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Spin is available which is current through this sequence number.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Spin Request Message -->
+    <Message>
+      <Name>Spin Request Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Firm</Origin>
+      <Category>Application</Category>
+      <Code>0x81</Code>
+      <Description>The Spin Request message is used by a user's process to request transmission of a spin of the unit's order book.</Description>
+      <Fields>
+        <Field>
+          <Name>Sequence</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Sequence number from a Spin Image Available message received by the participant.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Spin Response Message -->
+    <Message>
+      <Name>Spin Response Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x82</Code>
+      <Description>The Spin Response message is sent in response to a participant's Spin Request message indicating whether a spin will be sent.</Description>
+      <Fields>
+        <Field>
+          <Name>Sequence</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Sequence number from a Spin Image Available message received by the participant.</Description>
+        </Field>
+        <Field>
+          <Name>Order Count</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Always zero.</Description>
+        </Field>
+        <Field>
+          <Name>Spin Response Status</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Accepted or reason for reject. All non-A status codes should be interpreted as a reject.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Spin Finished Message -->
+    <Message>
+      <Name>Spin Finished Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x83</Code>
+      <Description>The Spin Finished message is sent to indicate that all messages for the spin requested have been sent. A Spin Finished message is only sent if a Spin Request was not rejected. Upon receipt of a Spin Finished message, any buffered multicast messages should be applied to the participant's copy of the book to make it current.</Description>
+      <Fields>
+        <Field>
+          <Name>Sequence</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Sequence number from the Spin Request message.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+
+    <!-- ============================================ -->
+    <!-- Multicast Pitch messages replayed during Spin -->
+    <!-- ============================================ -->
+
+    <!-- Time Reference Message -->
+    <Message>
+      <Name>Time Reference Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0xB1</Code>
+      <Description>The Time Reference message is used to provide a midnight reference point for recipients of the feed. It is sent whenever the system starts up and when the system crosses a midnight boundary.</Description>
+      <Fields>
+        <Field>
+          <Name>Midnight Reference</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Midnight Central Time reference time for subsequent Time messages, expressed as number of whole seconds since the Epoch (Midnight January 1, 1970 UTC).</Description>
+        </Field>
+        <Field>
+          <Name>Time Reference</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Number of whole seconds from midnight Central Time.</Description>
+        </Field>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+        <Field>
+          <Name>Trade Date</Name>
+          <Type>Binary Date</Type>
+          <Size>4</Size>
+          <Description>Current Trade Date</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Time Message -->
+    <Message>
+      <Name>Time Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x20</Code>
+      <Description>A Time message is immediately generated and sent when there is a PITCH event for a given clock second.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Reference</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Number of whole seconds from midnight CentralTime.</Description>
+        </Field>
+        <Field>
+          <Name>Epoch Time</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Number of whole seconds since the Epoch (Midnight January 1, 1970 UTC).</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Futures Instrument Definition Message -->
+    <Message>
+      <Name>Futures Instrument Definition Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0xBB</Code>
+      <Description>The Futures Instrument Definition message can be sent as a sequenced message or an un-sequenced message. It is sent as a sequenced message when the system starts up at the beginning of a trading session or an the instrument is created or modified during a trading day.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp or Unit Timestamp in this message if it is non-zero.</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Printable ASCII</Type>
+          <Size>6</Size>
+          <Description>Six character, base 62 symbol.</Description>
+        </Field>
+        <Field>
+          <Name>Unit Timestamp</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Unit timestamp expressed as number of whole seconds since the Epoch (Midnight, January 1, 1970 UTC).</Description>
+        </Field>
+        <Field>
+          <Name>Report Symbol</Name>
+          <Type>Alphanumeric</Type>
+          <Size>6</Size>
+          <Description>Symbol for product or underlying security.</Description>
+        </Field>
+        <Field>
+          <Name>Futures Flags</Name>
+          <Type>Bit Field</Type>
+          <Size>1</Size>
+          <Description>Value will always be zero indicating Standard Future.</Description>
+        </Field>
+        <Field>
+          <Name>Expiration Date</Name>
+          <Type>Binary Date</Type>
+          <Size>4</Size>
+          <Description>Expiration Date of Instrument.</Description>
+        </Field>
+        <Field>
+          <Name>Contract Size</Name>
+          <Type>Binary</Type>
+          <Size>2</Size>
+          <Description>Contract size of Instrument. Contract sizes less than 1 are represented with a 0 value; refer to the product specification for the contract size.</Description>
+        </Field>
+        <Field>
+          <Name>Listing State</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Listing State Values</Description>
+        </Field>
+        <Field>
+          <Name>Price Increment</Name>
+          <Type>Binary Price</Type>
+          <Size>8</Size>
+          <Description>Minimum Price Increment.</Description>
+        </Field>
+        <Field>
+          <Name>Leg Count</Name>
+          <Type>Binary</Type>
+          <Size>1</Size>
+          <Description>Values greater than 0 indicate this is a spread instrument.</Description>
+        </Field>
+        <Field>
+          <Name>Leg Offset</Name>
+          <Type>Binary</Type>
+          <Size>1</Size>
+          <Description>Leg definitions, if any, begin at this offset from the beginning of the message. Possible values are 0 (no legs present) or 45 (spread instrument).</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>Binary</Type>
+          <Size>1</Size>
+          <Description>Reserved. Value will always be zero.</Description>
+        </Field>
+        <Field>
+          <Name>Contract Date</Name>
+          <Type>Binary Date</Type>
+          <Size>4</Size>
+          <Description>Populated for single leg instruments only. Zero-filled for spread instruments. The date that should be used in describing the future's third party symbol and the measurement period of the contract.</Description>
+        </Field>
+        <Field>
+          <Name>Future Leg</Name>
+          <Type>group</Type>
+          <Size>4</Size>
+          <Description>Future Leg</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Futures Variance Symbol Mapping Message -->
+    <Message>
+      <Name>Futures Variance Symbol Mapping Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0xFA</Code>
+      <Description>The Futures Variance Symbol Mapping message is used to disseminate symbol reference data for S&amp;P 500 Variance Futures (VA Futures) symbols.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp or Unit Timestamp in this message if it is non-zero.</Description>
+        </Field>
+        <Field>
+          <Name>Unit Timestamp</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Unit timestamp expressed as number of whole seconds since the Epoch (Midnight, January 1, 1970 UTC).</Description>
+        </Field>
+        <Field>
+          <Name>Feed Symbol</Name>
+          <Type>Printable ASCII</Type>
+          <Size>6</Size>
+          <Description>Six character, base 62 symbol.</Description>
+        </Field>
+        <Field>
+          <Name>Futures Symbol</Name>
+          <Type>Alphanumeric</Type>
+          <Size>12</Size>
+          <Description>Twelve character textual definition of the symbol where the first six characters contain the product symbol, left justified, and padded on the right with spaces, and the right most six characters are the expiration date in YYMMDD format.</Description>
+        </Field>
+        <Field>
+          <Name>Accrued Day Variance</Name>
+          <Type>Signed Binary</Type>
+          <Size>8</Size>
+          <Description>Accrued day variance as of the start of the trading day (signed 64-bit decimal with twelve implied decimal places).</Description>
+        </Field>
+        <Field>
+          <Name>Num Final Returns</Name>
+          <Type>Binary</Type>
+          <Size>2</Size>
+          <Description>Number of S&amp;P 500 Index returns used in the Final Settlement Value calculation.</Description>
+        </Field>
+        <Field>
+          <Name>Num Elapsed Returns</Name>
+          <Type>Binary</Type>
+          <Size>2</Size>
+          <Description>Number of elapsed S&amp;P 500 Index returns including the current day.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Add Order Long Message -->
+    <Message>
+      <Name>Add Order Long Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x21</Code>
+      <Description>An Add Order message represents a newly accepted visible order on the CFE book.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+        <Field>
+          <Name>Order Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Day-specific identifier assigned to this order.</Description>
+        </Field>
+        <Field>
+          <Name>Side Indicator</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Side Indicator Values</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Number of contracts being added to the book (may be less than the number entered).</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Printable ASCII</Type>
+          <Size>6</Size>
+          <Description>Six character, base 62 symbol.</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Binary Price</Type>
+          <Size>8</Size>
+          <Description>The limit order price.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Add Order Short Message -->
+    <Message>
+      <Name>Add Order Short Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x22</Code>
+      <Description>An Add Order message represents a newly accepted visible order on the CFE book.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+        <Field>
+          <Name>Order Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Day-specific identifier assigned to this order.</Description>
+        </Field>
+        <Field>
+          <Name>Side Indicator</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Side Indicator Values</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>Binary</Type>
+          <Size>2</Size>
+          <Description>Number of contracts being added to the book (may be less than the number entered).</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Printable ASCII</Type>
+          <Size>6</Size>
+          <Description>Six character, base 62 symbol.</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Binary Short Price</Type>
+          <Size>2</Size>
+          <Description>The limit order price.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Trading Status Message -->
+    <Message>
+      <Name>Trading Status Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x31</Code>
+      <Description>The Trading Status message is used to indicate the current trading status of a Futures contract.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Printable ASCII</Type>
+          <Size>6</Size>
+          <Description>Six character, base 62 symbol.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved1</Name>
+          <Type>Alpha</Type>
+          <Size>2</Size>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>Trading Status</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>Trading Status Values</Description>
+        </Field>
+        <Field>
+          <Name>Reserved2</Name>
+          <Type>Alphanumeric</Type>
+          <Size>3</Size>
+          <Description>Reserved</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Settlement Message -->
+    <Message>
+      <Name>Settlement Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0xB9</Code>
+      <Description>Settlement messages are used to provide information concerning indicative, approved, or corrected daily and final settlement prices for CFE products.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Printable ASCII</Type>
+          <Size>6</Size>
+          <Description>Six character, base 62 symbol.</Description>
+        </Field>
+        <Field>
+          <Name>Trade Date</Name>
+          <Type>Binary Date</Type>
+          <Size>4</Size>
+          <Description>Trade Date for the settlement.</Description>
+        </Field>
+        <Field>
+          <Name>Settlement Price</Name>
+          <Type>Binary Price</Type>
+          <Size>8</Size>
+          <Description>Settlement Price</Description>
+        </Field>
+        <Field>
+          <Name>Issue</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Issue Values</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Price Limits Message -->
+    <Message>
+      <Name>Price Limits Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0xBE</Code>
+      <Description>The Price Limits message is sent out at the start of a session for products subject to price limits per the contract specifications.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Printable ASCII</Type>
+          <Size>6</Size>
+          <Description>Six character, base 62 symbol.</Description>
+        </Field>
+        <Field>
+          <Name>Upper Price Limit</Name>
+          <Type>Binary Price</Type>
+          <Size>8</Size>
+          <Description>Upper price limit</Description>
+        </Field>
+        <Field>
+          <Name>Lower Price Limit</Name>
+          <Type>Binary Price</Type>
+          <Size>8</Size>
+          <Description>Lower price limit</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- End Of Day Summary Message -->
+    <Message>
+      <Name>End Of Day Summary Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0xBA</Code>
+      <Description>The End of Day Summary message is sent immediately after trading ends for a symbol. No more Market Update messages will follow an End of Day Summary message for a particular symbol.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Printable ASCII</Type>
+          <Size>6</Size>
+          <Description>Six character, base 62 symbol.</Description>
+        </Field>
+        <Field>
+          <Name>Trade Date</Name>
+          <Type>Binary Date</Type>
+          <Size>4</Size>
+          <Description>Trade Date for the message.</Description>
+        </Field>
+        <Field>
+          <Name>Open Interest</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Prior Trade Date Open Interest for this symbol.</Description>
+        </Field>
+        <Field>
+          <Name>High Price</Name>
+          <Type>Binary Price</Type>
+          <Size>8</Size>
+          <Description>The higher of highest bid price and highest trade price for the day. Block and ECRP trades (Trade Condition=B or E) do not update High Price.</Description>
+        </Field>
+        <Field>
+          <Name>Low Price</Name>
+          <Type>Binary Price</Type>
+          <Size>8</Size>
+          <Description>The lower of lowest offer price and lowest trade price for the day. Block and ECRP trades (Trade Condition=B or E) do not update Low Price.</Description>
+        </Field>
+        <Field>
+          <Name>Open Price</Name>
+          <Type>Binary Price</Type>
+          <Size>8</Size>
+          <Description>The first trade on the day (in any session) will set the Open Price for the day (valid only if Total Volume &gt; 0). Block and ECRP trades (Trade Condition=B or E) do not update Open Price.</Description>
+        </Field>
+        <Field>
+          <Name>Close Price</Name>
+          <Type>Binary Price</Type>
+          <Size>8</Size>
+          <Description>The last trade on the day (in any session) will set the Close Price for the day (valid only if Total Volume &gt; 0). Block and ECRP trades (Trade Condition=B or E) do not update Close Price.</Description>
+        </Field>
+        <Field>
+          <Name>Total Volume</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Total number of contracts traded for the day, including block and ECRP trades.</Description>
+        </Field>
+        <Field>
+          <Name>Block Volume</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Total number of block and derived contracts traded for the day.</Description>
+        </Field>
+        <Field>
+          <Name>ECRP Volume</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Total number of contracts traded for the day.</Description>
+        </Field>
+        <Field>
+          <Name>Summary Flags</Name>
+          <Type>Bit Field</Type>
+          <Size>1</Size>
+          <Description>Summary Flags</Description>
+        </Field>
+      </Fields>
+    </Message>
+  </Messages>
+
+  <Enums>
+
+    <!-- Login Response Status -->
+    <Enum>
+      <Name>Login Response Status</Name>
+      <Values>
+        <Value><Data>A</Data><Name>Login Accepted</Name></Value>
+        <Value><Data>N</Data><Name>Not authorized (Invalid Username/Password)</Name></Value>
+        <Value><Data>B</Data><Name>Session in use</Name></Value>
+        <Value><Data>S</Data><Name>Invalid Session</Name></Value>
+      </Values>
+    </Enum>
+
+    <!-- Spin Response Status -->
+    <Enum>
+      <Name>Spin Response Status</Name>
+      <Values>
+        <Value><Data>A</Data><Name>Accepted</Name></Value>
+        <Value><Data>O</Data><Name>Out of Range (Sequence requested is greater than Sequence available by the next spin)</Name></Value>
+        <Value><Data>S</Data><Name>Spin already in progress (only one spin can be running at a time)</Name></Value>
+      </Values>
+    </Enum>
+
+    <!-- Trading Status -->
+    <Enum>
+      <Name>Trading Status</Name>
+      <Values>
+        <Value>
+          <Data>S</Data>
+          <Name>Suspended</Name>
+        </Value>
+        <Value>
+          <Data>Q</Data>
+          <Name>Queuing</Name>
+        </Value>
+        <Value>
+          <Data>T</Data>
+          <Name>Trading</Name>
+        </Value>
+        <Value>
+          <Data>H</Data>
+          <Name>Halted</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Trade Condition -->
+    <Enum>
+      <Name>Trade Condition</Name>
+      <Values>
+        <Value>
+          <Data>" "</Data>
+          <Name>Normal Trade</Name>
+        </Value>
+        <Value>
+          <Data>O</Data>
+          <Name>Opening Trade</Name>
+        </Value>
+        <Value>
+          <Data>S</Data>
+          <Name>Spread Trade</Name>
+        </Value>
+        <Value>
+          <Data>B</Data>
+          <Name>Block Trade</Name>
+        </Value>
+        <Value>
+          <Data>E</Data>
+          <Name>ECRP Trade</Name>
+        </Value>
+        <Value>
+          <Data>D</Data>
+          <Name>Derived</Name>
+        </Value>
+      </Values>
+    </Enum>
+  </Enums>
+
+  <Groups>
+
+    <!-- Future Leg -->
+    <Group>
+      <Name>Future Leg</Name>
+      <Dependency>Leg Count</Dependency>
+      <Description>Future Leg</Description>
+      <Fields>
+        <Field>
+          <Name>Leg Ratio</Name>
+          <Type>Signed Binary</Type>
+          <Size>4</Size>
+          <Description>Leg ratio (positive for buy, negative for sell).</Description>
+        </Field>
+        <Field>
+          <Name>Leg Symbol</Name>
+          <Type>Alphanumeric</Type>
+          <Size>6</Size>
+          <Description>Symbol of leg.</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+  </Groups>
+
+  <!-- Bitfields -->
+
+  <Bitfields>
+
+    <!-- Summary Flags -->
+    <Bitfield>
+      <Name>Summary Flags</Name>
+      <Description>Summary Flags bitfields</Description>
+      <Fields>
+        <Field>
+          <Name>High Price Valid</Name>
+          <Bits>1</Bits>
+          <Type>bit</Type>
+          <Description>Set if high price valid value</Description>
+        </Field>
+        <Field>
+          <Name>High Price Is Bid</Name>
+          <Bits>1</Bits>
+          <Type>bit</Type>
+          <Description>Set if high price was set by the highest bid</Description>
+        </Field>
+        <Field>
+          <Name>Low Price Valid</Name>
+          <Bits>1</Bits>
+          <Type>bit</Type>
+          <Description>Set if low price is a valid value</Description>
+        </Field>
+        <Field>
+          <Name>Low Price Is Offer</Name>
+          <Bits>1</Bits>
+          <Type>bit</Type>
+          <Description>Set if low price was set by the lowest offer</Description>
+        </Field>
+        <Field>
+          <Name>Offer Close Valid</Name>
+          <Bits>1</Bits>
+          <Type>bit</Type>
+          <Description>Set if open price and close price contain valid values</Description>
+        </Field>
+        <Field>
+          <Name>Reserved Flags</Name>
+          <Bits>3</Bits>
+          <Type>bit</Type>
+          <Description>Reserved 5-7 Bits</Description>
+        </Field>
+      </Fields>
+    </Bitfield>
+
+    <!-- Futures Flags -->
+    <Bitfield>
+      <Name>Futures Flags</Name>
+      <Description>Futures Flags bitfields</Description>
+      <Fields>
+        <Field>
+          <Name>Variance</Name>
+          <Bits>1</Bits>
+          <Type>bit</Type>
+          <Description>Set for a Variance Future, clear for a Standard Future</Description>
+        </Field>
+        <Field>
+          <Name>Reserved Flags</Name>
+          <Bits>7</Bits>
+          <Type>bit</Type>
+          <Description>Reserved 1-7 Bits</Description>
+        </Field>
+      </Fields>
+    </Bitfield>
+
+  </Bitfields>
+
+</OmiPitchFuturesPdf>

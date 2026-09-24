@@ -1,0 +1,763 @@
+﻿<OmiPitchOptionsPdf>
+
+  <Messages>
+
+    <!-- Login Message -->
+    <Message>
+      <Name>Login Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Firm</Origin>
+      <Category>Session</Category>
+      <Code>0x01</Code>
+      <Description>The Login message is the first message sent to the Spin Server by a user's process after the connection to the Spin Server is established. Failure to login before sending any other message type will result in the connection being dropped by the Spin Server. The format of the Login message for the Spin Server is identical to that of the GRP.</Description>
+      <Fields>
+        <Field>
+          <Name>SessionSubId</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>SessionSubId supplied by Cboe.</Description>
+        </Field>
+        <Field>
+          <Name>Username</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Username supplied by Cboe.</Description>
+        </Field>
+        <Field>
+          <Name>Filler</Name>
+          <Type>Alphanumeric</Type>
+          <Size>2</Size>
+          <Description>(space filled)</Description>
+        </Field>
+        <Field>
+          <Name>Password</Name>
+          <Type>Alphanumeric</Type>
+          <Size>10</Size>
+          <Description>Password supplied by Cboe.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Login Response Message -->
+    <Message>
+      <Name>Login Response Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Session</Category>
+      <Code>0x02</Code>
+      <Description>The Login Response message is sent by the Spin Server to a user's process in response to a Login message. The status field is used to reflect an accepted login or the reason the session was not accepted. If login fails, the connection will be dropped after the Login Response message is sent.</Description>
+      <Fields>
+        <Field>
+          <Name>Login Response Status</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Accepted or reason for reject.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Spin Image Available Message -->
+    <Message>
+      <Name>Spin Image Available Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x80</Code>
+      <Description>The Spin Image Available message is sent once per second and indicates through what sequence number a spin is available.</Description>
+      <Fields>
+        <Field>
+          <Name>Sequence</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Spin is available which is current through this sequence number.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Spin Request Message -->
+    <Message>
+      <Name>Spin Request Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Firm</Origin>
+      <Category>Application</Category>
+      <Code>0x81</Code>
+      <Description>The Spin Request message is used by a user's process to request transmission of a spin of the unit's order book.</Description>
+      <Fields>
+        <Field>
+          <Name>Sequence</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Sequence number from a Spin Image Available message received by the customer.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Spin Response Message -->
+    <Message>
+      <Name>Spin Response Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x82</Code>
+      <Description>The Spin Response message is sent in response to a user's Spin Request message indicating whether a spin will be sent.</Description>
+      <Fields>
+        <Field>
+          <Name>Sequence</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Sequence number from a Spin Image Available message received by the customer.</Description>
+        </Field>
+        <Field>
+          <Name>Order Count</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Always zero.</Description>
+        </Field>
+        <Field>
+          <Name>Spin Response Status</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Accepted or reason for reject. All non-A status codes should be interpreted as a reject.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Spin Finished Message -->
+    <Message>
+      <Name>Spin Finished Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x83</Code>
+      <Description>The Spin Finished message is sent to indicate that all messages for the spin requested have been sent. A Spin Finished message is only sent if a Spin Request was not rejected. Upon receipt of a Spin Finished message, any buffered multicast messages should be applied to the customer's copy of the book to make it current.</Description>
+      <Fields>
+        <Field>
+          <Name>Sequence</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Sequence number from the Spin Request message.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Instrument Definition Request Message -->
+    <Message>
+      <Name>Instrument Definition Request Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Firm</Origin>
+      <Category>Application</Category>
+      <Code>0x84</Code>
+      <Description>The Instrument Definition Request message is used by a user's process to request transmission of this unit's Symbol Mappings and Complex Instrument Definitions. All Symbol Mapping messages will be sent before Complex Instrument Definition Expanded and Exchange Designated Complex Instrument Definition messages.</Description>
+      <Fields>
+        <Field>
+          <Name>Sequence</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Must be 0. Only the current Symbol Mappings and Complex Instrument Definitions are available.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Instrument Definition Response Message -->
+    <Message>
+      <Name>Instrument Definition Response Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x85</Code>
+      <Description>The Instrument Definition Response message is sent in response to a user's Instrument Definition Request message indicating whether a spin will be sent.</Description>
+      <Fields>
+        <Field>
+          <Name>Sequence</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Will always be 0.</Description>
+        </Field>
+        <Field>
+          <Name>Instrument Count</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Number of Symbol Mapping and Complex Instrument Definition Expanded (if applicable) messages which will be contained in this spin.</Description>
+        </Field>
+        <Field>
+          <Name>Instrument Definition Response Status</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Accepted or reason for reject.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Instrument Definition Finished Message -->
+    <Message>
+      <Name>Instrument Definition Finished Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x86</Code>
+      <Description>The Instrument Definition Finished message is sent to indicate that all Symbol Mapping and Complex Instrument Definition Expanded messages for this unit have been sent. An Instrument Definition Finished message is only sent if an Instrument Definition Request was not rejected.</Description>
+      <Fields>
+      </Fields>
+    </Message>
+
+
+    <!-- ============================================ -->
+    <!-- FLEX messages replayed during Spin -->
+    <!-- ============================================ -->
+
+    <!-- Time Message -->
+    <Message>
+      <Name>Time Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x20</Code>
+      <Description>A Time message is immediately generated and sent when there is a FLEX event for a given clock second.</Description>
+      <Fields>
+        <Field>
+          <Name>Time</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Number of whole seconds elapsed since the start of the current Eastern Time calendar day.</Description>
+        </Field>
+        <Field>
+          <Name>Epoch Time</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Number of whole seconds since the Epoch (midnight January 1, 1970 UTC).</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Symbol Mapping Message -->
+    <Message>
+      <Name>Symbol Mapping Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x2E</Code>
+      <Description>A Symbol Mapping message is used to map the 6 character multicast feed symbol field to an OSI symbol and Underlying.</Description>
+      <Fields>
+        <Field>
+          <Name>Feed Symbol</Name>
+          <Type>Printable ASCII</Type>
+          <Size>6</Size>
+          <Description>Symbol right padded with spaces.</Description>
+        </Field>
+        <Field>
+          <Name>OSI Symbol</Name>
+          <Type>Printable ASCII</Type>
+          <Size>21</Size>
+          <Description>OSI Symbol</Description>
+        </Field>
+        <Field>
+          <Name>Symbol Condition</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Symbol condition indicator</Description>
+        </Field>
+        <Field>
+          <Name>Underlying</Name>
+          <Type>Alphanumeric</Type>
+          <Size>8</Size>
+          <Description>Symbol of underlying equity right padded with spaces. All spaces if not available or not applicable.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- FLEX Instrument Definition Message -->
+    <Message>
+      <Name>FLEX Instrument Definition Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x9C</Code>
+      <Description>A FLEX Instrument Definition message represents an instrument that is available to place orders.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Time Offset</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+        <Field>
+          <Name>Feed Symbol</Name>
+          <Type>Printable ASCII</Type>
+          <Size>6</Size>
+          <Description>Symbol right padded with spaces.</Description>
+        </Field>
+        <Field>
+          <Name>OSI Root</Name>
+          <Type>Printable ASCII</Type>
+          <Size>6</Size>
+          <Description>OSI Root right padded with spaces.</Description>
+        </Field>
+        <Field>
+          <Name>Year</Name>
+          <Type>Alphanumeric</Type>
+          <Size>2</Size>
+          <Description>Two digit year</Description>
+        </Field>
+        <Field>
+          <Name>Month</Name>
+          <Type>Alphanumeric</Type>
+          <Size>2</Size>
+          <Description>Two digit month</Description>
+        </Field>
+        <Field>
+          <Name>Day</Name>
+          <Type>Alphanumeric</Type>
+          <Size>2</Size>
+          <Description>Two digit day</Description>
+        </Field>
+        <Field>
+          <Name>Call Put Indicator</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Call/Put indicator</Description>
+        </Field>
+        <Field>
+          <Name>Dollar Strike</Name>
+          <Type>Alphanumeric</Type>
+          <Size>5</Size>
+          <Description>Dollar strike (if not percentage) left padded with zero. If percentage, field is space padded.</Description>
+        </Field>
+        <Field>
+          <Name>Decimal Strike</Name>
+          <Type>Alphanumeric</Type>
+          <Size>3</Size>
+          <Description>Decimal strike (if not percentage) left padded with zero. If percentage, field is space padded.</Description>
+        </Field>
+        <Field>
+          <Name>Symbol Condition</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Symbol condition indicator</Description>
+        </Field>
+        <Field>
+          <Name>Underlying</Name>
+          <Type>Printable ASCII</Type>
+          <Size>8</Size>
+          <Description>Instrument Underlying right padded with spaces.</Description>
+        </Field>
+        <Field>
+          <Name>Exercise Style</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Exercise style indicator</Description>
+        </Field>
+        <Field>
+          <Name>Settlement Type</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Settlement type indicator</Description>
+        </Field>
+        <Field>
+          <Name>Percentage</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Percentage when strike and price is percentage based (implied 4 decimal places). Otherwise zero.</Description>
+        </Field>
+        <Field>
+          <Name>Observation Day</Name>
+          <Type>Alphanumeric</Type>
+          <Size>2</Size>
+          <Description>Two digit observation day of month. Valid only for Asian and Cliquet options, otherwise space padded.</Description>
+        </Field>
+        <Field>
+          <Name>Return Cap Percentage</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Return cap percentage (implied 2 decimal places). Valid only for Cliquet, otherwise zero.</Description>
+        </Field>
+        <Field>
+          <Name>Creation Day</Name>
+          <Type>Alphanumeric</Type>
+          <Size>2</Size>
+          <Description>Two digit creation day of the month. Valid only for Cliquet, otherwise space padded.</Description>
+        </Field>
+        <Field>
+          <Name>Bit Fields</Name>
+          <Type>Bit Field</Type>
+          <Size>1</Size>
+          <Description>Bit 0: If set, strike/price in percentage. Bit 1-7: Reserved</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Complex FLEX Instrument Definition Message -->
+    <Message>
+      <Name>Complex FLEX Instrument Definition Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x9B</Code>
+      <Description>A Complex FLEX Instrument Definition message represents a complex instrument that is available to place orders.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Time Offset</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+        <Field>
+          <Name>Complex Instrument ID</Name>
+          <Type>Printable ASCII</Type>
+          <Size>6</Size>
+          <Description>Complex Instrument ID right padded with spaces.</Description>
+        </Field>
+        <Field>
+          <Name>Underlying</Name>
+          <Type>Printable ASCII</Type>
+          <Size>8</Size>
+          <Description>Complex Instrument Underlying right padded with spaces.</Description>
+        </Field>
+        <Field>
+          <Name>Complex Instrument Type</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>4 character field. Character 1: Complex Option Type. Characters 2-4: Reserved.</Description>
+        </Field>
+        <Field>
+          <Name>Leg Count</Name>
+          <Type>Binary</Type>
+          <Size>1</Size>
+          <Description>The number of legs in the complex instrument. The maximum number of legs is 100.</Description>
+        </Field>
+        <Field>
+          <Name>Message Count</Name>
+          <Type>Binary</Type>
+          <Size>1</Size>
+          <Description>Number of messages required to define the complex instrument.</Description>
+        </Field>
+        <Field>
+          <Name>Message Number</Name>
+          <Type>Binary</Type>
+          <Size>1</Size>
+          <Description>Message number of the message count, e.g. 1 of 5.</Description>
+        </Field>
+        <Field>
+          <Name>Message Leg Count</Name>
+          <Type>Binary</Type>
+          <Size>1</Size>
+          <Description>The number of legs in this message.</Description>
+        </Field>
+        <Field>
+          <Name>Complex FLEX Leg</Name>
+          <Type>Group</Type>
+          <Size>13</Size>
+          <Description>Repeating leg group</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Trading Status Message -->
+    <Message>
+      <Name>Trading Status Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x31</Code>
+      <Description>The Trading Status message is used to indicate the current trading status of a FLEX options instrument.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Time Offset</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Printable ASCII</Type>
+          <Size>6</Size>
+          <Description>Symbol right padded with spaces.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>Reserved</Type>
+          <Size>2</Size>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>Trading Status</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>Trading status indicator</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>Reserved</Type>
+          <Size>1</Size>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>GTH Trading Status</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>GTH Trading Status indicator</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>Reserved</Type>
+          <Size>1</Size>
+          <Description>Reserved</Description>
+        </Field>
+      </Fields>
+    </Message>
+  </Messages>
+
+  <!-- Groups -->
+
+  <Groups>
+
+    <!-- Complex FLEX Leg -->
+    <Group>
+      <Name>Complex FLEX Leg</Name>
+      <Dependency>Message Leg Count</Dependency>
+      <Rule>Count</Rule>
+      <Description>Repeating leg definition for complex FLEX instruments. Repeats Message Leg Count times.</Description>
+      <Fields>
+        <Field>
+          <Name>Leg Symbol</Name>
+          <Type>Printable ASCII</Type>
+          <Size>8</Size>
+          <Description>FLEX Symbol, right padded with spaces.</Description>
+        </Field>
+        <Field>
+          <Name>Leg Ratio</Name>
+          <Type>Signed Binary</Type>
+          <Size>4</Size>
+          <Description>Leg ratio (positive for buy-side, negative for sell-side).</Description>
+        </Field>
+        <Field>
+          <Name>Leg Security Type</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>The instrument type of this leg.</Description>
+        </Field>
+      </Fields>
+    </Group>
+  </Groups>
+
+  <Enums>
+
+    <!-- Login Response Status -->
+    <Enum>
+      <Name>Login Response Status</Name>
+      <Values>
+        <Value><Data>A</Data><Name>Login Accepted</Name></Value>
+        <Value><Data>N</Data><Name>Not authorized (Invalid Username/Password)</Name></Value>
+        <Value><Data>B</Data><Name>Session in use</Name></Value>
+        <Value><Data>S</Data><Name>Invalid Session</Name></Value>
+      </Values>
+    </Enum>
+
+    <!-- Spin Response Status -->
+    <Enum>
+      <Name>Spin Response Status</Name>
+      <Values>
+        <Value><Data>A</Data><Name>Accepted</Name></Value>
+        <Value><Data>O</Data><Name>Out of Range (Sequence requested is greater than Sequence available by the next spin)</Name></Value>
+        <Value><Data>S</Data><Name>Spin already in progress (only one spin can be running at a time)</Name></Value>
+      </Values>
+    </Enum>
+
+    <!-- Instrument Definition Response Status -->
+    <Enum>
+      <Name>Instrument Definition Response Status</Name>
+      <Values>
+        <Value><Data>A</Data><Name>Accepted</Name></Value>
+        <Value><Data>O</Data><Name>Out of Range (Sequence must be 0)</Name></Value>
+        <Value><Data>S</Data><Name>Spin already in progress (only one spin can be running at a time)</Name></Value>
+      </Values>
+    </Enum>
+
+    <!-- Symbol Condition -->
+    <Enum>
+      <Name>Symbol Condition</Name>
+      <Values>
+        <Value>
+          <Data>N</Data>
+          <Name>Normal</Name>
+        </Value>
+        <Value>
+          <Data>C</Data>
+          <Name>Closing Only</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Trading Status -->
+    <Enum>
+      <Name>Trading Status</Name>
+      <Values>
+        <Value>
+          <Data>H</Data>
+          <Name>Halted</Name>
+        </Value>
+        <Value>
+          <Data>L</Data>
+          <Name>Curb Trading</Name>
+        </Value>
+        <Value>
+          <Data>Q</Data>
+          <Name>Quote-Only</Name>
+        </Value>
+        <Value>
+          <Data>T</Data>
+          <Name>RTH Trading</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- GTH Trading Status -->
+    <Enum>
+      <Name>GTH Trading Status</Name>
+      <Values>
+        <Value>
+          <Data>H</Data>
+          <Name>Halted</Name>
+        </Value>
+        <Value>
+          <Data>Q</Data>
+          <Name>Quote-Only</Name>
+        </Value>
+        <Value>
+          <Data>T</Data>
+          <Name>Trading</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Complex Option Type -->
+    <Enum>
+      <Name>Complex Option Type</Name>
+      <Values>
+        <Value>
+          <Data>X</Data>
+          <Name>All legs are FLEX options</Name>
+        </Value>
+        <Value>
+          <Data>E</Data>
+          <Name>One leg is an equity leg</Name>
+        </Value>
+        <Value>
+          <Data>B</Data>
+          <Name>FLEX and Listed Option legs</Name>
+        </Value>
+        <Value>
+          <Data>C</Data>
+          <Name>FLEX and Listed Option legs + one leg is an equity leg</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Call Put Indicator -->
+    <Enum>
+      <Name>Call Put Indicator</Name>
+      <Values>
+        <Value>
+          <Data>C</Data>
+          <Name>Call</Name>
+        </Value>
+        <Value>
+          <Data>P</Data>
+          <Name>Put</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Exercise Style -->
+    <Enum>
+      <Name>Exercise Style</Name>
+      <Values>
+        <Value>
+          <Data>A</Data>
+          <Name>American</Name>
+        </Value>
+        <Value>
+          <Data>E</Data>
+          <Name>European</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Settlement Type -->
+    <Enum>
+      <Name>Settlement Type</Name>
+      <Values>
+        <Value>
+          <Data>A</Data>
+          <Name>AM</Name>
+        </Value>
+        <Value>
+          <Data>P</Data>
+          <Name>PM</Name>
+        </Value>
+        <Value>
+          <Data>S</Data>
+          <Name>Asian</Name>
+        </Value>
+        <Value>
+          <Data>Q</Data>
+          <Name>Cliquet</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Leg Security Type -->
+    <Enum>
+      <Name>Leg Security Type</Name>
+      <Values>
+        <Value>
+          <Data>X</Data>
+          <Name>FLEX option</Name>
+        </Value>
+        <Value>
+          <Data>E</Data>
+          <Name>Equity</Name>
+        </Value>
+        <Value>
+          <Data>O</Data>
+          <Name>Listed option</Name>
+        </Value>
+      </Values>
+    </Enum>
+  </Enums>
+
+  <Bitfields>
+
+    <!-- Bit Fields -->
+    <Bitfield>
+      <Name>Bit Fields</Name>
+      <Fields>
+        <Field>
+          <Name>Percentage</Name>
+          <Bits>1</Bits>
+          <Type>bit</Type>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Bits>7</Bits>
+          <Type>bit</Type>
+        </Field>
+      </Fields>
+    </Bitfield>
+
+  </Bitfields>
+
+</OmiPitchOptionsPdf>

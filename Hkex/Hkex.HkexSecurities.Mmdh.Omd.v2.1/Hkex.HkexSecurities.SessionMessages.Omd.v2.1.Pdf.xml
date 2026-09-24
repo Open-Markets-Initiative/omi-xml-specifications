@@ -1,0 +1,178 @@
+<OmiOmdPdf>
+
+  <Messages>
+
+    <!-- Send Key Message -->
+    <Message>
+      <Name>Send Key Message</Name>
+      <Description>Sent by MMDH to the client on TCP session establishment. Carries Diffie-Hellman parameters (Prime, Generator, PrimeOrderSubgroup) and the OMD Public Key concatenated with a 16-byte Initialization Vector for AES-CFB password encryption during Logon.</Description>
+      <Branch>Payload</Branch>
+      <Dependency>Msg Type</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Session</Category>
+      <Code>1105</Code>
+      <Fields>
+        <Field>
+          <Name>Prime</Name>
+          <Type>Data</Type>
+          <Size>128</Size>
+          <Description>A large Prime number in hexadecimal format.</Description>
+        </Field>
+        <Field>
+          <Name>Generator</Name>
+          <Type>Data</Type>
+          <Size>128</Size>
+          <Description>Generator — a primitive root modulo the value of Prime in hexadecimal format.</Description>
+        </Field>
+        <Field>
+          <Name>PrimeOrderSubgroup</Name>
+          <Type>Data</Type>
+          <Size>128</Size>
+          <Description>Prime-order subgroup value used by the Diffie-Hellman exchange.</Description>
+        </Field>
+        <Field>
+          <Name>OMDPublicKey</Name>
+          <Type>Data</Type>
+          <Size>144</Size>
+          <Description>First 128 bytes: the Public Key being shared. Last 16 bytes: the Initialization Vector for AES-CFB.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Logon Message -->
+    <Message>
+      <Name>Logon Message</Name>
+      <Description>Client-to-server message initiating authentication. Password is encrypted using an AES key derived from the Diffie-Hellman shared secret (SHA-256 hashed) with the IV received in SendKey. InternalSeqNum is 0 at start of day or the last received internal sequence number for intraday recovery. If EncryptedNewPasswordLen/EncryptedNewPassword are populated, the logon is treated as a password-change attempt.</Description>
+      <Branch>Payload</Branch>
+      <Dependency>Msg Type</Dependency>
+      <Origin>Firm</Origin>
+      <Category>Session</Category>
+      <Code>1101</Code>
+      <Fields>
+        <Field>
+          <Name>Username</Name>
+          <Type>String</Type>
+          <Size>12</Size>
+          <Description>Username to log on, padded with binary null characters.</Description>
+        </Field>
+        <Field>
+          <Name>InternalSeqNum</Name>
+          <Type>Uint32</Type>
+          <Size>4</Size>
+          <Description>Set to the last received internal sequence number for intraday recovery, or 0 at start of day.</Description>
+        </Field>
+        <Field>
+          <Name>ClientPublicKey</Name>
+          <Type>Data</Type>
+          <Size>128</Size>
+          <Description>Client public key generated per Diffie-Hellman exchange.</Description>
+        </Field>
+        <Field>
+          <Name>EncryptedPasswordLen</Name>
+          <Type>Uint8</Type>
+          <Size>1</Size>
+          <Description>Length of the EncryptedPassword in bytes.</Description>
+        </Field>
+        <Field>
+          <Name>EncryptedPassword</Name>
+          <Type>Data</Type>
+          <Size>20</Size>
+          <Description>AES-CFB encrypted password.</Description>
+        </Field>
+        <Field>
+          <Name>EncryptedNewPasswordLen</Name>
+          <Type>Uint8</Type>
+          <Size>1</Size>
+          <Description>Length of the EncryptedNewPassword in bytes.</Description>
+        </Field>
+        <Field>
+          <Name>EncryptedNewPassword</Name>
+          <Type>Data</Type>
+          <Size>20</Size>
+          <Description>AES-CFB encrypted new password (for password change; empty for normal logon).</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Logon Response Message -->
+    <Message>
+      <Name>Logon Response Message</Name>
+      <Description>Server response to a Logon request. Carries HeartBtInterval (heartbeat interval the client must honour), SessionStatus, and PasswordExpiryDays. A TCP disconnect follows SessionStatus 5, 6, 104 or 105 — client should reconnect and wait for a new SendKey before re-attempting Logon.</Description>
+      <Branch>Payload</Branch>
+      <Dependency>Msg Type</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Session</Category>
+      <Code>1102</Code>
+      <Fields>
+        <Field>
+          <Name>HeartBtInterval</Name>
+          <Type>Uint16</Type>
+          <Size>2</Size>
+          <Description>Heartbeat interval (seconds) the client and server must honour to keep the session alive.</Description>
+        </Field>
+        <Field>
+          <Name>SessionStatus</Name>
+          <Type>Uint8</Type>
+          <Size>1</Size>
+          <Description>Status of the session.</Description>
+        </Field>
+        <Field>
+          <Name>PasswordExpiryDays</Name>
+          <Type>Uint8</Type>
+          <Size>1</Size>
+          <Description>Number of days left before password expires.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Logout Message -->
+    <Message>
+      <Name>Logout Message</Name>
+      <Description>Server-initiated message informing the client they have been logged out. The server follows with a TCP disconnect.</Description>
+      <Branch>Payload</Branch>
+      <Dependency>Msg Type</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Session</Category>
+      <Code>1103</Code>
+      <Fields>
+        <Field>
+          <Name>SessionStatus</Name>
+          <Type>Uint8</Type>
+          <Size>1</Size>
+          <Description>Session Status.</Description>
+        </Field>
+        <Field>
+          <Name>Filler</Name>
+          <Type>String</Type>
+          <Size>3</Size>
+          <Description>Padding.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+  </Messages>
+
+  <Enums>
+
+    <!-- SessionStatus (used by both Logon Response and Logout) -->
+    <Enum>
+      <Name>SessionStatus</Name>
+      <Values>
+        <Value><Data>0</Data><Name>Session Active</Name></Value>
+        <Value><Data>1</Data><Name>Session Password Changed</Name></Value>
+        <Value><Data>2</Data><Name>Session Password Due To Expire</Name></Value>
+        <Value><Data>3</Data><Name>New Session Password Does Not Comply With Policy</Name></Value>
+        <Value><Data>5</Data><Name>Invalid Username Or Password</Name></Value>
+        <Value><Data>6</Data><Name>Account Locked</Name></Value>
+        <Value><Data>8</Data><Name>Password Expired</Name></Value>
+        <Value><Data>101</Data><Name>Session Active Refresh Required</Name></Value>
+        <Value><Data>102</Data><Name>Logon From Second Connection</Name></Value>
+        <Value><Data>103</Data><Name>Heartbeat Timeout</Name></Value>
+        <Value><Data>104</Data><Name>Already Connected</Name></Value>
+        <Value><Data>105</Data><Name>Client Public Key Generation Issue</Name></Value>
+      </Values>
+    </Enum>
+
+  </Enums>
+
+</OmiOmdPdf>

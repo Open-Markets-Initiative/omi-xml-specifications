@@ -18,6 +18,7 @@
 | B3Derivatives | BinaryUmdf | Sbe | 1.9 | [files](B3.B3Derivatives.BinaryUmdf.Sbe.v1.9/) |
 | B3Derivatives | BinaryUmdf | Sbe | 2.1 | [files](B3.B3Derivatives.BinaryUmdf.Sbe.v2.1/) |
 | B3Derivatives | BinaryUmdf | Sbe | 2.2 | [files](B3.B3Derivatives.BinaryUmdf.Sbe.v2.2/) |
+| B3Derivatives | BinaryUmdf | Sbe | 2.3 | [files](B3.B3Derivatives.BinaryUmdf.Sbe.v2.3/) |
 
 
 B3: [website](https://www.b3.com.br/en_us "Go to Brasil, Bolsa, Balcão")

@@ -1,0 +1,269 @@
+<OmiPitchEquitiesPdf>
+
+  <Messages>
+
+    <!-- Login Message -->
+    <Message>
+      <Name>Login Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x01</Code>
+      <Description>The first message the Member process sends to the Spin Server after connection to the Spin Server is established. Failure to login before sending any other message type will result in the connection being dropped by the Spin Server. The format is identical to the GRP Login message.</Description>
+      <Fields>
+        <Field>
+          <Name>SessionSubId</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>SessionSubId supplied by Cboe Canada.</Description>
+        </Field>
+        <Field>
+          <Name>Username</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Username supplied by Cboe Canada.</Description>
+        </Field>
+        <Field>
+          <Name>Filler</Name>
+          <Type>Alphanumeric</Type>
+          <Size>2</Size>
+          <Description>(space filled).</Description>
+        </Field>
+        <Field>
+          <Name>Password</Name>
+          <Type>Alphanumeric</Type>
+          <Size>10</Size>
+          <Description>Password supplied by Cboe Canada.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Login Response Message -->
+    <Message>
+      <Name>Login Response Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x02</Code>
+      <Description>Sent by the Spin Server to a Member's process in response to a Login message. The Status field reflects an accepted login or the reason the session was not accepted. If login fails, the connection will be dropped after the Login Response message is sent.</Description>
+      <Fields>
+        <Field>
+          <Name>Status</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Accepted or reason for reject.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Spin Image Available Message -->
+    <Message>
+      <Name>Spin Image Available Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x80</Code>
+      <Description>Sent once per second and indicates through what sequence number a spin is available.</Description>
+      <Fields>
+        <Field>
+          <Name>Sequence</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Spin is available which is current through this sequence number.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Spin Request Message -->
+    <Message>
+      <Name>Spin Request Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x81</Code>
+      <Description>Used by a Member's process to request transmission of a spin of the unit's order book.</Description>
+      <Fields>
+        <Field>
+          <Name>Sequence</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Sequence number from a Spin Image Available message received by the Member.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Spin Response Message -->
+    <Message>
+      <Name>Spin Response Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x82</Code>
+      <Description>Sent in response to a Member's Spin Request message indicating whether a spin will be sent.</Description>
+      <Fields>
+        <Field>
+          <Name>Sequence</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Sequence number from a Spin Image Available message.</Description>
+        </Field>
+        <Field>
+          <Name>Order Count</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Number of Add Order and Single Side Update messages which will be contained in this spin.</Description>
+        </Field>
+        <Field>
+          <Name>Status</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Accepted or reason for reject. All non-A status codes should be interpreted as a reject.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Spin Finished Message -->
+    <Message>
+      <Name>Spin Finished Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x83</Code>
+      <Description>Indicates that all messages for the spin requested have been sent. A Spin Finished message is only sent if a Spin Request was not rejected. Upon receipt of a Spin Finished message, any buffered multicast messages should be applied to the Member's copy of the book to make it current.</Description>
+      <Fields>
+        <Field>
+          <Name>Sequence</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Sequence number from the Spin Response message.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Instrument Definition Request Message -->
+    <Message>
+      <Name>Instrument Definition Request Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x84</Code>
+      <Description>Used by a Member's process to request transmission of this unit's Instrument Directory messages.</Description>
+      <Fields>
+        <Field>
+          <Name>Sequence</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Must be 0. Only the current instruments are available.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Instrument Definition Response Message -->
+    <Message>
+      <Name>Instrument Definition Response Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x85</Code>
+      <Description>Indicates whether a spin will be sent in response to a Member's Instrument Definition Request message.</Description>
+      <Fields>
+        <Field>
+          <Name>Sequence</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Will always be 0.</Description>
+        </Field>
+        <Field>
+          <Name>Instrument Count</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Number of Instrument Directory messages which will be contained in this spin.</Description>
+        </Field>
+        <Field>
+          <Name>Status</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Accepted or reason for reject. All non-A status codes should be interpreted as a reject.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Instrument Definition Finished Message -->
+    <Message>
+      <Name>Instrument Definition Finished Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x86</Code>
+      <Description>Indicates that all messages for the spin requested have been sent. An Instrument Definition Finished message is only sent if an Instrument Definition Request was not rejected.</Description>
+      <Fields>
+      </Fields>
+    </Message>
+
+    <!-- Trade Replay Request Message -->
+    <Message>
+      <Name>Trade Replay Request Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x87</Code>
+      <Description>Used by a Member's process to request transmission of this unit's Trade, Trade Break, and Trade Correction messages. Note Order Executed messages will be converted to Trade messages.</Description>
+      <Fields>
+        <Field>
+          <Name>Sequence</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Must be 0. Only the current trades are available.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Trade Replay Response Message -->
+    <Message>
+      <Name>Trade Replay Response Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x88</Code>
+      <Description>Indicates whether a spin will be sent in response to a Member's Trade Replay Request message.</Description>
+      <Fields>
+        <Field>
+          <Name>Sequence</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Will always be 0.</Description>
+        </Field>
+        <Field>
+          <Name>Trade Count</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Number of Trade, Trade Break, and Trade Correction messages which will be contained in this spin.</Description>
+        </Field>
+        <Field>
+          <Name>Status</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Accepted or reason for reject. All non-A status codes should be interpreted as a reject.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Trade Replay Finished Message -->
+    <Message>
+      <Name>Trade Replay Finished Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x89</Code>
+      <Description>Indicates that all messages for the spin requested have been sent. A Trade Replay Finished message is only sent if a Trade Replay Request message was not rejected.</Description>
+      <Fields>
+      </Fields>
+    </Message>
+
+  </Messages>
+
+  <Enums>
+
+    <!-- Status -->
+    <Enum>
+      <Name>Status</Name>
+      <Values>
+        <Value><Data>A</Data><Name>Accepted / Login Accepted</Name></Value>
+        <Value><Data>N</Data><Name>Not authorized (Invalid Username/Password)</Name></Value>
+        <Value><Data>B</Data><Name>Session in use</Name></Value>
+        <Value><Data>O</Data><Name>Out of Range</Name></Value>
+        <Value><Data>S</Data><Name>Invalid Session / Spin already in progress</Name></Value>
+      </Values>
+    </Enum>
+
+  </Enums>
+
+</OmiPitchEquitiesPdf>

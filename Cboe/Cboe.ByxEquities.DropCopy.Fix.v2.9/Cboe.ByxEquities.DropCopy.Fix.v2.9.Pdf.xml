@@ -1,0 +1,1168 @@
+<OmiFixPdf>
+
+  <!-- Cboe US Equities (BYX) FIX Drop (Drop Copy) — Execution Report + Trade Capture re-sent on the drop session -->
+
+  <Header>
+    <Fields>
+      <Field>
+        <Tag>8</Tag>
+        <Name>BeginString</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+        <Description>FIX.4.2 Must be first field in message.</Description>
+      </Field>
+      <Field>
+        <Tag>9</Tag>
+        <Name>BodyLength</Name>
+        <Required>Y</Required>
+        <Type>Length</Type>
+        <Fixed>Y</Fixed>
+        <Description>Length of message following Body Length field up to and including the delimiter preceding the Check Sum field. Must be second field in message.</Description>
+      </Field>
+      <Field>
+        <Tag>35</Tag>
+        <Name>MsgType</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+        <Description>Must be third field in message. 0=Heartbeat 1=Test Request 2=Resend/Request 3=Reject 4=Sequence Reset 5=Logout 8=Execution Report 9=Order Cancel Reject A=Logon D=New Order Single F=Order Cancel Request G=Order Cancel Replace Request UCC=Trade Cancel/Correct</Description>
+      </Field>
+      <Field>
+        <Tag>49</Tag>
+        <Name>SenderCompID</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Description>ID of sender: Assigned by Cboe for messages sent to Cboe. (Target Comp IDfor messages from Cboe)</Description>
+      </Field>
+      <Field>
+        <Tag>50</Tag>
+        <Name>SenderSubID</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Description>Sub ID of sender: Assigned by Cboe for messages sent to Cboe. (Target Sub IDfor messages from Cboe)</Description>
+      </Field>
+      <Field>
+        <Tag>56</Tag>
+        <Name>TargetCompID</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Description>ID of destination: ‘BATS’ for messages sent to BZX Exchange. ‘BYXX’ for messages sent to BYX Exchange. ‘EDGX’ for messages sent to EDGX Exchange. ‘EDGA’ for messages sent to EDGA Exchange. (Sender Comp IDfor messages from Cboe)</Description>
+      </Field>
+      <Field>
+        <Tag>57</Tag>
+        <Name>TargetSubID</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Description>Sub ID of destination: ‘TEST’ for messages sent to Cboe test/certification system. ‘PROD’ for messages sent to Cboe production system. (Sender Sub IDfor messages from Cboe)</Description>
+      </Field>
+      <Field>
+        <Tag>34</Tag>
+        <Name>MsgSeqNum</Name>
+        <Required>Y</Required>
+        <Type>SeqNum</Type>
+        <Description>Sequential sequence number for session.</Description>
+      </Field>
+      <Field>
+        <Tag>43</Tag>
+        <Name>PossDupFlag</Name>
+        <Required>N</Required>
+        <Type>Boolean</Type>
+        <Description>N=(Default) Y=Indicates a message resend and should be used during FIX Replay. All inbound orders with ‘Y’ will be rejected by Cboe.</Description>
+      </Field>
+      <Field>
+        <Tag>52</Tag>
+        <Name>SendingTime</Name>
+        <Required>Y</Required>
+        <Type>UTCTimestamp</Type>
+        <Description>GMT date-time that message was sent.</Description>
+      </Field>
+      <Field>
+        <Tag>122</Tag>
+        <Name>OrigSendingTime</Name>
+        <Required>N</Required>
+        <Type>UTCTimestamp</Type>
+        <Description>For messages with Poss Dup Flag=‘Y’, indicates time that message was first sent.</Description>
+      </Field>
+    </Fields>
+  </Header>
+
+  <Trailer>
+    <Fields>
+      <Field>
+        <Tag>10</Tag>
+        <Name>CheckSum</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+        <Description>Three byte, simple checksum. Always unencrypted, always last field in message.</Description>
+      </Field>
+    </Fields>
+  </Trailer>
+
+  <Messages>
+
+    <!-- Execution Report (8) -->
+    <Message>
+      <Name>ExecutionReport</Name>
+      <MsgType>8</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>20</Tag>
+          <Name>ExecTransType</Name>
+          <Required>Y</Required>
+          <Type>char</Type>
+          <Description>0=New 3=Status</Description>
+        </Field>
+        <Field>
+          <Tag>17</Tag>
+          <Name>ExecID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Day-unique id of execution message. Will be zero for Exec Trans Typeof Status (3).</Description>
+        </Field>
+        <Field>
+          <Tag>18</Tag>
+          <Name>ExecInst</Name>
+          <Required>N</Required>
+          <Type>MultipleValueString</Type>
+          <Description>Copied from order.</Description>
+        </Field>
+        <Field>
+          <Tag>9416</Tag>
+          <Name>ExtendedExecInst</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Copied from order.</Description>
+        </Field>
+        <Field>
+          <Tag>150</Tag>
+          <Name>ExecType</Name>
+          <Required>Y</Required>
+          <Type>char</Type>
+          <Description>Reason for this Execution Report: 0=New (acknowledgment of new order) 1=Partial Fill 2=Fill 3=Done For Day 4=Canceled 5=Replaced 6=Pending Cancel 8=Rejected D=Restated E=Pending Replace Pending Cancel ‘6’ and Pending Replace ‘E’ are only valid for routed orders that have posted to an away market. For Standard FIX Drop, only ‘1’ or ‘2’ will be sent and will always equal Ord Status(39). For Order by Order FIX Drop, all execution information will be sent. Refer to section 6.2.</Description>
+        </Field>
+        <Field>
+          <Tag>11</Tag>
+          <Name>ClOrdID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Cl Ord ID of the order being accepted, executed or rejected. -or- Cl Ord ID of the cancel or replace request. -or- Cl Ord ID of the order subject to unsolicited cancel (Orig Cl Ord ID will not be present).</Description>
+        </Field>
+        <Field>
+          <Tag>37</Tag>
+          <Name>OrderId</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Order Id (supplied by Cboe).</Description>
+        </Field>
+        <Field>
+          <Tag>39</Tag>
+          <Name>OrdStatus</Name>
+          <Required>Y</Required>
+          <Type>char</Type>
+          <Description>State of order. 0=New 1=Partially Filled 2=Filled 3=Done For Day 4=Canceled 5=Replaced 6=Pending Cancel 8=Rejected A=Pending Ack E=Pending Replace For FIX Drop, only ‘1’ or ‘2’ will be sent and will always equal Exec Type (150). For Order by Order FIX Drop, all execution information will be sent.</Description>
+        </Field>
+        <Field>
+          <Tag>1</Tag>
+          <Name>Account</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Copied from order. For Order by Order FIX Drop, all execution information will be sent.</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Copied from order.</Description>
+        </Field>
+        <Field>
+          <Tag>65</Tag>
+          <Name>SymbolSfx</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Copied from order.</Description>
+        </Field>
+        <Field>
+          <Tag>54</Tag>
+          <Name>Side</Name>
+          <Required>Y</Required>
+          <Type>char</Type>
+          <Description>Copied from order.</Description>
+        </Field>
+        <Field>
+          <Tag>38</Tag>
+          <Name>OrderQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>Copied from order. On restatements (150=D) the Order Qtymay be updated (for example, for SWP or CMC restatements).</Description>
+        </Field>
+        <Field>
+          <Tag>111</Tag>
+          <Name>MaxFloor</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Copied from order.</Description>
+        </Field>
+        <Field>
+          <Tag>44</Tag>
+          <Name>Price</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Copied from order.</Description>
+        </Field>
+        <Field>
+          <Tag>8020</Tag>
+          <Name>DisplayRange</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Copied from order.</Description>
+        </Field>
+        <Field>
+          <Tag>9622</Tag>
+          <Name>DiscretionAmount</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Copied from order.</Description>
+        </Field>
+        <Field>
+          <Tag>59</Tag>
+          <Name>TimeInForce</Name>
+          <Required>N</Required>
+          <Type>char</Type>
+          <Description>Copied from order.</Description>
+        </Field>
+        <Field>
+          <Tag>126</Tag>
+          <Name>ExpireTime</Name>
+          <Required>N</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Copied from order if Time In Forceis GTD (6) or PTD (T).</Description>
+        </Field>
+        <Field>
+          <Tag>439</Tag>
+          <Name>ClearingFirm</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Copied from order.</Description>
+        </Field>
+        <Field>
+          <Tag>440</Tag>
+          <Name>ClearingAccount</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Copied from order if present.</Description>
+        </Field>
+        <Field>
+          <Tag>151</Tag>
+          <Name>LeavesQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>Quantity of shares still open for further execution. Will include shares already matched in an earlier session for CMC restatements. Will be zero if order is dead, otherwise will be Order Qty(38)- Cum Qty (14). NNoottee::It is possible for Leaves Qtyto be zero when Exec Type(150) = 5 indicating that the order is dead.</Description>
+        </Field>
+        <Field>
+          <Tag>14</Tag>
+          <Name>CumQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>Cumulative quantity of shares executed for this order.</Description>
+        </Field>
+        <Field>
+          <Tag>99</Tag>
+          <Name>StopPx</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Copied from order.</Description>
+        </Field>
+        <Field>
+          <Tag>6</Tag>
+          <Name>AvgPx</Name>
+          <Required>Y</Required>
+          <Type>Price</Type>
+          <Description>Average price of executions for this order weighted by trade size. Zero if Cum Qtyis zero.</Description>
+        </Field>
+        <Field>
+          <Tag>9730</Tag>
+          <Name>TradeLiquidityIndicator</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Present for acknowledgments and fills (150=0, 150=1 or 150=2). Recommended mapping to FIX Tag 851 provided: 11sstt CChhaarraacctteerr A=Trade Added Liquidity (851=1) C=Auction/Uncrossing (851=4) R=Trade Removed Liquidity (851=2) W=Waiting for execution at pre-market time as defined by Time In Force (59) value and 'Hold Early to 7am' port setting. Only applied on the initial order acknowledgment. X=Routed Trade (851=3) 22nndd CChhaarraacctteerr E=Trade added RPI liquidity(BYX Only) H=Hidden liquidity add trade I =Hidden liquidity add trade that was price improved J =Execution from order that joined the NBBO P=Periodic Auction(BYX Only) S=NBBO-Setter fee eligible V=Visible liquidity add trade that was price improved m=Trade added or removed liquidity against a Midpoint peg s =Order set the NBBO but is not fee eligible Must request opt-in at firm or port level to receive 2ndcharacters in this field. To allow for future expansion of this field, please ignore values with an unknown character in the 2ndposition. MMTTPP For members that opt-in to Report MTP Fields functionality (at firm or port level), the liquidity add and remove values may be presented on an MTP triggered cancel/restatement. SSttaattee CChhaannggee TTrraacckkiinngg For members that opt-in to State Change Tracking at the port level, order acks (150=0), modify acks (150=5) and restatements (150=D with 378=4) will carry 9730 messages defined as follows: A=Zero or more immediate partial remove fills followed by posting. R=Zero or more immediate partial remove fills followed by a cancel (or full fill). X=Zero or more immediate partial remove fills followed by routing.</Description>
+        </Field>
+        <Field>
+          <Tag>9882</Tag>
+          <Name>FeeCode</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Specific fee code associated with execution. See the Fee Schedule for the respective market for possible values.</Description>
+        </Field>
+        <Field>
+          <Tag>9621</Tag>
+          <Name>AccessFee (effective 02/02/26)</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Transaction fee or rebate, inclusive of earned tiers, for the trade. Only present when Exec Type(150) = 1 or Exec Type(150) = 2.</Description>
+        </Field>
+        <Field>
+          <Tag>9690</Tag>
+          <Name>WorkingPrice</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Must be enabled at the firm or port level. Only present on Accepted, Replaced, or Restated and only when order is fully or partially booked. If Pricehad to be adjusted to a less aggressive value to avoid crossing the NBBO, the adjusted price will be reported here, otherwise equals Price.</Description>
+        </Field>
+        <Field>
+          <Tag>9691</Tag>
+          <Name>InitialDisplayPrice</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Must be enabled at the firm or port level. Only present on Accepted, Replaced, or Restated and only when order is fully or partially booked. If order had to be temporarily displayed at a less aggressive value to avoid locking the NBBO, the initial displayed price will be reported here, otherwise equals Working Price.</Description>
+        </Field>
+        <Branch>
+          <Name>New</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>0</Value>
+          <Fields></Fields>
+        </Branch>
+        <Branch>
+          <Name>Partial Fill</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>1</Value>
+          <Fields>
+            <Field>
+              <Tag>32</Tag>
+              <Name>LastShares</Name>
+              <Required>N</Required>
+              <Type>Qty</Type>
+              <Description>Quantity of shares traded on this fill (zero for non-fills). Reports the amount of shares cancelled for Cboe Market Close restatements, which are sent after each matching session cut-off time. Reports the size of Cboe Market Close fills, which are sent after the official closing price is received from the primary listing exchange.. MMuusstt rreeqquueesstt oopptt--iinn aatt fifirrmm oorr ppoorrtt lleevveell ffoorr ""RReeppoorrtt MMTTPP FFiieellddss"" ttoo rreecceeiivvee tthhiiss fifieelldd oonn aa MMTTPP ttrriiggggeerreedd ccaanncceell//rreessttaatteemmeenntt wwhheerree bbootthh ssiiddeess wweerree eeiitthheerr rreedduucceedd oorr ccaanncceelllleedd ((ii..ee.. iinnbboouunndd CCaanncceell BBootthh oorr DDeeccrreemmeenntt))..With MTP, this is the number of shares that would have matched.</Description>
+            </Field>
+            <Field>
+              <Tag>31</Tag>
+              <Name>LastPx</Name>
+              <Required>N</Required>
+              <Type>Price</Type>
+              <Description>Price of this fill (zero for non-fills). Reports the price of Cboe Market Close fills, which are sent after the official closing price is received from the primary listing exchange. MMuusstt rreeqquueesstt oopptt--iinn aatt fifirrmm oorr ppoorrtt lleevveell ffoorr ""RReeppoorrtt MMTTPP FFiieellddss"" ttoo rreecceeiivvee tthhiiss fifieelldd oonn aa MMTTPP ttrriiggggeerreedd ccaanncceell//rreessttaatteemmeenntt wwhheerree bbootthh ssiiddeess wweerree eeiitthheerr rreedduucceedd oorr ccaanncceelllleedd ((ii..ee.. iinnbboouunndd CCaanncceell BBootthh oorr DDeeccrreemmeenntt))..With MTP, the price at which Last Shareswould have matched.</Description>
+            </Field>
+            <Field>
+              <Tag>382</Tag>
+              <Name>NoContraBrokers</Name>
+              <Required>N</Required>
+              <Type>NumInGroup</Type>
+              <Description>Only present on trades. Always 1.</Description>
+            </Field>
+            <Field>
+              <Tag>375</Tag>
+              <Name>ContraBroker</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Only present on trades.</Description>
+            </Field>
+          </Fields>
+        </Branch>
+        <Branch>
+          <Name>Fill</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>2</Value>
+          <Fields>
+            <Field>
+              <Tag>32</Tag>
+              <Name>LastShares</Name>
+              <Required>N</Required>
+              <Type>Qty</Type>
+              <Description>Quantity of shares traded on this fill (zero for non-fills). Reports the amount of shares cancelled for Cboe Market Close restatements, which are sent after each matching session cut-off time. Reports the size of Cboe Market Close fills, which are sent after the official closing price is received from the primary listing exchange.. MMuusstt rreeqquueesstt oopptt--iinn aatt fifirrmm oorr ppoorrtt lleevveell ffoorr ""RReeppoorrtt MMTTPP FFiieellddss"" ttoo rreecceeiivvee tthhiiss fifieelldd oonn aa MMTTPP ttrriiggggeerreedd ccaanncceell//rreessttaatteemmeenntt wwhheerree bbootthh ssiiddeess wweerree eeiitthheerr rreedduucceedd oorr ccaanncceelllleedd ((ii..ee.. iinnbboouunndd CCaanncceell BBootthh oorr DDeeccrreemmeenntt))..With MTP, this is the number of shares that would have matched.</Description>
+            </Field>
+            <Field>
+              <Tag>31</Tag>
+              <Name>LastPx</Name>
+              <Required>N</Required>
+              <Type>Price</Type>
+              <Description>Price of this fill (zero for non-fills). Reports the price of Cboe Market Close fills, which are sent after the official closing price is received from the primary listing exchange. MMuusstt rreeqquueesstt oopptt--iinn aatt fifirrmm oorr ppoorrtt lleevveell ffoorr ""RReeppoorrtt MMTTPP FFiieellddss"" ttoo rreecceeiivvee tthhiiss fifieelldd oonn aa MMTTPP ttrriiggggeerreedd ccaanncceell//rreessttaatteemmeenntt wwhheerree bbootthh ssiiddeess wweerree eeiitthheerr rreedduucceedd oorr ccaanncceelllleedd ((ii..ee.. iinnbboouunndd CCaanncceell BBootthh oorr DDeeccrreemmeenntt))..With MTP, the price at which Last Shareswould have matched.</Description>
+            </Field>
+            <Field>
+              <Tag>382</Tag>
+              <Name>NoContraBrokers</Name>
+              <Required>N</Required>
+              <Type>NumInGroup</Type>
+              <Description>Only present on trades. Always 1.</Description>
+            </Field>
+            <Field>
+              <Tag>375</Tag>
+              <Name>ContraBroker</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Only present on trades.</Description>
+            </Field>
+          </Fields>
+        </Branch>
+        <Branch>
+          <Name>DoneForDay</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>3</Value>
+          <Fields></Fields>
+        </Branch>
+        <Branch>
+          <Name>Canceled</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>4</Value>
+          <Fields>
+            <Field>
+              <Tag>41</Tag>
+              <Name>OrigClOrdID</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Cl Ord ID of the order being cancelled or replaced (for a solicited Cancel or Cancel/Replace, otherwise not present).</Description>
+            </Field>
+            <Field>
+              <Tag>58</Tag>
+              <Name>Text</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>If present, indicates reason for reject or cancel. Format is one letter reason code followed by colon and space followed by free form text message. (e.g., ‘N: No Liquidity at price’). The specific text the system delivers may vary from the text listed below, to provide clarification of the reject reason. Reason codes listed below are still under review for Cboe Australia. Reason codes are one of the following: A = Admin C = Capacity undefined D = Duplicate identifier (e.g., Cl Ord ID)</Description>
+            </Field>
+            <Field>
+              <Tag>198</Tag>
+              <Name>SecondaryOrderID</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Present on a MTP triggered cancel/restatement, on a reserve reload restatement, and on a Cancel/Replace acknowledgment that increases the size of a reserve order. Cboe Order Id of contra side of prevented match (MTP), or Cboe PITCH Order Id for displayed portion of reserve order after reload, or Cboe PITCH Order Id for the displayed portion of a reserve order after a Cancel/Replace increased the size of the reserve order. MMuusstt rreeqquueesstt oopptt--iinn aatt fifirrmm oorr ppoorrtt lleevveell ffoorr ""RReeppoorrtt MMTTPP FFiieellddss"" oorr ""RReessttaattee oonn RReellooaadd"" ttoo rreecceeiivvee tthhiiss fifieelldd..</Description>
+            </Field>
+          </Fields>
+        </Branch>
+        <Branch>
+          <Name>Replaced</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>5</Value>
+          <Fields>
+            <Field>
+              <Tag>41</Tag>
+              <Name>OrigClOrdID</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Cl Ord ID of the order being cancelled or replaced (for a solicited Cancel or Cancel/Replace, otherwise not present).</Description>
+            </Field>
+          </Fields>
+        </Branch>
+        <Branch>
+          <Name>Pending Cancel</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>6</Value>
+          <Fields></Fields>
+        </Branch>
+        <Branch>
+          <Name>Rejected</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>8</Value>
+          <Fields>
+            <Field>
+              <Tag>103</Tag>
+              <Name>OrdRejReason</Name>
+              <Required>N</Required>
+              <Type>int</Type>
+              <Description>Only used when Exec Typeis Rejected (8). 0=Exchange option 1=Unknown symbol 2=Exchange closed 3=Order exceeds limit 5=Unknown order 6=Duplicate order 8=Stale order</Description>
+            </Field>
+            <Field>
+              <Tag>58</Tag>
+              <Name>Text</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>If present, indicates reason for reject or cancel. Format is one letter reason code followed by colon and space followed by free form text message. (e.g., ‘N: No Liquidity at price’). The specific text the system delivers may vary from the text listed below, to provide clarification of the reject reason. Reason codes listed below are still under review for Cboe Australia. Reason codes are one of the following: A = Admin C = Capacity undefined D = Duplicate identifier (e.g., Cl Ord ID)</Description>
+            </Field>
+          </Fields>
+        </Branch>
+        <Branch>
+          <Name>Restated</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>D</Value>
+          <Fields>
+            <Field>
+              <Tag>378</Tag>
+              <Name>ExecRestatementReason</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Only present when 150=D 3=Repricing of Peg Order 4=State Change 5=Reduction of Ord Qtydue to SWP or MTP Decrement 6=Price Sliding Reprice or Reserve Order Reload C=Cboe Market Close (CMC)</Description>
+            </Field>
+            <Field>
+              <Tag>198</Tag>
+              <Name>SecondaryOrderID</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Present on a MTP triggered cancel/restatement, on a reserve reload restatement, and on a Cancel/Replace acknowledgment that increases the size of a reserve order. Cboe Order Id of contra side of prevented match (MTP), or Cboe PITCH Order Id for displayed portion of reserve order after reload, or Cboe PITCH Order Id for the displayed portion of a reserve order after a Cancel/Replace increased the size of the reserve order. MMuusstt rreeqquueesstt oopptt--iinn aatt fifirrmm oorr ppoorrtt lleevveell ffoorr ""RReeppoorrtt MMTTPP FFiieellddss"" oorr ""RReessttaattee oonn RReellooaadd"" ttoo rreecceeiivvee tthhiiss fifieelldd..</Description>
+            </Field>
+          </Fields>
+        </Branch>
+        <Branch>
+          <Name>Pending Replace</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>E</Value>
+          <Fields></Fields>
+        </Branch>
+      </Fields>
+    </Message>
+  </Messages>
+
+  <Values>
+    <Value>
+      <Type>BeginString</Type>
+      <Enum>FIX.4.2</Enum>
+      <Kind>Static</Kind>
+      <Description>FIX 4.2</Description>
+    </Value>
+
+    <!-- AttributedQuote -->
+    <Value>
+      <Type>AttributedQuote</Type>
+      <Enum>N</Enum>
+      <Description>Do not attribute firm MPID to this order.</Description>
+    </Value>
+    <Value>
+      <Type>AttributedQuote</Type>
+      <Enum>R</Enum>
+      <Description>Attribute "RTAL" to this order.</Description>
+    </Value>
+
+    <!-- CancelOrigOnReject -->
+    <Value>
+      <Type>CancelOrigOnReject</Type>
+      <Enum>N</Enum>
+      <Description>Leave original order alone.</Description>
+    </Value>
+
+    <!-- CrossTradeFlag (BYX Only) -->
+    <Value>
+      <Type>CrossTradeFlag (BYX Only)</Type>
+      <Enum>0</Enum>
+      <Description>None (to override port setting as necessary)</Description>
+    </Value>
+    <Value>
+      <Type>CrossTradeFlag (BYX Only)</Type>
+      <Enum>2</Enum>
+      <Description>Periodic Auction Eligible</Description>
+    </Value>
+
+    <!-- CxlRejReason -->
+    <Value>
+      <Type>CxlRejReason</Type>
+      <Enum>0</Enum>
+      <Description>Too late to cancel.</Description>
+    </Value>
+    <Value>
+      <Type>CxlRejReason</Type>
+      <Enum>3</Enum>
+      <Description>Already pending cancel or pending replace.</Description>
+    </Value>
+    <Value>
+      <Type>CxlRejReason</Type>
+      <Enum>2</Enum>
+      <Description>Broker Option</Description>
+    </Value>
+
+    <!-- CxlRejResponseTo -->
+    <Value>
+      <Type>CxlRejResponseTo</Type>
+      <Enum>1</Enum>
+      <Description>Cancel</Description>
+    </Value>
+
+    <!-- DisplayIndicator -->
+    <Value>
+      <Type>DisplayIndicator</Type>
+      <Enum>V</Enum>
+      <Description>Default. As determined by port level setting (defaults to S)</Description>
+    </Value>
+    <Value>
+      <Type>DisplayIndicator</Type>
+      <Enum>m</Enum>
+      <Description>Multiple Price Adjust</Description>
+    </Value>
+    <Value>
+      <Type>DisplayIndicator</Type>
+      <Enum>M</Enum>
+      <Description>Multiple Display Price Sliding OOtthheerr OOppttiioonnss::</Description>
+    </Value>
+
+    <!-- ExDestination -->
+    <Value>
+      <Type>ExDestination</Type>
+      <Enum>A</Enum>
+      <Description>NYSE American1</Description>
+    </Value>
+    <Value>
+      <Type>ExDestination</Type>
+      <Enum>C</Enum>
+      <Description>NYSE National</Description>
+    </Value>
+
+    <!-- ExecInst -->
+    <Value>
+      <Type>ExecInst</Type>
+      <Enum>f</Enum>
+      <Description>Intermarket Sweep (Directed or Cboe)</Description>
+    </Value>
+    <Value>
+      <Type>ExecInst</Type>
+      <Enum>Q</Enum>
+      <Description>Market Maker Peg (see below)</Description>
+    </Value>
+    <Value>
+      <Type>ExecInst</Type>
+      <Enum>U</Enum>
+      <Description>Supplemental Peg Order</Description>
+    </Value>
+    <Value>
+      <Type>ExecInst</Type>
+      <Enum>d</Enum>
+      <Description>Midpoint Discretionary Order</Description>
+    </Value>
+    <Value>
+      <Type>ExecInst</Type>
+      <Enum>o</Enum>
+      <Description>Listing Market Opening (for ROOC strategy only)</Description>
+    </Value>
+
+    <!-- ExecRestatementReason -->
+    <Value>
+      <Type>ExecRestatementReason</Type>
+      <Enum>3</Enum>
+      <Description>Repricing of Peg Order</Description>
+    </Value>
+    <Value>
+      <Type>ExecRestatementReason</Type>
+      <Enum>5</Enum>
+      <Description>Reduction of Ord Qtydue to SWP or MTP Decrement</Description>
+    </Value>
+    <Value>
+      <Type>ExecRestatementReason</Type>
+      <Enum>C</Enum>
+      <Description>Cboe Market Close (CMC)</Description>
+    </Value>
+
+    <!-- ExecTransType -->
+    <Value>
+      <Type>ExecTransType</Type>
+      <Enum>0</Enum>
+      <Description>New</Description>
+    </Value>
+    <Value>
+      <Type>ExecTransType</Type>
+      <Enum>1</Enum>
+      <Description>Trade Cancel</Description>
+    </Value>
+    <Value>
+      <Type>ExecTransType</Type>
+      <Enum>3</Enum>
+      <Description>Status</Description>
+    </Value>
+
+    <!-- ExecType -->
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>0</Enum>
+      <Description>New (acknowledgment of new order)</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>2</Enum>
+      <Description>Fill</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>4</Enum>
+      <Description>Canceled</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>6</Enum>
+      <Description>Pending Cancel</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>D</Enum>
+      <Description>Restated</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>M</Enum>
+      <Description>Mass Cancel Complete</Description>
+    </Value>
+
+    <!-- ExtendedExecInst -->
+    <Value>
+      <Type>ExtendedExecInst</Type>
+      <Enum>N</Enum>
+      <Description>None</Description>
+    </Value>
+    <Value>
+      <Type>ExtendedExecInst</Type>
+      <Enum>P</Enum>
+      <Description>Retail Order (Price Improvement Only)</Description>
+    </Value>
+    <Value>
+      <Type>ExtendedExecInst</Type>
+      <Enum>9416</Enum>
+      <Description>P, R or T. EDGX:</Description>
+    </Value>
+
+    <!-- MassCancelInst -->
+    <Value>
+      <Type>MassCancelInst</Type>
+      <Enum>A</Enum>
+      <Description>No filtering by MPID is performed.</Description>
+    </Value>
+
+    <!-- OrdRejReason -->
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>0</Enum>
+      <Description>Exchange option</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>2</Enum>
+      <Description>Exchange closed</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>5</Enum>
+      <Description>Unknown order</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>8</Enum>
+      <Description>Stale order</Description>
+    </Value>
+
+    <!-- OrdStatus -->
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>0</Enum>
+      <Description>New</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>2</Enum>
+      <Description>Filled</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>4</Enum>
+      <Description>Canceled</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>6</Enum>
+      <Description>Pending Cancel</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>A</Enum>
+      <Description>Pending Ack</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>8</Enum>
+      <Description>Rejected</Description>
+    </Value>
+
+    <!-- OrdType -->
+    <Value>
+      <Type>OrdType</Type>
+      <Enum>1</Enum>
+      <Description>Market (Regular Session only)</Description>
+    </Value>
+    <Value>
+      <Type>OrdType</Type>
+      <Enum>3</Enum>
+      <Description>Stop</Description>
+    </Value>
+
+    <!-- OrderCapacity -->
+    <Value>
+      <Type>OrderCapacity</Type>
+      <Enum>A</Enum>
+      <Description>Agency</Description>
+    </Value>
+    <Value>
+      <Type>OrderCapacity</Type>
+      <Enum>R</Enum>
+      <Description>Riskless Principal</Description>
+    </Value>
+
+    <!-- PreventMemberMatch -->
+    <Value>
+      <Type>PreventMemberMatch</Type>
+      <Enum>N</Enum>
+      <Description>Cancel Newest</Description>
+    </Value>
+    <Value>
+      <Type>PreventMemberMatch</Type>
+      <Enum>B</Enum>
+      <Description>Cancel Both</Description>
+    </Value>
+    <Value>
+      <Type>PreventMemberMatch</Type>
+      <Enum>D</Enum>
+      <Description>Decrement Larger / Cancel Smaller</Description>
+    </Value>
+    <Value>
+      <Type>PreventMemberMatch</Type>
+      <Enum>F</Enum>
+      <Description>Prevent Match at Firm(Member) Level</Description>
+    </Value>
+
+    <!-- RiskReset -->
+    <Value>
+      <Type>RiskReset</Type>
+      <Enum>S</Enum>
+      <Description>Symbol level lockout reset</Description>
+    </Value>
+
+    <!-- RoutStrategy -->
+    <Value>
+      <Type>RoutStrategy</Type>
+      <Enum>ALLB</Enum>
+      <Description>Book + IOC Other Cboe Exchanges</Description>
+    </Value>
+    <Value>
+      <Type>RoutStrategy</Type>
+      <Enum>ROUX</Enum>
+      <Description>Book + Street</Description>
+    </Value>
+    <Value>
+      <Type>RoutStrategy</Type>
+      <Enum>SWPA</Enum>
+      <Description>ISO Sweep of All Protected Markets</Description>
+    </Value>
+    <Value>
+      <Type>RoutStrategy</Type>
+      <Enum>DIRC</Enum>
+      <Description>Book + Midpoint IOC IEX (also requires Ord</Description>
+    </Value>
+    <Value>
+      <Type>RoutStrategy</Type>
+      <Enum>TRIM</Enum>
+      <Description>Book + NYSE National + Nasdaq Texas + (DRT)</Description>
+    </Value>
+
+    <!-- RoutingInst -->
+    <Value>
+      <Type>RoutingInst</Type>
+      <Enum>B</Enum>
+      <Description>Book Only (not routable, will remove from local book)</Description>
+    </Value>
+    <Value>
+      <Type>RoutingInst</Type>
+      <Enum>L</Enum>
+      <Description>Route to displayed markets only</Description>
+    </Value>
+
+    <!-- Side -->
+    <Value>
+      <Type>Side</Type>
+      <Enum>1</Enum>
+      <Description>Buy</Description>
+    </Value>
+    <Value>
+      <Type>Side</Type>
+      <Enum>5</Enum>
+      <Description>Sell Short (client affirms ability to borrow)</Description>
+    </Value>
+
+    <!-- TimeInForce -->
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>1</Enum>
+      <Description>GTC (Allowed, but treated same as Day)</Description>
+    </Value>
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>3</Enum>
+      <Description>IOC (Portion not filled immediately is cancelled.)</Description>
+    </Value>
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>5</Enum>
+      <Description>GTX (Early Trading Session until end of Post-Market Session)</Description>
+    </Value>
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>R</Enum>
+      <Description>RHO (Regular Hours/Session Only)</Description>
+    </Value>
+
+    <!-- TradeLiquidityIndicator -->
+    <Value>
+      <Type>TradeLiquidityIndicator</Type>
+      <Enum>A</Enum>
+      <Description>Trade Added Liquidity (</Description>
+    </Value>
+    <Value>
+      <Type>TradeLiquidityIndicator</Type>
+      <Enum>C</Enum>
+      <Description>Auction/Uncrossing (</Description>
+    </Value>
+    <Value>
+      <Type>TradeLiquidityIndicator</Type>
+      <Enum>R</Enum>
+      <Description>Trade Removed Liquidity (</Description>
+    </Value>
+    <Value>
+      <Type>TradeLiquidityIndicator</Type>
+      <Enum>X</Enum>
+      <Description>Routed Trade (</Description>
+    </Value>
+    <Value>
+      <Type>TradeLiquidityIndicator</Type>
+      <Enum>E</Enum>
+      <Description>Trade added RPI liquidity(BYX Only)</Description>
+    </Value>
+    <Value>
+      <Type>TradeLiquidityIndicator</Type>
+      <Enum>I</Enum>
+      <Description>Hidden liquidity add trade that was price improved</Description>
+    </Value>
+    <Value>
+      <Type>TradeLiquidityIndicator</Type>
+      <Enum>P</Enum>
+      <Description>Periodic Auction(BYX Only)</Description>
+    </Value>
+    <Value>
+      <Type>TradeLiquidityIndicator</Type>
+      <Enum>V</Enum>
+      <Description>Visible liquidity add trade that was price improved</Description>
+    </Value>
+
+
+    <!-- PossDupFlag (completed from the PDF) -->
+    <Value>
+      <Type>PossDupFlag</Type>
+      <Enum>N</Enum>
+      <Description>(Default)</Description>
+    </Value>
+    <Value>
+      <Type>PossDupFlag</Type>
+      <Enum>Y</Enum>
+      <Description>Indicates a message resend and should be used during FIX Replay.</Description>
+    </Value>
+
+    <!-- Side (completed from the PDF) -->
+    <Value>
+      <Type>Side</Type>
+      <Enum>2</Enum>
+      <Description>Sell</Description>
+    </Value>
+    <Value>
+      <Type>Side</Type>
+      <Enum>6</Enum>
+      <Description>Sell Short Exempt</Description>
+    </Value>
+
+    <!-- TimeInForce (completed from the PDF) -->
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>0</Enum>
+      <Description>DAY (Default) (Early Trading Session until end of Regular Session)</Description>
+    </Value>
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>2</Enum>
+      <Description>At the Open(Available on BZX and applicable to Cboe listed securities only)</Description>
+    </Value>
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>4</Enum>
+      <Description>FOK (An IOC where the entire size must be filled, else the order will be</Description>
+    </Value>
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>6</Enum>
+      <Description>GTD (Early Trading Session; expires at earlier of specifiedExpireTimeor end</Description>
+    </Value>
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>7</Enum>
+      <Description>At the Close(Available on BZX and applicable to Cboe listed securities and</Description>
+    </Value>
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>E</Enum>
+      <Description>PRE (Pre-Market Trading Session until end of Regular Session)</Description>
+    </Value>
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>T</Enum>
+      <Description>PTD (Pre-Market Trading Session; expires at earlier of specifiedExpireTime</Description>
+    </Value>
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>X</Enum>
+      <Description>PTX (Pre-Market Trading Session until end of Post-Market Session)</Description>
+    </Value>
+
+    <!-- ExecInst (completed from the PDF) -->
+    <Value>
+      <Type>ExecInst</Type>
+      <Enum>P</Enum>
+      <Description>Market Peg (peg Buy [Sell] to NBBO Offer [Bid])</Description>
+    </Value>
+    <Value>
+      <Type>ExecInst</Type>
+      <Enum>R</Enum>
+      <Description>Primary Peg (peg Buy [Sell] to NBBO Bid [Offer])</Description>
+    </Value>
+    <Value>
+      <Type>ExecInst</Type>
+      <Enum>M</Enum>
+      <Description>Midpoint (peg to NBBO Midpoint)</Description>
+    </Value>
+    <Value>
+      <Type>ExecInst</Type>
+      <Enum>m</Enum>
+      <Description>Midpoint (peg to NBBO Midpoint, but do not match when NBBO is locked)</Description>
+    </Value>
+    <Value>
+      <Type>ExecInst</Type>
+      <Enum>L</Enum>
+      <Description>Alternate Midpoint (less aggressive of midpoint and 1 tick inside NBBO)</Description>
+    </Value>
+    <Value>
+      <Type>ExecInst</Type>
+      <Enum>e</Enum>
+      <Description>Midpoint Discretionary Order with Quote Depletion Protection</Description>
+    </Value>
+    <Value>
+      <Type>ExecInst</Type>
+      <Enum>c</Enum>
+      <Description>Listing Market Close (for ROOC strategy only)</Description>
+    </Value>
+    <Value>
+      <Type>ExecInst</Type>
+      <Enum>a</Enum>
+      <Description>Both Listing Market Open and Close (for ROOC strategy only; also eligible</Description>
+    </Value>
+
+    <!-- ExtendedExecInst (completed from the PDF) -->
+    <Value>
+      <Type>ExtendedExecInst</Type>
+      <Enum>R</Enum>
+      <Description>Retail Order; eligible for Retail rebate.</Description>
+    </Value>
+    <Value>
+      <Type>ExtendedExecInst</Type>
+      <Enum>T</Enum>
+      <Description>Retail Price Improving Order</Description>
+    </Value>
+    <Value>
+      <Type>ExtendedExecInst</Type>
+      <Enum>X</Enum>
+      <Description>Retail Priority Order ; eligible for Retail Priority and Retail rebate rate.</Description>
+    </Value>
+
+    <!-- ExecTransType (completed from the PDF) -->
+    <Value>
+      <Type>ExecTransType</Type>
+      <Enum>2</Enum>
+      <Description>Trade Correct</Description>
+    </Value>
+
+    <!-- ExecType (completed from the PDF) -->
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>1</Enum>
+      <Description>Partial Fill</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>3</Enum>
+      <Description>DoneForDay</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>5</Enum>
+      <Description>Replaced</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>8</Enum>
+      <Description>Rejected</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>E</Enum>
+      <Description>Pending Replace</Description>
+    </Value>
+
+    <!-- ExecRestatementReason (completed from the PDF) -->
+    <Value>
+      <Type>ExecRestatementReason</Type>
+      <Enum>4</Enum>
+      <Description>State Change</Description>
+    </Value>
+    <Value>
+      <Type>ExecRestatementReason</Type>
+      <Enum>6</Enum>
+      <Description>Price Sliding Reprice or Reserve Order Reload</Description>
+    </Value>
+
+    <!-- OrdStatus (completed from the PDF) -->
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>1</Enum>
+      <Description>Partially Filled</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>3</Enum>
+      <Description>DoneForDay</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>5</Enum>
+      <Description>Replaced</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>E</Enum>
+      <Description>Pending Replace</Description>
+    </Value>
+
+    <!-- OrdRejReason (completed from the PDF) -->
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>1</Enum>
+      <Description>Unknown symbol</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>3</Enum>
+      <Description>Order exceeds limit</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>6</Enum>
+      <Description>Duplicate order</Description>
+    </Value>
+
+    <!-- TradeLiquidityIndicator (completed from the PDF) -->
+    <Value>
+      <Type>TradeLiquidityIndicator</Type>
+      <Enum>W</Enum>
+      <Description>Waiting for execution at pre-market time as defined byTimeInForce</Description>
+    </Value>
+    <Value>
+      <Type>TradeLiquidityIndicator</Type>
+      <Enum>H</Enum>
+      <Description>Hidden liquidity add trade</Description>
+    </Value>
+    <Value>
+      <Type>TradeLiquidityIndicator</Type>
+      <Enum>S</Enum>
+      <Description>NBBO-Setter fee eligible</Description>
+    </Value>
+    <Value>
+      <Type>TradeLiquidityIndicator</Type>
+      <Enum>m</Enum>
+      <Description>Trade added or removed liquidity against a Midpoint peg</Description>
+    </Value>
+  </Values>
+
+</OmiFixPdf>

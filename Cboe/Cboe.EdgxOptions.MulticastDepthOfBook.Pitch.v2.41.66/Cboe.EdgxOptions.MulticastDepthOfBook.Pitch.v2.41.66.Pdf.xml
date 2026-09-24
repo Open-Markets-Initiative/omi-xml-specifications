@@ -1,0 +1,1463 @@
+<OmiPitchOptionsPdf>
+
+  <Messages>
+
+    <!-- Time Message -->
+    <Message>
+      <Name>Time Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x20</Code>
+      <Description>A Time message is immediately generated and sent when there is a PITCH event for a given clock second. If there is no PITCH event for a given clock second, then no Time message is sent for that second. The Time field is the number of seconds relative to midnight Eastern Time. All subsequent time offset fields for the same unit will use the new Time message value as the base until another Time message is received for the same unit.</Description>
+      <Fields>
+        <Field>
+          <Name>Time</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Number of whole seconds elapsed since the start of the current Eastern Time calendar day, derived by converting the current Eastern wall clock time (HH:MM:SS) to seconds. On Daylight Saving Time transition days, Time reflects wall clock seconds and does not adjust for the UTC offset change. On a DST spring-forward day, the maximum value will be 82,799 (23 hours). On a DST fall-back day, values between 3,600 and 7,199 will appear twice. Recipients requiring unambiguous absolute timestamps should use Epoch Time (where available) or Midnight Reference in the Time Reference message.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Unit Clear Message -->
+    <Message>
+      <Name>Unit Clear Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x97</Code>
+      <Description>The Unit Clear message instructs feed recipients to clear all orders for the Cboe book in the unit specified in the Sequenced Unit Header message. For Equities only, this message will be sent at startup each day. It would also be distributed in certain recovery events such as a data center fail-over.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Time Offset</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Transaction Begin Message -->
+    <Message>
+      <Name>Transaction Begin Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0xBC</Code>
+      <Description>Options Only. The Transaction Begin message indicates any subsequent messages, up to the accompanying Transaction End message, are all part of the same transaction block. All PITCH messages corresponding to such an event would be included between a Transaction Begin message and Transaction End message. It is important to note that transaction blocks are currently used in US Options for symbol state transitions only, but may be expanded to other use cases with notice. Transaction Begin messages do not alter the book and can be ignored if messages are being used solely to build a book.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Time Offset</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Transaction End Message -->
+    <Message>
+      <Name>Transaction End Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0xBD</Code>
+      <Description>Options Only. The Transaction End message indicates that a transaction indicated by a previous Transaction Begin message has completed. Transaction End messages do not alter the book and can be ignored if messages are being used solely to build a book.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Time Offset</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Add Order Long Message -->
+    <Message>
+      <Name>Add Order Long Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x21</Code>
+      <Description>An Add Order message represents a newly accepted visible order on the Cboe book. It includes a day-specific Order Id assigned by Cboe to the order.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Time Offset</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+        <Field>
+          <Name>Order Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Day-specific identifier assigned to this order.</Description>
+        </Field>
+        <Field>
+          <Name>Side Indicator</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>B = Buy Order, S = Sell Order.</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Number of shares/contracts being added to the book (may be less than the number entered).</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Printable ASCII</Type>
+          <Size>6</Size>
+          <Description>Symbol right padded with spaces.</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Binary Long Price</Type>
+          <Size>8</Size>
+          <Description>The limit order price.</Description>
+        </Field>
+        <Field>
+          <Name>Add Flags</Name>
+          <Type>Bit Field</Type>
+          <Size>1</Size>
+          <Description>Bit 0 - Reserved, set to 1. Bits 1-2 - Reserved. Bit 3 - AON (Options only) (0 = Order is a firm quote, 1 = Order is AON (All or None)). Bits 4-7 - Reserved.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Add Order Short Message -->
+    <Message>
+      <Name>Add Order Short Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x22</Code>
+      <Description>An Add Order message represents a newly accepted visible order on the Cboe book. It includes a day-specific Order Id assigned by Cboe to the order.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Time Offset</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+        <Field>
+          <Name>Order Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Day-specific identifier assigned to this order.</Description>
+        </Field>
+        <Field>
+          <Name>Side Indicator</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>B = Buy Order, S = Sell Order.</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>Binary</Type>
+          <Size>2</Size>
+          <Description>Number of shares/contracts being added to the book (may be less than the number entered).</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Printable ASCII</Type>
+          <Size>6</Size>
+          <Description>Symbol right padded with spaces.</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Binary Short Price</Type>
+          <Size>2</Size>
+          <Description>The limit order price.</Description>
+        </Field>
+        <Field>
+          <Name>Add Flags</Name>
+          <Type>Bit Field</Type>
+          <Size>1</Size>
+          <Description>Bit 0 - Reserved, set to 1. Bits 1-2 - Reserved. Bit 3 - AON (Options only) (0 = Order is a firm quote, 1 = Order is AON (All or None)). Bits 4-7 - Reserved.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Add Order Expanded Message -->
+    <Message>
+      <Name>Add Order Expanded Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x2F</Code>
+      <Description>The expanded version of the Add Order message has been made available to accommodate larger symbol sizes possible through the ISRA plan.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Time Offset</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+        <Field>
+          <Name>Order Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Day-specific identifier assigned to this order.</Description>
+        </Field>
+        <Field>
+          <Name>Side Indicator</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>B = Buy Order, S = Sell Order.</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Number of shares/contracts being added to the book (may be less than the number entered).</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Printable ASCII</Type>
+          <Size>8</Size>
+          <Description>Symbol right padded with spaces.</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Binary Long Price</Type>
+          <Size>8</Size>
+          <Description>The limit order price.</Description>
+        </Field>
+        <Field>
+          <Name>Add Flags</Name>
+          <Type>Bit Field</Type>
+          <Size>1</Size>
+          <Description>Bit 0 - Reserved, set to 1. Bits 1-2 - Reserved. Bit 3 - AON (Options only) (0 = Order is a firm quote, 1 = Order is AON (All or None)). Bits 4-7 - Reserved.</Description>
+        </Field>
+        <Field>
+          <Name>ParticipantID</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Optionally specified. If specified, MPID (equities) or Executing Firm ID (options) of firm attributed to this quote. Alternatively "RTAL" for retail specified orders (equities). Space filled otherwise.</Description>
+        </Field>
+        <Field>
+          <Name>Customer Indicator</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>BZX/C1/EDGX Options Only (space filled on C2 Options and all equities markets). N = Non-Customer, C = Customer, R = Retail Priority order (EDGX Equities only).</Description>
+        </Field>
+        <Field>
+          <Name>Client ID</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Options Only. Optional user specified value attributed to this quote. Space filled otherwise.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>Reserved</Type>
+          <Size>5</Size>
+          <Description>Options Only. Reserved.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Order Executed Message -->
+    <Message>
+      <Name>Order Executed Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x23</Code>
+      <Description>Order Executed messages are sent when a visible order on the Cboe book is executed in whole or in part. The execution price equals the limit order price found in the original Add Order message or the limit order price in the latest Modify Order message referencing the Order Id.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Time Offset</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+        <Field>
+          <Name>Order Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Order Id of a previously sent Add Order message that was executed.</Description>
+        </Field>
+        <Field>
+          <Name>Executed Quantity</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Number of shares/contracts executed.</Description>
+        </Field>
+        <Field>
+          <Name>Execution Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Cboe generated day-unique execution identifier of this execution. Execution Id is also referenced in the Trade Break message.</Description>
+        </Field>
+        <Field>
+          <Name>Trade Condition</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Options Only (byte not sent in Equities). See Options Trade Condition Codes on page 180 section for details about new codes.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Order Executed at Price Size Message -->
+    <Message>
+      <Name>Order Executed at Price Size Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x24</Code>
+      <Description>Order Executed at Price/Size messages are sent when a visible order on the Cboe book is executed in whole or in part at a different price than the limit price on the original Add Order message or the limit order price in the latest Modify Order message referencing the Order Id. If the Remaining Quantity field contains a 0 the order should be completely removed from the book. Order Executed at Price/Size messages may also be sent in cases where the Executed Quantity is greater than the current booked size for Order Id due to Exchange features that allow a portion of an order to be hidden while another portion is displayed.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Time Offset</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+        <Field>
+          <Name>Order Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Order Id of a previously sent Add Order message that was executed.</Description>
+        </Field>
+        <Field>
+          <Name>Executed Quantity</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Number of shares/contracts executed.</Description>
+        </Field>
+        <Field>
+          <Name>Remaining Quantity</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Number of shares/contracts remaining after the execution.</Description>
+        </Field>
+        <Field>
+          <Name>Execution Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Cboe generated day-unique execution identifier of this execution. Execution Id is also referenced in the Trade Break message.</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Binary Long Price</Type>
+          <Size>8</Size>
+          <Description>The execution price of the order.</Description>
+        </Field>
+        <Field>
+          <Name>Trade Condition</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Options Only (byte not sent in Equities). See Options Trade Condition Codes on page 180 for details about new codes.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Reduce Size Long Message -->
+    <Message>
+      <Name>Reduce Size Long Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x25</Code>
+      <Description>Reduce Size messages are sent when a visible order on the Cboe book is partially reduced.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Time Offset</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+        <Field>
+          <Name>Order Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Order Id of a previously sent Add Order message that has been reduced.</Description>
+        </Field>
+        <Field>
+          <Name>Canceled Quantity</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Number of shares/contracts canceled.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Reduce Size Short Message -->
+    <Message>
+      <Name>Reduce Size Short Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x26</Code>
+      <Description>Reduce Size messages are sent when a visible order on the Cboe book is partially reduced.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Time Offset</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+        <Field>
+          <Name>Order Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Order Id of a previously sent Add Order message that has been reduced.</Description>
+        </Field>
+        <Field>
+          <Name>Canceled Quantity</Name>
+          <Type>Binary</Type>
+          <Size>2</Size>
+          <Description>Number of shares/contracts canceled.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Modify Order Long Message -->
+    <Message>
+      <Name>Modify Order Long Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x27</Code>
+      <Description>The Modify Order message is sent whenever an open order is visibly modified. The Order Id refers to the Order Id of the original Add Order message. Note that Modify Order messages that appear to be "No Ops" (i.e. they do not appear to modify any relevant fields) will still lose priority.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Time Offset</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+        <Field>
+          <Name>Order Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Order Id of a previously sent Add Order message that has been modified.</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Number of shares/contracts associated with this order after this modify (may be less than the number entered).</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Binary Long Price</Type>
+          <Size>8</Size>
+          <Description>The limit order price after this modify.</Description>
+        </Field>
+        <Field>
+          <Name>Modify Flags</Name>
+          <Type>Bit Field</Type>
+          <Size>1</Size>
+          <Description>Bit 0 - Display (0 = Order is not aggregated in the Cboe SIP quote, 1 = Order is aggregated in the Cboe SIP quote). Bit 1 - Maintain Priority (0 = Reset Priority, 1 = Maintain Priority). Bits 2-7 Reserved.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Modify Order Short Message -->
+    <Message>
+      <Name>Modify Order Short Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x28</Code>
+      <Description>The Modify Order message is sent whenever an open order is visibly modified. The Order Id refers to the Order Id of the original Add Order message.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Time Offset</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+        <Field>
+          <Name>Order Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Order Id of a previously sent Add Order message that has been modified.</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>Binary</Type>
+          <Size>2</Size>
+          <Description>Number of shares/contracts associated with this order after this modify (may be less than the number entered).</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Binary Short Price</Type>
+          <Size>2</Size>
+          <Description>The limit order price after this modify.</Description>
+        </Field>
+        <Field>
+          <Name>Modify Flags</Name>
+          <Type>Bit Field</Type>
+          <Size>1</Size>
+          <Description>Bit 0 - Display (0 = Order is not aggregated in the Cboe SIP quote, 1 = Order is aggregated in the Cboe SIP quote). Bit 1 - Maintain Priority (0 = Reset Priority, 1 = Maintain Priority). Bits 2-7 Reserved.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Delete Order Message -->
+    <Message>
+      <Name>Delete Order Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x29</Code>
+      <Description>The Delete Order message is sent whenever a booked order is cancelled or leaves the order book. The Order Id refers to the Order Id of the original Add Order message. An order that is deleted from the book may return to the book later under certain circumstances. Therefore, a Delete Order message does not indicate that a given Order Id will not be sent again on a subsequent Add Order message.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Time Offset</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+        <Field>
+          <Name>Order Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Order Id of a previously sent Add Order message that has been removed from order book.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Trade Long Message -->
+    <Message>
+      <Name>Trade Long Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x2A</Code>
+      <Description>The Trade message provides information about executions of non-displayed orders on the Cboe book and routed executions to other trading centers. In options a Trade message can also be sent when an auction executes against a non-displayed order, such as a contra response. Trade messages are necessary to calculate Cboe execution-based data. Trade messages do not alter the book and can be ignored if messages are being used solely to build a book. The Order ID of a hidden order is obfuscated by default in the Trade message, but may be optionally disseminated for a member's own orders upon request.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Time Offset</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+        <Field>
+          <Name>Order Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Obfuscated Order ID or Order Id of the executed order.</Description>
+        </Field>
+        <Field>
+          <Name>Side Indicator</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Always B=Buy Order regardless of resting side.</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Incremental number of shares/contracts executed.</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Printable ASCII</Type>
+          <Size>6</Size>
+          <Description>Symbol right padded with spaces.</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Binary Long Price</Type>
+          <Size>8</Size>
+          <Description>The execution price of the order.</Description>
+        </Field>
+        <Field>
+          <Name>Execution Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Cboe generated day-unique execution identifier of this trade. Execution Id is also referenced in the Trade Break message.</Description>
+        </Field>
+        <Field>
+          <Name>Trade Condition</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Options Only (byte not sent in Equities). See Options Trade Condition Codes on page 180 section for details about new codes.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Trade Short Message -->
+    <Message>
+      <Name>Trade Short Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x2B</Code>
+      <Description>The Trade message provides information about executions of non-displayed orders on the Cboe book and routed executions to other trading centers. The Short variant uses a Binary Short Price and 2-byte Quantity.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Time Offset</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+        <Field>
+          <Name>Order Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Obfuscated Order ID or Order Id of the executed order.</Description>
+        </Field>
+        <Field>
+          <Name>Side Indicator</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Always B=Buy Order regardless of resting side.</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>Binary</Type>
+          <Size>2</Size>
+          <Description>Incremental Number of shares/contracts executed.</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Printable ASCII</Type>
+          <Size>6</Size>
+          <Description>Symbol right padded with spaces.</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Binary Short Price</Type>
+          <Size>2</Size>
+          <Description>The execution price of the order.</Description>
+        </Field>
+        <Field>
+          <Name>Execution Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Cboe generated day-unique execution identifier of this trade. Execution Id is also referenced in the Trade Break message.</Description>
+        </Field>
+        <Field>
+          <Name>Trade Condition</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Options Only (byte not sent in Equities). See Options Trade Condition Codes on page 180 section for details about new codes.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Trade Expanded Message -->
+    <Message>
+      <Name>Trade Expanded Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x30</Code>
+      <Description>The expanded version of the Trade message has been made available to accommodate larger symbol sizes possible through the ISRA plan.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Time Offset</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+        <Field>
+          <Name>Order Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Obfuscated Order ID or Order Id of the executed order.</Description>
+        </Field>
+        <Field>
+          <Name>Side Indicator</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Always B=Buy Order regardless of resting side.</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Incremental number of shares/contracts executed.</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Printable ASCII</Type>
+          <Size>8</Size>
+          <Description>Symbol right padded with spaces.</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Binary Long Price</Type>
+          <Size>8</Size>
+          <Description>The execution price of the order.</Description>
+        </Field>
+        <Field>
+          <Name>Execution Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Cboe generated day-unique execution identifier of this trade. Execution Id is also referenced in the Trade Break message.</Description>
+        </Field>
+        <Field>
+          <Name>Trade Condition</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Options Only (byte not sent in Equities). See Options Trade Condition Codes on page 180 section for details about new codes.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Trade Break Message -->
+    <Message>
+      <Name>Trade Break Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x2C</Code>
+      <Description>The Trade Break message is sent whenever an execution on Cboe is broken. Trade breaks are rare and only affect applications that rely upon Cboe execution-based data. Applications that simply build a Cboe book can ignore Trade Break messages.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Time Offset</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+        <Field>
+          <Name>Execution Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Cboe execution identifier of the execution that was broken. Execution Id refers to previously sent Order Executed or Trade message.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- End of Session Message -->
+    <Message>
+      <Name>End of Session Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x2D</Code>
+      <Description>The End of Session message is sent for each unit when the unit shuts down. No more sequenced messages will be delivered for this unit, but heartbeats from the unit may be received.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Time Offset</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Symbol Mapping Message -->
+    <Message>
+      <Name>Symbol Mapping Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x2E</Code>
+      <Description>Options Only. A Symbol Mapping message is used to map the 6 character multicast feed symbol field to an OSI symbol and Underlying. These messages are not sequenced (sequence = 0) and are sent continuously through the day at variable rates as bandwidth allows. Members who consume the 5 Gig or 8 Gig-Shaped Multicast PITCH feeds will be able to receive the full list of symbols in approximately 5 minutes.</Description>
+      <Fields>
+        <Field>
+          <Name>Feed Symbol</Name>
+          <Type>Printable ASCII</Type>
+          <Size>6</Size>
+          <Description>Symbol right padded with spaces.</Description>
+        </Field>
+        <Field>
+          <Name>OSI Symbol</Name>
+          <Type>Printable ASCII</Type>
+          <Size>21</Size>
+          <Description>OSI Symbol.</Description>
+        </Field>
+        <Field>
+          <Name>Symbol Condition</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>N = Normal, C = Closing Only.</Description>
+        </Field>
+        <Field>
+          <Name>Underlying</Name>
+          <Type>Alphanumeric</Type>
+          <Size>8</Size>
+          <Description>Symbol of underlying equity right padded with spaces.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Trading Status Message -->
+    <Message>
+      <Name>Trading Status Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x31</Code>
+      <Description>The Trading Status message is used to indicate the current trading status of a security. A Trading Status message will be sent whenever a security's trading status changes. The Trading Status field will be used to represent the status of the RTH (9:30 a.m. ET - 4:15 p.m. ET) and Curb sessions. The GTH Trading Status field will be used to represent the status of series that trade during the GTH session. The GTH session runs from 8:15 p.m. to 9:25 a.m. ET for GTH-eligible Products (C1 Options Only).</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Time Offset</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Printable ASCII</Type>
+          <Size>6</Size>
+          <Description>Symbol right padded with spaces.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>Reserved</Type>
+          <Size>2</Size>
+          <Description>Reserved.</Description>
+        </Field>
+        <Field>
+          <Name>Trading Status</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>H = Halted, L = Curb Trading (C1 Only), Q = Quote-Only, R = Opening Rotation, T = RTH Trading.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>Reserved</Type>
+          <Size>1</Size>
+          <Description>Reserved.</Description>
+        </Field>
+        <Field>
+          <Name>GTH Trading Status</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>C1 Only. H = Halted, Q = Quote-Only, R = Opening Rotation, T = Trading.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved2</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>Reserved.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Width Update Message -->
+    <Message>
+      <Name>Width Update Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0xD2</Code>
+      <Description>Options Only. The Width Update message is used to communicate opening quote width multiplier. This message will be sent in the event that the exchange decides to change the quote width multiplier on a per underlying basis. For complete details on the opening collars see the US Options Opening Process Specification.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Time Offset</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+        <Field>
+          <Name>Underlying</Name>
+          <Type>Printable ASCII</Type>
+          <Size>8</Size>
+          <Description>Underlying right padded with spaces.</Description>
+        </Field>
+        <Field>
+          <Name>Width Type</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>R = Regular, V = Volatility.</Description>
+        </Field>
+        <Field>
+          <Name>Multiplier</Name>
+          <Type>Multiplier</Type>
+          <Size>4</Size>
+          <Description>Width multiplier.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Options Auction Update Message -->
+    <Message>
+      <Name>Options Auction Update Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0xD1</Code>
+      <Description>Options Only. Options Auction Update messages are used to disseminate price and size information and Composite Market bid and offer prices during Opening and Re-Opening (halt) auctions on the Cboe Options Exchange. Options Auction Update messages are sent every five seconds during an opening period provided that one of the field values has changed. When no values have changed, a message is sent once every 60 seconds. Refer to the Cboe Options Opening Process specification for more information.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Time Offset</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Printable ASCII</Type>
+          <Size>8</Size>
+          <Description>Symbol right padded with spaces.</Description>
+        </Field>
+        <Field>
+          <Name>Auction Type</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>G = GTH Opening (C1 Only), O = RTH Opening (C1 Only), H = Halt Re-Opening, V = Volatility Opening.</Description>
+        </Field>
+        <Field>
+          <Name>Reference Price</Name>
+          <Type>Binary Long Price</Type>
+          <Size>8</Size>
+          <Description>Collared VMIM price computed on the queuing book only.</Description>
+        </Field>
+        <Field>
+          <Name>Buy Contracts</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Cumulative Buy contracts at the Reference Price and above.</Description>
+        </Field>
+        <Field>
+          <Name>Sell Contracts</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Cumulative Sell contracts at the Reference Price and below.</Description>
+        </Field>
+        <Field>
+          <Name>Indicative Price</Name>
+          <Type>Binary Long Price</Type>
+          <Size>8</Size>
+          <Description>Collared VMIM price computed on the combined queueing book and the continuous book. Equal to Reference Price for options that do not have a GTH trading session.</Description>
+        </Field>
+        <Field>
+          <Name>Auction Only Price</Name>
+          <Type>Binary Long Price</Type>
+          <Size>8</Size>
+          <Description>Uncollared VMIM price computed on the queuing book only.</Description>
+        </Field>
+        <Field>
+          <Name>Opening Condition</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>O = Would open, Q = Need quote to open, B = Need more buyers (C1 Only), S = Need more sellers (C1 Only), C = Crossed Composite Market.</Description>
+        </Field>
+        <Field>
+          <Name>Composite Market Bid Price</Name>
+          <Type>Binary Long Price</Type>
+          <Size>8</Size>
+          <Description>Bid Price of the prevailing Composite Market.</Description>
+        </Field>
+        <Field>
+          <Name>Composite Market Offer Price</Name>
+          <Type>Binary Long Price</Type>
+          <Size>8</Size>
+          <Description>Offer Price of the prevailing Composite Market.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Auction Summary Message -->
+    <Message>
+      <Name>Auction Summary Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x96</Code>
+      <Description>Auction Summary messages are used to disseminate the results of an auction of a Cboe listed security on BZX, the results of an Opening or Re-Opening of any options series on C1, and for Periodic Auctions on BYX. Auction Summary messages are also used in support of Opening and Re-Openings on the Cboe Options Exchange, including those for both GTH and RTH sessions. These messages indicate the price and size executed in such an Opening or Re-Opening.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Time Offset</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+        <Field>
+          <Name>Stock Symbol</Name>
+          <Type>Printable ASCII</Type>
+          <Size>8</Size>
+          <Description>Stock Symbol right padded with spaces.</Description>
+        </Field>
+        <Field>
+          <Name>Auction Type</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>O = Opening Auction (C1 Only), C = Closing Auction, G = GTH Opening (C1 Only), H = Halt Auction, I = IPO Auction, M = Cboe Market Close, V = Volitility Auction, P = Periodic Auction (BYX Only).</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Binary Long Price</Type>
+          <Size>8</Size>
+          <Description>Auction price or CMC match price.</Description>
+        </Field>
+        <Field>
+          <Name>Shares/Contracts</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Cumulative number of shares/contracts executed during the auction or CMC matching.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Auction Notification Message -->
+    <Message>
+      <Name>Auction Notification Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0xAD</Code>
+      <Description>C1 and EDGX Options Only. Auction Notification messages are used to disseminate order details of an auction. Auctions will be available for a defined period of time known as the exposure period.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Time Offset</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Printable ASCII</Type>
+          <Size>6</Size>
+          <Description>Symbol right padded with spaces.</Description>
+        </Field>
+        <Field>
+          <Name>Auction ID</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Day specific identifier assigned to this auction.</Description>
+        </Field>
+        <Field>
+          <Name>Auction Type</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>B = Bats Auction Mechanism (BAM) (EDGX Only) or AIM (C1 Only), S = Solicitation Auction Mechanism (C1 Only), T = Step Up Mechanism (SUM), A = SUM All or None.</Description>
+        </Field>
+        <Field>
+          <Name>Side</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>B or S.</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Binary Long Price</Type>
+          <Size>8</Size>
+          <Description>For SUM this will reflect the NBBO price of the opposite side of the auction at the time of entry. For BAM and SAM this will reflect the limit price specified on the order. For SPX and SPXW AIM, this field will reflect the auction start price (C1 Only). For all other AIM this field will be zero.</Description>
+        </Field>
+        <Field>
+          <Name>Contracts</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Number of contracts available in the auction.</Description>
+        </Field>
+        <Field>
+          <Name>Customer Indicator</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>N = Non-Customer, C = Customer.</Description>
+        </Field>
+        <Field>
+          <Name>ParticipantID</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Executing Broker (optional) of firm attributed to this quote.</Description>
+        </Field>
+        <Field>
+          <Name>AuctionEndOffset</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last timestamp.</Description>
+        </Field>
+        <Field>
+          <Name>Client ID</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Optional user specified value attributed to this quote.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Auction Cancel Message -->
+    <Message>
+      <Name>Auction Cancel Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0xAE</Code>
+      <Description>C1 and EDGX Options Only. Auction Cancel messages are used to disseminate the cancelation of an earlier Auction Notification message as a result of a user cancelation of the original order, a user modification request to change the price or increase the original order quantity, a fading of the NBBO or to cancel any remaining order quantity from the original Auction Notification messages following the auction termination. A user request to modify the order price or to increase the original order quantity will result in a cancelation of the auction followed by a new Auction Notification message. Auction Cancel messages will not be issued for order quantity decrements.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Time Offset</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+        <Field>
+          <Name>Auction ID</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Day specific identifier assigned to this auction.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Auction Trade Message -->
+    <Message>
+      <Name>Auction Trade Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0xAF</Code>
+      <Description>C1 and EDGX Options Only. Auction Trade messages are used to disseminate executions resulting from an options auction.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Time Offset</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+        <Field>
+          <Name>Auction ID</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Day specific identifier assigned to this auction.</Description>
+        </Field>
+        <Field>
+          <Name>Execution ID</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Day specific identifier assigned to this execution.</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Binary Long Price</Type>
+          <Size>8</Size>
+          <Description>Trade price.</Description>
+        </Field>
+        <Field>
+          <Name>Contracts</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Number of contracts traded.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- SOQ Strike Range Update Message -->
+    <Message>
+      <Name>SOQ Strike Range Update Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x9D</Code>
+      <Description>C1 Only. The SOQ Strike Range Update message is only available on the C1 Exchange. This message disseminates the minimum and maximum strike prices of the strike price range used to calculate the Special Opening Quote (SOQ) on a Volatility Settlement date. In the event that multiple distinct SOQ calculations occur on the same day, the applicable SOQ is differentiated by the SOQ Identifier field, which is set to the CSMi symbol on which the final settlement SOQ value is disseminated.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Time Offset</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+        <Field>
+          <Name>SOQ Identifier</Name>
+          <Type>Printable ASCII</Type>
+          <Size>20</Size>
+          <Description>Dissemination symbol of the final SOQ right padded with spaces.</Description>
+        </Field>
+        <Field>
+          <Name>Lower Strike Price</Name>
+          <Type>Binary Long Price</Type>
+          <Size>8</Size>
+          <Description>SOQ lower strike price.</Description>
+        </Field>
+        <Field>
+          <Name>Upper Strike Price</Name>
+          <Type>Binary Long Price</Type>
+          <Size>8</Size>
+          <Description>SOQ upper strike price.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Constituent Symbol Mapping Message -->
+    <Message>
+      <Name>Constituent Symbol Mapping Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x9E</Code>
+      <Description>C1 Only. The Constituent Symbol Mapping message is only available on the C1 Exchange. This message is used to communicate which options series (if any) are Constituent Series in a Volatility Settlement Special Opening Quote (SOQ). The message is identical to the Symbol Mapping message with the addition of the SOQ Identifier field, which is set to the CSMi symbol on which the final settlement SOQ value is disseminated. The Constituent Symbol Mapping message is sent as an unsequenced message with one message sent for each Constituent Series in a continuous loop as bandwidth allows.</Description>
+      <Fields>
+        <Field>
+          <Name>Feed Symbol</Name>
+          <Type>Printable ASCII</Type>
+          <Size>6</Size>
+          <Description>Symbol right padded with spaces.</Description>
+        </Field>
+        <Field>
+          <Name>OSI Symbol</Name>
+          <Type>Printable ASCII</Type>
+          <Size>21</Size>
+          <Description>OSI Symbol.</Description>
+        </Field>
+        <Field>
+          <Name>Symbol Condition</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>N = Normal, C = Closing Only.</Description>
+        </Field>
+        <Field>
+          <Name>Underlying</Name>
+          <Type>Alphanumeric</Type>
+          <Size>8</Size>
+          <Description>Symbol of underlying equity right padded with spaces.</Description>
+        </Field>
+        <Field>
+          <Name>SOQ Identifier</Name>
+          <Type>Printable ASCII</Type>
+          <Size>20</Size>
+          <Description>Dissemination symbol of the final SOQ right padded with spaces.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+  </Messages>
+
+  <!-- Bitfields -->
+
+  <Bitfields>
+
+    <!-- Add Flags -->
+    <Bitfield>
+      <Name>Add Flags</Name>
+      <Description>Add Flags bit field used in Add Order messages. Bit 3 indicates AON (All or None) status (Options only).</Description>
+      <Fields>
+        <Field>
+          <Name>Reserved</Name>
+          <Bits>3</Bits>
+          <Type>bit</Type>
+          <Description>Bits 0-2 Reserved (Bit 0 set to 1).</Description>
+        </Field>
+        <Field>
+          <Name>AON</Name>
+          <Bits>1</Bits>
+          <Type>bit</Type>
+          <Description>Options only. 0 = Order is a firm quote, 1 = Order is AON (All or None).</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Bits>4</Bits>
+          <Type>bit</Type>
+          <Description>Bits 4-7 Reserved.</Description>
+        </Field>
+      </Fields>
+    </Bitfield>
+
+    <!-- Modify Flags -->
+    <Bitfield>
+      <Name>Modify Flags</Name>
+      <Description>Modify Flags bit field used in Modify Order messages. Bit 0 indicates whether the order is aggregated in the Cboe SIP quote; Bit 1 indicates whether priority is maintained or reset.</Description>
+      <Fields>
+        <Field>
+          <Name>Display</Name>
+          <Bits>1</Bits>
+          <Type>bit</Type>
+          <Description>0 = Order is not aggregated in the Cboe SIP quote, 1 = Order is aggregated in the Cboe SIP quote.</Description>
+        </Field>
+        <Field>
+          <Name>Maintain Priority</Name>
+          <Bits>1</Bits>
+          <Type>bit</Type>
+          <Description>0 = Reset Priority, 1 = Maintain Priority.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Bits>6</Bits>
+          <Type>bit</Type>
+          <Description>Bits 2-7 Reserved.</Description>
+        </Field>
+      </Fields>
+    </Bitfield>
+
+  </Bitfields>
+
+  <!-- Enums -->
+
+  <Enums>
+
+    <!-- Side Indicator -->
+    <Enum>
+      <Name>Side Indicator</Name>
+      <Values>
+        <Value><Data>B</Data><Name>Buy Order</Name></Value>
+        <Value><Data>S</Data><Name>Sell Order</Name></Value>
+      </Values>
+    </Enum>
+
+    <!-- Customer Indicator -->
+    <Enum>
+      <Name>Customer Indicator</Name>
+      <Values>
+        <Value><Data>N</Data><Name>Non-Customer</Name></Value>
+        <Value><Data>C</Data><Name>Customer</Name></Value>
+        <Value><Data>R</Data><Name>Retail Priority order</Name></Value>
+      </Values>
+    </Enum>
+
+    <!-- Symbol Condition -->
+    <Enum>
+      <Name>Symbol Condition</Name>
+      <Values>
+        <Value><Data>N</Data><Name>Normal</Name></Value>
+        <Value><Data>C</Data><Name>Closing Only</Name></Value>
+      </Values>
+    </Enum>
+
+    <!-- Trading Status -->
+    <Enum>
+      <Name>Trading Status</Name>
+      <Values>
+        <Value><Data>H</Data><Name>Halted</Name></Value>
+        <Value><Data>L</Data><Name>Curb Trading</Name></Value>
+        <Value><Data>Q</Data><Name>Quote-Only</Name></Value>
+        <Value><Data>R</Data><Name>Opening Rotation</Name></Value>
+        <Value><Data>T</Data><Name>RTH Trading</Name></Value>
+      </Values>
+    </Enum>
+
+    <!-- GTH Trading Status -->
+    <Enum>
+      <Name>GTH Trading Status</Name>
+      <Values>
+        <Value><Data>H</Data><Name>Halted</Name></Value>
+        <Value><Data>Q</Data><Name>Quote-Only</Name></Value>
+        <Value><Data>R</Data><Name>Opening Rotation</Name></Value>
+        <Value><Data>T</Data><Name>Trading</Name></Value>
+      </Values>
+    </Enum>
+
+    <!-- Width Type -->
+    <Enum>
+      <Name>Width Type</Name>
+      <Values>
+        <Value><Data>R</Data><Name>Regular</Name></Value>
+        <Value><Data>V</Data><Name>Volatility</Name></Value>
+      </Values>
+    </Enum>
+
+    <!-- Auction Type -->
+    <Enum>
+      <Name>Auction Type</Name>
+      <Values>
+        <Value><Data>O</Data><Name>Opening Auction</Name></Value>
+        <Value><Data>C</Data><Name>Closing Auction</Name></Value>
+        <Value><Data>G</Data><Name>GTH Opening</Name></Value>
+        <Value><Data>H</Data><Name>Halt Auction</Name></Value>
+        <Value><Data>I</Data><Name>IPO Auction</Name></Value>
+        <Value><Data>M</Data><Name>Cboe Market Close</Name></Value>
+        <Value><Data>V</Data><Name>Volitility Auction</Name></Value>
+        <Value><Data>P</Data><Name>Periodic Auction</Name></Value>
+      </Values>
+    </Enum>
+
+    <!-- Opening Condition -->
+    <Enum>
+      <Name>Opening Condition</Name>
+      <Values>
+        <Value><Data>O</Data><Name>Would open</Name></Value>
+        <Value><Data>Q</Data><Name>Need quote to open</Name></Value>
+        <Value><Data>B</Data><Name>Need more buyers</Name></Value>
+        <Value><Data>S</Data><Name>Need more sellers</Name></Value>
+        <Value><Data>C</Data><Name>Crossed Composite Market</Name></Value>
+      </Values>
+    </Enum>
+
+    <!-- Side -->
+    <Enum>
+      <Name>Side</Name>
+      <Values>
+        <Value><Data>B</Data><Name>Buy</Name></Value>
+        <Value><Data>S</Data><Name>Sell</Name></Value>
+      </Values>
+    </Enum>
+
+    <!-- Trade Condition -->
+    <Enum>
+      <Name>Trade Condition</Name>
+      <Values>
+        <Value><Data>a</Data><Name>Single Leg Auction Non ISO. Cboe auction types include AIM, SAM</Name></Value>
+        <Value><Data>b</Data><Name>Single Leg Auction ISO. Cboe auction types are AIM ISO, SAM ISO</Name></Value>
+        <Value><Data>c</Data><Name>Single Leg Cross Non ISO. Cboe auction types include Cust to Cust AIM, QCC</Name></Value>
+        <Value><Data>d</Data><Name>Single Leg Cross ISO. Cboe order type is Cust to Cust AIM ISO</Name></Value>
+        <Value><Data>e</Data><Name>Single Leg Floor Trade</Name></Value>
+        <Value><Data>f</Data><Name>Complex to Complex Electronic Trade</Name></Value>
+        <Value><Data>g</Data><Name>Complex Auction Trade</Name></Value>
+        <Value><Data>h</Data><Name>Complex Cross</Name></Value>
+        <Value><Data>j</Data><Name>Complex Electronic Trade Against Single Leg(s)</Name></Value>
+        <Value><Data>k</Data><Name>Complex with Stock Options Auction Trade</Name></Value>
+        <Value><Data>m</Data><Name>Complex Floor Trade Against Single Leg(s)</Name></Value>
+        <Value><Data>n</Data><Name>Complex with Stock Electronic Trade</Name></Value>
+        <Value><Data>o</Data><Name>Complex with Stock Cross</Name></Value>
+        <Value><Data>p</Data><Name>Complex with Stock Floor Trade</Name></Value>
+        <Value><Data>t</Data><Name>Complex Floor Trade of Proprietary Products Marked as "Combo Order"</Name></Value>
+        <Value><Data>u</Data><Name>Multilateral Compression Trade of Proprietary Products</Name></Value>
+        <Value><Data>v</Data><Name>Extended Hours Trade</Name></Value>
+        <Value><Data>l</Data><Name>Electronic Trade</Name></Value>
+        <Value><Data>K</Data><Name>Cabinet Order</Name></Value>
+        <Value><Data>O</Data><Name>Opening Trade</Name></Value>
+        <Value><Data>S</Data><Name>ISO</Name></Value>
+      </Values>
+    </Enum>
+
+
+    <!-- AON -->
+    <Enum>
+      <Name>AON</Name>
+      <Values>
+        <Value><Data>0</Data><Name>Order is a firm quote</Name></Value>
+        <Value><Data>1</Data><Name>Order is AON (All or None)</Name></Value>
+      </Values>
+    </Enum>
+
+    <!-- Display -->
+    <Enum>
+      <Name>Display</Name>
+      <Values>
+        <Value><Data>0</Data><Name>Order is not aggregated in the Cboe SIP quote</Name></Value>
+        <Value><Data>1</Data><Name>Order is aggregated in the Cboe SIP quote</Name></Value>
+      </Values>
+    </Enum>
+
+    <!-- Maintain Priority -->
+    <Enum>
+      <Name>Maintain Priority</Name>
+      <Values>
+        <Value><Data>0</Data><Name>Reset Priority</Name></Value>
+        <Value><Data>1</Data><Name>Maintain Priority</Name></Value>
+      </Values>
+    </Enum>
+  </Enums>
+
+</OmiPitchOptionsPdf>

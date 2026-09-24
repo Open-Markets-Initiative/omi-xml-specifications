@@ -1,0 +1,1794 @@
+<OmiFixPdf>
+
+  <!-- x — OrderEntry -->
+
+  <Header>
+    <Fields>
+      <Field>
+        <Tag>8</Tag>
+        <Name>BeginString</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+        <Value>FIX.4.2</Value>
+        <Description>Must be first field in message.</Description>
+      </Field>
+      <Field>
+        <Tag>9</Tag>
+        <Name>BodyLength</Name>
+        <Required>Y</Required>
+        <Type>Length</Type>
+        <Fixed>Y</Fixed>
+        <Description>Length of message following BodyLength field up to and including the delimiter preceding the CheckSum field. Must be second field in message.</Description>
+      </Field>
+      <Field>
+        <Tag>35</Tag>
+        <Name>MsgType</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+        <Description>Must be third field in message. 0 = Heartbeat 1 = TestRequest 2 = ResendRequest 3 = Reject 4 = SequenceReset 5 = Logout 8 = ExecutionReport 9 = OrderCancelReject A = Logon D = NewOrderSingle F = OrderCancelRequest G = OrderCancelReplaceRequest h = TradingSessionStatus UCC = Trade Cancel/Correct</Description>
+      </Field>
+      <Field>
+        <Tag>49</Tag>
+        <Name>SenderCompID</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Description>ID of sender: Assigned by Cboe for messages sent to Cboe. (TargetCompID for messages from Cboe)</Description>
+      </Field>
+      <Field>
+        <Tag>50</Tag>
+        <Name>SenderSubID</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Description>Sub ID of sender: Assigned by Cboe for messages sent to Cboe. (TargetSubID for messages from Cboe)</Description>
+      </Field>
+      <Field>
+        <Tag>56</Tag>
+        <Name>TargetCompID</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Description>ID of destination: ‘CXJA’ for messages sent to the Alpha/Match marketplace. ‘CXJS’ for messages sent to the Select marketplace. (SenderCompID for messages from Cboe)</Description>
+      </Field>
+      <Field>
+        <Tag>57</Tag>
+        <Name>TargetSubID</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Description>Sub ID of destination: ‘TEST’ for messages sent to Cboe test/certification system. ‘PROD’ for messages sent to Cboe production system. (SenderSubID for messages from Cboe)</Description>
+      </Field>
+      <Field>
+        <Tag>34</Tag>
+        <Name>MsgSeqNum</Name>
+        <Required>Y</Required>
+        <Type>SeqNum</Type>
+        <Description>Sequential sequence number for session.</Description>
+      </Field>
+      <Field>
+        <Tag>43</Tag>
+        <Name>PossDupFlag</Name>
+        <Required>N</Required>
+        <Type>Boolean</Type>
+        <Description>N = (Default) Y = Indicates a message resend and should be used during FIX Replay. Cboe will reject all inbound orders with ‘Y’.</Description>
+      </Field>
+      <Field>
+        <Tag>52</Tag>
+        <Name>SendingTime</Name>
+        <Required>Y</Required>
+        <Type>UTCTimestamp</Type>
+        <Description>UTC date-time that message was sent.</Description>
+      </Field>
+      <Field>
+        <Tag>122</Tag>
+        <Name>OrigSendingTime</Name>
+        <Required>N</Required>
+        <Type>UTCTimestamp</Type>
+        <Description>For messages with PossDupFlag=‘Y’, indicates time that message was first sent.</Description>
+      </Field>
+    </Fields>
+  </Header>
+
+  <Trailer>
+    <Fields>
+      <Field>
+        <Tag>10</Tag>
+        <Name>10</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+        <Description>Check Sum Check Sum Modulo 256 Check Sum of all characters in message up to and</Description>
+      </Field>
+    </Fields>
+  </Trailer>
+
+  <Messages>
+
+    <!-- New Order Single (D) -->
+    <Message>
+      <Name>New Order Single</Name>
+      <MsgType>D</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>97</Tag>
+          <Name>PossResend</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>N = (default) indicates a new order. Y = indicates an application level resend and is not supported. The message will be logged, but effectively ignored. For reasons of economy, Cboe does not track (in primary storage) the Cl Ord ID values of orders that are no longer live.</Description>
+        </Field>
+        <Field>
+          <Tag>1</Tag>
+          <Name>Account</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Used by a trading participant or a broker service provider to provide a broker cross reference. Reflected back on Execution Reports associated with this order. 10 characters or less. Characters in ASCII range 33-126 are allowed. Available via Standard FIX Drop on an opt-in basis at the port level. Available by default on Order by Order FIX Drop.</Description>
+        </Field>
+        <Field>
+          <Tag>11</Tag>
+          <Name>ClOrdId</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Day-unique ID chosen by client. 20 characters or less. Characters in ASCII range 33-126 are allowed, except for double-quote (34), comma (44), “at” symbol (64), semicolon (59), and pipe (124). If the Cl Ord Id matches a live order it will be rejected as duplicate (unless Poss Resend (97) = ‘Y’, see above). Note: Cboe only enforces the uniqueness of Cl Ord ID values among currently live orders. However, we strongly recommend keeping Cl Ord ID values day unique.</Description>
+        </Field>
+        <Field>
+          <Tag>18</Tag>
+          <Name>ExecInst</Name>
+          <Required>N</Required>
+          <Type>MultipleValueString</Type>
+          <Description>Single value only (with no trailing space) For more details on each order type, see Peg Orders. All values not defined below are ignored. P = Market Peg (peg Buy [Sell] to PBBO Offer [Bid], one tick within PBBO) R = Primary Peg (peg Buy [Sell] to PBBO Bid [Offer], one tick within PBBO) M = Midpoint (peg to PBBO Midpoint)</Description>
+        </Field>
+        <Field>
+          <Tag>21</Tag>
+          <Name>HandInst</Name>
+          <Required>Y</Required>
+          <Type>char</Type>
+          <Description>Instruction for order handling. 1 = Automated execution order, private, no Broker intervention</Description>
+        </Field>
+        <Field>
+          <Tag>22</Tag>
+          <Name>IDSource</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Identifies the symbology presented in the Symbol (55) tag. 3 = QUICK (default) 5 = RIC</Description>
+        </Field>
+        <Field>
+          <Tag>38</Tag>
+          <Name>OrderQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>Number of shares for order, 1 to 999,999,999.</Description>
+        </Field>
+        <Field>
+          <Tag>40</Tag>
+          <Name>OrdType</Name>
+          <Required>Y</Required>
+          <Type>char</Type>
+          <Description>1 = Market 2 = Limit P = Pegged Market will reject unless VWAPSession ID(8004) is present. Pegged will reject unless: • Exec Inst (18) = P, R, or M.</Description>
+        </Field>
+        <Field>
+          <Tag>44</Tag>
+          <Name>Price</Name>
+          <Required>Y</Required>
+          <Type>Price</Type>
+          <Description>Limit (or cap) Price. If Ord Type (40) is • 1 (Market) – Price is ignored (if present). • 2 (Limit) – Required Limit Price. Rejected if price is finer than the minimum trading increment for the stock. • P (Pegged) – Optional Cap Price. Rejected if price is finer than the minimum trading increment for the stock.</Description>
+        </Field>
+        <Field>
+          <Tag>47</Tag>
+          <Name>OrderCapacity</Name>
+          <Required>Y</Required>
+          <Type>char</Type>
+          <Description>The capacity for the order. A = Agency P = Principal</Description>
+        </Field>
+        <Field>
+          <Tag>54</Tag>
+          <Name>Side</Name>
+          <Required>Y</Required>
+          <Type>char</Type>
+          <Description>1 = Buy 2 = Sell 5 = Sell Short (client affirms ability to borrow) 6 = Sell Short Exempt</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Symbol (upper case alphanumeric) conforming to the symbology declared in IDSource(22).</Description>
+        </Field>
+        <Field>
+          <Tag>59</Tag>
+          <Name>TimeInForce</Name>
+          <Required>N</Required>
+          <Type>char</Type>
+          <Description>0 = DAY (default) 3 = IOC (portion not filled immediately is cancelled). 4 = FOK (an IOC where the entire size must be filled, else the order will be cancelled back). 6 = GTD (expires at earlier of specified Expire Time or end of day). • VWAP orders must be DAY or IOC • Pullback orders must be DAY or GTD</Description>
+        </Field>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>Y</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Time order initiated/released. Required by FIX 4.2, but not used by Cboe.</Description>
+        </Field>
+        <Field>
+          <Tag>110</Tag>
+          <Name>MinQty</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Minimum fill quantity is accepted only for VWAP orders (orders having VWAPSession ID(8004) populated). Multiple consecutive fills may be created such that their combined size satisfies the Min Qty requirement. Rejected if it is not an integer multiple of the standard trading unit. When the remaining size (Leaves Qty) on an order is less than the defined Min Qty, then Min Qty is set to the Leaves Qty.</Description>
+        </Field>
+        <Field>
+          <Tag>111</Tag>
+          <Name>MaxFloor</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Portion of Order Qty to display. Used for iceberg orders. Rejected if it is not an integer multiple of the standard trading unit. Iceberg orders are Limit orders (40=2) and require Max Floor &gt; 0 if specified. For iceberg orders, this is the displayed quantity. The balance is reserve. The displayed quantity of each order at a price level is decremented first. Ignored if order is IOC or VWAP.</Description>
+        </Field>
+        <Field>
+          <Tag>126</Tag>
+          <Name>ExpireTime</Name>
+          <Required>N</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Required for Time In Force (59) = ‘6’ (GTD) orders, specifies the UTC Date/Time timestamp when the order expires. GTD orders will expire at the earlier of the end of the current trading day and the Expire Time.</Description>
+        </Field>
+        <Field>
+          <Tag>211</Tag>
+          <Name>PegDifference</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Signed currency value up to one decimal place is added to the result of the peg calculation. Ignored if Ord Type(40) is not P (Pegged).</Description>
+        </Field>
+        <Field>
+          <Tag>544</Tag>
+          <Name>CashMargin</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Indicates the type of cash or margin order. 1 = Cash (default) 2 = Margin Open 3 = Margin Close Rejected if any other value is specified. Ignored if order is VWAP.</Description>
+        </Field>
+        <Field>
+          <Tag>7699</Tag>
+          <Name>RiskGroupID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+        </Field>
+        <Field>
+          <Tag>7713</Tag>
+          <Name>NoTradeFeat</Name>
+          <Required>N</Required>
+          <Type>NumInGroup</Type>
+          <Description>Defines how to handle Match Trade Prevention (MTP) scenarios. If not specified, the port default is used. U = No Match Trade Protection, No Trade Key (7714) will be ignored. N = Cancel Newest O = Cancel Oldest B = Cancel Both S = Cancel Smallest D = Decrement larger/Cancel Smaller d = Same as ‘D’, but only decrement Leaves Qty. Do not restate Order Qty. If the older and newer orders in a self-matching trade have conflicting instructions, the instruction of the newer order will be honored, except if the inbound order specifies Decrement and the resting order does not, and the resting order is larger, then both orders will be cancelled. This exception protects the order entry software for the resting order from receiving an unexpected restatement message.</Description>
+        </Field>
+        <Field>
+          <Tag>7714</Tag>
+          <Name>NoTradeKey</Name>
+          <Required>N</Required>
+          <Type>NumInGroup</Type>
+          <Description>Interactions of orders from the same participant with the same No Trade Key (7714) value will be managed by the newer order’s No Trade Feat (7713) instruction. Ignored if No Trade Feat (7713)=U. Up to 10 printable ASCII characters (in the inclusive range 32..126).</Description>
+        </Field>
+        <Field>
+          <Tag>8004</Tag>
+          <Name>VWAPSessionID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+        </Field>
+        <Field>
+          <Tag>8060</Tag>
+          <Name>OrderClassification</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>N Specify the order classification as a single alphanumeric character. Suggested values: 1 = Non Low Latency trading (Auto) 2 = Non Low Latency trading (Manual) 3 = Market Making Strategy 4 = Arbitrage Strategy 5 = Directional Strategy 6 = Other Strategy</Description>
+        </Field>
+        <Field>
+          <Tag>8105</Tag>
+          <Name>Pullback</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>N P = Pullback Cancels back if the working price locks or crosses the effective TSE quote. Rejected unless Time In Force (59) = 0 (DAY) or 6 (GTD). Ignored unless sent to the Alpha marketplace.</Description>
+        </Field>
+        <Field>
+          <Tag>8214</Tag>
+          <Name>MarginTransactionType</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>N Specifies if a margin order is a Negotiable or a Standardized. 1 = Negotiable 2 = Standardized Required if Cash Margin (544) = 2 (Margin Open) or 3 (Margin Close), otherwise ignored.</Description>
+        </Field>
+        <Field>
+          <Tag>9303</Tag>
+          <Name>RoutingInst</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>N P = Post Only (never take liquidity). Rejected unless Ord Type(40) = 2 (Limit) and Time In Force(59) is 0 (DAY) or 6 (GTD).</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Order Cancel Request (F) -->
+    <Message>
+      <Name>Order Cancel Request</Name>
+      <MsgType>F</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>97</Tag>
+          <Name>PossResend</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>N = (default) indicates a new cancel.</Description>
+        </Field>
+        <Field>
+          <Tag>11</Tag>
+          <Name>ClOrdID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Day-unique ID chosen by client. 20 characters or less. Characters in ASCII range 33-126 are allowed, except for double-quote (34), comma (44), “at” symbol (64), semicolon (59), and pipe (124). Duplicate order Cl Ord IDs will be rejected (or ignored if Poss Resend=‘Y’).</Description>
+        </Field>
+        <Field>
+          <Tag>37</Tag>
+          <Name>OrderID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Order ID supplied by Cboe on the order acknowledgement. Optional but recommended for performance. Orig Cl Ord ID must be sent if Order ID is not.</Description>
+        </Field>
+        <Field>
+          <Tag>41</Tag>
+          <Name>OrigClOrdID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Cl Ord ID of the order to cancel. Order ID must be sent if Orig Cl Ord ID is not.</Description>
+        </Field>
+        <Field>
+          <Tag>54</Tag>
+          <Name>Side</Name>
+          <Required>N</Required>
+          <Type>char</Type>
+          <Description>Ignored</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Ignored</Description>
+        </Field>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>N</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Time cancel initiated/released. Required by FIX 4.2 but not used by Cboe.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Order Cancel/Replace Request (G) -->
+    <Message>
+      <Name>Order Cancel/Replace Request</Name>
+      <MsgType>G</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>97</Tag>
+          <Name>PossResend</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>Y = Indicates an application level resend. If the Cl Ord ID does not indicate an already pending Cancel/Replace, the Cancel is treated as normal. If Cl Ord ID does indicate an already pending Cancel/Replace then the resent Cancel/Replace is ignored. N = (default) indicates a new Cancel/Replace.</Description>
+        </Field>
+        <Field>
+          <Tag>11</Tag>
+          <Name>ClOrdId</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Day-unique ID chosen by client. 20 characters or less. Characters in ASCII range 33-126 are allowed, except for double-quote (34), comma (44), “at” symbol (64), semicolon (59), and pipe (124). Duplicate order Cl Ord IDs will be rejected1 (or ignored if Poss Resend=‘Y’).</Description>
+        </Field>
+        <Field>
+          <Tag>18</Tag>
+          <Name>ExecInst</Name>
+          <Required>N</Required>
+          <Type>MultipleValueString</Type>
+          <Description>Ignored – value preserved from original order</Description>
+        </Field>
+        <Field>
+          <Tag>37</Tag>
+          <Name>OrderId</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Order Id supplied by Cboe on the order acknowledgement. Optional but recommended for performance. Orig Cl Ord ID must be sent if Order Id is not. In the case of multiple changes to a single order, this will be the Order Id from the most recent acknowledgement.</Description>
+        </Field>
+        <Field>
+          <Tag>38</Tag>
+          <Name>OrderQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>Number of shares for order. This will modify the Order Qty of the current order; it does not directly set the remaining quantity.</Description>
+        </Field>
+        <Field>
+          <Tag>40</Tag>
+          <Name>OrdType</Name>
+          <Required>N</Required>
+          <Type>char</Type>
+          <Description>Ignored – Value preserved from original order.</Description>
+        </Field>
+        <Field>
+          <Tag>41</Tag>
+          <Name>OrigClOrdID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Cl Ord ID of the order to replace. In the case of multiple changes to a single order, this will be the Cl Ord ID of the most recent accepted change.</Description>
+        </Field>
+        <Field>
+          <Tag>44</Tag>
+          <Name>Price</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Limit price for limit order. Cap price for pegged orders.</Description>
+        </Field>
+        <Field>
+          <Tag>47</Tag>
+          <Name>OrderCapacity</Name>
+          <Required>N</Required>
+          <Type>char</Type>
+          <Description>Ignored – value preserved from original order</Description>
+        </Field>
+        <Field>
+          <Tag>54</Tag>
+          <Name>Side</Name>
+          <Required>N</Required>
+          <Type>char</Type>
+          <Description>Ignored – value preserved from original order</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Ignored – value preserved from original order</Description>
+        </Field>
+        <Field>
+          <Tag>59</Tag>
+          <Name>TimeInForce</Name>
+          <Required>N</Required>
+          <Type>char</Type>
+          <Description>Ignored – value preserved from original order</Description>
+        </Field>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>Y</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Time Cancel/Replace initiated/released.</Description>
+        </Field>
+        <Field>
+          <Tag>111</Tag>
+          <Name>MaxFloor</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Portion of Order Qty to display. The balance is reserve. See description in New Order Single. Invalid values for the order type will cause the Cancel/Replace to be rejected. Takes effect on the next reserve order reload or priority losing event. A value of zero will be ignored. If Max Floor is to be removed completely, then the order should be cancelled and a new order sent.</Description>
+        </Field>
+        <Field>
+          <Tag>126</Tag>
+          <Name>ExpireTime</Name>
+          <Required>N</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Ignored – value preserved from original order</Description>
+        </Field>
+        <Field>
+          <Tag>211</Tag>
+          <Name>PegDifference</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Ignored – value preserved from original order</Description>
+        </Field>
+        <Field>
+          <Tag>7713</Tag>
+          <Name>NoTradeFeat</Name>
+          <Required>N</Required>
+          <Type>NumInGroup</Type>
+          <Description>Ignored – value preserved from original order</Description>
+        </Field>
+        <Field>
+          <Tag>7714</Tag>
+          <Name>NoTradeKey</Name>
+          <Required>N</Required>
+          <Type>NumInGroup</Type>
+          <Description>Ignored – value preserved from original order</Description>
+        </Field>
+        <Field>
+          <Tag>9619</Tag>
+          <Name>CancelOrigOnReject</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>N = Leave original order alone. Y = Cancel original order if replacement fails (an unsolicited Cancel report will be sent for original order in this case). Default is configurable per port (‘N’ if not configured).</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Execution Report (8) -->
+    <Message>
+      <Name>ExecutionReport</Name>
+      <MsgType>8</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>1</Tag>
+          <Name>Account</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Copied from order.</Description>
+        </Field>
+        <Field>
+          <Tag>6</Tag>
+          <Name>AvgPx</Name>
+          <Required>Y</Required>
+          <Type>Price</Type>
+          <Description>Average price of executions for this order weighted by trade size. Zero if Cum Qty is zero.</Description>
+        </Field>
+        <Field>
+          <Tag>11</Tag>
+          <Name>ClOrdID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Cl Ord ID of the order being accepted, executed or rejected. -or- Cl Ord ID of the cancel or replace request. -or- Cl Ord ID of the order subject to unsolicited cancel (Orig Cl Ord ID will not be present).</Description>
+        </Field>
+        <Field>
+          <Tag>14</Tag>
+          <Name>CumQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>Cumulative quantity of shares executed for this order.</Description>
+        </Field>
+        <Field>
+          <Tag>17</Tag>
+          <Name>ExecID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Day-unique id of execution message.</Description>
+        </Field>
+        <Field>
+          <Tag>18</Tag>
+          <Name>ExecInst</Name>
+          <Required>N</Required>
+          <Type>MultipleValueString</Type>
+          <Description>Copied from order.</Description>
+        </Field>
+        <Field>
+          <Tag>20</Tag>
+          <Name>ExecTransType</Name>
+          <Required>Y</Required>
+          <Type>char</Type>
+          <Description>0 = New 2 = Correction. Used to provide confirmed trading price for VWAP trades. 3 = Status. Used to provide peg suspensions (150=9) and order restatements (150=D).</Description>
+        </Field>
+        <Field>
+          <Tag>22</Tag>
+          <Name>IDSource</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Copied from order, otherwise default value.</Description>
+        </Field>
+        <Field>
+          <Tag>29</Tag>
+          <Name>LastCapacity</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Present on Fill and Partial Fill messages. 1 = Agent 2 = Cross as agent 3 = Cross as principal 4 = Principal</Description>
+        </Field>
+        <Field>
+          <Tag>37</Tag>
+          <Name>OrderId</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Order Id (supplied by Cboe).</Description>
+        </Field>
+        <Field>
+          <Tag>38</Tag>
+          <Name>OrderQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>Copied from order.</Description>
+        </Field>
+        <Field>
+          <Tag>39</Tag>
+          <Name>OrdStatus</Name>
+          <Required>Y</Required>
+          <Type>char</Type>
+          <Description>Status of order. 0 = New 1 = Partially Filled 2 = Filled 4 = Canceled 5 = Replaced 6 = Pending Cancel 8 = Rejected 9 = Suspended B = Calculated E = Pending Replace For FIX Drop, only ‘1’ or ‘2’ will be sent and will always equal Exec Type (150). For Order by Order FIX Drop, all execution information will be sent.</Description>
+        </Field>
+        <Field>
+          <Tag>40</Tag>
+          <Name>OrdType</Name>
+          <Required>N</Required>
+          <Type>char</Type>
+          <Description>Copied from order.</Description>
+        </Field>
+        <Field>
+          <Tag>44</Tag>
+          <Name>Price</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Copied from order.</Description>
+        </Field>
+        <Field>
+          <Tag>47</Tag>
+          <Name>OrderCapacity</Name>
+          <Required>N</Required>
+          <Type>char</Type>
+          <Description>Copied from order.</Description>
+        </Field>
+        <Field>
+          <Tag>54</Tag>
+          <Name>Side</Name>
+          <Required>Y</Required>
+          <Type>char</Type>
+          <Description>Copied from order.</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Copied from order.</Description>
+        </Field>
+        <Field>
+          <Tag>59</Tag>
+          <Name>TimeInForce</Name>
+          <Required>N</Required>
+          <Type>char</Type>
+          <Description>Copied from order.</Description>
+        </Field>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>Y</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>UTC date-time that transaction occurred.</Description>
+        </Field>
+        <Field>
+          <Tag>76</Tag>
+          <Name>ExecBroker</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>(Present only on CXJ Alpha Drop Ports, only for BIDS trades)</Description>
+        </Field>
+        <Field>
+          <Tag>109</Tag>
+          <Name>ClientID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>(Present only on CXJ Alpha Drop Ports, only for BIDS trades)</Description>
+        </Field>
+        <Field>
+          <Tag>110</Tag>
+          <Name>MinQty</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Copied from order.</Description>
+        </Field>
+        <Field>
+          <Tag>111</Tag>
+          <Name>MaxFloor</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Copied from order.</Description>
+        </Field>
+        <Field>
+          <Tag>126</Tag>
+          <Name>ExpireTime</Name>
+          <Required>N</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Copied from order if Time In Force is GTD (6).</Description>
+        </Field>
+        <Field>
+          <Tag>150</Tag>
+          <Name>ExecType</Name>
+          <Required>Y</Required>
+          <Type>char</Type>
+          <Description>Reason for this Execution Report: 0 = New (acknowledgement of new order) 1 = Partial Fill 2 = Fill 4 = Canceled 5 = Replaced 8 = Rejected 9 = Suspended D = Restated For Standard FIX Drop, only ‘1’ or ‘2’ will be sent and will always equal Ord Status (39). For Order by Order FIX Drop, all execution information will be sent. Refer to section 7.2.</Description>
+        </Field>
+        <Field>
+          <Tag>151</Tag>
+          <Name>LeavesQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>Quantity of shares still open for further execution. Will be zero if order is dead, otherwise will be Order Qty (38) – Cum Qty (14). Note: It is possible for Leaves Qty to be zero when Exec Type (150) = ‘5’, indicating the order is dead.</Description>
+        </Field>
+        <Field>
+          <Tag>198</Tag>
+          <Name>SecondaryOrderID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Present on a Match Trade Prevention (MTP) triggered cancel/restatement, on a reserve reload restatement, and on a Cancel/Replace acknowledgement that increases the size of a reserve order. Contra side Cboe Order Id of prevented match (MTP), or Cboe PITCH Order Id for displayed portion of reserve order after reload, or Cboe PITCH Order Id for the displayed portion of a reserve order after a Cancel/Replace increased the size of the reserve order.</Description>
+        </Field>
+        <Field>
+          <Tag>544</Tag>
+          <Name>CashMargin</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Copied from order if present.</Description>
+        </Field>
+        <Field>
+          <Tag>7699</Tag>
+          <Name>RiskGroupID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Copied from order if present.</Description>
+        </Field>
+        <Field>
+          <Tag>7713</Tag>
+          <Name>NoTradeFeat</Name>
+          <Required>N</Required>
+          <Type>NumInGroup</Type>
+          <Description>Copied from order if present.</Description>
+        </Field>
+        <Field>
+          <Tag>7714</Tag>
+          <Name>NoTradeKey</Name>
+          <Required>N</Required>
+          <Type>NumInGroup</Type>
+          <Description>Copied from order if present.</Description>
+        </Field>
+        <Field>
+          <Tag>7903</Tag>
+          <Name>PreventedTradePx</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Provided if cancel or cancel/replace is the result of Match Trade Prevention (MTP). Indicates the trade price attempted when MTP was triggered.</Description>
+        </Field>
+        <Field>
+          <Tag>7904</Tag>
+          <Name>PreventedTradeQty</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Provided if cancel or cancel/replace is the result of Match Trade Prevention (MTP). Indicates the trade quantity attempted when MTP was triggered.</Description>
+        </Field>
+        <Field>
+          <Tag>7905</Tag>
+          <Name>PreventedTradeLiquidityIndicator</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Provided if cancel or cancel/replace is the result of Match Trade Prevention (MTP). Indicates the liquidity of the order attempted when MTP was triggered. A = Added liquidity R = Removed liquidity</Description>
+        </Field>
+        <Field>
+          <Tag>8004</Tag>
+          <Name>VWAPSessionID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Copied from order if present.</Description>
+        </Field>
+        <Field>
+          <Tag>8060</Tag>
+          <Name>OrderClassification</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Copied from order if present.</Description>
+        </Field>
+        <Field>
+          <Tag>8101</Tag>
+          <Name>ToSTNetTOrderID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Order Acceptance Number in To STNe T for this fill. (Present only on CXJ Alpha Drop Ports, only for BIDS trades)</Description>
+        </Field>
+        <Field>
+          <Tag>8102</Tag>
+          <Name>ToSTNeTExecutionID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Execution Notice number in To STNe T for this fill. (Present only on CXJ Alpha Drop Ports, only for BIDS trades)</Description>
+        </Field>
+        <Field>
+          <Tag>8105</Tag>
+          <Name>Pullback</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Copied from order if present.</Description>
+        </Field>
+        <Field>
+          <Tag>8106</Tag>
+          <Name>ToSTNeTTransactTime</Name>
+          <Required>N</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Transaction time in To STNe T (expressed as GMT) for this fill. (Present only on CXJ Alpha Drop Ports, only for BIDS trades)</Description>
+        </Field>
+        <Field>
+          <Tag>8214</Tag>
+          <Name>MarginTransactionType</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Copied from order if present.</Description>
+        </Field>
+        <Field>
+          <Tag>9303</Tag>
+          <Name>RoutingInst</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Copied from order if present.</Description>
+        </Field>
+        <Field>
+          <Tag>9617</Tag>
+          <Name>ModifySequence</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>FIX Drop only. Base 36 number of times order has been replaced.</Description>
+        </Field>
+        <Field>
+          <Tag>9688</Tag>
+          <Name>OrigCompID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>FIX Drop and ODROP only. Target Comp ID of original FIX exec report.</Description>
+        </Field>
+        <Field>
+          <Tag>9689</Tag>
+          <Name>OrigSubID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>FIX Drop and ODROP only. Target Sub ID of original FIX exec report.</Description>
+        </Field>
+        <Field>
+          <Tag>9690</Tag>
+          <Name>WorkingPrice</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>The price at which the order is effective on the book. Only present on Accepted, Replaced, or Restated and only when order is fully or partially booked.</Description>
+        </Field>
+        <Field>
+          <Tag>9730</Tag>
+          <Name>TradeLiquidityIndicator</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Present for acknowledgements and fills (150=0, 150=1 or 150=2). Recommended mapping to FIX Tag 851 provided: A = Trade Added Liquidity (851=1) R = Trade Removed Liquidity (851=2) Match Trade Prevention (MTP) For participants that opt-in to Report MTP Fields functionality (at firm or port level), the liquidity add and remove values may be presented on an MTP triggered cancel/restatement. IMPORTANT: Trade Liquidity Indicator was Tag 9882 in the Chi-X Japan FIX specification. All Cboe markets use Tag 9730 for Trade Liquidity Indicator and Tag 9882 for Fee Code.</Description>
+        </Field>
+        <Field>
+          <Tag>9882</Tag>
+          <Name>FeeCode</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Specific fee code associated with execution. See the Fee Schedule for the respective market for possible values. IMPORTANT: Trade Liquidity Indicator was Tag 9882 in the Chi-X Japan FIX specification. All Cboe markets use Tag 9730 for Trade Liquidity Indicator and Tag 9882 for Fee Code.</Description>
+        </Field>
+        <Branch>
+          <Name>New</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>0</Value>
+          <Fields></Fields>
+        </Branch>
+        <Branch>
+          <Name>Partial Fill</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>1</Value>
+          <Fields>
+            <Field>
+              <Tag>32</Tag>
+              <Name>LastShares</Name>
+              <Required>N</Required>
+              <Type>Qty</Type>
+              <Description>Quantity of shares traded on this fill (zero for non- fills).</Description>
+            </Field>
+            <Field>
+              <Tag>31</Tag>
+              <Name>LastPx</Name>
+              <Required>N</Required>
+              <Type>Price</Type>
+              <Description>Price of this fill (zero for non-fills). For VWAP Order Execution, this is the indicative price. For VWAP Price Restatement, this is the final VWAP trade price.</Description>
+            </Field>
+            <Field>
+              <Tag>30</Tag>
+              <Name>LastMkt</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Present on Fill and Partial Fill messages. Supported MIC code values are as follows: CHIJ = (Alpha – continuous book) CHIS = (Select) CHIV = (Match - VWAP) KAIX = (BIDS trade – drop only)</Description>
+            </Field>
+            <Field>
+              <Tag>375</Tag>
+              <Name>ContraBroker</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>The Broker ID (3-digit identifier) of the contra party on this fill. This tag is present if (and only if)Ord Statusis 2 (filled). Note: this is a standalone tag and is not used in conjunction with the No Contra Brokers(Tag 382) repeating group.</Description>
+            </Field>
+            <Field>
+              <Tag>382</Tag>
+              <Name>NoContraBrokers</Name>
+              <Required>N</Required>
+              <Type>NumInGroup</Type>
+              <Description>Only present on trades on attributed orders. Always 1 if present.</Description>
+            </Field>
+          </Fields>
+        </Branch>
+        <Branch>
+          <Name>Fill</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>2</Value>
+          <Fields>
+            <Field>
+              <Tag>32</Tag>
+              <Name>LastShares</Name>
+              <Required>N</Required>
+              <Type>Qty</Type>
+              <Description>Quantity of shares traded on this fill (zero for non- fills).</Description>
+            </Field>
+            <Field>
+              <Tag>31</Tag>
+              <Name>LastPx</Name>
+              <Required>N</Required>
+              <Type>Price</Type>
+              <Description>Price of this fill (zero for non-fills). For VWAP Order Execution, this is the indicative price. For VWAP Price Restatement, this is the final VWAP trade price.</Description>
+            </Field>
+            <Field>
+              <Tag>30</Tag>
+              <Name>LastMkt</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Present on Fill and Partial Fill messages. Supported MIC code values are as follows: CHIJ = (Alpha – continuous book) CHIS = (Select) CHIV = (Match - VWAP) KAIX = (BIDS trade – drop only)</Description>
+            </Field>
+            <Field>
+              <Tag>375</Tag>
+              <Name>ContraBroker</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>The Broker ID (3-digit identifier) of the contra party on this fill. This tag is present if (and only if)Ord Statusis 2 (filled). Note: this is a standalone tag and is not used in conjunction with the No Contra Brokers(Tag 382) repeating group.</Description>
+            </Field>
+            <Field>
+              <Tag>382</Tag>
+              <Name>NoContraBrokers</Name>
+              <Required>N</Required>
+              <Type>NumInGroup</Type>
+              <Description>Only present on trades on attributed orders. Always 1 if present.</Description>
+            </Field>
+          </Fields>
+        </Branch>
+        <Branch>
+          <Name>Canceled</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>4</Value>
+          <Fields>
+            <Field>
+              <Tag>41</Tag>
+              <Name>OrigClOrdID</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Cl Ord ID of the order being cancelled or replaced (for a solicited , or Order Cancel , otherwise not present). Cancel/Replace</Description>
+            </Field>
+            <Field>
+              <Tag>58</Tag>
+              <Name>Text</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>If present, indicates reason for reject or cancel. Format is one letter reason code followed by colon and space followed by free form text message. (e.g., ‘N: No Liquidity at price’). The specific text the system delivers may vary from the text listed below, to provide clarification of the reject reason. Reason codes are one of the following: A = Admin C = Capacity undefined D = Duplicate identifier (e.g., Cl Ord ID) F = Failed to Quote H = Halted J = Too late to cancel K = Order rate threshold exceeded L = Order would lock or cross PBBO M = Order size exceeded N = Ran out of liquidity to execute against O = Cl Ord ID doesn’t match a known order S = Short sale price violation T = Fill would trade through the NBBO U = User requested V = Would wash X = Order expired W = Add liquidity only order would remove Y = Symbol not supported Z = Unforeseen reason o = Max open orders count exceeded r = Reserve reload x = Crossed market y = Order received by Cboe during replay</Description>
+            </Field>
+            <Field>
+              <Tag>19</Tag>
+              <Name>ExecRefID</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Refers to the Exec ID of the message being cancelled or corrected.</Description>
+            </Field>
+          </Fields>
+        </Branch>
+        <Branch>
+          <Name>Replaced</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>5</Value>
+          <Fields>
+            <Field>
+              <Tag>41</Tag>
+              <Name>OrigClOrdID</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Cl Ord ID of the order being cancelled or replaced (for a solicited , or Order Cancel , otherwise not present). Cancel/Replace</Description>
+            </Field>
+          </Fields>
+        </Branch>
+        <Branch>
+          <Name>Rejected</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>8</Value>
+          <Fields>
+            <Field>
+              <Tag>103</Tag>
+              <Name>OrdRejReason</Name>
+              <Required>N</Required>
+              <Type>int</Type>
+              <Description>Only used when Exec Type is Rejected (8). 0 = Exchange option 1 = Unknown symbol 2 = Exchange closed 3 = Order exceeds limit 5 = Unknown order 6 = Duplicate order 8 = Stale order</Description>
+            </Field>
+            <Field>
+              <Tag>58</Tag>
+              <Name>Text</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>If present, indicates reason for reject or cancel. Format is one letter reason code followed by colon and space followed by free form text message. (e.g., ‘N: No Liquidity at price’). The specific text the system delivers may vary from the text listed below, to provide clarification of the reject reason. Reason codes are one of the following: A = Admin C = Capacity undefined D = Duplicate identifier (e.g., Cl Ord ID) F = Failed to Quote H = Halted J = Too late to cancel K = Order rate threshold exceeded L = Order would lock or cross PBBO M = Order size exceeded N = Ran out of liquidity to execute against O = Cl Ord ID doesn’t match a known order S = Short sale price violation T = Fill would trade through the NBBO U = User requested V = Would wash X = Order expired W = Add liquidity only order would remove Y = Symbol not supported Z = Unforeseen reason o = Max open orders count exceeded r = Reserve reload x = Crossed market y = Order received by Cboe during replay</Description>
+            </Field>
+          </Fields>
+        </Branch>
+        <Branch>
+          <Name>Suspended</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>9</Value>
+          <Fields></Fields>
+        </Branch>
+        <Branch>
+          <Name>Restated</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>D</Value>
+          <Fields>
+            <Field>
+              <Tag>378</Tag>
+              <Name>ExecRestatementReason</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Only present when 150=D. 4 = Iceberg display size refreshed 5 = Partial Reduce due self-match trade prevention result based on No Trade Feat (7713) C = Confirmed price for VWAP trade</Description>
+            </Field>
+          </Fields>
+        </Branch>
+      </Fields>
+    </Message>
+
+    <!-- Cancel Reject (9) -->
+    <Message>
+      <Name>Cancel Reject</Name>
+      <MsgType>9</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>1</Tag>
+          <Name>Account</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Copied from or request. Cancel Cancel/Replace</Description>
+        </Field>
+        <Field>
+          <Tag>11</Tag>
+          <Name>ClOrdID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Cl Ord ID from the or request. Cancel Cancel/Replace</Description>
+        </Field>
+        <Field>
+          <Tag>37</Tag>
+          <Name>OrderId</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Order Id of order that failed to be cancelled or replaced. Represents the originating/initial order in an order chain. ‘NONE’ if Cxl Rej Reason is Unknown (1).</Description>
+        </Field>
+        <Field>
+          <Tag>39</Tag>
+          <Name>OrdStatus</Name>
+          <Required>Y</Required>
+          <Type>char</Type>
+          <Description>or request: Order Status of Cancel Cancel/Replace order that failed to be cancelled or replaced. : 8 = Rejected Trade Cancel Report</Description>
+        </Field>
+        <Field>
+          <Tag>41</Tag>
+          <Name>OrigClOrdID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Cl Ord ID of the order that failed to be cancelled or replaced.</Description>
+        </Field>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Free form text message.</Description>
+        </Field>
+        <Field>
+          <Tag>102</Tag>
+          <Name>CxlRejReason</Name>
+          <Required>N</Required>
+          <Type>int</Type>
+          <Description>0 = Too late to cancel. 1 = Unknown order. 3 = Already pending cancel or pending replace.</Description>
+        </Field>
+        <Field>
+          <Tag>434</Tag>
+          <Name>CxlRejResponseTo</Name>
+          <Required>Y</Required>
+          <Type>char</Type>
+          <Description>This reject is in response to a: 1 = Cancel 2 = Cancel/Replace</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Trade Cancel/Correct -->
+    <Message>
+      <Name>Trade Cancel/Correct</Name>
+      <MsgType>UCC</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>11</Tag>
+          <Name>ClOrdID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Cl Ord ID of the original trade being cancelled/corrected.</Description>
+        </Field>
+        <Field>
+          <Tag>17</Tag>
+          <Name>ExecID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Day-unique id of execution message.</Description>
+        </Field>
+        <Field>
+          <Tag>19</Tag>
+          <Name>ExecRefID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Refers to the Exec ID of the message being cancelled or corrected.</Description>
+        </Field>
+        <Field>
+          <Tag>20</Tag>
+          <Name>ExecTransType</Name>
+          <Required>Y</Required>
+          <Type>char</Type>
+          <Description>1 = Trade Cancel 2 = Trade Correct</Description>
+        </Field>
+        <Field>
+          <Tag>31</Tag>
+          <Name>LastPx</Name>
+          <Required>Y</Required>
+          <Type>Price</Type>
+          <Description>Price on the original trade being cancelled/corrected.</Description>
+        </Field>
+        <Field>
+          <Tag>32</Tag>
+          <Name>LastShares</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>Quantity of shares on the original trade being cancelled/corrected.</Description>
+        </Field>
+        <Field>
+          <Tag>37</Tag>
+          <Name>OrderId</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Order Id of the original trade being cancelled/corrected.</Description>
+        </Field>
+        <Field>
+          <Tag>42</Tag>
+          <Name>OrigTime</Name>
+          <Required>Y</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>UTC date-time of original trade.</Description>
+        </Field>
+        <Field>
+          <Tag>54</Tag>
+          <Name>Side</Name>
+          <Required>Y</Required>
+          <Type>char</Type>
+          <Description>Copied from original trade being cancelled/corrected.</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Copied from original trade being cancelled/corrected (available in FIX Drop).</Description>
+        </Field>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>Y</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>UTC date-time of cancel/correct.</Description>
+        </Field>
+        <Field>
+          <Tag>9620</Tag>
+          <Name>CorrectedPrice</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>New trade price.</Description>
+        </Field>
+        <Field>
+          <Tag>9730</Tag>
+          <Name>TradeLiquidityIndicator</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Copied from original trade being cancelled/corrected.</Description>
+        </Field>
+        <Field>
+          <Tag>9882</Tag>
+          <Name>FeeCode</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Only for Trade Corrects. Corrected fee code.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Trading Session Status -->
+    <Message>
+      <Name>Trading Session Status</Name>
+      <MsgType>h</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Free form text message.</Description>
+        </Field>
+        <Field>
+          <Tag>325</Tag>
+          <Name>UnsolicitedIndicator</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Always ‘Y’ (unsolicited)</Description>
+        </Field>
+        <Field>
+          <Tag>336</Tag>
+          <Name>TradingSessionID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Always ‘TYO’</Description>
+        </Field>
+        <Field>
+          <Tag>339</Tag>
+          <Name>TradeSesMod</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Trading session mode: 2 = Simulation 3 = Production</Description>
+        </Field>
+        <Field>
+          <Tag>340</Tag>
+          <Name>TradeSesStatus</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Status of the trading session: 2 = Open 3 = Closed</Description>
+        </Field>
+      </Fields>
+    </Message>
+  </Messages>
+
+  <Values>
+
+    <!-- BeginString -->
+    <Value>
+      <Type>BeginString</Type>
+      <Enum>FIX.4.2</Enum>
+      <Kind>Static</Kind>
+      <Description>FIX.4.2</Description>
+    </Value>
+
+    <!--  -->
+    <Value>
+      <Type></Type>
+      <Enum>A</Enum>
+      <Description>No filtering by trading firm is performed.</Description>
+    </Value>
+
+    <!-- CancelOrigOnReject -->
+    <Value>
+      <Type>CancelOrigOnReject</Type>
+      <Enum>N</Enum>
+      <Description>Leave original order alone.</Description>
+    </Value>
+
+    <!-- CashMargin -->
+    <Value>
+      <Type>CashMargin</Type>
+      <Enum>1</Enum>
+      <Description>Cash (default)</Description>
+    </Value>
+
+    <!-- CxlRejReason -->
+    <Value>
+      <Type>CxlRejReason</Type>
+      <Enum>0</Enum>
+      <Description>Too late to cancel.</Description>
+    </Value>
+    <Value>
+      <Type>CxlRejReason</Type>
+      <Enum>3</Enum>
+      <Description>Already pending cancel or pending replace.</Description>
+    </Value>
+    <Value>
+      <Type>CxlRejReason</Type>
+      <Enum>2</Enum>
+      <Description>Broker Option</Description>
+    </Value>
+
+    <!-- CxlRejResponseTo -->
+    <Value>
+      <Type>CxlRejResponseTo</Type>
+      <Enum>1</Enum>
+      <Description>Cancel</Description>
+    </Value>
+
+    <!-- ExecInst -->
+    <Value>
+      <Type>ExecInst</Type>
+      <Enum>M</Enum>
+      <Description>Midpoint (peg to PBBO Midpoint)</Description>
+    </Value>
+    <Value>
+      <Type>ExecInst</Type>
+      <Enum>P</Enum>
+      <Description>Market Peg (peg Buy [Sell] to TSE Offer [Bid]</Description>
+    </Value>
+
+    <!-- ExecRestatementReason -->
+    <Value>
+      <Type>ExecRestatementReason</Type>
+      <Enum>C</Enum>
+      <Description>Confirmed price for VWAP trade</Description>
+    </Value>
+
+    <!-- ExecTransType -->
+    <Value>
+      <Type>ExecTransType</Type>
+      <Enum>0</Enum>
+      <Description>New</Description>
+    </Value>
+    <Value>
+      <Type>ExecTransType</Type>
+      <Enum>3</Enum>
+      <Description>Status. Used to provide peg suspensions (</Description>
+    </Value>
+    <Value>
+      <Type>ExecTransType</Type>
+      <Enum>1</Enum>
+      <Description>Trade Cancel</Description>
+    </Value>
+
+    <!-- ExecType -->
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>0</Enum>
+      <Description>New (acknowledgement of new order)</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>2</Enum>
+      <Description>Fill</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>5</Enum>
+      <Description>Replaced</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>9</Enum>
+      <Description>Suspended</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>M</Enum>
+      <Description>Mass Cancel Complete</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>D</Enum>
+      <Description>Restated</Description>
+    </Value>
+
+    <!-- HandInst -->
+    <Value>
+      <Type>HandInst</Type>
+      <Enum>1</Enum>
+      <Description>Automated execution order, private, no Broker intervention</Description>
+    </Value>
+
+    <!-- IDSource -->
+    <Value>
+      <Type>IDSource</Type>
+      <Enum>3</Enum>
+      <Description>QUICK (default)</Description>
+    </Value>
+
+    <!-- LastCapacity -->
+    <Value>
+      <Type>LastCapacity</Type>
+      <Enum>1</Enum>
+      <Description>Agent</Description>
+    </Value>
+    <Value>
+      <Type>LastCapacity</Type>
+      <Enum>3</Enum>
+      <Description>Cross as principal</Description>
+    </Value>
+
+    <!-- MarginTransactionType -->
+    <Value>
+      <Type>MarginTransactionType</Type>
+      <Enum>1</Enum>
+      <Description>Negotiable</Description>
+    </Value>
+
+    <!-- NoTradeFeat -->
+    <Value>
+      <Type>NoTradeFeat</Type>
+      <Enum>N</Enum>
+      <Description>Cancel Newest</Description>
+    </Value>
+    <Value>
+      <Type>NoTradeFeat</Type>
+      <Enum>B</Enum>
+      <Description>Cancel Both</Description>
+    </Value>
+    <Value>
+      <Type>NoTradeFeat</Type>
+      <Enum>D</Enum>
+      <Description>Decrement larger/Cancel Smaller</Description>
+    </Value>
+
+    <!-- OrdStatus -->
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>0</Enum>
+      <Description>New</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>2</Enum>
+      <Description>Filled</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>5</Enum>
+      <Description>Replaced</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>8</Enum>
+      <Description>Rejected</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>B</Enum>
+      <Description>Calculated</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>9</Enum>
+      <Description>Suspended</Description>
+    </Value>
+
+    <!-- OrdType -->
+    <Value>
+      <Type>OrdType</Type>
+      <Enum>1</Enum>
+      <Description>Market</Description>
+    </Value>
+    <Value>
+      <Type>OrdType</Type>
+      <Enum>2</Enum>
+      <Description>Limit</Description>
+    </Value>
+    <Value>
+      <Type>OrdType</Type>
+      <Enum>P</Enum>
+      <Description>Peg</Description>
+    </Value>
+
+    <!-- OrderCapacity -->
+    <Value>
+      <Type>OrderCapacity</Type>
+      <Enum>A</Enum>
+      <Description>Agency</Description>
+    </Value>
+
+    <!-- OrderClassification -->
+    <Value>
+      <Type>OrderClassification</Type>
+      <Enum>1</Enum>
+      <Description>Non Low Latency trading (Auto)</Description>
+    </Value>
+    <Value>
+      <Type>OrderClassification</Type>
+      <Enum>3</Enum>
+      <Description>Market Making Strategy</Description>
+    </Value>
+    <Value>
+      <Type>OrderClassification</Type>
+      <Enum>5</Enum>
+      <Description>Directional Strategy</Description>
+    </Value>
+
+    <!-- PreventedTradeLiquidityIndicator -->
+    <Value>
+      <Type>PreventedTradeLiquidityIndicator</Type>
+      <Enum>A</Enum>
+      <Description>Added liquidity</Description>
+    </Value>
+
+    <!-- Side -->
+    <Value>
+      <Type>Side</Type>
+      <Enum>1</Enum>
+      <Description>Buy</Description>
+    </Value>
+    <Value>
+      <Type>Side</Type>
+      <Enum>5</Enum>
+      <Description>Sell Short (client affirms ability to borrow)</Description>
+    </Value>
+
+    <!-- Text -->
+    <Value>
+      <Type>Text</Type>
+      <Enum>A</Enum>
+      <Kind>Constant</Kind>
+      <Description>Admin</Description>
+    </Value>
+    <Value>
+      <Type>Text</Type>
+      <Enum>D</Enum>
+      <Kind>Constant</Kind>
+      <Description>Duplicate identifier (e.g., Cl Ord ID)</Description>
+    </Value>
+    <Value>
+      <Type>Text</Type>
+      <Enum>H</Enum>
+      <Kind>Constant</Kind>
+      <Description>Halted</Description>
+    </Value>
+    <Value>
+      <Type>Text</Type>
+      <Enum>K</Enum>
+      <Kind>Constant</Kind>
+      <Description>Order rate threshold exceeded</Description>
+    </Value>
+    <Value>
+      <Type>Text</Type>
+      <Enum>M</Enum>
+      <Kind>Constant</Kind>
+      <Description>Order size exceeded</Description>
+    </Value>
+    <Value>
+      <Type>Text</Type>
+      <Enum>O</Enum>
+      <Kind>Constant</Kind>
+      <Description>Cl Ord ID doesn’t match a known order</Description>
+    </Value>
+    <Value>
+      <Type>Text</Type>
+      <Enum>T</Enum>
+      <Kind>Constant</Kind>
+      <Description>Fill would trade through the NBBO</Description>
+    </Value>
+    <Value>
+      <Type>Text</Type>
+      <Enum>V</Enum>
+      <Kind>Constant</Kind>
+      <Description>Would wash</Description>
+    </Value>
+    <Value>
+      <Type>Text</Type>
+      <Enum>W</Enum>
+      <Kind>Constant</Kind>
+      <Description>Add liquidity only order would remove</Description>
+    </Value>
+    <Value>
+      <Type>Text</Type>
+      <Enum>Z</Enum>
+      <Kind>Constant</Kind>
+      <Description>Unforeseen reason</Description>
+    </Value>
+    <Value>
+      <Type>Text</Type>
+      <Enum>r</Enum>
+      <Kind>Constant</Kind>
+      <Description>Reserve reload</Description>
+    </Value>
+    <Value>
+      <Type>Text</Type>
+      <Enum>y</Enum>
+      <Kind>Constant</Kind>
+      <Description>Order received by Cboe during replay</Description>
+    </Value>
+
+    <!-- TimeInForce -->
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>0</Enum>
+      <Description>DAY (default)</Description>
+    </Value>
+
+    <!-- TradeLiquidityIndicator -->
+    <Value>
+      <Type>TradeLiquidityIndicator</Type>
+      <Enum>A</Enum>
+      <Description>Trade Added Liquidity (</Description>
+    </Value>
+    <Value>
+      <Type>TradeLiquidityIndicator</Type>
+      <Enum>R</Enum>
+      <Description>Trade Removed Liquidity (</Description>
+    </Value>
+
+    <!-- TradeSesMod -->
+    <Value>
+      <Type>TradeSesMod</Type>
+      <Enum>2</Enum>
+      <Description>Simulation</Description>
+    </Value>
+
+    <!-- TradeSesStatus -->
+    <Value>
+      <Type>TradeSesStatus</Type>
+      <Enum>2</Enum>
+      <Description>Open</Description>
+    </Value>
+
+
+    <!-- PossDupFlag (completed from the PDF) -->
+    <Value>
+      <Type>PossDupFlag</Type>
+      <Enum>N</Enum>
+      <Description>(Default)</Description>
+    </Value>
+    <Value>
+      <Type>PossDupFlag</Type>
+      <Enum>Y</Enum>
+      <Description>Indicates a message resend and should be used during FIX Replay. Cboe will reject all inbound orders with ‘Y’.</Description>
+    </Value>
+
+    <!-- PossResend (completed from the PDF) -->
+    <Value>
+      <Type>PossResend</Type>
+      <Enum>N</Enum>
+      <Description>(default) indicates a new order. Japan Equities (Version 1.0.13)</Description>
+    </Value>
+    <Value>
+      <Type>PossResend</Type>
+      <Enum>Y</Enum>
+      <Description>indicates an application level resend and is not supported. The message will be logged, but effectively ignored. has not yet been seen, the cancel is treated as normal. If ClOrdID already exists, the resent cancel is ignored. does not indicate an already pending Cancel/Replace, the Cancel is treated as normal. If ClOrdID does indicate an already pending Cancel/Replace then the resent Cancel/Replace is ignored. resend. If ClOrdID has not yet been seen, the cancel is treated as normal. If ClOrdID already exists, the resent cancel is ignored.</Description>
+    </Value>
+
+    <!-- ExecInst (completed from the PDF) -->
+    <Value>
+      <Type>ExecInst</Type>
+      <Enum>R</Enum>
+      <Description>Primary Peg (peg Buy [Sell] to PBBO Bid [Offer], one tick within PBBO)</Description>
+    </Value>
+
+    <!-- IDSource (completed from the PDF) -->
+    <Value>
+      <Type>IDSource</Type>
+      <Enum>5</Enum>
+      <Description>RIC</Description>
+    </Value>
+
+    <!-- OrderCapacity (completed from the PDF) -->
+    <Value>
+      <Type>OrderCapacity</Type>
+      <Enum>P</Enum>
+      <Description>Principal</Description>
+    </Value>
+
+    <!-- Side (completed from the PDF) -->
+    <Value>
+      <Type>Side</Type>
+      <Enum>2</Enum>
+      <Description>Sell</Description>
+    </Value>
+    <Value>
+      <Type>Side</Type>
+      <Enum>6</Enum>
+      <Description>Sell Short Exempt</Description>
+    </Value>
+
+    <!-- TimeInForce (completed from the PDF) -->
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>3</Enum>
+      <Description>IOC (portion not filled immediately is cancelled).</Description>
+    </Value>
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>4</Enum>
+      <Description>FOK (an IOC where the entire size must be filled, else the order will be cancelled back).</Description>
+    </Value>
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>6</Enum>
+      <Description>GTD (expires at earlier of specified ExpireTime or end of day).</Description>
+    </Value>
+
+    <!-- CashMargin (completed from the PDF) -->
+    <Value>
+      <Type>CashMargin</Type>
+      <Enum>2</Enum>
+      <Description>Margin Open</Description>
+    </Value>
+    <Value>
+      <Type>CashMargin</Type>
+      <Enum>3</Enum>
+      <Description>Margin Close</Description>
+    </Value>
+
+    <!-- VWAPSessionID (completed from the PDF) -->
+    <Value>
+      <Type>VWAPSessionID</Type>
+      <Enum>DAY</Enum>
+      <Description>Full day VWAP session</Description>
+    </Value>
+    <Value>
+      <Type>VWAPSessionID</Type>
+      <Enum>AM</Enum>
+      <Description>AM VWAP session</Description>
+    </Value>
+    <Value>
+      <Type>VWAPSessionID</Type>
+      <Enum>PM</Enum>
+      <Description>PM VWAP session</Description>
+    </Value>
+
+    <!-- OrderClassification (completed from the PDF) -->
+    <Value>
+      <Type>OrderClassification</Type>
+      <Enum>2</Enum>
+      <Description>Non Low Latency trading (Manual)</Description>
+    </Value>
+    <Value>
+      <Type>OrderClassification</Type>
+      <Enum>4</Enum>
+      <Description>Arbitrage Strategy</Description>
+    </Value>
+    <Value>
+      <Type>OrderClassification</Type>
+      <Enum>6</Enum>
+      <Description>Other Strategy</Description>
+    </Value>
+
+    <!-- Pullback (completed from the PDF) -->
+    <Value>
+      <Type>Pullback</Type>
+      <Enum>P</Enum>
+      <Description>Pullback</Description>
+    </Value>
+
+    <!-- MarginTransactionType (completed from the PDF) -->
+    <Value>
+      <Type>MarginTransactionType</Type>
+      <Enum>2</Enum>
+      <Description>Standardized</Description>
+    </Value>
+
+    <!-- RoutingInst (completed from the PDF) -->
+    <Value>
+      <Type>RoutingInst</Type>
+      <Enum>P</Enum>
+      <Description>Post Only (never take liquidity).</Description>
+    </Value>
+
+    <!-- CancelOrigOnReject (completed from the PDF) -->
+    <Value>
+      <Type>CancelOrigOnReject</Type>
+      <Enum>Y</Enum>
+      <Description>Cancel original order if replacement fails (an unsolicited Cancel report will be sent for original order in this case).</Description>
+    </Value>
+
+    <!-- CxlRejReason (completed from the PDF) -->
+    <Value>
+      <Type>CxlRejReason</Type>
+      <Enum>1</Enum>
+      <Description>Unknown order.</Description>
+    </Value>
+
+    <!-- CxlRejResponseTo (completed from the PDF) -->
+    <Value>
+      <Type>CxlRejResponseTo</Type>
+      <Enum>2</Enum>
+      <Description>Cancel/Replace</Description>
+    </Value>
+
+    <!-- ExecTransType (completed from the PDF) -->
+    <Value>
+      <Type>ExecTransType</Type>
+      <Enum>2</Enum>
+      <Description>Trade Correct</Description>
+    </Value>
+
+    <!-- TradeSesMod (completed from the PDF) -->
+    <Value>
+      <Type>TradeSesMod</Type>
+      <Enum>3</Enum>
+      <Description>Production</Description>
+    </Value>
+
+    <!-- TradeSesStatus (completed from the PDF) -->
+    <Value>
+      <Type>TradeSesStatus</Type>
+      <Enum>3</Enum>
+      <Description>Closed</Description>
+    </Value>
+  </Values>
+
+</OmiFixPdf>

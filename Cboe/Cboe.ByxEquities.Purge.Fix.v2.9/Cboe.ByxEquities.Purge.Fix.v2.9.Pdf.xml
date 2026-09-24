@@ -1,0 +1,799 @@
+<OmiFixPdf>
+
+  <!-- x — Purge -->
+
+  <Header>
+    <Fields>
+      <Field>
+        <Tag>8</Tag>
+        <Name>BeginString</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+        <Description>FIX.4.2 Must be first field in message.</Description>
+      </Field>
+      <Field>
+        <Tag>9</Tag>
+        <Name>BodyLength</Name>
+        <Required>Y</Required>
+        <Type>Length</Type>
+        <Fixed>Y</Fixed>
+        <Description>Length of message following Body Length field up to and including the delimiter preceding the Check Sum field. Must be second field in message.</Description>
+      </Field>
+      <Field>
+        <Tag>35</Tag>
+        <Name>MsgType</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+        <Description>Must be third field in message. 0=Heartbeat 1=Test Request 2=Resend/Request 3=Reject 4=Sequence Reset 5=Logout 8=Execution Report 9=Order Cancel Reject A=Logon D=New Order Single F=Order Cancel Request G=Order Cancel Replace Request UCC=Trade Cancel/Correct</Description>
+      </Field>
+      <Field>
+        <Tag>49</Tag>
+        <Name>SenderCompID</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Description>ID of sender: Assigned by Cboe for messages sent to Cboe. (Target Comp IDfor messages from Cboe)</Description>
+      </Field>
+      <Field>
+        <Tag>50</Tag>
+        <Name>SenderSubID</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Description>Sub ID of sender: Assigned by Cboe for messages sent to Cboe. (Target Sub IDfor messages from Cboe)</Description>
+      </Field>
+      <Field>
+        <Tag>56</Tag>
+        <Name>TargetCompID</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Description>ID of destination: ‘BATS’ for messages sent to BZX Exchange. ‘BYXX’ for messages sent to BYX Exchange. ‘EDGX’ for messages sent to EDGX Exchange. ‘EDGA’ for messages sent to EDGA Exchange. (Sender Comp IDfor messages from Cboe)</Description>
+      </Field>
+      <Field>
+        <Tag>57</Tag>
+        <Name>TargetSubID</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Description>Sub ID of destination: ‘TEST’ for messages sent to Cboe test/certification system. ‘PROD’ for messages sent to Cboe production system. (Sender Sub IDfor messages from Cboe)</Description>
+      </Field>
+      <Field>
+        <Tag>34</Tag>
+        <Name>MsgSeqNum</Name>
+        <Required>Y</Required>
+        <Type>SeqNum</Type>
+        <Description>Sequential sequence number for session.</Description>
+      </Field>
+      <Field>
+        <Tag>43</Tag>
+        <Name>PossDupFlag</Name>
+        <Required>N</Required>
+        <Type>Boolean</Type>
+        <Description>N=(Default) Y=Indicates a message resend and should be used during FIX Replay. All inbound orders with ‘Y’ will be rejected by Cboe.</Description>
+      </Field>
+      <Field>
+        <Tag>52</Tag>
+        <Name>SendingTime</Name>
+        <Required>Y</Required>
+        <Type>UTCTimestamp</Type>
+        <Description>GMT date-time that message was sent.</Description>
+      </Field>
+      <Field>
+        <Tag>122</Tag>
+        <Name>OrigSendingTime</Name>
+        <Required>N</Required>
+        <Type>UTCTimestamp</Type>
+        <Description>For messages with Poss Dup Flag=‘Y’, indicates time that message was first sent.</Description>
+      </Field>
+    </Fields>
+  </Header>
+
+  <Trailer>
+    <Fields>
+      <Field>
+        <Tag>10</Tag>
+        <Name>CheckSum</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+        <Description>Three byte, simple checksum. Always unencrypted, always last field in message.</Description>
+      </Field>
+    </Fields>
+  </Trailer>
+
+  <Messages>
+
+    <!-- Purge Request (F) -->
+    <Message>
+      <Name>Purge Request</Name>
+      <MsgType>F</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>97</Tag>
+          <Name>PossResend</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>Y=Indicates an application level unsolicited resend. If Cl Ord ID has not yet been seen, the cancel is treated as normal. If Cl Ord ID already exists, the resent cancel is ignored. N=(Default) indicates a new cancel.</Description>
+        </Field>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>Y</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Time cancel initiated/released. Required by FIX 4.2 but not used by Cboe.</Description>
+        </Field>
+        <Field>
+          <Tag>7700</Tag>
+          <Name>MassCancelInst</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>At least one character must be provided (MPID Filter). Contiguous characters must be specified up to total length. Truncated (unspecified) characters will default to values indicated below. 11sstt CChhaarraacctteerr :: MMPPIIDD FFiilltteerr A=No filtering by MPID is performed. F=All orders that were sent under the MPID specified in On Behalf Of Comp Id (115) will be cancelled. 22nndd CChhaarraacctteerr :: AAcckknnoowwlleeddggmmeenntt SSttyyllee M=(Default) Individual Execution Reports are sent for each cancelled order. S=Single Purge Acknowledgment sent once all cancels have been processed. Single Purge Acknowledgment will contain Mass Cancel Id (7695) and Cancelled Order Count (7696). Mass Cancel Id(7695) must be specified or the Purge Request will be rejected. B=Both individual Execution Reports and single Purge Acknowledgment. Also requires Mass Cancel Id(7695) to be specified or the Purge Request will be rejected. 33rrdd CChhaarraacctteerr :: LLoocckkoouutt IInnssttrruuccttiioonn N=(Default) No lockout L=Lockout until corresponding Risk Reset received. Lockout can be used only with MPID Filter set to ‘F’, otherwise the Purge Request will be rejected. Lockout will apply to all new orders and cancel/replace orders for the MPID (and symbol or Risk Group Id(7699), if specified). A self-imposed lockout can be released using the Risk Reset (7692)field of the New Order Single message.</Description>
+        </Field>
+        <Field>
+          <Tag>7695</Tag>
+          <Name>MassCancelID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Mass Cancel ID - This field will be echoed back in the resulting Purge Acknowledgment when second character of Mass Cancel Inst(7700) is set to ‘S’ or ‘B’. Purge requests containing a Mass Cancel IDthat is currently outstanding will be rejected.</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Symbol (upper case). Limits cancellations to only orders with the specified symbol.</Description>
+        </Field>
+        <Field>
+          <Tag>65</Tag>
+          <Name>SymbolSfx</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Symbol Sfx: CQS or CMS suffix if used. DDoo nnoott sseenndd SSyymmbbooll SSffxxiiff uussiinngg CCbbooee ffoorrmmaatt oorr iiff ssyymmbbooll ddooeess nnoott hhaavvee aa ssuuffiffixx.. (Refer to Symbology link in the RReeffeerreenncceesschapter.)</Description>
+        </Field>
+        <Field>
+          <Tag>25017</Tag>
+          <Name></Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Matching Unit N Matching unit number the Purge Request will be sent toward. If blank or 0, the Purge Request will be sent to all units. Incompatible with symbol-level purges, specifying both symbol and Matching Unit(25017) will cause the Purge Request to be rejected. If both Mass Cancel Inst(7700) lockout instruction =L and Matching Unit(25017) are specified, a lockout will occur and will impact only the specified matching unit. Subsequent risk resets will clear risk locks on all units.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Purge Acknowledgement (8) -->
+    <Message>
+      <Name>Purge Acknowledgement</Name>
+      <MsgType>8</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>20</Tag>
+          <Name>ExecTransType</Name>
+          <Required>N</Required>
+          <Type>char</Type>
+          <Description>3=Status</Description>
+        </Field>
+        <Field>
+          <Tag>150</Tag>
+          <Name>ExecType</Name>
+          <Required>N</Required>
+          <Type>char</Type>
+          <Description>Reason for this execution report: M=Mass Cancel Complete</Description>
+        </Field>
+        <Field>
+          <Tag>7695</Tag>
+          <Name>MassCancelID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Copied from original Purge Request.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Purge Reject (9) -->
+    <Message>
+      <Name>Purge Reject</Name>
+      <MsgType>9</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>39</Tag>
+          <Name>OrdStatus</Name>
+          <Required>N</Required>
+          <Type>char</Type>
+          <Description>8=Rejected</Description>
+        </Field>
+        <Field>
+          <Tag>434</Tag>
+          <Name>CxlRejResponseTo</Name>
+          <Required>N</Required>
+          <Type>char</Type>
+          <Description>1=Cancel</Description>
+        </Field>
+        <Field>
+          <Tag>102</Tag>
+          <Name>CxlRejReason</Name>
+          <Required>N</Required>
+          <Type>int</Type>
+          <Description>2=Broker Option</Description>
+        </Field>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Free form text message with additional reject information.</Description>
+        </Field>
+        <Field>
+          <Tag>7695</Tag>
+          <Name>MassCancelID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Mass Cancel IDfrom the Purge Request</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+  </Messages>
+
+  <Values>
+    <!-- BeginString (8) static. Source: "FIX.4.2 Must be first field in message." -->
+    <Value>
+      <Type>BeginString</Type>
+      <Enum>FIX.4.2</Enum>
+      <Kind>Static</Kind>
+      <Description>FIX 4.2</Description>
+    </Value>
+
+    <!-- AttributedQuote -->
+    <Value>
+      <Type>AttributedQuote</Type>
+      <Enum>N</Enum>
+      <Description>Do not attribute firm MPID to this order.</Description>
+    </Value>
+    <Value>
+      <Type>AttributedQuote</Type>
+      <Enum>R</Enum>
+      <Description>Attribute "RTAL" to this order.</Description>
+    </Value>
+
+    <!-- CancelOrigOnReject -->
+    <Value>
+      <Type>CancelOrigOnReject</Type>
+      <Enum>N</Enum>
+      <Description>Leave original order alone.</Description>
+    </Value>
+
+    <!-- CrossTradeFlag (BYX Only) -->
+    <Value>
+      <Type>CrossTradeFlag (BYX Only)</Type>
+      <Enum>0</Enum>
+      <Description>None (to override port setting as necessary)</Description>
+    </Value>
+    <Value>
+      <Type>CrossTradeFlag (BYX Only)</Type>
+      <Enum>2</Enum>
+      <Description>Periodic Auction Eligible</Description>
+    </Value>
+
+    <!-- CxlRejReason -->
+    <Value>
+      <Type>CxlRejReason</Type>
+      <Enum>0</Enum>
+      <Description>Too late to cancel.</Description>
+    </Value>
+    <Value>
+      <Type>CxlRejReason</Type>
+      <Enum>3</Enum>
+      <Description>Already pending cancel or pending replace.</Description>
+    </Value>
+    <Value>
+      <Type>CxlRejReason</Type>
+      <Enum>2</Enum>
+      <Description>Broker Option</Description>
+    </Value>
+
+    <!-- CxlRejResponseTo -->
+    <Value>
+      <Type>CxlRejResponseTo</Type>
+      <Enum>1</Enum>
+      <Description>Cancel</Description>
+    </Value>
+
+    <!-- DisplayIndicator -->
+    <Value>
+      <Type>DisplayIndicator</Type>
+      <Enum>V</Enum>
+      <Description>Default. As determined by port level setting (defaults to S)</Description>
+    </Value>
+    <Value>
+      <Type>DisplayIndicator</Type>
+      <Enum>m</Enum>
+      <Description>Multiple Price Adjust</Description>
+    </Value>
+    <Value>
+      <Type>DisplayIndicator</Type>
+      <Enum>M</Enum>
+      <Description>Multiple Display Price Sliding OOtthheerr OOppttiioonnss::</Description>
+    </Value>
+
+    <!-- ExDestination -->
+    <Value>
+      <Type>ExDestination</Type>
+      <Enum>A</Enum>
+      <Description>NYSE American1</Description>
+    </Value>
+    <Value>
+      <Type>ExDestination</Type>
+      <Enum>C</Enum>
+      <Description>NYSE National</Description>
+    </Value>
+
+    <!-- ExecInst -->
+    <Value>
+      <Type>ExecInst</Type>
+      <Enum>f</Enum>
+      <Description>Intermarket Sweep (Directed or Cboe)</Description>
+    </Value>
+    <Value>
+      <Type>ExecInst</Type>
+      <Enum>Q</Enum>
+      <Description>Market Maker Peg (see below)</Description>
+    </Value>
+    <Value>
+      <Type>ExecInst</Type>
+      <Enum>U</Enum>
+      <Description>Supplemental Peg Order</Description>
+    </Value>
+    <Value>
+      <Type>ExecInst</Type>
+      <Enum>d</Enum>
+      <Description>Midpoint Discretionary Order</Description>
+    </Value>
+    <Value>
+      <Type>ExecInst</Type>
+      <Enum>o</Enum>
+      <Description>Listing Market Opening (for ROOC strategy only)</Description>
+    </Value>
+
+    <!-- ExecRestatementReason -->
+    <Value>
+      <Type>ExecRestatementReason</Type>
+      <Enum>3</Enum>
+      <Description>Repricing of Peg Order</Description>
+    </Value>
+    <Value>
+      <Type>ExecRestatementReason</Type>
+      <Enum>5</Enum>
+      <Description>Reduction of Ord Qtydue to SWP or MTP Decrement</Description>
+    </Value>
+    <Value>
+      <Type>ExecRestatementReason</Type>
+      <Enum>C</Enum>
+      <Description>Cboe Market Close (CMC)</Description>
+    </Value>
+
+    <!-- ExecTransType -->
+    <Value>
+      <Type>ExecTransType</Type>
+      <Enum>0</Enum>
+      <Description>New</Description>
+    </Value>
+    <Value>
+      <Type>ExecTransType</Type>
+      <Enum>1</Enum>
+      <Description>Trade Cancel</Description>
+    </Value>
+    <Value>
+      <Type>ExecTransType</Type>
+      <Enum>3</Enum>
+      <Description>Status</Description>
+    </Value>
+
+    <!-- ExecType -->
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>0</Enum>
+      <Description>New (acknowledgment of new order)</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>2</Enum>
+      <Description>Fill</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>4</Enum>
+      <Description>Canceled</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>6</Enum>
+      <Description>Pending Cancel</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>D</Enum>
+      <Description>Restated</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>M</Enum>
+      <Description>Mass Cancel Complete</Description>
+    </Value>
+
+    <!-- ExtendedExecInst -->
+    <Value>
+      <Type>ExtendedExecInst</Type>
+      <Enum>N</Enum>
+      <Description>None</Description>
+    </Value>
+    <Value>
+      <Type>ExtendedExecInst</Type>
+      <Enum>P</Enum>
+      <Description>Retail Order (Price Improvement Only)</Description>
+    </Value>
+    <Value>
+      <Type>ExtendedExecInst</Type>
+      <Enum>9416</Enum>
+      <Description>P, R or T. EDGX:</Description>
+    </Value>
+
+    <!-- MassCancelInst -->
+    <Value>
+      <Type>MassCancelInst</Type>
+      <Enum>A</Enum>
+      <Description>No filtering by MPID is performed.</Description>
+    </Value>
+
+    <!-- OrdRejReason -->
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>0</Enum>
+      <Description>Exchange option</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>2</Enum>
+      <Description>Exchange closed</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>5</Enum>
+      <Description>Unknown order</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>8</Enum>
+      <Description>Stale order</Description>
+    </Value>
+
+    <!-- OrdStatus -->
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>0</Enum>
+      <Description>New</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>2</Enum>
+      <Description>Filled</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>4</Enum>
+      <Description>Canceled</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>6</Enum>
+      <Description>Pending Cancel</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>A</Enum>
+      <Description>Pending Ack</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>8</Enum>
+      <Description>Rejected</Description>
+    </Value>
+
+    <!-- OrdType -->
+    <Value>
+      <Type>OrdType</Type>
+      <Enum>1</Enum>
+      <Description>Market (Regular Session only)</Description>
+    </Value>
+    <Value>
+      <Type>OrdType</Type>
+      <Enum>3</Enum>
+      <Description>Stop</Description>
+    </Value>
+
+    <!-- OrderCapacity -->
+    <Value>
+      <Type>OrderCapacity</Type>
+      <Enum>A</Enum>
+      <Description>Agency</Description>
+    </Value>
+    <Value>
+      <Type>OrderCapacity</Type>
+      <Enum>R</Enum>
+      <Description>Riskless Principal</Description>
+    </Value>
+
+    <!-- PreventMemberMatch -->
+    <Value>
+      <Type>PreventMemberMatch</Type>
+      <Enum>N</Enum>
+      <Description>Cancel Newest</Description>
+    </Value>
+    <Value>
+      <Type>PreventMemberMatch</Type>
+      <Enum>B</Enum>
+      <Description>Cancel Both</Description>
+    </Value>
+    <Value>
+      <Type>PreventMemberMatch</Type>
+      <Enum>D</Enum>
+      <Description>Decrement Larger / Cancel Smaller</Description>
+    </Value>
+    <Value>
+      <Type>PreventMemberMatch</Type>
+      <Enum>F</Enum>
+      <Description>Prevent Match at Firm(Member) Level</Description>
+    </Value>
+
+    <!-- RiskReset -->
+    <Value>
+      <Type>RiskReset</Type>
+      <Enum>S</Enum>
+      <Description>Symbol level lockout reset</Description>
+    </Value>
+
+    <!-- RoutStrategy -->
+    <Value>
+      <Type>RoutStrategy</Type>
+      <Enum>ALLB</Enum>
+      <Description>Book + IOC Other Cboe Exchanges</Description>
+    </Value>
+    <Value>
+      <Type>RoutStrategy</Type>
+      <Enum>ROUX</Enum>
+      <Description>Book + Street</Description>
+    </Value>
+    <Value>
+      <Type>RoutStrategy</Type>
+      <Enum>SWPA</Enum>
+      <Description>ISO Sweep of All Protected Markets</Description>
+    </Value>
+    <Value>
+      <Type>RoutStrategy</Type>
+      <Enum>DIRC</Enum>
+      <Description>Book + Midpoint IOC IEX (also requires Ord</Description>
+    </Value>
+    <Value>
+      <Type>RoutStrategy</Type>
+      <Enum>TRIM</Enum>
+      <Description>Book + NYSE National + Nasdaq Texas + (DRT)</Description>
+    </Value>
+
+    <!-- RoutingInst -->
+    <Value>
+      <Type>RoutingInst</Type>
+      <Enum>B</Enum>
+      <Description>Book Only (not routable, will remove from local book)</Description>
+    </Value>
+    <Value>
+      <Type>RoutingInst</Type>
+      <Enum>L</Enum>
+      <Description>Route to displayed markets only</Description>
+    </Value>
+
+    <!-- Side -->
+    <Value>
+      <Type>Side</Type>
+      <Enum>1</Enum>
+      <Description>Buy</Description>
+    </Value>
+    <Value>
+      <Type>Side</Type>
+      <Enum>5</Enum>
+      <Description>Sell Short (client affirms ability to borrow)</Description>
+    </Value>
+
+    <!-- TimeInForce -->
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>1</Enum>
+      <Description>GTC (Allowed, but treated same as Day)</Description>
+    </Value>
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>3</Enum>
+      <Description>IOC (Portion not filled immediately is cancelled.)</Description>
+    </Value>
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>5</Enum>
+      <Description>GTX (Early Trading Session until end of Post-Market Session)</Description>
+    </Value>
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>R</Enum>
+      <Description>RHO (Regular Hours/Session Only)</Description>
+    </Value>
+
+    <!-- TradeLiquidityIndicator -->
+    <Value>
+      <Type>TradeLiquidityIndicator</Type>
+      <Enum>A</Enum>
+      <Description>Trade Added Liquidity (</Description>
+    </Value>
+    <Value>
+      <Type>TradeLiquidityIndicator</Type>
+      <Enum>C</Enum>
+      <Description>Auction/Uncrossing (</Description>
+    </Value>
+    <Value>
+      <Type>TradeLiquidityIndicator</Type>
+      <Enum>R</Enum>
+      <Description>Trade Removed Liquidity (</Description>
+    </Value>
+    <Value>
+      <Type>TradeLiquidityIndicator</Type>
+      <Enum>X</Enum>
+      <Description>Routed Trade (</Description>
+    </Value>
+    <Value>
+      <Type>TradeLiquidityIndicator</Type>
+      <Enum>E</Enum>
+      <Description>Trade added RPI liquidity(BYX Only)</Description>
+    </Value>
+    <Value>
+      <Type>TradeLiquidityIndicator</Type>
+      <Enum>I</Enum>
+      <Description>Hidden liquidity add trade that was price improved</Description>
+    </Value>
+    <Value>
+      <Type>TradeLiquidityIndicator</Type>
+      <Enum>P</Enum>
+      <Description>Periodic Auction(BYX Only)</Description>
+    </Value>
+    <Value>
+      <Type>TradeLiquidityIndicator</Type>
+      <Enum>V</Enum>
+      <Description>Visible liquidity add trade that was price improved</Description>
+    </Value>
+
+
+    <!-- PossDupFlag (completed from the PDF) -->
+    <Value>
+      <Type>PossDupFlag</Type>
+      <Enum>N</Enum>
+      <Description>(Default)</Description>
+    </Value>
+    <Value>
+      <Type>PossDupFlag</Type>
+      <Enum>Y</Enum>
+      <Description>Indicates a message resend and should be used during FIX Replay.</Description>
+    </Value>
+
+    <!-- ExecTransType (completed from the PDF) -->
+    <Value>
+      <Type>ExecTransType</Type>
+      <Enum>2</Enum>
+      <Description>Trade Correct</Description>
+    </Value>
+
+    <!-- ExecType (completed from the PDF) -->
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>1</Enum>
+      <Description>Partial Fill</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>3</Enum>
+      <Description>DoneForDay</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>5</Enum>
+      <Description>Replaced</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>8</Enum>
+      <Description>Rejected</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>E</Enum>
+      <Description>Pending Replace</Description>
+    </Value>
+
+    <!-- OrdStatus (completed from the PDF) -->
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>1</Enum>
+      <Description>Partially Filled</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>3</Enum>
+      <Description>DoneForDay</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>5</Enum>
+      <Description>Replaced</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>E</Enum>
+      <Description>Pending Replace</Description>
+    </Value>
+
+    <!-- CxlRejResponseTo (completed from the PDF) -->
+    <Value>
+      <Type>CxlRejResponseTo</Type>
+      <Enum>2</Enum>
+      <Description>Cancel/Replace</Description>
+    </Value>
+
+    <!-- CxlRejReason (completed from the PDF) -->
+    <Value>
+      <Type>CxlRejReason</Type>
+      <Enum>1</Enum>
+      <Description>Unknown order.</Description>
+    </Value>
+
+    <!-- PossResend (completed from the PDF) -->
+    <Value>
+      <Type>PossResend</Type>
+      <Enum>Y</Enum>
+      <Description>Indicates an application level unsolicited resend. IfClOrdID</Description>
+    </Value>
+    <Value>
+      <Type>PossResend</Type>
+      <Enum>N</Enum>
+      <Description>(Default) indicates a new cancel.</Description>
+    </Value>
+
+    <!-- MassCancelInst (completed from the PDF) -->
+    <Value>
+      <Type>MassCancelInst</Type>
+      <Enum>F</Enum>
+      <Description>All orders that were sent under the MPID specified in</Description>
+    </Value>
+    <Value>
+      <Type>MassCancelInst</Type>
+      <Enum>M</Enum>
+      <Description>(Default) Individual Execution Reports are sent for each</Description>
+    </Value>
+    <Value>
+      <Type>MassCancelInst</Type>
+      <Enum>S</Enum>
+      <Description>Single Purge Acknowledgment sent once all cancels</Description>
+    </Value>
+    <Value>
+      <Type>MassCancelInst</Type>
+      <Enum>B</Enum>
+      <Description>Both individual Execution Reports and single</Description>
+    </Value>
+    <Value>
+      <Type>MassCancelInst</Type>
+      <Enum>N</Enum>
+      <Description>(Default) No lockout</Description>
+    </Value>
+    <Value>
+      <Type>MassCancelInst</Type>
+      <Enum>L</Enum>
+      <Description>Lockout until corresponding Risk Reset received. Lockout</Description>
+    </Value>
+  </Values>
+
+</OmiFixPdf>

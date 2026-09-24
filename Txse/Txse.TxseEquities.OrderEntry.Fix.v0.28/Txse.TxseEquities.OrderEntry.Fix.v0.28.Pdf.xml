@@ -1,0 +1,2560 @@
+<OmiFixPdf>
+  <Header>
+    <Fields>
+      <Field>
+        <Tag>8</Tag>
+        <Name>BeginString</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+        <Description>Must be the first tag. Must be set to FIXT.1.1.</Description>
+      </Field>
+      <Field>
+        <Tag>9</Tag>
+        <Name>BodyLength</Name>
+        <Required>Y</Required>
+        <Type>Length</Type>
+        <Fixed>Y</Fixed>
+        <Description>Must be the second tag. Length of message as defined by the FIX specification.</Description>
+      </Field>
+      <Field>
+        <Tag>35</Tag>
+        <Name>MsgType</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+        <Description>Enum MsgType. Must be the third tag. Type of message.</Description>
+      </Field>
+      <Field>
+        <Tag>34</Tag>
+        <Name>MsgSeqNum</Name>
+        <Required>Y</Required>
+        <Type>SeqNum</Type>
+        <Description>Sequence number of this message, starting from 1. Except for Logon, mustbe1plusthesequencenumberofthelastmessage. TheExchange never sends out-of-order messages. Receipt of an out-of-order message will cause the session to terminate.</Description>
+      </Field>
+      <Field>
+        <Tag>49</Tag>
+        <Name>SenderCompID</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Description>Sender's CompID, assigned by the Exchange during on-boarding. Must match the value assigned to the Member.</Description>
+      </Field>
+      <Field>
+        <Tag>56</Tag>
+        <Name>TargetCompID</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Description>Target CompID. For messages sent to the Exchange, must be set to the Exchange's assigned CompID (provided during on-boarding).</Description>
+      </Field>
+      <Field>
+        <Tag>52</Tag>
+        <Name>SendingTime</Name>
+        <Required>N</Required>
+        <Type>UTCTimestamp</Type>
+        <Description>Time the message was sent. Always set by the Exchange, but ignored on messages received by the Exchange.</Description>
+      </Field>
+      <Field>
+        <Tag>43</Tag>
+        <Name>PossDupFlag</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Description>Set to Y on SequenceReset-GapFill messages to indicate the message may contain a duplicate sequence number.</Description>
+      </Field>
+      <Field>
+        <Tag>115</Tag>
+        <Name>OnBehalfOfCompID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Description>Applicationnameoftheoriginatingport. OnlypresentintheDropCopy protocol.</Description>
+      </Field>
+    </Fields>
+  </Header>
+  <Trailer>
+    <Fields>
+      <Field>
+        <Tag>10</Tag>
+        <Name>CheckSum</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+        <Description>Must be the last tag. Checksum of message as defined by the FIX specification.</Description>
+      </Field>
+    </Fields>
+  </Trailer>
+  <Messages>
+    <Message>
+      <Name>Heartbeat</Name>
+      <MsgType>0</MsgType>
+      <Category>admin</Category>
+      <Fields>
+        <Field>
+          <Tag>112</Tag>
+          <Name>TestReqID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Set by the Exchange in response to a TestRequest. Omitted otherwise. Ignored by the Exchange on receipt. Members may omit.</Description>
+        </Field>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>Logon</Name>
+      <MsgType>A</MsgType>
+      <Category>admin</Category>
+      <Fields>
+        <Field>
+          <Tag>789</Tag>
+          <Name>NextExpectedMsgSeqNum</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>The next sequence number this sender expects to receive. See Logon.</Description>
+        </Field>
+        <Field>
+          <Tag>554</Tag>
+          <Name>Password</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Plain text token supplied by the Exchange during port setup. Sent by the Member only; not included in the Exchange's Logon response.</Description>
+        </Field>
+        <Field>
+          <Tag>98</Tag>
+          <Name>EncryptMethod</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Enum EncryptMethod. The Exchange will always set this to NONE_OTHER(0). Members can omit this field or set it to the same value. Any other value is invalid.</Description>
+        </Field>
+        <Field>
+          <Tag>141</Tag>
+          <Name>ResetSeqNumFlag</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>ResetstheMember'sexpectedsequencenumbertoMsgSeqNum intheheader. DoesnotaffecttheExchange'ssequencenumber. ThistagwillneverbesetbytheExchange. Membersmayalways log in with sequence number 1 when this flag is set.</Description>
+        </Field>
+        <Field>
+          <Tag>108</Tag>
+          <Name>HeartBtInt</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Time in seconds. Defaults to 30 if not set. The Exchange will always send this tag.</Description>
+        </Field>
+        <Field>
+          <Tag>1137</Tag>
+          <Name>DefaultApplVerID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Enum DefaultApplVerID. The Exchange will always set this to FIX50_SP2(9). Members can omit this field or set it to the same value. Any other value is invalid.</Description>
+        </Field>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>Logout</Name>
+      <MsgType>5</MsgType>
+      <Category>admin</Category>
+      <Fields>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Always sent by the Exchange. Human-readable text. Reason for logout. Members may omit.</Description>
+        </Field>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>Reject</Name>
+      <MsgType>3</MsgType>
+      <Category>admin</Category>
+      <Fields>
+        <Field>
+          <Tag>45</Tag>
+          <Name>RefSeqNum</Name>
+          <Required>Y</Required>
+          <Type>SeqNum</Type>
+          <Description>MsgSeqNum(34) of the inbound message being rejected.</Description>
+        </Field>
+        <Field>
+          <Tag>372</Tag>
+          <Name>RefMsgType</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Enum RefMsgType. MsgType(35) of the inbound message being re- jected.</Description>
+        </Field>
+        <Field>
+          <Tag>373</Tag>
+          <Name>SessionRejectReason</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Enum SessionRejectReason. Reason the message was rejected.</Description>
+        </Field>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>Sequence Reset</Name>
+      <MsgType>4</MsgType>
+      <Category>admin</Category>
+      <Fields>
+        <Field>
+          <Tag>123</Tag>
+          <Name>GapFillFlag</Name>
+          <Required>Y</Required>
+          <Type>Boolean</Type>
+          <Description>Always set to Y by the Exchange.</Description>
+        </Field>
+        <Field>
+          <Tag>36</Tag>
+          <Name>NewSeqNo</Name>
+          <Required>Y</Required>
+          <Type>SeqNum</Type>
+          <Description>The next sequence number after the gap.</Description>
+        </Field>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>Test Request</Name>
+      <MsgType>1</MsgType>
+      <Category>admin</Category>
+      <Fields>
+        <Field>
+          <Tag>112</Tag>
+          <Name>TestReqID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Set by the Member.</Description>
+        </Field>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>New Order Single</Name>
+      <MsgType>D</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>Y</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Time request was initiated. Required by FIX 5.0, but not used by the Exchange.</Description>
+        </Field>
+        <Field>
+          <Tag>40</Tag>
+          <Name>OrdType</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Enum OrdType. '2' for Limit.</Description>
+        </Field>
+        <Field>
+          <Tag>11</Tag>
+          <Name>ClOrdID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Client-specified order identifier with maximum length of 20 characters.</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Security identifier root represented in CMS format.</Description>
+        </Field>
+        <Field>
+          <Tag>65</Tag>
+          <Name>SymbolSfx</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Security identifier suffix represented in CMS format. De- faults to blank if not provided.</Description>
+        </Field>
+        <Field>
+          <Tag>54</Tag>
+          <Name>Side</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Enum Side. Determines direction of a trading action, in- cluding short-sell indicators.</Description>
+        </Field>
+        <Field>
+          <Tag>114</Tag>
+          <Name>LocateReqd</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>True if a locate is required for short-sale, false otherwise.</Description>
+        </Field>
+        <Field>
+          <Tag>9000</Tag>
+          <Name>LocateBroker</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Used for short sale orders to identify the broker that has loaned the stock to settle the short sale. MPID should con- tain upper-case alpha only.</Description>
+        </Field>
+        <Field>
+          <Tag>38</Tag>
+          <Name>OrderQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>Number of shares. Must be greater than 0.</Description>
+        </Field>
+        <Field>
+          <Tag>59</Tag>
+          <Name>TimeInForce</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Enum TimeInForce.</Description>
+        </Field>
+        <Field>
+          <Tag>528</Tag>
+          <Name>OrderCapacity</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Enum OrderCapacity. Broker capacity in sending order.</Description>
+        </Field>
+        <Field>
+          <Tag>109</Tag>
+          <Name>ClientID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Market Participant Identifier. MPID should contain upper- case alpha only.</Description>
+        </Field>
+        <Field>
+          <Tag>9004</Tag>
+          <Name>MemberGroup</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Member supplied grouping. Used for both self-match pre- vention and mass cancel, in conjunction with MPID or SenderComp.</Description>
+        </Field>
+        <Field>
+          <Tag>8001</Tag>
+          <Name>SelfMatchScope</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>EnumSelfMatchScope. Determinesthescopeforself-match prevention. For additional information, refer to Self Match Prevention documentation.</Description>
+        </Field>
+        <Field>
+          <Tag>2964</Tag>
+          <Name>SelfMatchPreventionInstruction</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Enum SelfMatchPreventionInstruction. Determines the be- havior when orders from the same entity would match. For additional information, refer to Self Match Prevention doc- umentation.</Description>
+        </Field>
+        <Field>
+          <Tag>9002</Tag>
+          <Name>UserData</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Pass-through field for use by clients, not used by the Ex- change.</Description>
+        </Field>
+        <Branch>
+          <Name>New Limit Order Single</Name>
+          <Required>N</Required>
+          <Dependency>OrdType</Dependency>
+          <Value>2</Value>
+          <Fields>
+            <Field>
+              <Tag>44</Tag>
+              <Name>Price</Name>
+              <Required>Y</Required>
+              <Type>Price</Type>
+              <Description>Limit price. Must be greater than 0. Maximum price is $100,000,000.00.</Description>
+            </Field>
+            <Field>
+              <Tag>18</Tag>
+              <Name>ExecInst</Name>
+              <Required>N</Required>
+              <Type>MultipleCharValue</Type>
+              <Description>Enum ExecInst.</Description>
+            </Field>
+            <Field>
+              <Tag>9005</Tag>
+              <Name>CancelAtEntryIfCrossed</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>True to cancel the order at entry if market conditions are crossed.</Description>
+            </Field>
+            <Field>
+              <Tag>8000</Tag>
+              <Name>PriceSlideInstruction</Name>
+              <Required>N</Required>
+              <Type>Char</Type>
+              <Description>Enum PriceSlideInstruction. For additional information, re- fer to Display Price Slide Instructions documentation.</Description>
+            </Field>
+            <Field>
+              <Tag>211</Tag>
+              <Name>PegOffsetValue</Name>
+              <Required>N</Required>
+              <Type>PriceOffset</Type>
+              <Description>Thetargetrelativetothereferencebasepriceinbasispoints of the NBBO spread.</Description>
+            </Field>
+            <Field>
+              <Tag>110</Tag>
+              <Name>MinQty</Name>
+              <Required>N</Required>
+              <Type>Qty</Type>
+              <Description>Number of shares that must be executed to execute any shares.</Description>
+            </Field>
+            <Field>
+              <Tag>1138</Tag>
+              <Name>DisplayQty</Name>
+              <Required>N</Required>
+              <Type>Qty</Type>
+              <Description>Quantitytobedisplayedatonetimewithremainingquantity not displayed on the book. Name Req'd</Description>
+            </Field>
+            <Field>
+              <Tag>1087</Tag>
+              <Name>DisplayMinIncr</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Defines the maximum range to be used when calculating a random refresh quantity.</Description>
+            </Field>
+            <Field>
+              <Tag>9001</Tag>
+              <Name>MaxReplenishTimeRange</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Defines the maximum range to be used when calculating a random refresh time, in nanoseconds.</Description>
+            </Field>
+            <Field>
+              <Tag>126</Tag>
+              <Name>ExpireTime</Name>
+              <Required>N</Required>
+              <Type>UTCTimestamp</Type>
+              <Description>Timestamp at which the order's open quantity will be can- celed, valid only with GTT time in force. For additional information, refer to GTT documentation.</Description>
+            </Field>
+          </Fields>
+        </Branch>
+        <Branch>
+          <Name>New Market Order Single</Name>
+          <Required>N</Required>
+          <Dependency>OrdType</Dependency>
+          <Value>1</Value>
+          <Fields></Fields>
+        </Branch>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>Order Cancel Request</Name>
+      <MsgType>F</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>Y</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Timerequestwasinitiated. RequiredbyFIX5.0,butnotusedbytheExchange.</Description>
+        </Field>
+        <Field>
+          <Tag>11</Tag>
+          <Name>ClOrdID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Client-specified order identifier with maximum length of 20 characters.</Description>
+        </Field>
+        <Field>
+          <Tag>41</Tag>
+          <Name>OrigClOrdID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Original ClOrdID. Must reference an existing order.</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>SecurityidentifierrootrepresentedinCMSformat. Thisfieldmustnotchange from the value sent in the original order.</Description>
+        </Field>
+        <Field>
+          <Tag>65</Tag>
+          <Name>SymbolSfx</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>SecurityidentifiersuffixrepresentedinCMSformat. Thisfieldmustnotchange from the value sent in the original order. Defaults to blank if not provided.</Description>
+        </Field>
+        <Field>
+          <Tag>54</Tag>
+          <Name>Side</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Enum Side. This field must match the value sent in the original order.</Description>
+        </Field>
+        <Field>
+          <Tag>38</Tag>
+          <Name>OrderQty</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Not used by TXSE. FIX 5.0 SP2 requires this field (via OrderQtyData compo- nent),butTXSEdoesnotprocessthisfieldsinceallcancelrequestscancelthe full remaining quantity of the order identified by OrigClOrdID.</Description>
+        </Field>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>Order Replace Request</Name>
+      <MsgType>G</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>Y</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Time request was initiated. Required by FIX 5.0, but not used by the Exchange.</Description>
+        </Field>
+        <Field>
+          <Tag>11</Tag>
+          <Name>ClOrdID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Client-specified order identifier with maximum length of 20 characters.</Description>
+        </Field>
+        <Field>
+          <Tag>41</Tag>
+          <Name>OrigClOrdID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Original ClOrdID. Must reference an existing order.</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Security identifier root represented in CMS format. This field must not change from the value sent in the original order.</Description>
+        </Field>
+        <Field>
+          <Tag>65</Tag>
+          <Name>SymbolSfx</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Security identifier suffix represented in CMS format. This field must not change from the value sent in the original order. Defaults to blank if not provided.</Description>
+        </Field>
+        <Field>
+          <Tag>54</Tag>
+          <Name>Side</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Enum Side. Side can only change between Sell and Sell- Short. Otherwisethisfieldmustmatchthevaluesentinthe original order.</Description>
+        </Field>
+        <Field>
+          <Tag>40</Tag>
+          <Name>OrdType</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>Enum OrdType. Not used by TXSE. FIX 5.0 SP2 requires this field, but TXSE does not process this field since the order type cannot be modified via replace.</Description>
+        </Field>
+        <Field>
+          <Tag>114</Tag>
+          <Name>LocateReqd</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>Processed for Sell Short and Sell Short Exempt in which client affirms ability to borrow (isLocateRequired = false) orclientdoesnotaffirmabilitytoborrow(isLocateRequired = true)</Description>
+        </Field>
+        <Field>
+          <Tag>9000</Tag>
+          <Name>LocateBroker</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Used for short sale orders to identify the broker that has loaned the stock to settle the short sale. MPID should con- tain upper-case alpha only.</Description>
+        </Field>
+        <Field>
+          <Tag>44</Tag>
+          <Name>Price</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Limit price. Must be greater than 0. Maximum price is $100,000,000.00. Changingthepricewillcausetheorderto lose its priority in the book.</Description>
+        </Field>
+        <Field>
+          <Tag>38</Tag>
+          <Name>OrderQty</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Number of shares. Must be greater than 0. Increase in the size of the order will cause the order to lose priority in the book.</Description>
+        </Field>
+        <Field>
+          <Tag>18</Tag>
+          <Name>ExecInst</Name>
+          <Required>N</Required>
+          <Type>MultipleCharValue</Type>
+          <Description>Enum ExecInst. Name Req'd</Description>
+        </Field>
+        <Field>
+          <Tag>9005</Tag>
+          <Name>CancelAtEntryIfCrossed</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>True to cancel the order at entry if market conditions are crossed.</Description>
+        </Field>
+        <Field>
+          <Tag>8001</Tag>
+          <Name>SelfMatchScope</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>EnumSelfMatchScope. Determinesthescopeforself-match prevention. For additional information, refer to Self Match Prevention documentation.</Description>
+        </Field>
+        <Field>
+          <Tag>2964</Tag>
+          <Name>SelfMatchPreventionInstruction</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Enum SelfMatchPreventionInstruction. Determines the be- havior when orders from the same entity would match. For additional information, refer to Self Match Prevention doc- umentation.</Description>
+        </Field>
+        <Field>
+          <Tag>8000</Tag>
+          <Name>PriceSlideInstruction</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>Enum PriceSlideInstruction. For additional information, re- fer to Display Price Slide Instructions documentation.</Description>
+        </Field>
+        <Field>
+          <Tag>211</Tag>
+          <Name>PegOffsetValue</Name>
+          <Required>N</Required>
+          <Type>PriceOffset</Type>
+          <Description>Thetargetrelativetothereferencebasepriceinbasispoints of the NBBO spread.</Description>
+        </Field>
+        <Field>
+          <Tag>1138</Tag>
+          <Name>DisplayQty</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Quantitytobedisplayedatonetimewithremainingquantity not displayed on the book.</Description>
+        </Field>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>Order Mass Cancel Request</Name>
+      <MsgType>q</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>Y</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Time request was initiated. Required by FIX 5.0, but not used by the Exchange.</Description>
+        </Field>
+        <Field>
+          <Tag>11</Tag>
+          <Name>ClOrdID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Client-specifiedorderidentifierwithmaximumlengthof20charac- ters. UniqueidentifierassignedbytheMemberforthismasscancel request.</Description>
+        </Field>
+        <Field>
+          <Tag>530</Tag>
+          <Name>MassCancelRequestType</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Enum MassCancelRequestType. Determines the Member-Owned scope for mass cancels. For additional information, refer to Mass Cancel Behavior documentation.</Description>
+        </Field>
+        <Field>
+          <Tag>109</Tag>
+          <Name>ClientID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Market Participant Identifier. MPID should contain upper-case al- pha only.</Description>
+        </Field>
+        <Field>
+          <Tag>930</Tag>
+          <Name>RefCompID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Whenpresent,narrowsthecanceltoordersenteredonthespecified order entry port (SenderComp).</Description>
+        </Field>
+        <Field>
+          <Tag>9004</Tag>
+          <Name>MemberGroup</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Member supplied grouping. Used for both self-match prevention and mass cancel, in conjunction with MPID or SenderComp.</Description>
+        </Field>
+        <Field>
+          <Tag>41</Tag>
+          <Name>OrigClOrdID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>OriginalClOrdID.Mustreferenceanexistingorder. Whenpresent, scopes the mass cancel to this specific order. RefCompID (in re- quest) is required when OrigClOrdID is supplied.</Description>
+        </Field>
+        <Field>
+          <Tag>9009</Tag>
+          <Name>ExcludeAuctionOrders</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Whenset,auctionordersareexcludedfromthemasscancelscope.</Description>
+        </Field>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>Execution Report</Name>
+      <MsgType>8</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>Y</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>The time this event was processed by the Exchange.</Description>
+        </Field>
+        <Field>
+          <Tag>150</Tag>
+          <Name>ExecType</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Enum ExecType. Execution type (NEW).</Description>
+        </Field>
+        <Field>
+          <Tag>39</Tag>
+          <Name>OrdStatus</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Enum OrdStatus. Order status (NEW).</Description>
+        </Field>
+        <Field>
+          <Tag>11</Tag>
+          <Name>ClOrdID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Client-specified order identifier with maximum length of 20 characters.</Description>
+        </Field>
+        <Field>
+          <Tag>17</Tag>
+          <Name>ExecID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Exchange-assigned unique execution identifier.</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Security identifier root represented in CMS format.</Description>
+        </Field>
+        <Field>
+          <Tag>65</Tag>
+          <Name>SymbolSfx</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Security identifier suffix represented in CMS format. Only present when the symbol has a suffix.</Description>
+        </Field>
+        <Field>
+          <Tag>54</Tag>
+          <Name>Side</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Enum Side. Determines direction of a trading action, in- cluding short-sell indicators.</Description>
+        </Field>
+        <Field>
+          <Tag>109</Tag>
+          <Name>ClientID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Market Participant Identifier. MPID should contain upper- case alpha only.</Description>
+        </Field>
+        <Field>
+          <Tag>151</Tag>
+          <Name>LeavesQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>Number of shares that were still available to execute after the execution. If this value is 0, then the order has been fully executed.</Description>
+        </Field>
+        <Field>
+          <Tag>14</Tag>
+          <Name>CumQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>Cumulative quantity filled.</Description>
+        </Field>
+        <Branch>
+          <Name>New</Name>
+          <Required>N</Required>
+          <Dependency>ExecType</Dependency>
+          <Value>0</Value>
+          <Fields>
+            <Field>
+              <Tag>40</Tag>
+              <Name>OrdType</Name>
+              <Required>Y</Required>
+              <Type>Char</Type>
+              <Description>Enum OrdType.</Description>
+            </Field>
+            <Field>
+              <Tag>37</Tag>
+              <Name>OrderID</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>Exchange-assigned unique order identifier.</Description>
+            </Field>
+            <Field>
+              <Tag>114</Tag>
+              <Name>LocateReqd</Name>
+              <Required>Y</Required>
+              <Type>Boolean</Type>
+              <Description>True if a locate is required for short-sale, false otherwise.</Description>
+            </Field>
+            <Field>
+              <Tag>9000</Tag>
+              <Name>LocateBroker</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Used for short sale orders to identify the broker that has loaned the stock to settle the short sale. MPID should con- tain upper-case alpha only.</Description>
+            </Field>
+            <Field>
+              <Tag>44</Tag>
+              <Name>Price</Name>
+              <Required>N</Required>
+              <Type>Price</Type>
+              <Description>Limit price. Conditional on OrdType.</Description>
+            </Field>
+            <Field>
+              <Tag>38</Tag>
+              <Name>OrderQty</Name>
+              <Required>Y</Required>
+              <Type>Qty</Type>
+              <Description>Number of shares.</Description>
+            </Field>
+            <Field>
+              <Tag>59</Tag>
+              <Name>TimeInForce</Name>
+              <Required>Y</Required>
+              <Type>Char</Type>
+              <Description>Enum TimeInForce.</Description>
+            </Field>
+            <Field>
+              <Tag>18</Tag>
+              <Name>ExecInst</Name>
+              <Required>N</Required>
+              <Type>MultipleCharValue</Type>
+              <Description>Enum ExecInst.</Description>
+            </Field>
+            <Field>
+              <Tag>9005</Tag>
+              <Name>CancelAtEntryIfCrossed</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>True to cancel the order at entry if market conditions are crossed.</Description>
+            </Field>
+            <Field>
+              <Tag>528</Tag>
+              <Name>OrderCapacity</Name>
+              <Required>Y</Required>
+              <Type>Char</Type>
+              <Description>Enum OrderCapacity. Broker capacity in sending order.</Description>
+            </Field>
+            <Field>
+              <Tag>9004</Tag>
+              <Name>MemberGroup</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>Member supplied grouping. Used for both self-match pre- vention and mass cancel, in conjunction with MPID or SenderComp.</Description>
+            </Field>
+            <Field>
+              <Tag>8001</Tag>
+              <Name>SelfMatchScope</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>EnumSelfMatchScope. Determinesthescopeforself-match prevention. For additional information, refer to Self Match Prevention documentation.</Description>
+            </Field>
+            <Field>
+              <Tag>2964</Tag>
+              <Name>SelfMatchPreventionInstruction</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>Enum SelfMatchPreventionInstruction. Determines the be- havior when orders from the same entity would match. For additional information, refer to Self Match Prevention doc- umentation.</Description>
+            </Field>
+            <Field>
+              <Tag>8000</Tag>
+              <Name>PriceSlideInstruction</Name>
+              <Required>Y</Required>
+              <Type>Char</Type>
+              <Description>Enum PriceSlideInstruction. For additional information, re- fer to Display Price Slide Instructions documentation.</Description>
+            </Field>
+            <Field>
+              <Tag>211</Tag>
+              <Name>PegOffsetValue</Name>
+              <Required>N</Required>
+              <Type>PriceOffset</Type>
+              <Description>Thetargetrelativetothereferencebasepriceinbasispoints of the NBBO spread. Name Req'd</Description>
+            </Field>
+            <Field>
+              <Tag>110</Tag>
+              <Name>MinQty</Name>
+              <Required>N</Required>
+              <Type>Qty</Type>
+              <Description>Number of shares that must be executed to execute any shares.</Description>
+            </Field>
+            <Field>
+              <Tag>1138</Tag>
+              <Name>DisplayQty</Name>
+              <Required>N</Required>
+              <Type>Qty</Type>
+              <Description>Quantitytobedisplayedatonetimewithremainingquantity not displayed on the book.</Description>
+            </Field>
+            <Field>
+              <Tag>1087</Tag>
+              <Name>DisplayMinIncr</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Defines the maximum range to be used when calculating a random refresh quantity.</Description>
+            </Field>
+            <Field>
+              <Tag>9001</Tag>
+              <Name>MaxReplenishTimeRange</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Defines the maximum range to be used when calculating a random refresh time, in nanoseconds.</Description>
+            </Field>
+            <Field>
+              <Tag>126</Tag>
+              <Name>ExpireTime</Name>
+              <Required>N</Required>
+              <Type>UTCTimestamp</Type>
+              <Description>Timestamp at which the order's open quantity will be can- celed, valid only with GTT time in force. For additional information, refer to GTT documentation.</Description>
+            </Field>
+            <Field>
+              <Tag>9002</Tag>
+              <Name>UserData</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Pass-through field for use by clients, not used by the Ex- change.</Description>
+            </Field>
+            <Field>
+              <Tag>9008</Tag>
+              <Name>RankPrice</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Optional rank price, when different from limit price.</Description>
+            </Field>
+            <Field>
+              <Tag>2828</Tag>
+              <Name>CurrentDisplayPrice</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Optional display price, when different from limit price.</Description>
+            </Field>
+          </Fields>
+        </Branch>
+        <Branch>
+          <Name>Rejected</Name>
+          <Required>N</Required>
+          <Dependency>ExecType</Dependency>
+          <Value>8</Value>
+          <Fields>
+            <Field>
+              <Tag>40</Tag>
+              <Name>OrdType</Name>
+              <Required>Y</Required>
+              <Type>Char</Type>
+              <Description>Enum OrdType.</Description>
+            </Field>
+            <Field>
+              <Tag>114</Tag>
+              <Name>LocateReqd</Name>
+              <Required>Y</Required>
+              <Type>Boolean</Type>
+              <Description>True if a locate is required for short-sale, false otherwise.</Description>
+            </Field>
+            <Field>
+              <Tag>9000</Tag>
+              <Name>LocateBroker</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Used for short sale orders to identify the broker that has loaned the stock to settle the short sale. MPID should con- tain upper-case alpha only.</Description>
+            </Field>
+            <Field>
+              <Tag>44</Tag>
+              <Name>Price</Name>
+              <Required>N</Required>
+              <Type>Price</Type>
+              <Description>Limit price. Conditional on OrdType.</Description>
+            </Field>
+            <Field>
+              <Tag>38</Tag>
+              <Name>OrderQty</Name>
+              <Required>Y</Required>
+              <Type>Qty</Type>
+              <Description>Number of shares.</Description>
+            </Field>
+            <Field>
+              <Tag>59</Tag>
+              <Name>TimeInForce</Name>
+              <Required>Y</Required>
+              <Type>Char</Type>
+              <Description>Enum TimeInForce.</Description>
+            </Field>
+            <Field>
+              <Tag>18</Tag>
+              <Name>ExecInst</Name>
+              <Required>N</Required>
+              <Type>MultipleCharValue</Type>
+              <Description>Enum ExecInst. Name Req'd</Description>
+            </Field>
+            <Field>
+              <Tag>9005</Tag>
+              <Name>CancelAtEntryIfCrossed</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>True to cancel the order at entry if market conditions are crossed.</Description>
+            </Field>
+            <Field>
+              <Tag>528</Tag>
+              <Name>OrderCapacity</Name>
+              <Required>Y</Required>
+              <Type>Char</Type>
+              <Description>Enum OrderCapacity. Broker capacity in sending order.</Description>
+            </Field>
+            <Field>
+              <Tag>9004</Tag>
+              <Name>MemberGroup</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Member supplied grouping. Used for both self-match pre- vention and mass cancel, in conjunction with MPID or SenderComp.</Description>
+            </Field>
+            <Field>
+              <Tag>8001</Tag>
+              <Name>SelfMatchScope</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>EnumSelfMatchScope. Determinesthescopeforself-match prevention. For additional information, refer to Self Match Prevention documentation.</Description>
+            </Field>
+            <Field>
+              <Tag>2964</Tag>
+              <Name>SelfMatchPreventionInstruction</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Enum SelfMatchPreventionInstruction. Determines the be- havior when orders from the same entity would match. For additional information, refer to Self Match Prevention doc- umentation.</Description>
+            </Field>
+            <Field>
+              <Tag>8000</Tag>
+              <Name>PriceSlideInstruction</Name>
+              <Required>N</Required>
+              <Type>Char</Type>
+              <Description>Enum PriceSlideInstruction. For additional information, re- fer to Display Price Slide Instructions documentation.</Description>
+            </Field>
+            <Field>
+              <Tag>211</Tag>
+              <Name>PegOffsetValue</Name>
+              <Required>N</Required>
+              <Type>PriceOffset</Type>
+              <Description>Thetargetrelativetothereferencebasepriceinbasispoints of the NBBO spread.</Description>
+            </Field>
+            <Field>
+              <Tag>110</Tag>
+              <Name>MinQty</Name>
+              <Required>N</Required>
+              <Type>Qty</Type>
+              <Description>Number of shares that must be executed to execute any shares.</Description>
+            </Field>
+            <Field>
+              <Tag>1138</Tag>
+              <Name>DisplayQty</Name>
+              <Required>N</Required>
+              <Type>Qty</Type>
+              <Description>Quantitytobedisplayedatonetimewithremainingquantity not displayed on the book.</Description>
+            </Field>
+            <Field>
+              <Tag>1087</Tag>
+              <Name>DisplayMinIncr</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Defines the maximum range to be used when calculating a random refresh quantity.</Description>
+            </Field>
+            <Field>
+              <Tag>9001</Tag>
+              <Name>MaxReplenishTimeRange</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Defines the maximum range to be used when calculating a random refresh time, in nanoseconds.</Description>
+            </Field>
+            <Field>
+              <Tag>126</Tag>
+              <Name>ExpireTime</Name>
+              <Required>N</Required>
+              <Type>UTCTimestamp</Type>
+              <Description>Timestamp at which the order's open quantity will be can- celed, valid only with GTT time in force. For additional information, refer to GTT documentation.</Description>
+            </Field>
+            <Field>
+              <Tag>9002</Tag>
+              <Name>UserData</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Pass-through field for use by clients, not used by the Ex- change.</Description>
+            </Field>
+            <Field>
+              <Tag>103</Tag>
+              <Name>OrdRejReason</Name>
+              <Required>Y</Required>
+              <Type>Int</Type>
+              <Description>Enum OrdRejReason. Indicates the reason that a customer actionwasrejectedbytheExchange. Additionalvaluesmay beintroducedinfutureExchangereleaseswithoutchanging themessagelayout. Membersshouldbepreparedtoreceive values not listed here, and should treat any such value as a generic,unspecifiedmemberofthissetratherthanrejecting the message or ending the session.</Description>
+            </Field>
+          </Fields>
+        </Branch>
+        <Branch>
+          <Name>Canceled</Name>
+          <Required>N</Required>
+          <Dependency>ExecType</Dependency>
+          <Value>4</Value>
+          <Fields>
+            <Field>
+              <Tag>41</Tag>
+              <Name>OrigClOrdID</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>Original ClOrdID.</Description>
+            </Field>
+            <Field>
+              <Tag>37</Tag>
+              <Name>OrderID</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>Exchange-assigned unique order identifier.</Description>
+            </Field>
+            <Field>
+              <Tag>84</Tag>
+              <Name>CxlQty</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>Canceled quantity. Equals the order's remaining open quantity at the time of cancellation.</Description>
+            </Field>
+            <Field>
+              <Tag>8003</Tag>
+              <Name>CancelReason</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>Enum CancelReason. Reason that an order was canceled. Additional valuesmaybeintroducedinfutureExchangereleaseswithoutchanging the message layout. Members should be prepared to receive values not listed here, and should treat any such value as a generic, unspecified member of this set rather than rejecting the message or ending the session.</Description>
+            </Field>
+            <Field>
+              <Tag>378</Tag>
+              <Name>ExecRestatementReason</Name>
+              <Required>N</Required>
+              <Type>Int</Type>
+              <Description>Enum ExecRestatementReason. Present only when Exec- Type=RESTATED.Value5(partialdeclineofOrderQty,exchange- initiated partial cancel).</Description>
+            </Field>
+            <Field>
+              <Tag>31</Tag>
+              <Name>LastPx</Name>
+              <Required>Y</Required>
+              <Type>Price</Type>
+              <Description>The price at which the self-match would have executed.</Description>
+            </Field>
+            <Field>
+              <Tag>32</Tag>
+              <Name>LastQty</Name>
+              <Required>Y</Required>
+              <Type>Qty</Type>
+              <Description>The quantity that would have executed against the self-matching order if self-match prevention was not enabled.</Description>
+            </Field>
+          </Fields>
+        </Branch>
+        <Branch>
+          <Name>Replaced</Name>
+          <Required>N</Required>
+          <Dependency>ExecType</Dependency>
+          <Value>5</Value>
+          <Fields>
+            <Field>
+              <Tag>40</Tag>
+              <Name>OrdType</Name>
+              <Required>Y</Required>
+              <Type>Char</Type>
+              <Description>Enum OrdType.</Description>
+            </Field>
+            <Field>
+              <Tag>41</Tag>
+              <Name>OrigClOrdID</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>Original ClOrdID.</Description>
+            </Field>
+            <Field>
+              <Tag>37</Tag>
+              <Name>OrderID</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>Exchange-assigned unique order identifier.</Description>
+            </Field>
+            <Field>
+              <Tag>114</Tag>
+              <Name>LocateReqd</Name>
+              <Required>Y</Required>
+              <Type>Boolean</Type>
+              <Description>True if a locate is required for short-sale, false otherwise.</Description>
+            </Field>
+            <Field>
+              <Tag>9000</Tag>
+              <Name>LocateBroker</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Used for short sale orders to identify the broker that has loaned the stock to settle the short sale. MPID should con- tain upper-case alpha only.</Description>
+            </Field>
+            <Field>
+              <Tag>44</Tag>
+              <Name>Price</Name>
+              <Required>N</Required>
+              <Type>Price</Type>
+              <Description>Limit price.</Description>
+            </Field>
+            <Field>
+              <Tag>38</Tag>
+              <Name>OrderQty</Name>
+              <Required>Y</Required>
+              <Type>Qty</Type>
+              <Description>Number of shares.</Description>
+            </Field>
+            <Field>
+              <Tag>59</Tag>
+              <Name>TimeInForce</Name>
+              <Required>Y</Required>
+              <Type>Char</Type>
+              <Description>Enum TimeInForce.</Description>
+            </Field>
+            <Field>
+              <Tag>18</Tag>
+              <Name>ExecInst</Name>
+              <Required>N</Required>
+              <Type>MultipleCharValue</Type>
+              <Description>Enum ExecInst.</Description>
+            </Field>
+            <Field>
+              <Tag>9005</Tag>
+              <Name>CancelAtEntryIfCrossed</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>True to cancel the order at entry if market conditions are crossed.</Description>
+            </Field>
+            <Field>
+              <Tag>8001</Tag>
+              <Name>SelfMatchScope</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>EnumSelfMatchScope. Determinesthescopeforself-match prevention. For additional information, refer to Self Match Prevention documentation.</Description>
+            </Field>
+            <Field>
+              <Tag>2964</Tag>
+              <Name>SelfMatchPreventionInstruction</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>Enum SelfMatchPreventionInstruction. Determines the be- havior when orders from the same entity would match. For additional information, refer to Self Match Prevention doc- umentation.</Description>
+            </Field>
+            <Field>
+              <Tag>8000</Tag>
+              <Name>PriceSlideInstruction</Name>
+              <Required>Y</Required>
+              <Type>Char</Type>
+              <Description>Enum PriceSlideInstruction. For additional information, re- fer to Display Price Slide Instructions documentation.</Description>
+            </Field>
+            <Field>
+              <Tag>211</Tag>
+              <Name>PegOffsetValue</Name>
+              <Required>N</Required>
+              <Type>PriceOffset</Type>
+              <Description>Thetargetrelativetothereferencebasepriceinbasispoints of the NBBO spread.</Description>
+            </Field>
+            <Field>
+              <Tag>1138</Tag>
+              <Name>DisplayQty</Name>
+              <Required>N</Required>
+              <Type>Qty</Type>
+              <Description>Quantitytobedisplayedatonetimewithremainingquantity not displayed on the book.</Description>
+            </Field>
+            <Field>
+              <Tag>9008</Tag>
+              <Name>RankPrice</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Optional rank price, when different from limit price.</Description>
+            </Field>
+            <Field>
+              <Tag>2828</Tag>
+              <Name>CurrentDisplayPrice</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Optional display price, when different from limit price. Name Req'd</Description>
+            </Field>
+          </Fields>
+        </Branch>
+        <Branch>
+          <Name>Trade</Name>
+          <Required>N</Required>
+          <Dependency>ExecType</Dependency>
+          <Value>F</Value>
+          <Fields>
+            <Field>
+              <Tag>37</Tag>
+              <Name>OrderID</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>Exchange-assigned unique order identifier.</Description>
+            </Field>
+            <Field>
+              <Tag>31</Tag>
+              <Name>LastPx</Name>
+              <Required>Y</Required>
+              <Type>Price</Type>
+              <Description>The price at which these shares were executed.</Description>
+            </Field>
+            <Field>
+              <Tag>32</Tag>
+              <Name>LastQty</Name>
+              <Required>Y</Required>
+              <Type>Qty</Type>
+              <Description>Number of shares that were executed.</Description>
+            </Field>
+            <Field>
+              <Tag>851</Tag>
+              <Name>LastLiquidityInd</Name>
+              <Required>Y</Required>
+              <Type>Int</Type>
+              <Description>Enum LastLiquidityInd.</Description>
+            </Field>
+            <Field>
+              <Tag>9730</Tag>
+              <Name>TradeLiquidityIndicator</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>Enum TradeLiquidityIndicator.</Description>
+            </Field>
+          </Fields>
+        </Branch>
+        <Branch>
+          <Name>Restated</Name>
+          <Required>N</Required>
+          <Dependency>ExecType</Dependency>
+          <Value>D</Value>
+          <Fields>
+            <Field>
+              <Tag>37</Tag>
+              <Name>OrderID</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>Exchange-assigned unique order identifier.</Description>
+            </Field>
+            <Field>
+              <Tag>44</Tag>
+              <Name>Price</Name>
+              <Required>N</Required>
+              <Type>Price</Type>
+              <Description>Limit price.</Description>
+            </Field>
+            <Field>
+              <Tag>38</Tag>
+              <Name>OrderQty</Name>
+              <Required>Y</Required>
+              <Type>Qty</Type>
+              <Description>Number of shares.</Description>
+            </Field>
+            <Field>
+              <Tag>378</Tag>
+              <Name>ExecRestatementReason</Name>
+              <Required>Y</Required>
+              <Type>Int</Type>
+              <Description>Enum ExecRestatementReason. Reason for order restatement events triggered by the Exchange.</Description>
+            </Field>
+            <Field>
+              <Tag>1138</Tag>
+              <Name>DisplayQty</Name>
+              <Required>Y</Required>
+              <Type>Qty</Type>
+              <Description>Quantity to be displayed at one time with remaining quantity not displayed on the book.</Description>
+            </Field>
+            <Field>
+              <Tag>9008</Tag>
+              <Name>RankPrice</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>The rank price. Only present on re-priced orders.</Description>
+            </Field>
+            <Field>
+              <Tag>2828</Tag>
+              <Name>CurrentDisplayPrice</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>The display price, when different from rank price. Only present on re-priced orders.</Description>
+            </Field>
+            <Field>
+              <Tag>84</Tag>
+              <Name>CxlQty</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>The quantity that was decremented or canceled from this order as a result of the self-match prevention instruction.</Description>
+            </Field>
+            <Field>
+              <Tag>8003</Tag>
+              <Name>CancelReason</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Enum CancelReason. Reason that an order was canceled. Addi- tional values may be introduced in future Exchange releases with- out changing the message layout. Members should be prepared to receive values not listed here, and should treat any such value as a generic, unspecified member of this set rather than reject- ing the message or ending the session. Present only when Exec- Type=CANCELED (full cancel). Value 6 (self-match prevention).</Description>
+            </Field>
+            <Field>
+              <Tag>31</Tag>
+              <Name>LastPx</Name>
+              <Required>Y</Required>
+              <Type>Price</Type>
+              <Description>The price at which the self-match would have executed.</Description>
+            </Field>
+            <Field>
+              <Tag>32</Tag>
+              <Name>LastQty</Name>
+              <Required>Y</Required>
+              <Type>Qty</Type>
+              <Description>The quantity that would have executed against the self-matching order if self-match prevention was not enabled.</Description>
+            </Field>
+          </Fields>
+        </Branch>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>Order Cancel Reject</Name>
+      <MsgType>9</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>Y</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>The time this event was processed by the Exchange.</Description>
+        </Field>
+        <Field>
+          <Tag>434</Tag>
+          <Name>CxlRejResponseTo</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Enum CxlRejResponseTo. Request being rejected (OR- DER_CANCEL_REQUEST).</Description>
+        </Field>
+        <Field>
+          <Tag>39</Tag>
+          <Name>OrdStatus</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Enum OrdStatus. Order status (REJECTED, CANCELED, NEW, PAR- TIALLY_FILLED or FILLED).</Description>
+        </Field>
+        <Field>
+          <Tag>11</Tag>
+          <Name>ClOrdID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Client-specified order identifier with maximum length of 20 characters.</Description>
+        </Field>
+        <Field>
+          <Tag>41</Tag>
+          <Name>OrigClOrdID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Original ClOrdID.</Description>
+        </Field>
+        <Field>
+          <Tag>37</Tag>
+          <Name>OrderID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Exchange-assigned unique order identifier. Only present if the order was found. Absent if the order was not found (e.g., invalid OrigClOrdID).</Description>
+        </Field>
+        <Field>
+          <Tag>102</Tag>
+          <Name>CxlRejReason</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Enum CxlRejReason.</Description>
+        </Field>
+        <Branch>
+          <Name>Order Cancel Reject</Name>
+          <Required>N</Required>
+          <Dependency>CxlRejResponseTo</Dependency>
+          <Value>1</Value>
+          <Fields></Fields>
+        </Branch>
+        <Branch>
+          <Name>Order Replace Reject</Name>
+          <Required>N</Required>
+          <Dependency>CxlRejResponseTo</Dependency>
+          <Value>2</Value>
+          <Fields>
+            <Field>
+              <Tag>54</Tag>
+              <Name>Side</Name>
+              <Required>Y</Required>
+              <Type>Char</Type>
+              <Description>Enum Side. Determines direction of a trading action, in- cluding short-sell indicators.</Description>
+            </Field>
+            <Field>
+              <Tag>114</Tag>
+              <Name>LocateReqd</Name>
+              <Required>Y</Required>
+              <Type>Boolean</Type>
+              <Description>True if a locate is required for short-sale, false otherwise.</Description>
+            </Field>
+            <Field>
+              <Tag>9000</Tag>
+              <Name>LocateBroker</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Used for short sale orders to identify the broker that has loaned the stock to settle the short sale. MPID should con- tain upper-case alpha only.</Description>
+            </Field>
+            <Field>
+              <Tag>44</Tag>
+              <Name>Price</Name>
+              <Required>N</Required>
+              <Type>Price</Type>
+              <Description>Limit price.</Description>
+            </Field>
+            <Field>
+              <Tag>38</Tag>
+              <Name>OrderQty</Name>
+              <Required>N</Required>
+              <Type>Qty</Type>
+              <Description>Number of shares.</Description>
+            </Field>
+            <Field>
+              <Tag>18</Tag>
+              <Name>ExecInst</Name>
+              <Required>N</Required>
+              <Type>MultipleCharValue</Type>
+              <Description>Enum ExecInst.</Description>
+            </Field>
+            <Field>
+              <Tag>9005</Tag>
+              <Name>CancelAtEntryIfCrossed</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>True to cancel the order at entry if market conditions are crossed.</Description>
+            </Field>
+            <Field>
+              <Tag>8001</Tag>
+              <Name>SelfMatchScope</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>EnumSelfMatchScope. Determinesthescopeforself-match prevention. For additional information, refer to Self Match Prevention documentation.</Description>
+            </Field>
+            <Field>
+              <Tag>2964</Tag>
+              <Name>SelfMatchPreventionInstruction</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Enum SelfMatchPreventionInstruction. Determines the be- havior when orders from the same entity would match. For additional information, refer to Self Match Prevention doc- umentation.</Description>
+            </Field>
+            <Field>
+              <Tag>8000</Tag>
+              <Name>PriceSlideInstruction</Name>
+              <Required>N</Required>
+              <Type>Char</Type>
+              <Description>Enum PriceSlideInstruction. For additional information, re- fer to Display Price Slide Instructions documentation.</Description>
+            </Field>
+            <Field>
+              <Tag>211</Tag>
+              <Name>PegOffsetValue</Name>
+              <Required>N</Required>
+              <Type>PriceOffset</Type>
+              <Description>Thetargetrelativetothereferencebasepriceinbasispoints of the NBBO spread.</Description>
+            </Field>
+            <Field>
+              <Tag>1138</Tag>
+              <Name>DisplayQty</Name>
+              <Required>N</Required>
+              <Type>Qty</Type>
+              <Description>Quantitytobedisplayedatonetimewithremainingquantity not displayed on the book.</Description>
+            </Field>
+          </Fields>
+        </Branch>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>Order Mass Cancel Report</Name>
+      <MsgType>r</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>Y</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>The time this event was processed by the Exchange.</Description>
+        </Field>
+        <Field>
+          <Tag>11</Tag>
+          <Name>ClOrdID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Client-specifiedorderidentifierwithmaximumlengthof20charac- ters. UniqueidentifierassignedbytheMemberforthismasscancel request.</Description>
+        </Field>
+        <Field>
+          <Tag>531</Tag>
+          <Name>MassCancelResponse</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>EnumMassCancelResponse. MASS_CANCEL_REQUEST_ACCEP (100).</Description>
+        </Field>
+        <Branch>
+          <Name>Accepted</Name>
+          <Required>N</Required>
+          <Dependency>MassCancelResponse</Dependency>
+          <Value>100</Value>
+          <Fields>
+            <Field>
+              <Tag>1369</Tag>
+              <Name>MassActionReportID</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>AnidentifierassignedbytheExchangeforthisMassCancelrequest. Name Req'd</Description>
+            </Field>
+            <Field>
+              <Tag>530</Tag>
+              <Name>MassCancelRequestType</Name>
+              <Required>Y</Required>
+              <Type>Char</Type>
+              <Description>Enum MassCancelRequestType. Determines the Member-Owned scope for mass cancels. For additional information, refer to Mass Cancel Behavior documentation.</Description>
+            </Field>
+            <Field>
+              <Tag>109</Tag>
+              <Name>ClientID</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Market Participant Identifier. MPID should contain upper-case al- pha only.</Description>
+            </Field>
+            <Field>
+              <Tag>930</Tag>
+              <Name>RefCompID</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Whenpresent,narrowsthecanceltoordersenteredonthespecified order entry port (SenderComp).</Description>
+            </Field>
+            <Field>
+              <Tag>9004</Tag>
+              <Name>MemberGroup</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Member supplied grouping. Used for both self-match prevention and mass cancel, in conjunction with MPID or SenderComp.</Description>
+            </Field>
+            <Field>
+              <Tag>41</Tag>
+              <Name>OrigClOrdID</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>OriginalClOrdID.Mustreferenceanexistingorder. Whenpresent, scopes the mass cancel to this specific order. RefCompID is re- quired when OrigClOrdID is supplied.</Description>
+            </Field>
+          </Fields>
+        </Branch>
+        <Branch>
+          <Name>Rejected</Name>
+          <Required>N</Required>
+          <Dependency>MassCancelResponse</Dependency>
+          <Value>0</Value>
+          <Fields>
+            <Field>
+              <Tag>530</Tag>
+              <Name>MassCancelRequestType</Name>
+              <Required>Y</Required>
+              <Type>Char</Type>
+              <Description>Enum MassCancelRequestType. Determines the Member-Owned scope for mass cancels. For additional information, refer to Mass Cancel Behavior documentation.</Description>
+            </Field>
+            <Field>
+              <Tag>532</Tag>
+              <Name>MassCancelRejectReason</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>Enum MassCancelRejectReason. Reason for rejection.</Description>
+            </Field>
+            <Field>
+              <Tag>109</Tag>
+              <Name>ClientID</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Market Participant Identifier. MPID should contain upper-case alpha only.</Description>
+            </Field>
+            <Field>
+              <Tag>930</Tag>
+              <Name>RefCompID</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Whenpresent,narrowsthecanceltoordersenteredonthespecified order entry port (SenderComp).</Description>
+            </Field>
+            <Field>
+              <Tag>9004</Tag>
+              <Name>MemberGroup</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Member supplied grouping. Used for both self-match prevention and mass cancel, in conjunction with MPID or SenderComp.</Description>
+            </Field>
+            <Field>
+              <Tag>41</Tag>
+              <Name>OrigClOrdID</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>OriginalClOrdID.Mustreferenceanexistingorder. Whenpresent, scopes the mass cancel to this specific order. RefCompID is re- quired when OrigClOrdID is supplied.</Description>
+            </Field>
+          </Fields>
+        </Branch>
+        <Branch>
+          <Name>Complete</Name>
+          <Required>N</Required>
+          <Dependency>MassCancelResponse</Dependency>
+          <Value>101</Value>
+          <Fields>
+            <Field>
+              <Tag>1369</Tag>
+              <Name>MassActionReportID</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>An identifier assigned by the Exchange for this Mass Cancel request.</Description>
+            </Field>
+            <Field>
+              <Tag>533</Tag>
+              <Name>TotalAffectedOrders</Name>
+              <Required>Y</Required>
+              <Type>Int</Type>
+              <Description>Total number of orders canceled.</Description>
+            </Field>
+          </Fields>
+        </Branch>
+      </Fields>
+    </Message>
+  </Messages>
+  <Values>
+    <Value>
+      <Type>BeginString</Type>
+      <Enum>FIXT.1.1</Enum>
+      <Kind>Static</Kind>
+      <Description>FIXT 1.1</Description>
+    </Value>
+    <Value>
+      <Type>CancelReason</Type>
+      <Enum>1</Enum>
+      <Description>Cancel due to request by client.</Description>
+    </Value>
+    <Value>
+      <Type>CancelReason</Type>
+      <Enum>2</Enum>
+      <Description>Cancel due to time in force expiration.</Description>
+    </Value>
+    <Value>
+      <Type>CancelReason</Type>
+      <Enum>3</Enum>
+      <Description>Cancel due to inability to meet minimum quantity.</Description>
+    </Value>
+    <Value>
+      <Type>CancelReason</Type>
+      <Enum>4</Enum>
+      <Description>Canceled as order would violate Regu- lation NMS Rule 610(d) by creating a lockedorcrossedmarket,andpricesliding was either not selected or not applicable.</Description>
+    </Value>
+    <Value>
+      <Type>CancelReason</Type>
+      <Enum>5</Enum>
+      <Description>Reserve orders will be canceled when deemed marketable at another exchange either at new order entry or replenish- ment.</Description>
+    </Value>
+    <Value>
+      <Type>CancelReason</Type>
+      <Enum>6</Enum>
+      <Description>Cancel due to self-match prevention in- structions.</Description>
+    </Value>
+    <Value>
+      <Type>CancelReason</Type>
+      <Enum>7</Enum>
+      <Description>Replenishment canceled related to the Reserveorderbeingcanceledorreplaced.</Description>
+    </Value>
+    <Value>
+      <Type>CancelReason</Type>
+      <Enum>8</Enum>
+      <Description>Cancelduetoordertypee.g. MarketOr- ders do not rest.</Description>
+    </Value>
+    <Value>
+      <Type>CancelReason</Type>
+      <Enum>9</Enum>
+      <Description>Cancel due to client instruction on crossed markets.</Description>
+    </Value>
+    <Value>
+      <Type>CancelReason</Type>
+      <Enum>10</Enum>
+      <Description>Cancel due to a mass cancel request.</Description>
+    </Value>
+    <Value>
+      <Type>CancelReason</Type>
+      <Enum>11</Enum>
+      <Description>Canceledasorderwouldlockorcrossthe Exchange book, and price sliding was ei- ther not selected or not applicable.</Description>
+    </Value>
+    <Value>
+      <Type>CancelReason</Type>
+      <Enum>12</Enum>
+      <Description>Canceled as order would violate Regula- tionSHORule201bydisplayatorbelow the National Best Bid during a short sale pricetestrestriction,andpriceslidingwas either not selected or not applicable</Description>
+    </Value>
+    <Value>
+      <Type>CancelReason</Type>
+      <Enum>13</Enum>
+      <Description>Canceled as order would violate LULD (Limit Up-Limit Down) price bands per SEC Rule 608, and price sliding was ei- ther not selected or not applicable.</Description>
+    </Value>
+    <Value>
+      <Type>CancelReason</Type>
+      <Enum>14</Enum>
+      <Description>Canceled as the order's limit price is now outside LULD (Limit Up-Limit Down) price bands after bands narrowed.</Description>
+    </Value>
+    <Value>
+      <Type>CancelReason</Type>
+      <Enum>15</Enum>
+      <Description>Cancel due to client disconnect from a port with cancel-on-disconnect instruc- tions. Value</Description>
+    </Value>
+    <Value>
+      <Type>CancelReason</Type>
+      <Enum>16</Enum>
+      <Description>Auction order is canceled because the auction it was eligible for has concluded. Covers two cases: (a) the cross ran but did not fully fill this order - canceled at end of the post-cross auction-cance</Description>
+    </Value>
+    <Value>
+      <Type>CancelReason</Type>
+      <Enum>17</Enum>
+      <Description>Pegged order canceled because its calcu- lated reference price moved beyond the order'slimitprice(thelimitpricecollared the peg).</Description>
+    </Value>
+    <Value>
+      <Type>CancelReason</Type>
+      <Enum>18</Enum>
+      <Description>Canceled as the order is of odd lot size and could not be executed against the contra-side liquidity on the TXSE Book.</Description>
+    </Value>
+    <Value>
+      <Type>CxlRejReason</Type>
+      <Enum>0</Enum>
+      <Description>Attempt to modify, replace, or cancel an orderthathasalreadycanceledorfullyex- ecuted.</Description>
+    </Value>
+    <Value>
+      <Type>CxlRejReason</Type>
+      <Enum>1</Enum>
+      <Description>Attempttomodifyorreplaceaclientorder that was not found for the current session on this port.</Description>
+    </Value>
+    <Value>
+      <Type>CxlRejReason</Type>
+      <Enum>6</Enum>
+      <Description>Client Order Id has already been used for the current session on this port.</Description>
+    </Value>
+    <Value>
+      <Type>CxlRejReason</Type>
+      <Enum>8</Enum>
+      <Description>Invalid limit price.</Description>
+    </Value>
+    <Value>
+      <Type>CxlRejReason</Type>
+      <Enum>18</Enum>
+      <Description>Price does not conform to the minimum price variation (tick size).</Description>
+    </Value>
+    <Value>
+      <Type>CxlRejReason</Type>
+      <Enum>100</Enum>
+      <Description>Invalidreferencepricetargetrelatedtothe order attributes. (custom TXSE value)</Description>
+    </Value>
+    <Value>
+      <Type>CxlRejReason</Type>
+      <Enum>103</Enum>
+      <Description>Invalid side. (custom TXSE value)</Description>
+    </Value>
+    <Value>
+      <Type>CxlRejReason</Type>
+      <Enum>104</Enum>
+      <Description>Invalid max floor quantity related to the order attributes. (custom TXSE value)</Description>
+    </Value>
+    <Value>
+      <Type>CxlRejReason</Type>
+      <Enum>108</Enum>
+      <Description>Invalid locate-required flag related to the order attributes. (custom TXSE value)</Description>
+    </Value>
+    <Value>
+      <Type>CxlRejReason</Type>
+      <Enum>110</Enum>
+      <Description>Invalid market participant identifier. (cus- tom TXSE value)</Description>
+    </Value>
+    <Value>
+      <Type>CxlRejReason</Type>
+      <Enum>111</Enum>
+      <Description>Invalid 'Is Post Only' flag related to the order attributes. (custom TXSE value)</Description>
+    </Value>
+    <Value>
+      <Type>CxlRejReason</Type>
+      <Enum>113</Enum>
+      <Description>Not permitted during the current trading session. (custom TXSE value)</Description>
+    </Value>
+    <Value>
+      <Type>CxlRejReason</Type>
+      <Enum>114</Enum>
+      <Description>Not permitted during the current trading status. (custom TXSE value) Value</Description>
+    </Value>
+    <Value>
+      <Type>CxlRejReason</Type>
+      <Enum>115</Enum>
+      <Description>Not permitted during the current symbol status. (custom TXSE value)</Description>
+    </Value>
+    <Value>
+      <Type>CxlRejReason</Type>
+      <Enum>116</Enum>
+      <Description>Invalid'IsISO'flagrelatedtotheorderat- tributes(ISO=IntermarketSweepOrder). (custom TXSE value)</Description>
+    </Value>
+    <Value>
+      <Type>CxlRejReason</Type>
+      <Enum>117</Enum>
+      <Description>Trading is disabled for the MPID on this port based on port MPID settings config- uration. (custom TXSE value)</Description>
+    </Value>
+    <Value>
+      <Type>CxlRejReason</Type>
+      <Enum>118</Enum>
+      <Description>Trading is restricted to test symbols only basedonportsettingsconfiguration. (cus- tom TXSE value)</Description>
+    </Value>
+    <Value>
+      <Type>CxlRejReason</Type>
+      <Enum>120</Enum>
+      <Description>ISO (Intermarket Sweep Order) trading is disabled based on port settings configura- tion. (custom TXSE value)</Description>
+    </Value>
+    <Value>
+      <Type>CxlRejReason</Type>
+      <Enum>121</Enum>
+      <Description>Order quantity exceeds the maximum shares limit configured in port settings. (custom TXSE value)</Description>
+    </Value>
+    <Value>
+      <Type>CxlRejReason</Type>
+      <Enum>122</Enum>
+      <Description>Limit price exceeds the maximum accept- able price for the Exchange. (custom TXSE value)</Description>
+    </Value>
+    <Value>
+      <Type>CxlRejReason</Type>
+      <Enum>123</Enum>
+      <Description>Symbol is on the restricted list for this port/MPID based on port settings config- uration. (custom TXSE value)</Description>
+    </Value>
+    <Value>
+      <Type>CxlRejReason</Type>
+      <Enum>124</Enum>
+      <Description>Order limit price is outside LULD (Limit Up-Limit Down) bands and port settings require rejection. (custom TXSE value)</Description>
+    </Value>
+    <Value>
+      <Type>CxlRejReason</Type>
+      <Enum>125</Enum>
+      <Description>Auction-Only orders for the Open and Close cannot be cancelled, modified, or replaced once the Band Window begins. (custom TXSE value)</Description>
+    </Value>
+    <Value>
+      <Type>CxlRejReason</Type>
+      <Enum>126</Enum>
+      <Description>Order property is incompatible with an auction-classed order. (custom TXSE value)</Description>
+    </Value>
+    <Value>
+      <Type>CxlRejReason</Type>
+      <Enum>200</Enum>
+      <Description>Symbol ID is not valid for the current ses- sion. (custom TXSE value)</Description>
+    </Value>
+    <Value>
+      <Type>CxlRejReason</Type>
+      <Enum>201</Enum>
+      <Description>Invalid order quantity. (custom TXSE value)</Description>
+    </Value>
+    <Value>
+      <Type>CxlRejReason</Type>
+      <Enum>202</Enum>
+      <Description>Ordernotionalvalueexceedsthemaximum notional limit configured in port settings. (custom TXSE value)</Description>
+    </Value>
+    <Value>
+      <Type>CxlRejReason</Type>
+      <Enum>203</Enum>
+      <Description>Order modification not permitted. (cus- tom TXSE value)</Description>
+    </Value>
+    <Value>
+      <Type>CxlRejResponseTo</Type>
+      <Enum>1</Enum>
+      <Description>Order Cancel Request</Description>
+    </Value>
+    <Value>
+      <Type>CxlRejResponseTo</Type>
+      <Enum>2</Enum>
+      <Description>Order Cancel Replace Request</Description>
+    </Value>
+    <Value>
+      <Type>ExecInst</Type>
+      <Enum>6</Enum>
+      <Description>Indicates a Post Only order instruction.</Description>
+    </Value>
+    <Value>
+      <Type>ExecInst</Type>
+      <Enum>f</Enum>
+      <Description>Indicates a Reg NMS Inter-market sweep order instruction.</Description>
+    </Value>
+    <Value>
+      <Type>ExecRestatementReason</Type>
+      <Enum>3</Enum>
+      <Description>A reprice eligible order has been repriced to a new price.</Description>
+    </Value>
+    <Value>
+      <Type>ExecRestatementReason</Type>
+      <Enum>5</Enum>
+      <Description>Sent when Self Match Prevention decrements an order quantity.</Description>
+    </Value>
+    <Value>
+      <Type>ExecRestatementReason</Type>
+      <Enum>100</Enum>
+      <Description>A new displayed slice of a reserve order has been added to the displayed book. (custom TXSE value)</Description>
+    </Value>
+    <Value>
+      <Type>ExecRestatementReason</Type>
+      <Enum>101</Enum>
+      <Description>Orders staged awaiting the result of the auction with un- filled residual have been reinstated into continuous book. (custom TXSE value)</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>0</Enum>
+      <Description>New</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>4</Enum>
+      <Description>Canceled</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>5</Enum>
+      <Description>Replaced</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>8</Enum>
+      <Description>Rejected</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>D</Enum>
+      <Description>Restated</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>F</Enum>
+      <Description>Trade</Description>
+    </Value>
+    <Value>
+      <Type>LastLiquidityInd</Type>
+      <Enum>1</Enum>
+      <Description>Added Liquidity.</Description>
+    </Value>
+    <Value>
+      <Type>LastLiquidityInd</Type>
+      <Enum>2</Enum>
+      <Description>Removed Liquidity.</Description>
+    </Value>
+    <Value>
+      <Type>LastLiquidityInd</Type>
+      <Enum>4</Enum>
+      <Description>Execution from an auction cross (any AuctionType).</Description>
+    </Value>
+    <Value>
+      <Type>MassCancelRejectReason</Type>
+      <Enum>100</Enum>
+      <Description>(custom TXSE value)</Description>
+    </Value>
+    <Value>
+      <Type>MassCancelRejectReason</Type>
+      <Enum>101</Enum>
+      <Description>(custom TXSE value)</Description>
+    </Value>
+    <Value>
+      <Type>MassCancelRejectReason</Type>
+      <Enum>102</Enum>
+      <Description>(custom TXSE value)</Description>
+    </Value>
+    <Value>
+      <Type>MassCancelRejectReason</Type>
+      <Enum>103</Enum>
+      <Description>(custom TXSE value)</Description>
+    </Value>
+    <Value>
+      <Type>MassCancelRejectReason</Type>
+      <Enum>113</Enum>
+      <Description>(custom TXSE value)</Description>
+    </Value>
+    <Value>
+      <Type>MassCancelRequestType</Type>
+      <Enum>100</Enum>
+      <Description>(customTXSEvalue)CancelacrossallSenderComps owned by this Member</Description>
+    </Value>
+    <Value>
+      <Type>MassCancelRequestType</Type>
+      <Enum>101</Enum>
+      <Description>(customTXSEvalue)CancelacrossallMPIDsowned by this Member</Description>
+    </Value>
+    <Value>
+      <Type>MassCancelResponse</Type>
+      <Enum>0</Enum>
+      <Description>Rejected</Description>
+    </Value>
+    <Value>
+      <Type>MassCancelResponse</Type>
+      <Enum>100</Enum>
+      <Description>(custom TXSE value) Request accepted; sweep in progress</Description>
+    </Value>
+    <Value>
+      <Type>MassCancelResponse</Type>
+      <Enum>101</Enum>
+      <Description>(custom TXSE value) Sweep complete; see TotalAf- fectedOrders for count</Description>
+    </Value>
+    <Value>
+      <Type>OperationalHaltReason</Type>
+      <Enum>0</Enum>
+      <Description>Administrative or technical halt initiated by the Exchange.</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>1</Enum>
+      <Description>Symbol ID is not valid for the current ses- sion.</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>5</Enum>
+      <Description>Client Order Id is invalid.</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>6</Enum>
+      <Description>Client Order Id has already been used for the current session on this port.</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>8</Enum>
+      <Description>Attempt to modify, replace, or cancel an orderthathasalreadycanceledorfullyex- ecuted.</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>13</Enum>
+      <Description>Invalid order quantity.</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>16</Enum>
+      <Description>Invalid limit price.</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>18</Enum>
+      <Description>Price does not conform to the minimum price variation (tick size).</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>27</Enum>
+      <Description>Ordernotionalvalueexceedsthemaximum notional limit configured in port settings. Value</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>100</Enum>
+      <Description>Invalidreferencepricetargetrelatedtothe order attributes. (custom TXSE value)</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>101</Enum>
+      <Description>Invalid'IsHidden'flagrelatedtotheorder attributes. (custom TXSE value)</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>102</Enum>
+      <Description>Invalid order type related to the order at- tributes. (custom TXSE value)</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>103</Enum>
+      <Description>Invalid side. (custom TXSE value)</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>104</Enum>
+      <Description>Invalid max floor quantity related to the order attributes. (custom TXSE value)</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>105</Enum>
+      <Description>Invalidmaximumreplenishquantityrange. (custom TXSE value)</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>106</Enum>
+      <Description>Invalid maximum replenish time range. (custom TXSE value)</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>107</Enum>
+      <Description>Invalid minimum quantity. (custom TXSE value)</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>108</Enum>
+      <Description>Invalid locate-required flag related to the order attributes. (custom TXSE value)</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>109</Enum>
+      <Description>Invalidtimeinforce. (customTXSEvalue)</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>110</Enum>
+      <Description>Invalid market participant identifier. (cus- tom TXSE value)</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>111</Enum>
+      <Description>Invalid 'Is Post Only' flag related to the order attributes. (custom TXSE value)</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>112</Enum>
+      <Description>Invalid expire time. (custom TXSE value)</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>113</Enum>
+      <Description>Not permitted during the current trading session. (custom TXSE value)</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>114</Enum>
+      <Description>Not permitted during the current trading status. (custom TXSE value)</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>115</Enum>
+      <Description>Not permitted during the current symbol status. (custom TXSE value)</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>116</Enum>
+      <Description>Invalid'IsISO'flagrelatedtotheorderat- tributes(ISO=IntermarketSweepOrder). (custom TXSE value)</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>117</Enum>
+      <Description>Trading is disabled for the MPID on this port based on port MPID settings config- uration. (custom TXSE value)</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>118</Enum>
+      <Description>Trading is restricted to test symbols only basedonportsettingsconfiguration. (cus- tom TXSE value)</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>119</Enum>
+      <Description>Trading is disabled for the specified order capacity based on port settings configura- tion. (custom TXSE value)</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>120</Enum>
+      <Description>ISO (Intermarket Sweep Order) trading is disabled based on port settings configura- tion. (custom TXSE value)</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>121</Enum>
+      <Description>Order quantity exceeds the maximum shares limit configured in port settings. (custom TXSE value)</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>122</Enum>
+      <Description>Limit price exceeds the maximum accept- able price for the Exchange. (custom TXSE value) Value</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>123</Enum>
+      <Description>Symbol is on the restricted list for this port/MPID based on port settings config- uration. (custom TXSE value)</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>124</Enum>
+      <Description>Order limit price is outside LULD (Limit Up-Limit Down) bands and port settings require rejection. (custom TXSE value)</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>125</Enum>
+      <Description>Auction-Only orders for the Open and Close cannot be cancelled, modified, or replaced once the Band Window begins. (custom TXSE value)</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>126</Enum>
+      <Description>Order property is incompatible with an auction-classed order. (custom TXSE value)</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>0</Enum>
+      <Description>New</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>1</Enum>
+      <Description>Partially Filled</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>2</Enum>
+      <Description>Filled</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>4</Enum>
+      <Description>Canceled</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>5</Enum>
+      <Description>Replaced</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>8</Enum>
+      <Description>Rejected</Description>
+    </Value>
+    <Value>
+      <Type>OrdType</Type>
+      <Enum>1</Enum>
+      <Description>Market</Description>
+    </Value>
+    <Value>
+      <Type>OrdType</Type>
+      <Enum>2</Enum>
+      <Description>Limit</Description>
+    </Value>
+    <Value>
+      <Type>OrderCapacity</Type>
+      <Enum>A</Enum>
+      <Description>Acting on behalf of clients.</Description>
+    </Value>
+    <Value>
+      <Type>OrderCapacity</Type>
+      <Enum>P</Enum>
+      <Description>Acting on behalf of Broker-Dealer.</Description>
+    </Value>
+    <Value>
+      <Type>OrderCapacity</Type>
+      <Enum>R</Enum>
+      <Description>Order to offset client order.</Description>
+    </Value>
+    <Value>
+      <Type>PriceSlideInstruction</Type>
+      <Enum>0</Enum>
+      <Description>No Display-Price Slide instruction. Or- dersthatwouldcreatelockingorcrossing quotations will be canceled. Value</Description>
+    </Value>
+    <Value>
+      <Type>PriceSlideInstruction</Type>
+      <Enum>1</Enum>
+      <Description>Single price slide applied to both locking and crossing quotations. Adjusts order price only upon entry and one additional time following an NBBO change.</Description>
+    </Value>
+    <Value>
+      <Type>PriceSlideInstruction</Type>
+      <Enum>2</Enum>
+      <Description>Multiplepriceslidesappliedtobothlock- ing and crossing quotations. Continu- ously re-ranks and re-displays orders as NBBO changes throughout the order's life.</Description>
+    </Value>
+    <Value>
+      <Type>PriceSlideInstruction</Type>
+      <Enum>3</Enum>
+      <Description>Single price slide applied only to locking quotations. Crossing quotations will be canceled. Note: Given this only serves locked quotations, a multiple price slide optioncouldonlyslideonce,thusmaking</Description>
+    </Value>
+    <Value>
+      <Type>SelfMatchPreventionInstruction</Type>
+      <Enum>1</Enum>
+      <Description>Cancels the incoming order. Keeps the resting order on the book.</Description>
+    </Value>
+    <Value>
+      <Type>SelfMatchPreventionInstruction</Type>
+      <Enum>2</Enum>
+      <Description>Cancels the resting order. Keeps the incoming order on the book.</Description>
+    </Value>
+    <Value>
+      <Type>SelfMatchPreventionInstruction</Type>
+      <Enum>3</Enum>
+      <Description>Cancels both orders entirely regardless of size.</Description>
+    </Value>
+    <Value>
+      <Type>SelfMatchPreventionInstruction</Type>
+      <Enum>100</Enum>
+      <Description>Self-match prevention is disabled. (custom TXSE value)</Description>
+    </Value>
+    <Value>
+      <Type>SelfMatchPreventionInstruction</Type>
+      <Enum>101</Enum>
+      <Description>Ifordersareequalsize: cancelsboth. Ifdifferentsizes: cancels the smaller order, keeps the larger one. (custom TXSE value)</Description>
+    </Value>
+    <Value>
+      <Type>SelfMatchPreventionInstruction</Type>
+      <Enum>102</Enum>
+      <Description>If orders are equal size: cancels both. If different sizes: can- cels the overlapping portion, keeps the remainder of the larger order. (custom TXSE value)</Description>
+    </Value>
+    <Value>
+      <Type>SelfMatchScope</Type>
+      <Enum>0</Enum>
+      <Description>Match prevention applies to all orders from the same Mem- ber.</Description>
+    </Value>
+    <Value>
+      <Type>SelfMatchScope</Type>
+      <Enum>1</Enum>
+      <Description>Match prevention applies to orders from the same Member with the same MPID.</Description>
+    </Value>
+    <Value>
+      <Type>SelfMatchScope</Type>
+      <Enum>2</Enum>
+      <Description>Match prevention applies to orders from the same Member within the same Member Group.</Description>
+    </Value>
+    <Value>
+      <Type>SelfMatchScope</Type>
+      <Enum>3</Enum>
+      <Description>Match prevention applies to orders from the same Member with the same MPID and Member Group.</Description>
+    </Value>
+    <Value>
+      <Type>Side</Type>
+      <Enum>1</Enum>
+      <Description>Order is a buy order.</Description>
+    </Value>
+    <Value>
+      <Type>Side</Type>
+      <Enum>2</Enum>
+      <Description>Sell order of existing inventory.</Description>
+    </Value>
+    <Value>
+      <Type>Side</Type>
+      <Enum>5</Enum>
+      <Description>Sell order of borrowed shares.</Description>
+    </Value>
+    <Value>
+      <Type>Side</Type>
+      <Enum>6</Enum>
+      <Description>Sell order of borrowed shares exempt from certain regulations of Regula- tion SHO.</Description>
+    </Value>
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>0</Enum>
+      <Description>Accepted during the Early and Regular Sessions; rejected during the After Hours Session. Live immediately upon entry. On TXSE-primary-listed symbols, resting DAY orders participate in the Closing Auct</Description>
+    </Value>
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>2</Enum>
+      <Description>Auction-only TIF for the Opening Auction cross. Order participates only in the Opening cross - no continuous-book matching. Accepted fromthestartoftheEarlySessionuntilthecrossfires. Orderbecomes non-c</Description>
+    </Value>
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>3</Enum>
+      <Description>Similar to SYS, but canceled immediately, after trading with resting liquidity on the Exchange.</Description>
+    </Value>
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>6</Enum>
+      <Description>Similar to SYS, but canceled after the requested time has passed or the end of the After Hours Session, whichever comes first. See the order's expireTime field. For additional information, refer to GT</Description>
+    </Value>
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>7</Enum>
+      <Description>Auction-onlyTIFfortheClosingAuctioncross. Orderparticipatesonly in the Closing cross - no continuous-book matching. Accepted from the start of the Early Session until the cross fires. Order becomes no</Description>
+    </Value>
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>S</Enum>
+      <Description>Accepted during any session. Live immediately upon entry. Canceled at the end of the After Hours Session. (custom TXSE value) Value</Description>
+    </Value>
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>R</Enum>
+      <Description>Regular-Hours-Only limit order. Accepted during the Early Session for TXSE-primary-listedsymbolsonly;acceptedduringtheRegularSession for any symbol. Rejected during the After Hours Session. For TXSE-p</Description>
+    </Value>
+    <Value>
+      <Type>TradeLiquidityIndicator</Type>
+      <Enum>0</Enum>
+      <Description>Removed hidden liquidity.</Description>
+    </Value>
+    <Value>
+      <Type>TradeLiquidityIndicator</Type>
+      <Enum>1</Enum>
+      <Description>Removed displayed liquidity.</Description>
+    </Value>
+    <Value>
+      <Type>TradeLiquidityIndicator</Type>
+      <Enum>2</Enum>
+      <Description>Added hidden liquidity.</Description>
+    </Value>
+    <Value>
+      <Type>TradeLiquidityIndicator</Type>
+      <Enum>3</Enum>
+      <Description>Added displayed liquidity.</Description>
+    </Value>
+    <Value>
+      <Type>TradeLiquidityIndicator</Type>
+      <Enum>4</Enum>
+      <Description>Execution from an auction cross.</Description>
+    </Value>
+    <Value>
+      <Type>DefaultApplVerID</Type>
+      <Enum>0</Enum>
+      <Description>Not supported. Do not send.</Description>
+    </Value>
+    <Value>
+      <Type>DefaultApplVerID</Type>
+      <Enum>1</Enum>
+      <Description>Not supported. Do not send.</Description>
+    </Value>
+    <Value>
+      <Type>DefaultApplVerID</Type>
+      <Enum>2</Enum>
+      <Description>Not supported. Do not send.</Description>
+    </Value>
+    <Value>
+      <Type>DefaultApplVerID</Type>
+      <Enum>3</Enum>
+      <Description>Not supported. Do not send.</Description>
+    </Value>
+    <Value>
+      <Type>DefaultApplVerID</Type>
+      <Enum>4</Enum>
+      <Description>Not supported. Do not send.</Description>
+    </Value>
+    <Value>
+      <Type>DefaultApplVerID</Type>
+      <Enum>5</Enum>
+      <Description>Not supported. Do not send.</Description>
+    </Value>
+    <Value>
+      <Type>DefaultApplVerID</Type>
+      <Enum>6</Enum>
+      <Description>Not supported. Do not send.</Description>
+    </Value>
+    <Value>
+      <Type>DefaultApplVerID</Type>
+      <Enum>7</Enum>
+      <Description>Not supported. Do not send.</Description>
+    </Value>
+    <Value>
+      <Type>DefaultApplVerID</Type>
+      <Enum>8</Enum>
+      <Description>Not supported. Do not send.</Description>
+    </Value>
+    <Value>
+      <Type>DefaultApplVerID</Type>
+      <Enum>9</Enum>
+      <Description>FIX 5.0 Service Pack 2. TXSE uses FIX 5.0 SP2 for all sessions.</Description>
+    </Value>
+    <Value>
+      <Type>DefaultApplVerID</Type>
+      <Enum>10</Enum>
+      <Description>Not supported. Do not send.</Description>
+    </Value>
+    <Value>
+      <Type>EncryptMethod</Type>
+      <Enum>0</Enum>
+      <Description>No encryption. TXSE requires EncryptMethod to always be set to 0.</Description>
+    </Value>
+    <Value>
+      <Type>EncryptMethod</Type>
+      <Enum>1</Enum>
+      <Description>Not supported. Do not send.</Description>
+    </Value>
+    <Value>
+      <Type>EncryptMethod</Type>
+      <Enum>2</Enum>
+      <Description>Not supported. Do not send.</Description>
+    </Value>
+    <Value>
+      <Type>EncryptMethod</Type>
+      <Enum>3</Enum>
+      <Description>Not supported. Do not send.</Description>
+    </Value>
+    <Value>
+      <Type>EncryptMethod</Type>
+      <Enum>4</Enum>
+      <Description>Not supported. Do not send.</Description>
+    </Value>
+    <Value>
+      <Type>EncryptMethod</Type>
+      <Enum>5</Enum>
+      <Description>Not supported. Do not send.</Description>
+    </Value>
+    <Value>
+      <Type>EncryptMethod</Type>
+      <Enum>6</Enum>
+      <Description>Not supported. Do not send.</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>6</Enum>
+      <Description>A message could not be fully parsed with invalid or missing fields.</Description>
+    </Value>
+  </Values>
+</OmiFixPdf>

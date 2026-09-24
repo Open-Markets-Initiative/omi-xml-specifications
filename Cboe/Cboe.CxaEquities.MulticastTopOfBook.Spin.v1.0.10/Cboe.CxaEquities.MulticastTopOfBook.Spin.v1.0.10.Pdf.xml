@@ -1,0 +1,400 @@
+<OmiPitchCxaEquitiesPdf>
+
+  <Messages>
+
+    <!-- Login Message -->
+    <Message>
+      <Name>Login Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x01</Code>
+      <Description>First message sent to the Spin Server by the client process after the connection to the Spin Server is established. Failure to login before sending any other message type will result in the connection being dropped by the Spin Server. Identical format to the GRP Login message.</Description>
+      <Fields>
+        <Field>
+          <Name>SessionSubId</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>SessionSubId supplied by CXA.</Description>
+        </Field>
+        <Field>
+          <Name>Username</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Username supplied by CXA.</Description>
+        </Field>
+        <Field>
+          <Name>Filler</Name>
+          <Type>Alphanumeric</Type>
+          <Size>2</Size>
+          <Description>Space filled.</Description>
+        </Field>
+        <Field>
+          <Name>Password</Name>
+          <Type>Alphanumeric</Type>
+          <Size>10</Size>
+          <Description>Password supplied by CXA.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Login Response Message -->
+    <Message>
+      <Name>Login Response Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x02</Code>
+      <Description>Sent by the Spin Server to the client process in response to a Login message. The Status field reflects an accepted login or the reason the session was not accepted. If login fails, the connection will be dropped after the Login Response message is sent.</Description>
+      <Fields>
+        <Field>
+          <Name>Login Response Status</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Accepted or reason for reject.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Spin Image Available Message -->
+    <Message>
+      <Name>Spin Image Available Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x80</Code>
+      <Description>Sent once per second by the Spin Server, indicating through what sequence number a spin is available.</Description>
+      <Fields>
+        <Field>
+          <Name>Sequence</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Spin is available which is current through this sequence number.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Spin Request Message -->
+    <Message>
+      <Name>Spin Request Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x81</Code>
+      <Description>Used by a client's process to request transmission of a spin of the unit's order book.</Description>
+      <Fields>
+        <Field>
+          <Name>Sequence</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Sequence number from a Spin Image Available message received by the client.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Spin Response Message -->
+    <Message>
+      <Name>Spin Response Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x82</Code>
+      <Description>Sent by the Spin Server in response to a client's Spin Request message indicating whether a spin will be sent.</Description>
+      <Fields>
+        <Field>
+          <Name>Sequence</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Sequence number from a Spin Image Available message.</Description>
+        </Field>
+        <Field>
+          <Name>Order Count</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>For TOP this is always zero.</Description>
+        </Field>
+        <Field>
+          <Name>Spin Response Status</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Accepted or reason for reject.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Spin Finished Message -->
+    <Message>
+      <Name>Spin Finished Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x83</Code>
+      <Description>Sent to indicate that all messages for the spin requested have been sent. A Spin Finished message is only sent if a Spin Request was not rejected. Upon receipt, any buffered multicast messages should be applied to the client's copy of the book to make it current.</Description>
+      <Fields>
+        <Field>
+          <Name>Sequence</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Sequence number from the Spin Response message.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Trading Status Message -->
+    <Message>
+      <Name>Trading Status Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x3B</Code>
+      <Description>Indicates the current trading status of a security. Included in a spin response so the client can populate trading state for each symbol.</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>Binary UTC Timestamp</Type>
+          <Size>8</Size>
+          <Description>Nanoseconds since epoch.</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Printable ASCII</Type>
+          <Size>6</Size>
+          <Description>Symbol (right padded with spaces).</Description>
+        </Field>
+        <Field>
+          <Name>Trading Status</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Trading status of the session for the symbol.</Description>
+        </Field>
+        <Field>
+          <Name>Market Id Code</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Market Identifier Code (right padded with spaces).</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>Binary</Type>
+          <Size>1</Size>
+          <Description>Reserved (undefined).</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Single Side Update Message -->
+    <Message>
+      <Name>Single Side Update Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0xE4</Code>
+      <Description>Carries the current inside price and quantity for a single side of a symbol. Included in a spin response so the client can populate the top-of-book state.</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>Binary UTC Timestamp</Type>
+          <Size>8</Size>
+          <Description>Nanoseconds since epoch.</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Printable ASCII</Type>
+          <Size>6</Size>
+          <Description>Symbol (right padded with spaces).</Description>
+        </Field>
+        <Field>
+          <Name>Side</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Side of the update.</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Binary Price</Type>
+          <Size>8</Size>
+          <Description>Price of the update.</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Number of shares on the inside book. May be zero if only undisclosed orders exist on the inside book.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>Binary</Type>
+          <Size>1</Size>
+          <Description>Reserved (undefined).</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Two Side Update Message -->
+    <Message>
+      <Name>Two Side Update Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0xE5</Code>
+      <Description>Carries the current inside prices and quantities for both sides of a symbol. Included in a spin response so the client can populate the top-of-book state.</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>Binary UTC Timestamp</Type>
+          <Size>8</Size>
+          <Description>Nanoseconds since epoch.</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Printable ASCII</Type>
+          <Size>6</Size>
+          <Description>Symbol (right padded with spaces).</Description>
+        </Field>
+        <Field>
+          <Name>Bid Price</Name>
+          <Type>Binary Price</Type>
+          <Size>8</Size>
+          <Description>Bid price.</Description>
+        </Field>
+        <Field>
+          <Name>Bid Quantity</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Number of shares on the bid side of the inside book. May be zero if only undisclosed orders exist on the inside book.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved 1</Name>
+          <Type>Binary</Type>
+          <Size>1</Size>
+          <Description>Reserved (undefined).</Description>
+        </Field>
+        <Field>
+          <Name>Ask Price</Name>
+          <Type>Binary Price</Type>
+          <Size>8</Size>
+          <Description>Ask price.</Description>
+        </Field>
+        <Field>
+          <Name>Ask Quantity</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Number of shares on the ask side of the inside book. May be zero if only undisclosed orders exist on the inside book.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved 2</Name>
+          <Type>Binary</Type>
+          <Size>1</Size>
+          <Description>Reserved (undefined).</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Calculated Value Message -->
+    <Message>
+      <Name>Calculated Value Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0xE3</Code>
+      <Description>Carries the latest calculated market value for a specified symbol. Included in a spin response so the client can populate the latest index, iNAV, or closing price value.</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>Binary UTC Timestamp</Type>
+          <Size>8</Size>
+          <Description>Nanoseconds since epoch.</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Printable ASCII</Type>
+          <Size>6</Size>
+          <Description>Symbol (right padded with spaces).</Description>
+        </Field>
+        <Field>
+          <Name>Value Category</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Category of the calculated value.</Description>
+        </Field>
+        <Field>
+          <Name>Value</Name>
+          <Type>Binary Price</Type>
+          <Size>8</Size>
+          <Description>The calculated value.</Description>
+        </Field>
+        <Field>
+          <Name>Value Timestamp</Name>
+          <Type>Binary UTC Timestamp</Type>
+          <Size>8</Size>
+          <Description>Timestamp when the calculated value was generated in nanoseconds since epoch.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+  </Messages>
+
+  <Enums>
+
+    <!-- Login Response Status -->
+    <Enum>
+      <Name>Login Response Status</Name>
+      <Values>
+        <Value><Data>A</Data><Name>Login Accepted</Name></Value>
+        <Value><Data>N</Data><Name>Not authorised (Invalid Username/Password)</Name></Value>
+        <Value><Data>B</Data><Name>Session in use</Name></Value>
+        <Value><Data>S</Data><Name>Invalid Session</Name></Value>
+      </Values>
+    </Enum>
+
+    <!-- Spin Response Status -->
+    <Enum>
+      <Name>Spin Response Status</Name>
+      <Values>
+        <Value><Data>A</Data><Name>Accepted</Name></Value>
+        <Value><Data>O</Data><Name>Out of Range (Sequence requested is greater than Sequence available by the next spin)</Name></Value>
+        <Value><Data>S</Data><Name>Spin already in progress (only one spin can be running at a time)</Name></Value>
+      </Values>
+    </Enum>
+
+    <!-- Trading Status -->
+    <Enum>
+      <Name>Trading Status</Name>
+      <Values>
+        <Value><Data>C</Data><Name>Closed</Name></Value>
+        <Value><Data>A</Data><Name>Pre-market</Name></Value>
+        <Value><Data>T</Data><Name>Trading</Name></Value>
+        <Value><Data>M</Data><Name>MOC Trading</Name></Value>
+        <Value><Data>P</Data><Name>Post-market</Name></Value>
+        <Value><Data>H</Data><Name>Halted</Name></Value>
+        <Value><Data>S</Data><Name>Trading suspended</Name></Value>
+        <Value><Data>O</Data><Name>Pre-Open</Name></Value>
+        <Value><Data>E</Data><Name>Pre-Close</Name></Value>
+      </Values>
+    </Enum>
+
+    <!-- Market Id Code -->
+    <Enum>
+      <Name>Market Id Code</Name>
+      <Values>
+        <Value><Data>XASX</Data><Name>Australian Stock Market</Name></Value>
+        <Value><Data>CXAW</Data><Name>CXA Warrants</Name></Value>
+        <Value><Data>CXAE</Data><Name>CXA ETF</Name></Value>
+        <Value><Data>CXAQ</Data><Name>CXA QMF</Name></Value>
+        <Value><Data>CXAL</Data><Name>CXA Listed</Name></Value>
+      </Values>
+    </Enum>
+
+    <!-- Side -->
+    <Enum>
+      <Name>Side</Name>
+      <Values>
+        <Value><Data>B</Data><Name>Bid side</Name></Value>
+        <Value><Data>S</Data><Name>Ask side</Name></Value>
+      </Values>
+    </Enum>
+
+    <!-- Value Category -->
+    <Enum>
+      <Name>Value Category</Name>
+      <Values>
+        <Value><Data>1</Data><Name>Closing price</Name></Value>
+        <Value><Data>2</Data><Name>iNAV values (ETF)</Name></Value>
+        <Value><Data>3</Data><Name>Index values</Name></Value>
+        <Value><Data>4</Data><Name>EOD NAV from issuer</Name></Value>
+      </Values>
+    </Enum>
+
+  </Enums>
+
+</OmiPitchCxaEquitiesPdf>

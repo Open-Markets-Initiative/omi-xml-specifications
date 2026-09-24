@@ -1,0 +1,163 @@
+<OmiPitchOptionsPdf>
+
+  <!-- Cboe Pitch Gap Request Proxy messages — shared across all Pitch feeds (equities, options, futures). The Gap Request Proxy (GRP) is a TCP service that accepts client Login and Gap Request messages and responds with Login Response and Gap Response messages. -->
+
+  <Messages>
+
+    <!-- Login Message -->
+    <Message>
+      <Name>Login Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Firm</Origin>
+      <Category>Session</Category>
+      <Code>0x01</Code>
+      <Description>The Login message is the first message sent to the Gap Request Proxy by a user's process after the connection is established. Failure to login before sending any other message type will result in the connection being dropped by the Gap Request Proxy.</Description>
+      <Fields>
+        <Field>
+          <Name>SessionSubId</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>SessionSubId supplied by Cboe.</Description>
+        </Field>
+        <Field>
+          <Name>Username</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Username supplied by Cboe.</Description>
+        </Field>
+        <Field>
+          <Name>Filler</Name>
+          <Type>Alphanumeric</Type>
+          <Size>2</Size>
+          <Description>(space filled)</Description>
+        </Field>
+        <Field>
+          <Name>Password</Name>
+          <Type>Alphanumeric</Type>
+          <Size>10</Size>
+          <Description>Password supplied by Cboe.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Login Response Message -->
+    <Message>
+      <Name>Login Response Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Session</Category>
+      <Code>0x02</Code>
+      <Description>The Login Response message is sent by the Gap Request Proxy to a user's process in response to a Login message. The status field is used to reflect an accepted login or the reason the session was not accepted. If login fails, the connection will be dropped after the Login Response message is sent.</Description>
+      <Fields>
+        <Field>
+          <Name>Login Response Status</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Accepted or reason for reject.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Gap Request Message -->
+    <Message>
+      <Name>Gap Request Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Firm</Origin>
+      <Category>Application</Category>
+      <Code>0x03</Code>
+      <Description>The Gap Request message is used by a user's process to request retransmission of a sequenced message (or messages) by one of Cboe's gap servers.</Description>
+      <Fields>
+        <Field>
+          <Name>Unit</Name>
+          <Type>Binary</Type>
+          <Size>1</Size>
+          <Description>Unit that the gap is requested for.</Description>
+        </Field>
+        <Field>
+          <Name>Sequence</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Sequence of first message, (lowest sequence in range).</Description>
+        </Field>
+        <Field>
+          <Name>Count</Name>
+          <Type>Binary</Type>
+          <Size>2</Size>
+          <Description>Count of messages requested.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Gap Response Message -->
+    <Message>
+      <Name>Gap Response Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x04</Code>
+      <Description>The Gap Response message is sent by the Gap Request Proxy in response to a Gap Request message. The Unit and Sequence fields will match the values supplied in the Gap Request message. A Gap Response message, with a Status of Accepted or reason for failure, will be sent for each Gap Request message received by the Gap Request Proxy.</Description>
+      <Fields>
+        <Field>
+          <Name>Unit</Name>
+          <Type>Binary</Type>
+          <Size>1</Size>
+          <Description>Unit the gap was requested for.</Description>
+        </Field>
+        <Field>
+          <Name>Sequence</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Sequence of first message in request.</Description>
+        </Field>
+        <Field>
+          <Name>Count</Name>
+          <Type>Binary</Type>
+          <Size>2</Size>
+          <Description>Count of messages requested.</Description>
+        </Field>
+        <Field>
+          <Name>Gap Response Status</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Accepted or reason for reject. All non-'A' status codes should be interpreted as a reject.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+  </Messages>
+
+  <Enums>
+
+    <!-- Login Response Status -->
+    <Enum>
+      <Name>Login Response Status</Name>
+      <Values>
+        <Value><Data>A</Data><Name>Login accepted</Name></Value>
+        <Value><Data>N</Data><Name>Not authorized (invalid username/password)</Name></Value>
+        <Value><Data>B</Data><Name>Session in use</Name></Value>
+        <Value><Data>S</Data><Name>Invalid session</Name></Value>
+      </Values>
+    </Enum>
+
+    <!-- Gap Response Status -->
+    <Enum>
+      <Name>Gap Response Status</Name>
+      <Values>
+        <Value><Data>A</Data><Name>Accepted</Name></Value>
+        <Value><Data>O</Data><Name>Out of range (ahead of sequence or too far behind)</Name></Value>
+        <Value><Data>D</Data><Name>Daily gap request allocation exhausted</Name></Value>
+        <Value><Data>M</Data><Name>Minute gap request allocation exhausted</Name></Value>
+        <Value><Data>S</Data><Name>Second gap request allocation exhausted</Name></Value>
+        <Value><Data>C</Data><Name>Count request limit for one gap request exceeded</Name></Value>
+        <Value><Data>I</Data><Name>Invalid Unit specified in request</Name></Value>
+        <Value><Data>U</Data><Name>Unit is currently unavailable</Name></Value>
+      </Values>
+    </Enum>
+
+  </Enums>
+
+</OmiPitchOptionsPdf>

@@ -5,6 +5,10 @@
 
 | Division | Protocol | Encoding | Version | Specification |
 | --- | --- | --- | --- | --- |
+| T7 | CashOrderEntry | Fix | 12.0 | [files](Eurex.T7.CashOrderEntry.Fix.v12.0/) |
+| T7 | CashOrderEntry | Fix | 14.0 | [files](Eurex.T7.CashOrderEntry.Fix.v14.0/) |
+| T7 | CashOrderEntry | Fix | 14.1 | [files](Eurex.T7.CashOrderEntry.Fix.v14.1/) |
+| T7 | CashOrderEntry | Fix | 15.0 | [files](Eurex.T7.CashOrderEntry.Fix.v15.0/) |
 | T7 | Edci | Fbe | 1 | [files](Eurex.T7.Edci.Fbe.v1/) |
 | T7 | Edci | Fbe | 13.0 | [files](Eurex.T7.Edci.Fbe.v13.0/) |
 | T7 | Edci | Fbe | 13.1 | [files](Eurex.T7.Edci.Fbe.v13.1/) |
@@ -56,6 +60,10 @@
 | T7 | Eti | Fbe | 8.1 | [files](Eurex.T7.Eti.Fbe.v8.1/) |
 | T7 | Eti | Fbe | 9.0 | [files](Eurex.T7.Eti.Fbe.v9.0/) |
 | T7 | Eti | Fbe | 9.1 | [files](Eurex.T7.Eti.Fbe.v9.1/) |
+| T7 | OrderEntry | Fix | 12.0 | [files](Eurex.T7.OrderEntry.Fix.v12.0/) |
+| T7 | OrderEntry | Fix | 14.0 | [files](Eurex.T7.OrderEntry.Fix.v14.0/) |
+| T7 | OrderEntry | Fix | 14.1 | [files](Eurex.T7.OrderEntry.Fix.v14.1/) |
+| T7 | OrderEntry | Fix | 15.0 | [files](Eurex.T7.OrderEntry.Fix.v15.0/) |
 | T7 | Xti | Fbe | 10.0 | [files](Eurex.T7.Xti.Fbe.v10.0/) |
 | T7 | Xti | Fbe | 10.1 | [files](Eurex.T7.Xti.Fbe.v10.1/) |
 | T7 | Xti | Fbe | 11.0 | [files](Eurex.T7.Xti.Fbe.v11.0/) |

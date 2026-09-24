@@ -1,0 +1,761 @@
+<OmiPitchOptionsPdf>
+
+  <Messages>
+
+    <!-- Login Message -->
+    <Message>
+      <Name>Login Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Firm</Origin>
+      <Code>0x01</Code>
+      <Description>The Login message is the first message sent to the Spin Server by a user's process after the connection to the Spin Server is established. Failure to login before sending any other message type will result in the connection being dropped by the Spin Server. The format of the Login message for the Spin Server is identical to that of the GRP.</Description>
+      <Fields>
+        <Field>
+          <Name>SessionSubId</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>SessionSubId supplied by Cboe.</Description>
+        </Field>
+        <Field>
+          <Name>Username</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Username supplied by Cboe.</Description>
+        </Field>
+        <Field>
+          <Name>Filler</Name>
+          <Type>Alphanumeric</Type>
+          <Size>2</Size>
+          <Description>(space filled)</Description>
+        </Field>
+        <Field>
+          <Name>Password</Name>
+          <Type>Alphanumeric</Type>
+          <Size>10</Size>
+          <Description>Password supplied by Cboe.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Login Response Message -->
+    <Message>
+      <Name>Login Response Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Code>0x02</Code>
+      <Description>The Login Response message is sent by the Spin Server to a user's process in response to a Login message. The status field is used to reflect an accepted login or the reason the session was not accepted. If login fails, the connection will be dropped after the Login Response message is sent.</Description>
+      <Fields>
+        <Field>
+          <Name>Login Response Status</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Accepted or reason for reject.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Spin Image Available Message -->
+    <Message>
+      <Name>Spin Image Available Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Code>0x80</Code>
+      <Description>The Spin Image Available message is sent once per second and indicates through what sequence number a spin is available.</Description>
+      <Fields>
+        <Field>
+          <Name>Sequence</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Spin is available which is current through this sequence number.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Spin Request Message -->
+    <Message>
+      <Name>Spin Request Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Firm</Origin>
+      <Code>0x81</Code>
+      <Description>The Spin Request message is used by a user's process to request transmission of a spin of the unit's order book.</Description>
+      <Fields>
+        <Field>
+          <Name>Sequence</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Sequence number from a Spin Image Available message received by the customer.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Spin Response Message -->
+    <Message>
+      <Name>Spin Response Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Code>0x82</Code>
+      <Description>The Spin Response message is sent in response to a user's Spin Request message indicating whether a spin will be sent.</Description>
+      <Fields>
+        <Field>
+          <Name>Sequence</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Sequence number from a Spin Image Available message received by the customer.</Description>
+        </Field>
+        <Field>
+          <Name>Order Count</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Always zero.</Description>
+        </Field>
+        <Field>
+          <Name>Spin Response Status</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Accepted or reason for reject. All non-A status codes should be interpreted as a reject.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Spin Finished Message -->
+    <Message>
+      <Name>Spin Finished Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Code>0x83</Code>
+      <Description>The Spin Finished message is sent to indicate that all messages for the spin requested have been sent. A Spin Finished message is only sent if a Spin Request was not rejected. Upon receipt of a Spin Finished message, any buffered multicast messages should be applied to the customer's copy of the book to make it current.</Description>
+      <Fields>
+        <Field>
+          <Name>Sequence</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Sequence number from the Spin Request message.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Instrument Definition Request Message -->
+    <Message>
+      <Name>Instrument Definition Request Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Firm</Origin>
+      <Code>0x84</Code>
+      <Description>The Instrument Definition Request message is used by a user's process to request transmission of this unit's Symbol Mappings and Complex Instrument Definitions. All Symbol Mapping messages will be sent before Complex Instrument Definition Expanded and Exchange Designated Complex Instrument Definition messages.</Description>
+      <Fields>
+        <Field>
+          <Name>Sequence</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Must be 0. Only the current Symbol Mappings and Complex Instrument Definitions are available.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Instrument Definition Response Message -->
+    <Message>
+      <Name>Instrument Definition Response Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Code>0x85</Code>
+      <Description>The Instrument Definition Response message is sent in response to a user's Instrument Definition Request message indicating whether a spin will be sent.</Description>
+      <Fields>
+        <Field>
+          <Name>Sequence</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Will always be 0.</Description>
+        </Field>
+        <Field>
+          <Name>Instrument Count</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Number of Symbol Mapping and Complex Instrument Definition Expanded (if applicable) messages which will be contained in this spin.</Description>
+        </Field>
+        <Field>
+          <Name>Instrument Definition Response Status</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Accepted or reason for reject.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Instrument Definition Finished Message -->
+    <Message>
+      <Name>Instrument Definition Finished Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Code>0x86</Code>
+      <Description>The Instrument Definition Finished message is sent to indicate that all Symbol Mapping and Complex Instrument Definition Expanded messages for this unit have been sent. An Instrument Definition Finished message is only sent if an Instrument Definition Request was not rejected.</Description>
+      <Fields>
+      </Fields>
+    </Message>
+
+
+    <!-- ============================================ -->
+    <!-- Top messages replayed during Spin -->
+    <!-- ============================================ -->
+
+    <!-- Time Message -->
+    <Message>
+      <Name>Time Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x20</Code>
+      <Description>A Time message is immediately generated and sent when there is a Top event for a given clock second. If there is no Top event for a given clock second, then no Time message is sent for that second. All subsequent time offset fields for the same unit will use the new Time value as the base until another Time message is received for the same unit. The Time field is the number of seconds relative to midnight Eastern Time, which is provided in the Time Reference message. On C1 only, the Time message will also include the Epoch Time field, which is the current time represented as the number of whole seconds since the Epoch (midnight January 1, 1970).</Description>
+      <Fields>
+        <Field>
+          <Name>Time</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Number of whole seconds elapsed since the start of the current Eastern Time calendar day, derived by converting the current Eastern wall clock time (HH:MM:SS) to seconds.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Symbol Mapping Message -->
+    <Message>
+      <Name>Symbol Mapping Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x2E</Code>
+      <Description>A Symbol Mapping message is sent as an unsequenced message. One unsequenced Symbol Mapping message for each Symbol is sent in a continuous loop as bandwidth allows.</Description>
+      <Fields>
+        <Field>
+          <Name>Feed Symbol</Name>
+          <Type>Printable ASCII</Type>
+          <Size>6</Size>
+          <Description>Symbol right padded with spaces.</Description>
+        </Field>
+        <Field>
+          <Name>OSI Symbol</Name>
+          <Type>Printable ASCII</Type>
+          <Size>21</Size>
+          <Description>OSI Symbol.</Description>
+        </Field>
+        <Field>
+          <Name>Symbol Condition</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>N = Normal, C = Closing Only.</Description>
+        </Field>
+        <Field>
+          <Name>Underlying</Name>
+          <Type>Alphanumeric</Type>
+          <Size>8</Size>
+          <Description>Symbol of underlying equity right padded with spaces.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Single Side Update Expanded Short Message -->
+    <Message>
+      <Name>Single Side Update Expanded Short Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0xD4</Code>
+      <Description>Single Side Update messages provide an updated price and size for a single side of a Symbol. The side is denoted by the Side field. One Single Side Update message may reflect one or more updates to the inside book that were processed at the same time, but will only be done so in a way that can be arbitrated between A/B feeds. The Single Side Update Expanded (Short) message is used whenever possible.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Time Offset</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Printable ASCII</Type>
+          <Size>6</Size>
+          <Description>Symbol right padded with spaces.</Description>
+        </Field>
+        <Field>
+          <Name>Side</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>B = Bid Side, S = Ask Side.</Description>
+        </Field>
+        <Field>
+          <Name>Bit Fields</Name>
+          <Type>Bit Field</Type>
+          <Size>1</Size>
+          <Description>Bits 0-2 Reserved. Bit 3 AON (0 = Price level is a firm quote, 1 = Price Level is AON). Bit 4 Customer (C1 Only, 0 = Not customer specific, 1 = Price Level is specifically for firm customer quotes). Bits 5-7 Reserved.</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Binary Short Price</Type>
+          <Size>2</Size>
+          <Description>Price.</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>Binary</Type>
+          <Size>2</Size>
+          <Description>Total number of contracts on the inside book (customer and non-customer). If Customer bit is set, this will be zero.</Description>
+        </Field>
+        <Field>
+          <Name>Customer Quantity</Name>
+          <Type>Binary</Type>
+          <Size>2</Size>
+          <Description>Number of customer contracts on the inside book. A zero value denotes that there are no customer contracts at the inside price. If Customer bit is set, this will be the number of customer contracts on the inside book considering only customer firm quotes. Will always be zero for C2.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Single Side Update Expanded Long Message -->
+    <Message>
+      <Name>Single Side Update Expanded Long Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0xD5</Code>
+      <Description>Single Side Update Expanded (Long) message is used when the Price cannot be represented by a Binary Short Price or the Quantity cannot be represented by an unsigned 16-bit integer.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Time Offset</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Printable ASCII</Type>
+          <Size>6</Size>
+          <Description>Symbol right padded with spaces.</Description>
+        </Field>
+        <Field>
+          <Name>Side</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>B = Bid Side, S = Ask Side.</Description>
+        </Field>
+        <Field>
+          <Name>Bit Fields</Name>
+          <Type>Bit Field</Type>
+          <Size>1</Size>
+          <Description>Bits 0-2 Reserved. Bit 3 AON (0 = Price level is a firm quote, 1 = Price Level is AON). Bit 4 Customer (C1 Only, 0 = Not customer specific, 1 = Price Level is specifically for firm customer quotes). Bits 5-7 Reserved.</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Binary Long Price</Type>
+          <Size>8</Size>
+          <Description>Price.</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Total number of contracts on the inside book (customer and non-customer). If Customer bit is set, this will be zero.</Description>
+        </Field>
+        <Field>
+          <Name>Customer Quantity</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Number of customer contracts on the inside book. A zero value denotes that there are no customer contracts at the inside price. If Customer bit is set, this will be the number of customer contracts on the inside book considering only customer firm quotes. Will always be zero for C2.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Two Side Update Expanded Short Message -->
+    <Message>
+      <Name>Two Side Update Expanded Short Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0xD6</Code>
+      <Description>Two Side Update messages provide an updated price and size for both sides of a Symbol. One Two Side Update message may reflect one or more updates to the inside book that were processed at the same time, but will only be done so in a way that can be arbitrated between A/B feeds. The Two Side Update Expanded (Short) message is used whenever possible.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Time Offset</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Printable ASCII</Type>
+          <Size>6</Size>
+          <Description>Symbol right padded with spaces.</Description>
+        </Field>
+        <Field>
+          <Name>Bit Fields</Name>
+          <Type>Bit Field</Type>
+          <Size>1</Size>
+          <Description>Bits 0-2 Reserved. Bit 3 AON (0 = Price level is a firm quote, 1 = Price Level is AON). Bit 4 Customer (C1 Only, 0 = Not customer specific, 1 = Price Level is specifically for firm customer quotes). Bits 5-7 Reserved.</Description>
+        </Field>
+        <Field>
+          <Name>Bid Price</Name>
+          <Type>Binary Short Price</Type>
+          <Size>2</Size>
+          <Description>Bid Price.</Description>
+        </Field>
+        <Field>
+          <Name>Bid Quantity</Name>
+          <Type>Binary</Type>
+          <Size>2</Size>
+          <Description>Total number of contracts on the inside bid (customer and non-customer). A zero value indicates there is no bid. If Customer bit is set, this will be zero.</Description>
+        </Field>
+        <Field>
+          <Name>Bid Customer Quantity</Name>
+          <Type>Binary</Type>
+          <Size>2</Size>
+          <Description>Number of customer contracts on the inside bid. A zero value denotes there are no customer contracts at the inside price. If Customer bit is set, this will be the number of customer contracts on the inside bid considering only customer firm quotes. Will always be zero for C2.</Description>
+        </Field>
+        <Field>
+          <Name>Ask Price</Name>
+          <Type>Binary Short Price</Type>
+          <Size>2</Size>
+          <Description>Ask Price.</Description>
+        </Field>
+        <Field>
+          <Name>Ask Quantity</Name>
+          <Type>Binary</Type>
+          <Size>2</Size>
+          <Description>Total number of contracts on the inside ask (customer and non-customer). A zero value indicates there is no ask. If Customer bit is set, this will be zero.</Description>
+        </Field>
+        <Field>
+          <Name>Ask Customer Quantity</Name>
+          <Type>Binary</Type>
+          <Size>2</Size>
+          <Description>Number of customer contracts on the inside ask. A zero value denotes there are no customer contracts at the inside price. If Customer bit is set, this will be the number of customer contracts on the inside ask considering only customer firm quotes. Will always be zero for C2.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Two Side Update Expanded Long Message -->
+    <Message>
+      <Name>Two Side Update Expanded Long Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0xD7</Code>
+      <Description>Two Side Update Expanded (Long) message is used when the Price cannot be represented by a Binary Short Price or the Quantity cannot be represented by an unsigned 16-bit integer.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Time Offset</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Printable ASCII</Type>
+          <Size>6</Size>
+          <Description>Symbol right padded with spaces.</Description>
+        </Field>
+        <Field>
+          <Name>Bit Fields</Name>
+          <Type>Bit Field</Type>
+          <Size>1</Size>
+          <Description>Bits 0-2 Reserved. Bit 3 AON (0 = Price level is a firm quote, 1 = Price Level is AON). Bit 4 Customer (C1 Only, 0 = Not customer specific, 1 = Price Level is specifically for firm customer quotes). Bits 5-7 Reserved.</Description>
+        </Field>
+        <Field>
+          <Name>Bid Price</Name>
+          <Type>Binary Long Price</Type>
+          <Size>8</Size>
+          <Description>Bid Price.</Description>
+        </Field>
+        <Field>
+          <Name>Bid Quantity</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Total number of contracts on the inside bid (customer and non-customer). A zero value indicates there is no bid. If Customer bit is set, this will be zero.</Description>
+        </Field>
+        <Field>
+          <Name>Bid Customer Quantity</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Number of customer contracts on the inside bid. A zero value denotes there are no customer contracts at the inside price. If Customer bit is set, this will be the number of customer contracts on the inside bid considering only customer firm quotes. Will always be zero for C2.</Description>
+        </Field>
+        <Field>
+          <Name>Ask Price</Name>
+          <Type>Binary Long Price</Type>
+          <Size>8</Size>
+          <Description>Ask Price.</Description>
+        </Field>
+        <Field>
+          <Name>Ask Quantity</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Total number of contracts on the inside ask (customer and non-customer). A zero value indicates there is no ask. If Customer bit is set, this will be zero.</Description>
+        </Field>
+        <Field>
+          <Name>Ask Customer Quantity</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Number of customer contracts on the inside ask. A zero value denotes there are no customer contracts at the inside price. If Customer bit is set, this will be the number of customer contracts on the inside ask considering only customer firm quotes. Will always be zero for C2.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Top Trade Message -->
+    <Message>
+      <Name>Top Trade Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0xB8</Code>
+      <Description>The Top Trade message provides information about executions of orders on the book. Top Trade messages are necessary to calculate execution-based data. Top Trade messages do not alter the book. One or more Single Side Update Expanded or Two Side Update Expanded messages will follow a Top Trade message to reflect the updated book. The Top Trade message sends the trade price, trade quantity, execution id, and trade condition of a trade as well as the cumulative volume for the trading session. The Trade Condition value of X (Trade Break) is sent whenever an execution is broken. Trade breaks will contain the Symbol, Quantity, Price, and Execution Id of the original trade.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Time Offset</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Printable ASCII</Type>
+          <Size>6</Size>
+          <Description>Symbol right padded with spaces.</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Incremental number of contracts executed or corrected (see Trade Condition).</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Binary Long Price</Type>
+          <Size>8</Size>
+          <Description>The execution price of the order.</Description>
+        </Field>
+        <Field>
+          <Name>Execution Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Cboe generated day-unique execution identifier of this trade. Execution Id is also referenced in the Trade Break message.</Description>
+        </Field>
+        <Field>
+          <Name>Total Volume</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Total number of contracts traded on the current trading session (may decrease if the Trade Condition field indicates a canceled trade).</Description>
+        </Field>
+        <Field>
+          <Name>Trade Condition</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>See Options Trade Condition Codes for details.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Trading Status Message -->
+    <Message>
+      <Name>Trading Status Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x31</Code>
+      <Description>The Trading Status message is used to indicate the current trading status of an options contract. A Trading Status message will be sent whenever a security's trading status changes. The Trading Status field will be used to represent the status of the RTH (9:30 a.m. ET - 4:15 p.m. ET) and Curb sessions. The GTH Trading Status field will be used to represent the status of series that trade during the GTH session. The GTH session runs from 8:15 p.m. to 9:25 a.m. ET for GTH-eligible Products (C1 only).</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Time Offset</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Printable ASCII</Type>
+          <Size>6</Size>
+          <Description>Symbol right padded with spaces.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>Reserved</Type>
+          <Size>2</Size>
+          <Description>Reserved.</Description>
+        </Field>
+        <Field>
+          <Name>Trading Status</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>H = Halted, L = Curb Trading (C1 Only), Q = Quote-Only, R = Opening Rotation, T = RTH Trading.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved Filler</Name>
+          <Type>Reserved</Type>
+          <Size>1</Size>
+          <Description>Reserved.</Description>
+        </Field>
+        <Field>
+          <Name>GTH Trading Status</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>C1 Only. H = Halted, Q = Quote-Only, R = Opening Rotation, T = Trading.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved2</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>Reserved.</Description>
+        </Field>
+      </Fields>
+    </Message>
+  </Messages>
+
+  <!-- Bitfields -->
+
+  <Bitfields>
+
+    <!-- Bit Fields -->
+    <Bitfield>
+      <Name>Bit Fields</Name>
+      <Description>Bit field used in Single Side Update Expanded and Two Side Update Expanded messages. Bit 3 indicates AON (All or None) price level; Bit 4 (C1 Only) indicates the price level is specifically for firm customer quotes.</Description>
+      <Fields>
+        <Field>
+          <Name>Reserved Low</Name>
+          <Bits>3</Bits>
+          <Type>bit</Type>
+          <Description>Bits 0-2 Reserved.</Description>
+        </Field>
+        <Field>
+          <Name>AON</Name>
+          <Bits>1</Bits>
+          <Type>bit</Type>
+          <Description>0 = Price level is a firm quote, 1 = Price Level is AON (All or None).</Description>
+        </Field>
+        <Field>
+          <Name>Customer</Name>
+          <Bits>1</Bits>
+          <Type>bit</Type>
+          <Description>C1 Only. 0 = Not customer specific, 1 = Price Level is specifically for firm customer quotes.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved High</Name>
+          <Bits>3</Bits>
+          <Type>bit</Type>
+          <Description>Bits 5-7 Reserved.</Description>
+        </Field>
+      </Fields>
+    </Bitfield>
+  </Bitfields>
+
+  <Enums>
+
+    <!-- Login Response Status -->
+    <Enum>
+      <Name>Login Response Status</Name>
+      <Values>
+        <Value><Data>A</Data><Name>Login Accepted</Name></Value>
+        <Value><Data>N</Data><Name>Not authorized (Invalid Username/Password)</Name></Value>
+        <Value><Data>B</Data><Name>Session in use</Name></Value>
+        <Value><Data>S</Data><Name>Invalid Session</Name></Value>
+      </Values>
+    </Enum>
+
+    <!-- Spin Response Status -->
+    <Enum>
+      <Name>Spin Response Status</Name>
+      <Values>
+        <Value><Data>A</Data><Name>Accepted</Name></Value>
+        <Value><Data>O</Data><Name>Out of Range (Sequence requested is greater than Sequence available by the next spin)</Name></Value>
+        <Value><Data>S</Data><Name>Spin already in progress (only one spin can be running at a time)</Name></Value>
+      </Values>
+    </Enum>
+
+    <!-- Instrument Definition Response Status -->
+    <Enum>
+      <Name>Instrument Definition Response Status</Name>
+      <Values>
+        <Value><Data>A</Data><Name>Accepted</Name></Value>
+        <Value><Data>O</Data><Name>Out of Range (Sequence must be 0)</Name></Value>
+        <Value><Data>S</Data><Name>Spin already in progress (only one spin can be running at a time)</Name></Value>
+      </Values>
+    </Enum>
+
+    <!-- Side -->
+    <Enum>
+      <Name>Side</Name>
+      <Values>
+        <Value><Data>B</Data><Name>Bid Side</Name></Value>
+        <Value><Data>S</Data><Name>Ask Side</Name></Value>
+      </Values>
+    </Enum>
+
+    <!-- Symbol Condition -->
+    <Enum>
+      <Name>Symbol Condition</Name>
+      <Values>
+        <Value><Data>N</Data><Name>Normal</Name></Value>
+        <Value><Data>C</Data><Name>Closing Only</Name></Value>
+      </Values>
+    </Enum>
+
+    <!-- Trading Status -->
+    <Enum>
+      <Name>Trading Status</Name>
+      <Values>
+        <Value><Data>H</Data><Name>Halted</Name></Value>
+        <Value><Data>L</Data><Name>Curb Trading</Name></Value>
+        <Value><Data>Q</Data><Name>Quote-Only</Name></Value>
+        <Value><Data>R</Data><Name>Opening Rotation</Name></Value>
+        <Value><Data>T</Data><Name>RTH Trading</Name></Value>
+      </Values>
+    </Enum>
+
+    <!-- GTH Trading Status -->
+    <Enum>
+      <Name>GTH Trading Status</Name>
+      <Values>
+        <Value><Data>H</Data><Name>Halted</Name></Value>
+        <Value><Data>Q</Data><Name>Quote-Only</Name></Value>
+        <Value><Data>R</Data><Name>Opening Rotation</Name></Value>
+        <Value><Data>T</Data><Name>Trading</Name></Value>
+      </Values>
+    </Enum>
+
+    <!-- Trade Condition -->
+    <Enum>
+      <Name>Trade Condition</Name>
+      <Values>
+        <Value><Data>a</Data><Name>Single Leg Auction Non ISO. Cboe auction types include AIM, SAM</Name></Value>
+        <Value><Data>b</Data><Name>Single Leg Auction ISO. Cboe auction types include AIM ISO, SAM ISO</Name></Value>
+        <Value><Data>c</Data><Name>Single Leg Cross Non ISO. Cboe auction types include Cust to Cust AIM, QCC</Name></Value>
+        <Value><Data>d</Data><Name>Single Leg Cross ISO. Cboe order type is Cust to Cust AIM ISO</Name></Value>
+        <Value><Data>e</Data><Name>Single Leg Floor Trade</Name></Value>
+        <Value><Data>f</Data><Name>Complex to Complex Electronic Trade. Cboe auction type is COA</Name></Value>
+        <Value><Data>g</Data><Name>Complex Auction Trade. Cboe order types include C-AIM, C-SAM</Name></Value>
+        <Value><Data>h</Data><Name>Complex Cross. Cboe auction types include Cust to Cust C-AIM, C-QCC</Name></Value>
+        <Value><Data>i</Data><Name>Complex Floor Trade. Deprecated; all complex floor executions are reported as condition m</Name></Value>
+        <Value><Data>j</Data><Name>Complex Electronic Trade Against Single Leg(s)</Name></Value>
+        <Value><Data>k</Data><Name>Complex with Stock Options Auction Trade. Cboe auction types include C-AIM w/ Stock, C-SAM w/ Stock</Name></Value>
+        <Value><Data>m</Data><Name>Complex Floor Trade Against Single Leg(s). All complex floor executions are reported as condition m</Name></Value>
+        <Value><Data>n</Data><Name>Complex with Stock Electronic Trade. Includes COA auctions done electronically</Name></Value>
+        <Value><Data>o</Data><Name>Complex with Stock Cross. Cboe auction types include C-QCC w/ Stock</Name></Value>
+        <Value><Data>p</Data><Name>Complex with Stock Floor Trade</Name></Value>
+        <Value><Data>t</Data><Name>Complex Floor Trade of Proprietary Products Marked as "Combo Order"</Name></Value>
+        <Value><Data>u</Data><Name>Multilateral Compression Trade of Proprietary Products</Name></Value>
+        <Value><Data>v</Data><Name>Extended Hours Trade. Transaction represents a trade executed during the Curb session</Name></Value>
+        <Value><Data>l</Data><Name>Electronic Trade</Name></Value>
+        <Value><Data>K</Data><Name>Cabinet Order</Name></Value>
+        <Value><Data>O</Data><Name>Opening Trade</Name></Value>
+        <Value><Data>S</Data><Name>ISO</Name></Value>
+        <Value><Data>X</Data><Name>Trade Break</Name></Value>
+      </Values>
+    </Enum>
+  </Enums>
+
+</OmiPitchOptionsPdf>

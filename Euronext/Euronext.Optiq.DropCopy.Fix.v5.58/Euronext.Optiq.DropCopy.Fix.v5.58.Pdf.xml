@@ -1,0 +1,2038 @@
+<OmiFixPdf>
+
+  <!-- Standard FIX 5.0 SP2 Message Header (Euronext Optiq, shared with Order Entry) -->
+  <Header>
+    <Fields>
+      <Field>
+        <Tag>8</Tag>
+        <Name>BeginString</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Description>Beginning of message identifier. Identifies the beginning of message and the protocol version. Must be the first field in message. Always unencrypted. Values: FIXT.1.1 (Always unencrypted, must be first field in message)</Description>
+      </Field>
+      <Field>
+        <Tag>9</Tag>
+        <Name>BodyLength</Name>
+        <Required>Y</Required>
+        <Type>Length</Type>
+        <Description>Message length including header, body and trailer. Message length, in bytes, forward to checksum field. Must be second field in message. Always unencrypted.</Description>
+      </Field>
+      <Field>
+        <Tag>35</Tag>
+        <Name>MsgType</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Description>Specifies the Message type.</Description>
+      </Field>
+      <Field>
+        <Tag>34</Tag>
+        <Name>MsgSeqNum</Name>
+        <Required>Y</Required>
+        <Type>SeqNum</Type>
+        <Description>The MsgSeqNum (34) is mandatory for all inbound messages and identifies the sequence number of the inbound or outbound message. Values: From 1 to 2^32- 2</Description>
+      </Field>
+      <Field>
+        <Tag>49</Tag>
+        <Name>SenderCompID</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Description>Identifier of the member firm that sends the message. Values: Inbound: Firm ID / Outbound: Exchange ID</Description>
+      </Field>
+      <Field>
+        <Tag>56</Tag>
+        <Name>TargetCompID</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Description>Message receptor ID. Values: Inbound: Exchange ID / Outbound: Firm ID</Description>
+      </Field>
+      <Field>
+        <Tag>115</Tag>
+        <Name>OnBehalfOfCompID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Description>ID of the issuing firm when the message is sent through a third party. Values: Inbound: Firm ID / Outbound: Not used</Description>
+      </Field>
+      <Field>
+        <Tag>128</Tag>
+        <Name>DeliverToCompID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Description>ID of the receiving firm when the message is sent through a third party. This field holds the same information as the one held by OnBehalfOfCompID in inbound messages. Values: Inbound: Not used / Outbound: Firm ID</Description>
+      </Field>
+      <Field>
+        <Tag>43</Tag>
+        <Name>PossDupFlag</Name>
+        <Required>N</Required>
+        <Type>Boolean</Type>
+        <Description>Identifies if a message is being retransmitted or not.</Description>
+      </Field>
+      <Field>
+        <Tag>97</Tag>
+        <Name>PossResend</Name>
+        <Required>N</Required>
+        <Type>Boolean</Type>
+        <Description>Indicates if the message contains information that was already sent under a different sequence number.</Description>
+      </Field>
+      <Field>
+        <Tag>52</Tag>
+        <Name>SendingTime</Name>
+        <Required>Y</Required>
+        <Type>UTCTimestamp</Type>
+        <Description>Time (in ns) of message transmission (Format: YYYYMMDD- HH:MM:SS.sssssssss). Values: YYYY = 0000- 9999, MM = 01-12, DD = 01-31, HH = 00-23, MM = 00-59, SS = 00-59, sssssssss = 000000000- 999999999 (nanoseconds)</Description>
+      </Field>
+      <Field>
+        <Tag>122</Tag>
+        <Name>OrigSendingTime</Name>
+        <Required>N</Required>
+        <Type>UTCTimestamp</Type>
+        <Description>Time (in ns) of message transmission (Format: YYYYMMDD- HH:MM:SS.sssssssss). Values: YYYY = 0000- 9999, MM = 01-12, DD = 01-31, HH = 00-23, MM = 00-59, SS = 00-59, sssssssss = 000000000- 999999999 (nanoseconds)</Description>
+      </Field>
+      <Field>
+        <Tag>369</Tag>
+        <Name>LastMsgSeqNumProcessed</Name>
+        <Required>N</Required>
+        <Type>SeqNum</Type>
+        <Description>Indicates to the Client which was the Message Sequence Number of the last message processed by the Exchange. Values: From 1 to 2^32- 2</Description>
+      </Field>
+    </Fields>
+  </Header>
+
+  <Trailer>
+    <Fields>
+      <Field>
+        <Tag>10</Tag>
+        <Name>CheckSum</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Description>Simple checksum. Always 3 bytes, always unencrypted, always last field in message.</Description>
+      </Field>
+    </Fields>
+  </Trailer>
+
+  <Messages>
+
+    <!-- Logon (A) -->
+    <Message>
+      <Name>Logon</Name>
+      <MsgType>A</MsgType>
+      <Category>admin</Category>
+      <Description>Logon.</Description>
+      <Fields>
+        <Field>
+          <Tag>108</Tag>
+          <Name>HeartBtInt</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Heartbeat interval (in seconds).</Description>
+        </Field>
+        <Field>
+          <Tag>98</Tag>
+          <Name>EncryptMethod</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Method of encryption for the new FIX session. Values: Always set to 0 (No encryption)</Description>
+        </Field>
+        <Field>
+          <Tag>21019</Tag>
+          <Name>OEPartitionID</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Identifies uniquely an OE Optiq partition by which the engine is reached. Values: From 0 to 2^16-2</Description>
+        </Field>
+        <Field>
+          <Tag>21021</Tag>
+          <Name>LogicalAccessID</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Identifier of the Logical Access. Values: From 0 to 2^32-2</Description>
+        </Field>
+        <Field>
+          <Tag>789</Tag>
+          <Name>NextExpectedMsgSeqNum</Name>
+          <Required>Y</Required>
+          <Type>SeqNum</Type>
+          <Description>Indicates the sequence number plus one (+1) of the last message received by the Client from the Exchange on the OE Session. Values: Integer.</Description>
+        </Field>
+        <Field>
+          <Tag>21020</Tag>
+          <Name>QueueingIndicator</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Indicates whether the client requests its orders to be queued or rejected in case of throttling. (0: False - Reject ; 1: True - Queue).</Description>
+        </Field>
+        <Field>
+          <Tag>1137</Tag>
+          <Name>DefaultApplVerID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Specifies the service pack release being applied, by default, to the message at the session level.</Description>
+        </Field>
+        <Field>
+          <Tag>21050</Tag>
+          <Name>SoftwareProvider</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Free text field entered by the client in the Logon (A) message, identifying the provider of the software used for exchange of messages for trading purposes.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- ResendRequest (2) -->
+    <Message>
+      <Name>ResendRequest</Name>
+      <MsgType>2</MsgType>
+      <Category>admin</Category>
+      <Description>ResendRequest.</Description>
+      <Fields>
+        <Field>
+          <Tag>7</Tag>
+          <Name>BeginSeqNo</Name>
+          <Required>Y</Required>
+          <Type>SeqNum</Type>
+          <Description>Message sequence number for first message. Values: From 1 to 2^32-2</Description>
+        </Field>
+        <Field>
+          <Tag>16</Tag>
+          <Name>EndSeqNo</Name>
+          <Required>Y</Required>
+          <Type>SeqNum</Type>
+          <Description>Message sequence number for last message. Values: From 1 to 2^32-2</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Reject (3) -->
+    <Message>
+      <Name>Reject</Name>
+      <MsgType>3</MsgType>
+      <Category>admin</Category>
+      <Description>Reject.</Description>
+      <Fields>
+        <Field>
+          <Tag>45</Tag>
+          <Name>RefSeqNum</Name>
+          <Required>Y</Required>
+          <Type>SeqNum</Type>
+          <Description>Identifies the message sequence number (MsgSeqNum (34)) of the message being rejected. Values: From 1 to 2^32-2</Description>
+        </Field>
+        <Field>
+          <Tag>371</Tag>
+          <Name>RefTagID</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Identifies the tag number of the FIX field being referenced as the reason triggering the rejection.</Description>
+        </Field>
+        <Field>
+          <Tag>372</Tag>
+          <Name>RefMsgType</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>The MsgType (35) of the FIX message being referenced. Values: Value received in the rejected inbound message, if any</Description>
+        </Field>
+        <Field>
+          <Tag>373</Tag>
+          <Name>SessionRejectReason</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Provides the logon rejection reason.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- SequenceReset (4) -->
+    <Message>
+      <Name>SequenceReset</Name>
+      <MsgType>4</MsgType>
+      <Category>admin</Category>
+      <Description>SequenceReset.</Description>
+      <Fields>
+        <Field>
+          <Tag>36</Tag>
+          <Name>NewSeqNo</Name>
+          <Required>Y</Required>
+          <Type>SeqNum</Type>
+          <Description>Identifies the MsgSeNum (34) of the next message to be received from the counterpart application. Values: From 1 to 2^32-2</Description>
+        </Field>
+        <Field>
+          <Tag>123</Tag>
+          <Name>GapFillFlag</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>Purpose of sequence reset.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Logout (5) -->
+    <Message>
+      <Name>Logout</Name>
+      <MsgType>5</MsgType>
+      <Category>admin</Category>
+      <Description>Logout.</Description>
+      <Fields>
+        <Field>
+          <Tag>1409</Tag>
+          <Name>SessionStatus</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Provides the code associated to the reason for the logout.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Heartbeat (0) -->
+    <Message>
+      <Name>Heartbeat</Name>
+      <MsgType>0</MsgType>
+      <Category>admin</Category>
+      <Description>Heartbeat.</Description>
+      <Fields>
+        <Field>
+          <Tag>112</Tag>
+          <Name>TestReqID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Test Request ID to be returned in Heartbeat (0).</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- TestRequest (1) -->
+    <Message>
+      <Name>TestRequest</Name>
+      <MsgType>1</MsgType>
+      <Category>admin</Category>
+      <Description>TestRequest.</Description>
+      <Fields>
+        <Field>
+          <Tag>112</Tag>
+          <Name>TestReqID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Test Request ID to be returned in Heartbeat (0).</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- ExecutionReport (8) -->
+    <Message>
+      <Name>ExecutionReport</Name>
+      <MsgType>8</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>21005</Tag>
+          <Name>ClientMessageSendingTime</Name>
+          <Required>N</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Indicates the time of message transmission, the consistency of the time provided is not checked by the Exchange.</Description>
+        </Field>
+        <Field>
+          <Tag>5979</Tag>
+          <Name>OEGINFromMember</Name>
+          <Required>N</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Order Entry Gateway IN time from member (in ns), measured when inbound message enters the gateway</Description>
+        </Field>
+        <Field>
+          <Tag>7764</Tag>
+          <Name>OEGOUTToME</Name>
+          <Required>N</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Gateway OUT time to ME (in ns), measured when inbound message leaves the gateway</Description>
+        </Field>
+        <Field>
+          <Tag>21002</Tag>
+          <Name>BookINTime</Name>
+          <Required>Y</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Time of order creation in ME</Description>
+        </Field>
+        <Field>
+          <Tag>21003</Tag>
+          <Name>BookOUTTime</Name>
+          <Required>N</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Matching Engine OUT time (in ns), when message leaves the Matching Engine (ME)</Description>
+        </Field>
+        <Field>
+          <Tag>7765</Tag>
+          <Name>OEGINFromME</Name>
+          <Required>N</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Gateway IN time from ME (in ns), measured when outbound message enters the gateway</Description>
+        </Field>
+        <Field>
+          <Tag>11</Tag>
+          <Name>ClOrdID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Identifier of an Order assigned by the Client</Description>
+        </Field>
+        <Field>
+          <Tag>48</Tag>
+          <Name>SecurityID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Exchange defined ID of an</Description>
+        </Field>
+        <Field>
+          <Tag>22</Tag>
+          <Name>SecurityIDSource</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Type of the SecurityID. Always set to 8 Values: 8 = Symbol Index</Description>
+        </Field>
+        <Field>
+          <Tag>20020</Tag>
+          <Name>20020</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Exchange Market Mechanism Values: Int 2 2 1 = Cash and Derivative Central Order Book (COB) A</Description>
+        </Field>
+        <Field>
+          <Tag>37</Tag>
+          <Name>OrderID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Numerical order identifier assigned by ME.</Description>
+        </Field>
+        <Field>
+          <Tag>39</Tag>
+          <Name>OrdStatus</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Order status Values: 0 = New</Description>
+        </Field>
+        <Field>
+          <Tag>21004</Tag>
+          <Name>OrderPriority</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Rank / priority of an order. Order with</Description>
+        </Field>
+        <Field>
+          <Tag>20052</Tag>
+          <Name>DarkExecutionInstruction</Name>
+          <Required>N</Required>
+          <Type>MultipleCharValue</Type>
+          <Description>CASH ONLY Field used as instruction for dark order handling. Values: First Position = Dark Indicator (0: No ; 1: Yes)</Description>
+        </Field>
+        <Field>
+          <Tag>44</Tag>
+          <Name>Price</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Instrument price per quantity unit.</Description>
+        </Field>
+        <Field>
+          <Tag>1913</Tag>
+          <Name>NumOfCompetitor</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>If provided, it identifies the minimum number of LPs required to respond to the RFQ for the RFQ to be matched</Description>
+        </Field>
+        <Field>
+          <Tag>38</Tag>
+          <Name>OrderQty</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Total order quantity, per quantity unit</Description>
+        </Field>
+        <Field>
+          <Tag>151</Tag>
+          <Name>151</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>Indicates the remaining quantity of an order</Description>
+        </Field>
+        <Field>
+          <Tag>17</Tag>
+          <Name>ExecID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Set to NA for non-trade related messages</Description>
+        </Field>
+        <Field>
+          <Tag>150</Tag>
+          <Name>ExecType</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Describes the specific type of ExecutionReport (8) message while OrdStatus (39) always identifies the current order status (e.g. Partially Filled). Values: 0 = New</Description>
+        </Field>
+        <Field>
+          <Tag>99</Tag>
+          <Name>StopPx</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Stop Trigger Price / Mandatory for Stop</Description>
+        </Field>
+        <Field>
+          <Tag>1138</Tag>
+          <Name>DisplayQty</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Maximum quantity shown to market</Description>
+        </Field>
+        <Field>
+          <Tag>20175</Tag>
+          <Name>TriggeredStopTimeInForce</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>Specifies the maximum validity of an Values: 0 = Day</Description>
+        </Field>
+        <Field>
+          <Tag>131</Tag>
+          <Name>QuoteReqID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Numerical RFQ identifier assigned by the</Description>
+        </Field>
+        <Field>
+          <Tag>21037</Tag>
+          <Name>RFQAnswerIndicator</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>CASH ONLY Values: 0 = No 1 = Yes</Description>
+        </Field>
+        <Field>
+          <Tag>21038</Tag>
+          <Name>RFQConfirmationIndicator</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>CASH ONLY Values: 0 = No 1 = Yes</Description>
+        </Field>
+        <Field>
+          <Tag>21800</Tag>
+          <Name>ConditionalOrderFlag</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>CASH ONLY Values: 0 = Firm (default) 1 = Conditional</Description>
+        </Field>
+        <Field>
+          <Tag>453</Tag>
+          <Name>NoPartyIDs</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Number of PartyID entries</Description>
+        </Field>
+        <Field>
+          <Tag>448</Tag>
+          <Name>PartyID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>In this case provides the Values: 11 Alphanumeric Alphanumeric A</Description>
+        </Field>
+        <Field>
+          <Tag>447</Tag>
+          <Name>PartyIDSource</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Source of PartyID value Values: P = Short code identifier</Description>
+        </Field>
+        <Field>
+          <Tag>452</Tag>
+          <Name>PartyRole</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Identifies the type or role of the PartyID Values: 3 = Client ID 12 = Executing Trader 999 = Not Applicable</Description>
+        </Field>
+        <Field>
+          <Tag>2376</Tag>
+          <Name>PartyRoleQualifier</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Used to further qualify the value of Values: 22 = Algorithm 23 = Firm or legal entity 24 = Natural person 99 = Not Applicable</Description>
+        </Field>
+        <Field>
+          <Tag>1724</Tag>
+          <Name>OrderOrigination</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Identifies the origin of the order Values: 5 = Order received from a direct access or</Description>
+        </Field>
+        <Field>
+          <Tag>2593</Tag>
+          <Name>NoOrderAttribute</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Number of order attribute entries</Description>
+        </Field>
+        <Field>
+          <Tag>2594</Tag>
+          <Name>OrderAttributeType</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Used in case client needs to indicate values Values: 0 = Aggregated order</Description>
+        </Field>
+        <Field>
+          <Tag>2595</Tag>
+          <Name>OrderAttributeVal</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Always set to Yes if OrderAttributeType Values: Y = Yes Y = Yes</Description>
+        </Field>
+        <Field>
+          <Tag>29</Tag>
+          <Name>LastCapacity</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Indicates whether the order submission Values: 7 = Dealing on own account (DEAL)</Description>
+        </Field>
+        <Field>
+          <Tag>110</Tag>
+          <Name>MinQty</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Minimum quantity to be executed upon Values: Value &#x27;0&#x27; by default and depending to a minimum value for the given instrument and/or market type</Description>
+        </Field>
+        <Field>
+          <Tag>21013</Tag>
+          <Name>AckPhase</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Indicates the trading phase during which the Matching Engine has received the order Values 5 and 8 apply only for Cash markets Values: 1 = Continuous Trading Phase</Description>
+        </Field>
+        <Field>
+          <Tag>21014</Tag>
+          <Name>AckQualifiers</Name>
+          <Required>Y</Required>
+          <Type>MultipleCharValue</Type>
+          <Description>Field used to provide additional information on the corresponding order. For Derivatives position 0 is not applicable and is always set to 0. Values: 0 = Dark Indicator</Description>
+        </Field>
+        <Field>
+          <Tag>21019</Tag>
+          <Name>OEPartitionID</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Identifies uniquely an OE Optiq partition by</Description>
+        </Field>
+        <Field>
+          <Tag>21021</Tag>
+          <Name>LogicalAccessID</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Identifier of the Logical Access.</Description>
+        </Field>
+        <Field>
+          <Tag>432</Tag>
+          <Name>ExpireDate</Name>
+          <Required>N</Required>
+          <Type>LocalMktDate</Type>
+          <Description>Provided for: Values: Date</Description>
+        </Field>
+        <Field>
+          <Tag>14</Tag>
+          <Name>CumQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>Cumulated quantity (to be calculated with</Description>
+        </Field>
+        <Field>
+          <Tag>336</Tag>
+          <Name>TradingSessionID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Defines the validity time periods for Valid Values: 101 = Session 1 102 = Session 2 103 = Session 3 104 = Session 4 205 = Session 1 and Session 3 313 = Session 1, 3 and Session 4 123 = All Sessions, deprecated (no more used on Optiq)</Description>
+        </Field>
+        <Field>
+          <Tag>40</Tag>
+          <Name>OrdType</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Type of Order Values K, P, T, X and N are only for Cash Markets Values: 1 = Market</Description>
+        </Field>
+        <Field>
+          <Tag>59</Tag>
+          <Name>TimeInForce</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Specifies the maximum validity of an order. Values 7 and B are only for Cash Markets. Values: 0 = Day</Description>
+        </Field>
+        <Field>
+          <Tag>552</Tag>
+          <Name>NoSides</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Number of sides.</Description>
+        </Field>
+        <Field>
+          <Tag>54</Tag>
+          <Name>Side</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>Indicates the side of the order. Values: 1 1 = Buy 2 = Sell 1 = Buy C</Description>
+        </Field>
+        <Field>
+          <Tag>577</Tag>
+          <Name>ClearingInstruction</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Clearing Instruction Values: 0 = Process normally (formerly Systematic posting)</Description>
+        </Field>
+        <Field>
+          <Tag>1</Tag>
+          <Name>Account</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Account Number. Client account number Values: Alphanumeric</Description>
+        </Field>
+        <Field>
+          <Tag>6399</Tag>
+          <Name>AccountCode</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Indicates the account type for which the Values: 1 = Client</Description>
+        </Field>
+        <Field>
+          <Tag>20021</Tag>
+          <Name>LPRole</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Liquidity Provider Role identifies the type of Values: 1 = Liquidity Provider or Market Maker 3 = Retail Liquidity Provider [C] 12 = RFQ Liquidity Provider [C]</Description>
+        </Field>
+        <Field>
+          <Tag>9941</Tag>
+          <Name>TechnicalOrdType</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>Indicates the origin of the order; for example, manual entry, or an order coming from a Program Trading system. Values: 1 = Index trading arbitrage</Description>
+        </Field>
+        <Field>
+          <Tag>539</Tag>
+          <Name>NoNestedPartyIDs</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Number of NestedPartyID entries.</Description>
+        </Field>
+        <Field>
+          <Tag>524</Tag>
+          <Name>NestedPartyID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>This use of the repeating group is to provide Values: 11 Alphanumeric Alphanumeric C</Description>
+        </Field>
+        <Field>
+          <Tag>525</Tag>
+          <Name>NestedPartyIDSou</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>Source of NestedPartyID value. Values: P = Short code identifier</Description>
+        </Field>
+        <Field>
+          <Tag>538</Tag>
+          <Name>NestedPartyRole</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Identifies the type of role of the Values: 122 = Investment decision maker</Description>
+        </Field>
+        <Field>
+          <Tag>2384</Tag>
+          <Name>NestedPartyRoleQualifier</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Used to further qualify the value of Values: 22 = Algorithm 24 = Natural person 99 = Not Applicable</Description>
+        </Field>
+        <Field>
+          <Tag>126</Tag>
+          <Name>ExpireTime</Name>
+          <Required>N</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>CASH ONLY Values: Date &amp; Time</Description>
+        </Field>
+        <Field>
+          <Tag>21015</Tag>
+          <Name>STPAggressorIndicator</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Field used as instruction for order handling. (STP is not applicable for Dark Orders) Values: 0 = Cancel resting order [C]</Description>
+        </Field>
+        <Field>
+          <Tag>21016</Tag>
+          <Name>DisclosedQtyRandIndicator</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>CASH ONLY Values: 0 = No 1 = Yes 0 = No</Description>
+        </Field>
+        <Field>
+          <Tag>21018</Tag>
+          <Name>CancelOnDisconn</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Indicates if order is in scope of the Cancel Values: 0 = Per Default Configuration</Description>
+        </Field>
+        <Field>
+          <Tag>211</Tag>
+          <Name>PegOffsetValue</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>CASH ONLY</Description>
+        </Field>
+        <Field>
+          <Tag>21822</Tag>
+          <Name>OrderTolerablePrice</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Derivatives ONLY</Description>
+        </Field>
+        <Field>
+          <Tag>21807</Tag>
+          <Name>KillReason</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>Future Use Values: Future Use</Description>
+        </Field>
+        <Field>
+          <Tag>9955</Tag>
+          <Name>ErrorCode</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Error code in case of rejection.</Description>
+        </Field>
+        <Field>
+          <Tag>60</Tag>
+          <Name>60</Name>
+          <Required>Y</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Indicates the time of message transmission In ExecutionReport (8) it is provided only in case of Fill or Partial Fill. Values: UTCTimestam 27 27 Timestamp Timestamp A</Description>
+        </Field>
+        <Field>
+          <Tag>32</Tag>
+          <Name>LastQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>Quantity of the fill</Description>
+        </Field>
+        <Field>
+          <Tag>21010</Tag>
+          <Name>TradeType</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Type of trade Values: 1 = Conventional Trade (Cash and Derivatives)</Description>
+        </Field>
+        <Field>
+          <Tag>21023</Tag>
+          <Name>ExecPhase</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Indicates the trading phase during which the trade has occurred. Values: 1 = Continuous Trading Phase</Description>
+        </Field>
+        <Field>
+          <Tag>21080</Tag>
+          <Name>TradeQualifier</Name>
+          <Required>Y</Required>
+          <Type>MultipleCharValue</Type>
+          <Description>Trade Qualifier. This field can contain up to 7 values, space delimited, provided in different positions. Values: 0 = Uncrossing Trade</Description>
+        </Field>
+        <Field>
+          <Tag>1907</Tag>
+          <Name>NoRegulatoryTrad</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Number of RegulatoryTradeIDGrp entries.</Description>
+        </Field>
+        <Field>
+          <Tag>1903</Tag>
+          <Name>RegulatoryTradeID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Alphanumerical code unique, consistent Values: Alphanumerical ID</Description>
+        </Field>
+        <Field>
+          <Tag>1906</Tag>
+          <Name>RegulatoryTradeI</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Specifies the type of trade identifier Values: 5 = TVTIC</Description>
+        </Field>
+        <Field>
+          <Tag>2411</Tag>
+          <Name>RegulatoryLegRefID</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Identifies the leg of the trade the</Description>
+        </Field>
+        <Field>
+          <Tag>21802</Tag>
+          <Name>EvaluatedPrice</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>For TRF and MOC contracts only</Description>
+        </Field>
+        <Field>
+          <Tag>21803</Tag>
+          <Name>MessagePriceNotation</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>For TRF and MOC contracts only</Description>
+        </Field>
+        <Field>
+          <Tag>21805</Tag>
+          <Name>FinalSecurityID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>For MOC contracts only</Description>
+        </Field>
+        <Field>
+          <Tag>21806</Tag>
+          <Name>FinalExecID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>For MOC contracts only</Description>
+        </Field>
+        <Field>
+          <Tag>21085</Tag>
+          <Name>LISTransactionID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>For Wholesale Trades only (Outright and</Description>
+        </Field>
+        <Field>
+          <Tag>555</Tag>
+          <Name>NoLegs</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>For Wholesale Trades on Strategy only</Description>
+        </Field>
+        <Field>
+          <Tag>600</Tag>
+          <Name>LegSymbol</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>For Wholesale Trades on Strategy only</Description>
+        </Field>
+        <Field>
+          <Tag>602</Tag>
+          <Name>LegSecurityID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>For Wholesale Trades on Strategy only</Description>
+        </Field>
+        <Field>
+          <Tag>603</Tag>
+          <Name>LegSecurityIDSource</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>For Wholesale Trades on Strategy only Values: 8 = Symbol Index</Description>
+        </Field>
+        <Field>
+          <Tag>637</Tag>
+          <Name>LegLastPx</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>For Wholesale Trades on Strategy only</Description>
+        </Field>
+        <Field>
+          <Tag>1418</Tag>
+          <Name>LegLastQty</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>For Wholesale Trades on Strategy only</Description>
+        </Field>
+        <Field>
+          <Tag>624</Tag>
+          <Name>LegSide</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>For Wholesale Trades on Strategy only Values: 1 = Buy 2 = Sell</Description>
+        </Field>
+        <Field>
+          <Tag>1893</Tag>
+          <Name>LegExecID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>For Wholesale Trades on Strategy only</Description>
+        </Field>
+        <Field>
+          <Tag>21094</Tag>
+          <Name>ParentExecID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Used for a Strategy only Derivatives Only</Description>
+        </Field>
+        <Field>
+          <Tag>21093</Tag>
+          <Name>ParentSecurityID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Used for a Strategy only Derivatives Only</Description>
+        </Field>
+        <Field>
+          <Tag>19</Tag>
+          <Name>19</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>The ExecRefID is an unique identifier of a</Description>
+        </Field>
+        <Branch>
+          <Name>New</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>0</Value>
+          <Fields></Fields>
+        </Branch>
+        <Branch>
+          <Name>Cancelled by Reactor</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>1</Value>
+          <Fields>
+            <Field>
+              <Tag>41</Tag>
+              <Name>OrigClOrdID</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>Client order ID of the original order that</Description>
+            </Field>
+          </Fields>
+        </Branch>
+        <Branch>
+          <Name>Cross Order Ack</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>2</Value>
+          <Fields></Fields>
+        </Branch>
+        <Branch>
+          <Name>DoneForDay</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>3</Value>
+          <Fields></Fields>
+        </Branch>
+        <Branch>
+          <Name>Cancelled</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>4</Value>
+          <Fields>
+            <Field>
+              <Tag>41</Tag>
+              <Name>OrigClOrdID</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>Client order ID of the original order that</Description>
+            </Field>
+            <Field>
+              <Tag>58</Tag>
+              <Name>Text</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Text Free Text is manually Values: String 18 18 Alphanumeric Alphanumeric Optional</Description>
+            </Field>
+          </Fields>
+        </Branch>
+        <Branch>
+          <Name>Replaced</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>5</Value>
+          <Fields>
+            <Field>
+              <Tag>41</Tag>
+              <Name>OrigClOrdID</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>Client order ID of the original order that</Description>
+            </Field>
+          </Fields>
+        </Branch>
+        <Branch>
+          <Name>Rejected</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>8</Value>
+          <Fields>
+            <Field>
+              <Tag>103</Tag>
+              <Name>OrdRejReason</Name>
+              <Required>N</Required>
+              <Type>int</Type>
+              <Description>Code to identify reason for order rejection.</Description>
+            </Field>
+            <Field>
+              <Tag>58</Tag>
+              <Name>Text</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Text Free Text is manually Values: String 18 18 Alphanumeric Alphanumeric Optional</Description>
+            </Field>
+          </Fields>
+        </Branch>
+        <Branch>
+          <Name>Cancelled by STP</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>a</Value>
+          <Fields>
+            <Field>
+              <Tag>41</Tag>
+              <Name>OrigClOrdID</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>Client order ID of the original order that</Description>
+            </Field>
+          </Fields>
+        </Branch>
+        <Branch>
+          <Name>Cancelled by COD</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>b</Value>
+          <Fields>
+            <Field>
+              <Tag>41</Tag>
+              <Name>OrigClOrdID</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>Client order ID of the original order that</Description>
+            </Field>
+          </Fields>
+        </Branch>
+        <Branch>
+          <Name>Conditional Cancelled</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>c</Value>
+          <Fields>
+            <Field>
+              <Tag>41</Tag>
+              <Name>OrigClOrdID</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>Client order ID of the original order that</Description>
+            </Field>
+          </Fields>
+        </Branch>
+        <Branch>
+          <Name>Collar Confirmation Ack</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>d</Value>
+          <Fields></Fields>
+        </Branch>
+        <Branch>
+          <Name>Refilled Iceberg Ack</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>e</Value>
+          <Fields></Fields>
+        </Branch>
+        <Branch>
+          <Name>LP Cancel RFQ Cancellation</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>f</Value>
+          <Fields>
+            <Field>
+              <Tag>41</Tag>
+              <Name>OrigClOrdID</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>Client order ID of the original order that</Description>
+            </Field>
+          </Fields>
+        </Branch>
+        <Branch>
+          <Name>Quote Knock-Out</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>g</Value>
+          <Fields></Fields>
+        </Branch>
+        <Branch>
+          <Name>Iceberg Min Size Transform</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>h</Value>
+          <Fields></Fields>
+        </Branch>
+        <Branch>
+          <Name>Created by Market Operations</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>i</Value>
+          <Fields></Fields>
+        </Branch>
+        <Branch>
+          <Name>RFQ Ack</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>j</Value>
+          <Fields></Fields>
+        </Branch>
+        <Branch>
+          <Name>Ownership Request Ack</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>k</Value>
+          <Fields></Fields>
+        </Branch>
+        <Branch>
+          <Name>Order Mass Status Request Ack</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>m</Value>
+          <Fields></Fields>
+        </Branch>
+        <Branch>
+          <Name>Cancelled FSP Limit</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>n</Value>
+          <Fields>
+            <Field>
+              <Tag>41</Tag>
+              <Name>OrigClOrdID</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>Client order ID of the original order that</Description>
+            </Field>
+          </Fields>
+        </Branch>
+        <Branch>
+          <Name>Expired</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>C</Value>
+          <Fields>
+            <Field>
+              <Tag>41</Tag>
+              <Name>OrigClOrdID</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>Client order ID of the original order that</Description>
+            </Field>
+          </Fields>
+        </Branch>
+        <Branch>
+          <Name>Restated</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>D</Value>
+          <Fields>
+            <Field>
+              <Tag>378</Tag>
+              <Name>ExecRestatementReason</Name>
+              <Required>N</Required>
+              <Type>Int</Type>
+              <Description>The reason for restatement when ExecutionReport (8) message is sent with ExecType (150) = 'D' (Restated) or used when communicating an unsolicited cancel.</Description>
+            </Field>
+          </Fields>
+        </Branch>
+        <Branch>
+          <Name>Trade</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>F</Value>
+          <Fields>
+            <Field>
+              <Tag>32</Tag>
+              <Name>LastShares</Name>
+              <Required>N</Required>
+              <Type>Qty</Type>
+              <Description>Quantity of shares bought/sold on this (last) fill. Field not required for ExecTransType = 3 (Status)</Description>
+            </Field>
+            <Field>
+              <Tag>31</Tag>
+              <Name>LastPx</Name>
+              <Required>Y</Required>
+              <Type>Price</Type>
+              <Description>Price at which order is filled</Description>
+            </Field>
+            <Field>
+              <Tag>375</Tag>
+              <Name>ContraBroker</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>CASH ONLY</Description>
+            </Field>
+            <Field>
+              <Tag>382</Tag>
+              <Name>NoContraBrokers</Name>
+              <Required>N</Required>
+              <Type>NumInGroup</Type>
+              <Description>The number of ContraBroker (375) entries.</Description>
+            </Field>
+            <Field>
+              <Tag>880</Tag>
+              <Name>TrdMatchID</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Identifier assigned to a trade by a matching system.</Description>
+            </Field>
+            <Field>
+              <Tag>851</Tag>
+              <Name>LastLiquidityInd</Name>
+              <Required>N</Required>
+              <Type>int</Type>
+              <Description>Indicator to identify whether this fill was a result of a liquidity provider providing or liquidity taker taking the liquidity. Applicable only for OrdStatus of Partial or Filled.</Description>
+            </Field>
+          </Fields>
+        </Branch>
+        <Branch>
+          <Name>Cancel Trade</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>H</Value>
+          <Fields>
+            <Field>
+              <Tag>19</Tag>
+              <Name>ExecRefID</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>The ExecRefID (19) is an unique identifier of a trade per instrument. This field is provided in case of trade cancellation. Values: Sequential number. From 0 to 2^32-2</Description>
+            </Field>
+            <Field>
+              <Tag>32</Tag>
+              <Name>LastShares</Name>
+              <Required>N</Required>
+              <Type>Qty</Type>
+              <Description>Quantity of shares bought/sold on this (last) fill. Field not required for ExecTransType = 3 (Status)</Description>
+            </Field>
+            <Field>
+              <Tag>31</Tag>
+              <Name>LastPx</Name>
+              <Required>Y</Required>
+              <Type>Price</Type>
+              <Description>Price at which order is filled</Description>
+            </Field>
+          </Fields>
+        </Branch>
+        <Branch>
+          <Name>Order Status</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>I</Value>
+          <Fields></Fields>
+        </Branch>
+        <Branch>
+          <Name>Triggered by System</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>L</Value>
+          <Fields></Fields>
+        </Branch>
+        <Branch>
+          <Name>Cancelled by Market Operations</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>U</Value>
+          <Fields>
+            <Field>
+              <Tag>41</Tag>
+              <Name>OrigClOrdID</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>Client order ID of the original order that</Description>
+            </Field>
+            <Field>
+              <Tag>58</Tag>
+              <Name>Text</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Text Free Text is manually Values: String 18 18 Alphanumeric Alphanumeric Optional</Description>
+            </Field>
+          </Fields>
+        </Branch>
+      </Fields>
+    </Message>
+
+    <!-- OrderCancelReject (9) -->
+    <Message>
+      <Name>OrderCancelReject</Name>
+      <MsgType>9</MsgType>
+      <Category>app</Category>
+      <Description>OrderCancelReject (Drop Copy).</Description>
+      <Fields>
+        <Field>
+          <Tag>21005</Tag>
+          <Name>ClientMessageSendingTime</Name>
+          <Required>N</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Indicates the time of message transmission, the consistency of the time provided is not checked by the Exchange.</Description>
+        </Field>
+        <Field>
+          <Tag>5979</Tag>
+          <Name>OEGINFromMember</Name>
+          <Required>N</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Order Entry Gateway IN time from member</Description>
+        </Field>
+        <Field>
+          <Tag>7764</Tag>
+          <Name>OEGOUTToME</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Gateway OUT time to ME (in ns), measured</Description>
+        </Field>
+        <Field>
+          <Tag>21002</Tag>
+          <Name>BookINTime</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Time of order modification rejection</Description>
+        </Field>
+        <Field>
+          <Tag>21003</Tag>
+          <Name>BookOUTTime</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Matching Engine OUT time (in ns), when</Description>
+        </Field>
+        <Field>
+          <Tag>7765</Tag>
+          <Name>OEGINFromME</Name>
+          <Required>N</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Gateway IN time from ME (in ns), measured Values: UTCTimestam 27 Timestamp</Description>
+        </Field>
+        <Field>
+          <Tag>11</Tag>
+          <Name>ClOrdID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Identifier of an Order Modification message</Description>
+        </Field>
+        <Field>
+          <Tag>48</Tag>
+          <Name>SecurityID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Exchange defined ID of an</Description>
+        </Field>
+        <Field>
+          <Tag>22</Tag>
+          <Name>SecurityIDSource</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Type of the SecurityID. Always set to 8 Values: 8 = Symbol Index</Description>
+        </Field>
+        <Field>
+          <Tag>20020</Tag>
+          <Name>EMM</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Exchange Market Mechanism Values: 1 = Cash and Derivative Central Order Book (COB)</Description>
+        </Field>
+        <Field>
+          <Tag>37</Tag>
+          <Name>OrderID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Numerical order identifier assigned by ME</Description>
+        </Field>
+        <Field>
+          <Tag>9955</Tag>
+          <Name>ErrorCode</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Error code in case of rejection.</Description>
+        </Field>
+        <Field>
+          <Tag>434</Tag>
+          <Name>434</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Identifies the type of request that the OrderCancelReject (9) is in response to. Values: Char 1 1 1 = OrderCancelRequest (F) M</Description>
+        </Field>
+        <Field>
+          <Tag>39</Tag>
+          <Name>OrdStatus</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Order status Values: 8 = Rejected</Description>
+        </Field>
+        <Field>
+          <Tag>21014</Tag>
+          <Name>AckQualifiers</Name>
+          <Required>Y</Required>
+          <Type>MultipleCharValue</Type>
+          <Description>Field used to provide additional information on the corresponding order. For Derivatives positions 0 is not applicable and is always set to 0. Values: 0 = Dark Indicator</Description>
+        </Field>
+        <Field>
+          <Tag>21019</Tag>
+          <Name>OEPartitionID</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Identifies uniquely an OE Optiq partition by</Description>
+        </Field>
+        <Field>
+          <Tag>21021</Tag>
+          <Name>LogicalAccessID</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Identifier of the Logical Access.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- TradeCaptureReportAck (AR) -->
+    <Message>
+      <Name>TradeCaptureReportAck</Name>
+      <MsgType>AR</MsgType>
+      <Category>app</Category>
+      <Description>TradeCaptureReportAck (Drop Copy).</Description>
+      <Fields>
+        <Field>
+          <Tag>571</Tag>
+          <Name>571</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Unique identifier of trade capture report</Description>
+        </Field>
+        <Field>
+          <Tag>1003</Tag>
+          <Name>TradeID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>The unique ID assigned by the matching</Description>
+        </Field>
+        <Field>
+          <Tag>939</Tag>
+          <Name>TrdRptStatus</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Trade Report Type Values: 18 = Pre-Matched</Description>
+        </Field>
+        <Field>
+          <Tag>828</Tag>
+          <Name>828</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Type of Operation Values: Int 2 2 51 = Volume weighted average trade A</Description>
+        </Field>
+        <Field>
+          <Tag>48</Tag>
+          <Name>SecurityID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Exchange identification code of the</Description>
+        </Field>
+        <Field>
+          <Tag>22</Tag>
+          <Name>SecurityIDSource</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Type of the SecurityID. Always set to 8 Values: 8 = Symbol Index</Description>
+        </Field>
+        <Field>
+          <Tag>20020</Tag>
+          <Name>20020</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Defines the Exchange Market Mechanism Values: String 2 2 5 = Cash On Exchange Off book [C] 5 = Cash On Exchange Off book [C] A</Description>
+        </Field>
+        <Field>
+          <Tag>21065</Tag>
+          <Name>MICofSecondaryListing</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Identifies the secondary listing place to</Description>
+        </Field>
+        <Field>
+          <Tag>10042</Tag>
+          <Name>PreMatchingIndicator</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Pre-matching delay indicator for a TCS Values: 2 = Pre-matched for the next fixing 3 = Pre-matched for the second next fixing 4 = Pre-matched for the third next fixing 5 = Pre-matched for the fourth next fixing 6 = Pre-matched for the fifth next fixing</Description>
+        </Field>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransacTime</Name>
+          <Required>N</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Indicates the time of message transmission (Format: YYYYMMDD- HH:MM:SS.sssssssss). Values: Valid values:</Description>
+        </Field>
+        <Field>
+          <Tag>2670</Tag>
+          <Name>TrdRegPublicationReason</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Waiver Indicator In outbound TradeCaptureReportAck (AR) messages (from TCS) field TrdRegPublicationReason (2670) is filled with one of the possible values if TrdRptStatus (939) is set to 19 = Filled OR 18 = Pre-Matched; AND the transaction meets the conditions required for a waiver Values: 0 = NLIQ</Description>
+        </Field>
+        <Field>
+          <Tag>552</Tag>
+          <Name>NoSides</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Number of sides</Description>
+        </Field>
+        <Field>
+          <Tag>54</Tag>
+          <Name>Side</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Indicates the side of the order Values: 1 1 = Buy M</Description>
+        </Field>
+        <Field>
+          <Tag>6399</Tag>
+          <Name>AccountCode</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Indicates the account type for which the Values: 1 = Client 2 = House 4 = RO 5 = Assigned Broker 6 = Liquidity Provider 7 = Related Party 8 = Structured Product Market Maker 14 = Omega Client 15 = Ceres Client</Description>
+        </Field>
+        <Field>
+          <Tag>29</Tag>
+          <Name>LastCapacity</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>MiFID II field that indicates whether the Values: 7 = Dealing on own account (DEAL) 8 = Matched principal (MTCH) 9 = Any other capacity (AOTC)</Description>
+        </Field>
+        <Field>
+          <Tag>53</Tag>
+          <Name>Quantity</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Number of traded or ordered units (to be calculated with Quantity Decimals).</Description>
+        </Field>
+        <Field>
+          <Tag>44</Tag>
+          <Name>Price</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Instrument price per quantity unit (to be calculated with Price/Index Level Decimals).</Description>
+        </Field>
+        <Field>
+          <Tag>453</Tag>
+          <Name>NoPartyIDs</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Number of PartyID entries.</Description>
+        </Field>
+        <Field>
+          <Tag>448</Tag>
+          <Name>PartyID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>In this case provides the CounterParty ID Values: Alphanumeric</Description>
+        </Field>
+        <Field>
+          <Tag>447</Tag>
+          <Name>PartyIDSource</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Source of NestedPartyID value. Values: D = Proprietary / Custom code</Description>
+        </Field>
+        <Field>
+          <Tag>452</Tag>
+          <Name>PartyRole</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Identifies the type or role of the NestedPartyID (524) specified. Values: 17 = Contra Broker</Description>
+        </Field>
+        <Field>
+          <Tag>2376</Tag>
+          <Name>PartyRoleQualifier</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Used to further qualify the value of NestedPartyRole(538). Values: 23 = Firm or legal entity</Description>
+        </Field>
+        <Field>
+          <Tag>539</Tag>
+          <Name>NestedPartyID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Number of NestedPartyID entries.</Description>
+        </Field>
+        <Field>
+          <Tag>524</Tag>
+          <Name>NestedPartyID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Party identifier/code. See NestedPartyIDSource (525) and NestedPartyRole (538). Values: Alphanumeric</Description>
+        </Field>
+        <Field>
+          <Tag>525</Tag>
+          <Name>NestedPartyIDSource</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>Source of NestedPartyID value. Values: D = Proprietary / Custom code P = Short code identifier</Description>
+        </Field>
+        <Field>
+          <Tag>538</Tag>
+          <Name>NestedPartyRole</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Identifies the type or role of the NestedPartyID (524) specified. Values: 4 = Clearing Firm 17 = Contra Firm 122 = Investment decision maker</Description>
+        </Field>
+        <Field>
+          <Tag>2384</Tag>
+          <Name>NestedPartyRoleQualifier</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Used to further qualify the value of NestedPartyRole(538). Values: 3 = General clearing member 4 = Individual clearing member 22 = Algorithm 24 = Natural person</Description>
+        </Field>
+        <Field>
+          <Tag>9952</Tag>
+          <Name>PreviousDayFlag</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>Flag indicator whether declaration matched at D or D-1. (0: [indicated as False] means &quot;matched at D&quot; ; 1: [indicated as True] means &quot;matched at D-1&quot;) Values: 0 = False 1 = True</Description>
+        </Field>
+        <Field>
+          <Tag>137</Tag>
+          <Name>MiscFeeAmt</Name>
+          <Required>N</Required>
+          <Type>Amt</Type>
+          <Description>Miscellaneous Fee Value. Total order fees related to the funds share creation or redemption applied by the Asset Manager per order.</Description>
+        </Field>
+        <Field>
+          <Tag>21068</Tag>
+          <Name>CentralisationDate</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Cut-off for the trading cycle / session on Values: YYYY = 0000-9999, MM = 01-12, DD = 01-31 Provided only if set in the inbound messages by the client AND is relevant to the type of product / market.</Description>
+        </Field>
+        <Field>
+          <Tag>2104</Tag>
+          <Name>CCPID</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>Clearing House code attached to a firm Values: 0= No CCP</Description>
+        </Field>
+        <Field>
+          <Tag>1907</Tag>
+          <Name>NoRegulatoryTrad</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Number of RegulatoryTradeIDGrp entries.</Description>
+        </Field>
+        <Field>
+          <Tag>1903</Tag>
+          <Name>RegulatoryTradeID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Alphanumerical code unique, consistent Values: Alphanumerical ID</Description>
+        </Field>
+        <Field>
+          <Tag>1906</Tag>
+          <Name>RegulatoryTradeI</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Specifies the type of trade identifier Values: 5 = TVTIC</Description>
+        </Field>
+        <Field>
+          <Tag>10055</Tag>
+          <Name>SettlPeriod</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Indicates the settlement delay in trading days, from 0 to 30 days Provided only if the SettlementFlag (9970) is set to 1 = True</Description>
+        </Field>
+        <Field>
+          <Tag>9970</Tag>
+          <Name>SettlementFlag</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>Indicates whether the trade must be settled or not. (0: Not Settled ; 1: Settled) Values: 0 = False 1 = True</Description>
+        </Field>
+        <Field>
+          <Tag>9971</Tag>
+          <Name>GuaranteeFlag</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>Indicates if the trade is guaranteed or not (for clearing purposes) Provided only if the SettlementFlag (9970) is set to 1 = True Values: 1 = Cleared but not Guaranteed 2 = Cleared and Guaranteed</Description>
+        </Field>
+        <Field>
+          <Tag>1839</Tag>
+          <Name>TradePriceCondition</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Contribution to price formation or the price discovery process. Provided only if set in the inbound messages by the client. Values: 15 = Non-price forming trade (NPFT) 101 = Plain Vanilla Trade 102 = Trade Not Contributing to Price Discovery Process 103 = Dark Trade (for future use)</Description>
+        </Field>
+        <Field>
+          <Tag>381</Tag>
+          <Name>GrossTradeAmt</Name>
+          <Required>N</Required>
+          <Type>Amt</Type>
+          <Description>Total amount of a Declaration Values: Amount</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+  </Messages>
+
+  <Values>
+    <Value>
+      <Type>BeginString</Type>
+      <Enum>FIXT.1.1</Enum>
+      <Kind>Static</Kind>
+      <Description>FIXT 1.1</Description>
+    </Value>
+
+    <!-- AccountCode -->
+    <Value>
+      <Type>AccountCode</Type>
+      <Enum>1</Enum>
+      <Description>Client</Description>
+    </Value>
+    <!-- AckPhase -->
+    <Value>
+      <Type>AckPhase</Type>
+      <Enum>1</Enum>
+      <Description>Continuous Trading Phase</Description>
+    </Value>
+    <!-- AckQualifiers -->
+    <Value>
+      <Type>AckQualifiers</Type>
+      <Enum>0</Enum>
+      <Description>Dark Indicator</Description>
+    </Value>
+    <!-- CancelOnDisconn -->
+    <Value>
+      <Type>CancelOnDisconn</Type>
+      <Enum>0</Enum>
+      <Description>Per Default Configuration</Description>
+    </Value>
+    <!-- CCPID -->
+    <Value>
+      <Type>CCPID</Type>
+      <Enum>0</Enum>
+      <Description>No CCP</Description>
+    </Value>
+    <!-- ClearingInstruction -->
+    <Value>
+      <Type>ClearingInstruction</Type>
+      <Enum>0</Enum>
+      <Description>Process normally (formerly Systematic posting)</Description>
+    </Value>
+    <!-- ConditionalOrderFlag -->
+    <Value>
+      <Type>ConditionalOrderFlag</Type>
+      <Enum>0</Enum>
+      <Description>Firm (default) 1 = Conditional</Description>
+    </Value>
+    <!-- DisclosedQtyRandIndicator -->
+    <Value>
+      <Type>DisclosedQtyRandIndicator</Type>
+      <Enum>0</Enum>
+      <Description>No 1 = Yes 0 = No</Description>
+    </Value>
+    <!-- EMM -->
+    <Value>
+      <Type>EMM</Type>
+      <Enum>1</Enum>
+      <Description>Cash and Derivative Central Order Book (COB)</Description>
+    </Value>
+    <!-- ExecPhase -->
+    <Value>
+      <Type>ExecPhase</Type>
+      <Enum>1</Enum>
+      <Description>Continuous Trading Phase</Description>
+    </Value>
+    <!-- ExecType -->
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>0</Enum>
+      <Description>New</Description>
+    </Value>
+    <!-- GuaranteeFlag -->
+    <Value>
+      <Type>GuaranteeFlag</Type>
+      <Enum>1</Enum>
+      <Description>Cleared but not Guaranteed 2 = Cleared and Guaranteed</Description>
+    </Value>
+    <!-- LastCapacity -->
+    <Value>
+      <Type>LastCapacity</Type>
+      <Enum>7</Enum>
+      <Description>Dealing on own account (DEAL)</Description>
+    </Value>
+    <!-- LegSecurityIDSource -->
+    <Value>
+      <Type>LegSecurityIDSource</Type>
+      <Enum>8</Enum>
+      <Description>Symbol Index</Description>
+    </Value>
+    <!-- LegSide -->
+    <Value>
+      <Type>LegSide</Type>
+      <Enum>1</Enum>
+      <Description>Buy 2 = Sell</Description>
+    </Value>
+    <!-- LPRole -->
+    <Value>
+      <Type>LPRole</Type>
+      <Enum>1</Enum>
+      <Description>Liquidity Provider or Market Maker 3 = Retail Liquidity Provider [C] 12 = RFQ Liquidity Provider [C]</Description>
+    </Value>
+    <!-- NestedPartyIDSou -->
+    <Value>
+      <Type>NestedPartyIDSou</Type>
+      <Enum>P</Enum>
+      <Description>Short code identifier</Description>
+    </Value>
+    <!-- NestedPartyIDSource -->
+    <Value>
+      <Type>NestedPartyIDSource</Type>
+      <Enum>D</Enum>
+      <Description>Proprietary / Custom code P = Short code identifier</Description>
+    </Value>
+    <!-- NestedPartyRole -->
+    <Value>
+      <Type>NestedPartyRole</Type>
+      <Enum>122</Enum>
+      <Description>Investment decision maker</Description>
+    </Value>
+    <Value>
+      <Type>NestedPartyRole</Type>
+      <Enum>4</Enum>
+      <Description>Clearing Firm 17 = Contra Firm 122 = Investment decision maker</Description>
+    </Value>
+    <!-- NestedPartyRoleQualifier -->
+    <Value>
+      <Type>NestedPartyRoleQualifier</Type>
+      <Enum>22</Enum>
+      <Description>Algorithm 24 = Natural person 99 = Not Applicable</Description>
+    </Value>
+    <Value>
+      <Type>NestedPartyRoleQualifier</Type>
+      <Enum>3</Enum>
+      <Description>General clearing member 4 = Individual clearing member 22 = Algorithm 24 = Natural person</Description>
+    </Value>
+    <!-- OrderAttributeType -->
+    <Value>
+      <Type>OrderAttributeType</Type>
+      <Enum>0</Enum>
+      <Description>Aggregated order</Description>
+    </Value>
+    <!-- OrderAttributeVal -->
+    <Value>
+      <Type>OrderAttributeVal</Type>
+      <Enum>Y</Enum>
+      <Description>Yes Y = Yes</Description>
+    </Value>
+    <!-- OrderOrigination -->
+    <Value>
+      <Type>OrderOrigination</Type>
+      <Enum>5</Enum>
+      <Description>Order received from a direct access or</Description>
+    </Value>
+    <!-- OrdStatus -->
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>0</Enum>
+      <Description>New</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>8</Enum>
+      <Description>Rejected</Description>
+    </Value>
+    <!-- OrdType -->
+    <Value>
+      <Type>OrdType</Type>
+      <Enum>1</Enum>
+      <Description>Market</Description>
+    </Value>
+    <!-- PartyIDSource -->
+    <Value>
+      <Type>PartyIDSource</Type>
+      <Enum>D</Enum>
+      <Description>Proprietary / Custom code</Description>
+    </Value>
+    <Value>
+      <Type>PartyIDSource</Type>
+      <Enum>P</Enum>
+      <Description>Short code identifier</Description>
+    </Value>
+    <!-- PartyRole -->
+    <Value>
+      <Type>PartyRole</Type>
+      <Enum>17</Enum>
+      <Description>Contra Broker</Description>
+    </Value>
+    <Value>
+      <Type>PartyRole</Type>
+      <Enum>3</Enum>
+      <Description>Client ID 12 = Executing Trader 999 = Not Applicable</Description>
+    </Value>
+    <!-- PartyRoleQualifier -->
+    <Value>
+      <Type>PartyRoleQualifier</Type>
+      <Enum>22</Enum>
+      <Description>Algorithm 23 = Firm or legal entity 24 = Natural person 99 = Not Applicable</Description>
+    </Value>
+    <Value>
+      <Type>PartyRoleQualifier</Type>
+      <Enum>23</Enum>
+      <Description>Firm or legal entity</Description>
+    </Value>
+    <!-- PreMatchingIndicator -->
+    <Value>
+      <Type>PreMatchingIndicator</Type>
+      <Enum>2</Enum>
+      <Description>Pre-matched for the next fixing 3 = Pre-matched for the second next fixing 4 = Pre-matched for the third next fixing 5 = Pre-matched for the fourth next fixing 6 = Pre-matched for the fifth next fixing</Description>
+    </Value>
+    <!-- PreviousDayFlag -->
+    <Value>
+      <Type>PreviousDayFlag</Type>
+      <Enum>0</Enum>
+      <Description>False 1 = True</Description>
+    </Value>
+    <!-- RegulatoryTradeI -->
+    <Value>
+      <Type>RegulatoryTradeI</Type>
+      <Enum>5</Enum>
+      <Description>TVTIC</Description>
+    </Value>
+    <!-- RFQAnswerIndicator -->
+    <Value>
+      <Type>RFQAnswerIndicator</Type>
+      <Enum>0</Enum>
+      <Description>No 1 = Yes</Description>
+    </Value>
+    <!-- RFQConfirmationIndicator -->
+    <Value>
+      <Type>RFQConfirmationIndicator</Type>
+      <Enum>0</Enum>
+      <Description>No 1 = Yes</Description>
+    </Value>
+    <!-- SecurityIDSource -->
+    <Value>
+      <Type>SecurityIDSource</Type>
+      <Enum>8</Enum>
+      <Description>Symbol Index</Description>
+    </Value>
+    <!-- SettlementFlag -->
+    <Value>
+      <Type>SettlementFlag</Type>
+      <Enum>0</Enum>
+      <Description>False 1 = True</Description>
+    </Value>
+    <!-- STPAggressorIndicator -->
+    <Value>
+      <Type>STPAggressorIndicator</Type>
+      <Enum>0</Enum>
+      <Description>Cancel resting order [C]</Description>
+    </Value>
+    <!-- TechnicalOrdType -->
+    <Value>
+      <Type>TechnicalOrdType</Type>
+      <Enum>1</Enum>
+      <Description>Index trading arbitrage</Description>
+    </Value>
+    <!-- TimeInForce -->
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>0</Enum>
+      <Description>Day</Description>
+    </Value>
+    <!-- TradePriceCondition -->
+    <Value>
+      <Type>TradePriceCondition</Type>
+      <Enum>15</Enum>
+      <Description>Non-price forming trade (NPFT) 101 = Plain Vanilla Trade 102 = Trade Not Contributing to Price Discovery Process 103 = Dark Trade (for future use)</Description>
+    </Value>
+    <!-- TradeQualifier -->
+    <Value>
+      <Type>TradeQualifier</Type>
+      <Enum>0</Enum>
+      <Description>Uncrossing Trade</Description>
+    </Value>
+    <!-- TradeType -->
+    <Value>
+      <Type>TradeType</Type>
+      <Enum>1</Enum>
+      <Description>Conventional Trade (Cash and Derivatives)</Description>
+    </Value>
+    <!-- TradingSessionID -->
+    <Value>
+      <Type>TradingSessionID</Type>
+      <Enum>101</Enum>
+      <Description>Session 1 102 = Session 2 103 = Session 3 104 = Session 4 205 = Session 1 and Session 3 313 = Session 1, 3 and Session 4 123 = All Sessions, deprecated (no more used on Optiq)</Description>
+    </Value>
+    <!-- TrdRegPublicationReason -->
+    <Value>
+      <Type>TrdRegPublicationReason</Type>
+      <Enum>0</Enum>
+      <Description>NLIQ</Description>
+    </Value>
+    <!-- TrdRptStatus -->
+    <Value>
+      <Type>TrdRptStatus</Type>
+      <Enum>18</Enum>
+      <Description>Pre-Matched</Description>
+    </Value>
+    <!-- TriggeredStopTimeInForce -->
+    <Value>
+      <Type>TriggeredStopTimeInForce</Type>
+      <Enum>0</Enum>
+      <Description>Day</Description>
+    </Value>
+  </Values>
+
+</OmiFixPdf>

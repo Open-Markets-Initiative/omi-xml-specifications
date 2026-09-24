@@ -1,0 +1,660 @@
+<OmiFixPdf>
+
+  <!-- x — Purge -->
+
+  <Header>
+    <Fields>
+      <Field>
+        <Tag>8</Tag>
+        <Name>BeginString</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+        <Description>FIX.4.2 Must be first field in message</Description>
+      </Field>
+      <Field>
+        <Tag>9</Tag>
+        <Name>BodyLength</Name>
+        <Required>Y</Required>
+        <Type>Length</Type>
+        <Fixed>Y</Fixed>
+        <Description>Length of message following Body Length field up to and including the delimiter preceding the Check Sum field. Must be second field in message.</Description>
+      </Field>
+      <Field>
+        <Tag>35</Tag>
+        <Name>MsgType</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+        <Description>Must be third field in message</Description>
+      </Field>
+      <Field>
+        <Tag>49</Tag>
+        <Name>SenderCompID</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Description>ID of sender: Assigned by CFE for messages sent to CFE (Target Comp IDfor messages from CFE)</Description>
+      </Field>
+      <Field>
+        <Tag>50</Tag>
+        <Name>SenderSubID</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Description>Sub ID of sender: Assigned by CFE for messages sent to CFE. (Target Sub IDfor messages from CFE)</Description>
+      </Field>
+      <Field>
+        <Tag>56</Tag>
+        <Name>TargetCompID</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Description>ID of destination: CFE=messages sent to CFE (Sender Comp IDfor messages from CFE)</Description>
+      </Field>
+      <Field>
+        <Tag>57</Tag>
+        <Name>TargetSubID</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Description>Sub ID of destination: TEST=messages sent to CFE test system PROD=messages sent to CFE production system (Sender Sub IDfor messages from CFE)</Description>
+      </Field>
+      <Field>
+        <Tag>34</Tag>
+        <Name>MsgSeqNum</Name>
+        <Required>Y</Required>
+        <Type>SeqNum</Type>
+        <Description>Sequential sequence number for session</Description>
+      </Field>
+      <Field>
+        <Tag>43</Tag>
+        <Name>PossDupFlag</Name>
+        <Required>N</Required>
+        <Type>Boolean</Type>
+        <Description>N=(Default) Y=Indicates a message resend and should be used during FIX Replay. All inbound orders with a value of ‘Y’ will be rejected by Cboe.</Description>
+      </Field>
+      <Field>
+        <Tag>52</Tag>
+        <Name>SendingTime</Name>
+        <Required>Y</Required>
+        <Type>UTCTimestamp</Type>
+        <Description>GMT date-time that message was sent</Description>
+      </Field>
+      <Field>
+        <Tag>122</Tag>
+        <Name>OrigSendingTime</Name>
+        <Required>N</Required>
+        <Type>UTCTimestamp</Type>
+        <Description>For messages with Poss Dup Flag=‘Y’, indicates time that message was first sent</Description>
+      </Field>
+      <Field>
+        <Tag>115</Tag>
+        <Name>OnBehalfOfCompID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Description>Used to specify clearing information on messages to CFE. Must be an allowed Executing Firm ID (EFID). Sent to OCC in Exec Broker field.</Description>
+      </Field>
+      <Field>
+        <Tag>116</Tag>
+        <Name>OnBehalfOfSubID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Description>End-client sub identifier. 4 Characters alphanumeric, otherwise not validated. Recorded and returned in Deliver To Sub ID. Available via Drop feeds</Description>
+      </Field>
+      <Field>
+        <Tag>128</Tag>
+        <Name>DeliverToCompId</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Description>Identifies end-client on messages from CFE. Used to specify clearing information</Description>
+      </Field>
+      <Field>
+        <Tag>129</Tag>
+        <Name>DeliverToSubID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Description>Returns On Behalf Of Sub IDoptionally sent by client</Description>
+      </Field>
+    </Fields>
+  </Header>
+
+  <Trailer>
+    <Fields>
+      <Field>
+        <Tag>10</Tag>
+        <Name>CheckSum</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+        <Description>Three byte, simple checksum. Always unencrypted, always last field in message.</Description>
+      </Field>
+    </Fields>
+  </Trailer>
+
+  <Messages>
+
+    <!-- Purge Request (F) -->
+    <Message>
+      <Name>Purge Request</Name>
+      <MsgType>F</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>97</Tag>
+          <Name>PossResend</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>Y=Indicates an application level unsolicited resend. If Cl Ord ID has not yet been seen, the cancel is treated as normal. If Cl Ord IDalready exists, the resent cancel is ignored. N=(default) indicates a new cancel.</Description>
+        </Field>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>Y</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Time cancel initiated/released. Required by FIX 4.2.</Description>
+        </Field>
+        <Field>
+          <Tag>7700</Tag>
+          <Name>MassCancelInst</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>At least one character must be provided (Clearing Firm Filter). Contiguous characters must be specified up to total length. Truncated/unspecified characters will default to values indicated (Default) below. 11sstt CChhaarraacctteerr :: CClleeaarriinngg FFiirrmm FFiilltteerr</Description>
+        </Field>
+        <Field>
+          <Tag>7695</Tag>
+          <Name>MassCancelID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>This field will be echoed back in the resulting order execution report when the Acknowledgement Style value of the Mass Cancel Inst(7700) =Sor ‘B’. Purge requests containing a Mass Cancel IDthat is currently outstanding will be rejected.</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Symbol N Futures product symbol (upper case). Limits cancellations to only orders with the specified product.</Description>
+        </Field>
+        <Field>
+          <Tag>1028</Tag>
+          <Name></Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Manual Order Indicator Y Y=Manual order entry N=Automated order entry</Description>
+        </Field>
+        <Field>
+          <Tag>25004</Tag>
+          <Name></Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>OEOID Y Identifies the Order Entry Operator responsible for this message. Minimum and maximum length is 3 and 18 characters, respectively. Characters in ASCII range 33-126 are allowed, except for comma, semicolon, and pipe.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Purge Acknowledgement (8) -->
+    <Message>
+      <Name>Purge Acknowledgement</Name>
+      <MsgType>8</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>20</Tag>
+          <Name>ExecTransType</Name>
+          <Required>N</Required>
+          <Type>char</Type>
+          <Description>3=Status</Description>
+        </Field>
+        <Field>
+          <Tag>150</Tag>
+          <Name>ExecType</Name>
+          <Required>N</Required>
+          <Type>char</Type>
+          <Description>Reason for this execution report: M=Mass Cancel Complete</Description>
+        </Field>
+        <Field>
+          <Tag>7695</Tag>
+          <Name>MassCancelID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Copied from original Purge Request.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Purge Reject (9) -->
+    <Message>
+      <Name>Purge Reject</Name>
+      <MsgType>9</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>39</Tag>
+          <Name>OrdStatus</Name>
+          <Required>N</Required>
+          <Type>char</Type>
+          <Description>8=Rejected</Description>
+        </Field>
+        <Field>
+          <Tag>434</Tag>
+          <Name>CxlRejResponseTo</Name>
+          <Required>N</Required>
+          <Type>char</Type>
+          <Description>1=Cancel</Description>
+        </Field>
+        <Field>
+          <Tag>102</Tag>
+          <Name>CxlRejReason</Name>
+          <Required>N</Required>
+          <Type>int</Type>
+          <Description>2=Broker Option</Description>
+        </Field>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Free form text message with additional reject information.</Description>
+        </Field>
+        <Field>
+          <Tag>7695</Tag>
+          <Name>MassCancelID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Mass Cancel IDfrom the Purge Request</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+  </Messages>
+
+  <Values>
+    <!-- BeginString (8) static. Source: "FIX.4.2 Must be first field in message" -->
+    <Value>
+      <Type>BeginString</Type>
+      <Enum>FIX.4.2</Enum>
+      <Kind>Static</Kind>
+      <Description>FIX 4.2</Description>
+    </Value>
+
+    <!--  -->
+    <Value>
+      <Type></Type>
+      <Enum>1</Enum>
+      <Description>Accept As-Is (legs were not modified)</Description>
+    </Value>
+    <Value>
+      <Type></Type>
+      <Enum>Y</Enum>
+      <Description>Manual order entry</Description>
+    </Value>
+
+    <!-- CancelOrigOnReject -->
+    <Value>
+      <Type>CancelOrigOnReject</Type>
+      <Enum>N</Enum>
+      <Description>Leave original order alone.</Description>
+    </Value>
+
+    <!-- CustOrderHandlingInst -->
+    <Value>
+      <Type>CustOrderHandlingInst</Type>
+      <Enum>W</Enum>
+      <Description>Desk (high touch)</Description>
+    </Value>
+    <Value>
+      <Type>CustOrderHandlingInst</Type>
+      <Enum>C</Enum>
+      <Description>Vendor-provided platform, billed by Executing Broker</Description>
+    </Value>
+    <Value>
+      <Type>CustOrderHandlingInst</Type>
+      <Enum>D</Enum>
+      <Description>Other, including other-provided screen</Description>
+    </Value>
+
+    <!-- CxlRejReason -->
+    <Value>
+      <Type>CxlRejReason</Type>
+      <Enum>0</Enum>
+      <Description>Too late to cancel.</Description>
+    </Value>
+    <Value>
+      <Type>CxlRejReason</Type>
+      <Enum>2</Enum>
+      <Description>Broker Option.</Description>
+    </Value>
+
+    <!-- CxlRejResponseTo -->
+    <Value>
+      <Type>CxlRejResponseTo</Type>
+      <Enum>1</Enum>
+      <Description>Cancel</Description>
+    </Value>
+
+    <!-- ExecRestatementReason -->
+    <Value>
+      <Type>ExecRestatementReason</Type>
+      <Enum>1</Enum>
+      <Description>GTC and GTD Restatement</Description>
+    </Value>
+
+    <!-- ExecTransType -->
+    <Value>
+      <Type>ExecTransType</Type>
+      <Enum>0</Enum>
+      <Description>New</Description>
+    </Value>
+    <Value>
+      <Type>ExecTransType</Type>
+      <Enum>2</Enum>
+      <Description>Correct</Description>
+    </Value>
+    <Value>
+      <Type>ExecTransType</Type>
+      <Enum>1</Enum>
+      <Description>Trade Cancel</Description>
+    </Value>
+    <Value>
+      <Type>ExecTransType</Type>
+      <Enum>3</Enum>
+      <Description>Status</Description>
+    </Value>
+
+    <!-- ExecType -->
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>0</Enum>
+      <Description>New (acknowledgement of new order)</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>2</Enum>
+      <Description>Fill</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>5</Enum>
+      <Description>Replaced</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>D</Enum>
+      <Description>Restated</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>M</Enum>
+      <Description>Mass Cancel Complete</Description>
+    </Value>
+
+    <!-- ManualOrderIndicator -->
+    <Value>
+      <Type>ManualOrderIndicator</Type>
+      <Enum>Y</Enum>
+      <Description>Manual order entry</Description>
+    </Value>
+
+    <!-- MassCancelInst -->
+    <Value>
+      <Type>MassCancelInst</Type>
+      <Enum>A</Enum>
+      <Description>No filtering by EFID is performed.</Description>
+    </Value>
+
+    <!-- MultilegReportingType -->
+    <Value>
+      <Type>MultilegReportingType</Type>
+      <Enum>1</Enum>
+      <Description>Simple instrument execution</Description>
+    </Value>
+    <Value>
+      <Type>MultilegReportingType</Type>
+      <Enum>3</Enum>
+      <Description>Spread instrument execution.</Description>
+    </Value>
+
+    <!-- OpenClose -->
+    <Value>
+      <Type>OpenClose</Type>
+      <Enum>O</Enum>
+      <Description>Open</Description>
+    </Value>
+    <Value>
+      <Type>OpenClose</Type>
+      <Enum>N</Enum>
+      <Description>None (same as not present)</Description>
+    </Value>
+
+    <!-- OrdRejReason -->
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>0</Enum>
+      <Description>Broker option</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>2</Enum>
+      <Description>Exchange closed</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>5</Enum>
+      <Description>Unknown order</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>8</Enum>
+      <Description>Stale order</Description>
+    </Value>
+
+    <!-- OrdStatus -->
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>0</Enum>
+      <Description>New</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>2</Enum>
+      <Description>Filled</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>5</Enum>
+      <Description>Replaced</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>8</Enum>
+      <Description>Rejected</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>B</Enum>
+      <Description>Calculated</Description>
+    </Value>
+
+    <!-- OrdType -->
+    <Value>
+      <Type>OrdType</Type>
+      <Enum>1</Enum>
+      <Description>Market</Description>
+    </Value>
+
+    <!-- OrderCapacity -->
+    <Value>
+      <Type>OrderCapacity</Type>
+      <Enum>C</Enum>
+      <Description>Customer</Description>
+    </Value>
+
+    <!-- PossResend -->
+    <Value>
+      <Type>PossResend</Type>
+      <Enum>N</Enum>
+      <Description>Default. Indicates a new order.</Description>
+    </Value>
+
+    <!-- PreventMatch -->
+    <Value>
+      <Type>PreventMatch</Type>
+      <Enum>N</Enum>
+      <Description>Cancel Newest</Description>
+    </Value>
+    <Value>
+      <Type>PreventMatch</Type>
+      <Enum>F</Enum>
+      <Description>Prevent Match at CFE Exchange TPH level</Description>
+    </Value>
+
+    <!-- RiskReset -->
+    <Value>
+      <Type>RiskReset</Type>
+      <Enum>S</Enum>
+      <Description>Product-level risk/lockout reset(Futures only)</Description>
+    </Value>
+    <Value>
+      <Type>RiskReset</Type>
+      <Enum>C</Enum>
+      <Description>Custom Group IDlockout reset(Futures only)</Description>
+    </Value>
+    <Value>
+      <Type>RiskReset</Type>
+      <Enum>I</Enum>
+      <Description>Firm-level risk/lockout reset(Options only)</Description>
+    </Value>
+
+    <!-- SecurityType -->
+    <Value>
+      <Type>SecurityType</Type>
+      <Enum>FUT</Enum>
+      <Description>Simple instrument(Futures only)</Description>
+    </Value>
+    <Value>
+      <Type>SecurityType</Type>
+      <Enum>MLEG</Enum>
+      <Description>Multi-leg/Spread instrument(Futures only)</Description>
+    </Value>
+    <Value>
+      <Type>SecurityType</Type>
+      <Enum>MLO</Enum>
+      <Description>Multi-leg/Spread instrument</Description>
+    </Value>
+
+    <!-- Side -->
+    <Value>
+      <Type>Side</Type>
+      <Enum>1</Enum>
+      <Description>Buy</Description>
+    </Value>
+
+    <!-- TimeInForce -->
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>0</Enum>
+      <Description>DAY (Default) (Expires at end of market day.)</Description>
+    </Value>
+
+    <!-- TradeLiquidityIndicator -->
+    <Value>
+      <Type>TradeLiquidityIndicator</Type>
+      <Enum>A</Enum>
+      <Description>Trade Added Liquidity</Description>
+    </Value>
+
+    <!-- TrdType -->
+    <Value>
+      <Type>TrdType</Type>
+      <Enum>1</Enum>
+      <Description>Block Trade</Description>
+    </Value>
+
+
+    <!-- PossDupFlag (completed from the PDF) -->
+    <Value>
+      <Type>PossDupFlag</Type>
+      <Enum>N</Enum>
+      <Description>(Default)</Description>
+    </Value>
+    <Value>
+      <Type>PossDupFlag</Type>
+      <Enum>Y</Enum>
+      <Description>Indicates a message resend and should be used during FIX Replay. All</Description>
+    </Value>
+
+    <!-- PossResend (completed from the PDF) -->
+    <Value>
+      <Type>PossResend</Type>
+      <Enum>Y</Enum>
+      <Description>Indicates an application level resend and is NOT supported.</Description>
+    </Value>
+
+    <!-- MassCancelInst (completed from the PDF) -->
+    <Value>
+      <Type>MassCancelInst</Type>
+      <Enum>F</Enum>
+      <Description>All orders that were sent under the EFID specified in</Description>
+    </Value>
+
+    <!-- ExecType (completed from the PDF) -->
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>1</Enum>
+      <Description>Partial Fill</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>4</Enum>
+      <Description>Canceled</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>8</Enum>
+      <Description>Rejected</Description>
+    </Value>
+
+    <!-- OrdStatus (completed from the PDF) -->
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>1</Enum>
+      <Description>Partially Filled</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>4</Enum>
+      <Description>Canceled</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>6</Enum>
+      <Description>Pending Cancel</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>A</Enum>
+      <Description>Pending Ack</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>E</Enum>
+      <Description>Pending Replace</Description>
+    </Value>
+
+    <!-- CxlRejResponseTo (completed from the PDF) -->
+    <Value>
+      <Type>CxlRejResponseTo</Type>
+      <Enum>2</Enum>
+      <Description>Cancel/Replace</Description>
+    </Value>
+
+    <!-- CxlRejReason (completed from the PDF) -->
+    <Value>
+      <Type>CxlRejReason</Type>
+      <Enum>1</Enum>
+      <Description>Unknown order.</Description>
+    </Value>
+    <Value>
+      <Type>CxlRejReason</Type>
+      <Enum>3</Enum>
+      <Description>Already pending cancel or pending replace.</Description>
+    </Value>
+  </Values>
+
+</OmiFixPdf>

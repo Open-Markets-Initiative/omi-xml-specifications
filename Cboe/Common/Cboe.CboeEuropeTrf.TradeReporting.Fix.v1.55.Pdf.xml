@@ -1,0 +1,1403 @@
+<OmiFixPdf>
+
+  <!-- Cboe Europe TRF FIX v1.55 — Trade Reporting (SI quoting + off-book trade reporting) -->
+
+  <Header>
+    <Fields>
+      <Field>
+        <Tag>8</Tag>
+        <Name>BeginString</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+        <Description>FIX.4.2 or FIX.4.4 Must be the first field in the message.</Description>
+      </Field>
+      <Field>
+        <Tag>9</Tag>
+        <Name>BodyLength</Name>
+        <Required>N</Required>
+        <Type>Length</Type>
+        <Fixed>Y</Fixed>
+        <Description>Length of message following Body Length field up to and including the delimiter preceding the Check Sum (10) field. Must be the second field in the message.</Description>
+      </Field>
+      <Field>
+        <Tag>35</Tag>
+        <Name>MsgType</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+        <Description>Must be the third field in the message.</Description>
+      </Field>
+      <Field>
+        <Tag>34</Tag>
+        <Name>MsgSeqNum</Name>
+        <Required>N</Required>
+        <Type>SeqNum</Type>
+        <Description>Sequential sequence number for the session.</Description>
+      </Field>
+      <Field>
+        <Tag>43</Tag>
+        <Name>PossDupFlag</Name>
+        <Required>N</Required>
+        <Type>Boolean</Type>
+        <Description>Indicates a message resent from the admin level (has a duplicate sequence number). Defaults to N.</Description>
+      </Field>
+      <Field>
+        <Tag>49</Tag>
+        <Name>SenderCompID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Description>ID of sender. Assigned by Cboe for messages sent to Cboe. (Target Comp ID (56) for messages from Cboe.)</Description>
+      </Field>
+      <Field>
+        <Tag>52</Tag>
+        <Name>SendingTime</Name>
+        <Required>N</Required>
+        <Type>UTCTimestamp</Type>
+        <Description>GMT date and time that message was sent. Nanosecond level reso- lution.</Description>
+      </Field>
+      <Field>
+        <Tag>56</Tag>
+        <Name>TargetCompID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Description>ID of destination. BATS for messages sent to TRF ports. (Sender Comp ID (49) for messages from Cboe.)</Description>
+      </Field>
+      <Field>
+        <Tag>57</Tag>
+        <Name>TargetSubID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Description>Sub ID of destination. TEST for messages sent to the Cboe test system. PROD for messages sent to the Cboe production system. (Sender- Sub ID (50) for messages from Cboe.)</Description>
+      </Field>
+      <Field>
+        <Tag>97</Tag>
+        <Name>PossResend</Name>
+        <Required>N</Required>
+        <Type>Boolean</Type>
+        <Description>Possible resend flag. Cboe does not support Poss Resend (97) = Y on the TRF system.</Description>
+      </Field>
+      <Field>
+        <Tag>122</Tag>
+        <Name>OrigSendingTime</Name>
+        <Required>N</Required>
+        <Type>UTCTimestamp</Type>
+        <Description>For messages with Poss Dup Flag (43) = Y, indicates time that mes- sage was first sent. Nanosecond level resolution.</Description>
+      </Field>
+      <Field>
+        <Tag>128</Tag>
+        <Name>DeliverToCompID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Description>Service bureau use. Identifies end-client on message from Cboe. Must be Cboe approved identifier.</Description>
+      </Field>
+    </Fields>
+  </Header>
+
+  <Trailer>
+    <Fields>
+      <Field>
+        <Tag>10</Tag>
+        <Name>CheckSum</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+        <Description>Modulo 256 checksum of all characters in the message up to and including the delimiter preceding the Check Sum field. Three digits with leading zeroes if necessary.</Description>
+      </Field>
+    </Fields>
+  </Trailer>
+
+  <Messages>
+
+    <!-- Trade Capture Report (AE) -->
+    <Message>
+      <Name>Trade Capture Report</Name>
+      <MsgType>AE</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>15</Tag>
+          <Name>Currency</Name>
+          <Required>N</Required>
+          <Type>Currency</Type>
+          <Description>Required if IDSource (22) = 4 (ISIN). If Currency (15) is included when other symbology is used, it must match the currency expected by Cboe for the given symbol.</Description>
+        </Field>
+        <Field>
+          <Tag>22</Tag>
+          <Name>IDSource</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Values supported by the TRF: 4 = ISIN 5 = RIC Required if Symbol (55) is not set.</Description>
+        </Field>
+        <Field>
+          <Tag>30</Tag>
+          <Name>LastMkt</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>For Trade Capture Reportssubmittedtothe EUAPAvenue,Last Mkt shouldbeusedtospecify MICcodewhenthetradingvenueisanon- EU equivalent venue under ESMA rules. For Trade Capture Reports performed on a Systematic Internaliser (SI), i.e. Match Type (574) = 9 (Systematic Internalizer), Last Mkt should be used to submit the 4-character MIC code of the SI. The MIC will be validated against the applicable ESMA / FCA registries.</Description>
+        </Field>
+        <Field>
+          <Tag>31</Tag>
+          <Name>LastPx</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Traded price. A value of zero or an indicative price may be used if the price is pending, as denoted by Trade Price Condition. This tag may be excluded if using Gross Trade Amt.</Description>
+        </Field>
+        <Field>
+          <Tag>32</Tag>
+          <Name>LastQty</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Quantity (eg. shares) traded.</Description>
+        </Field>
+        <Field>
+          <Tag>48</Tag>
+          <Name>SecurityID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>ISIN, or RIC if IDSource (22) is set.</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Security symbol. See Symbology (p. 4) for additional notes.</Description>
+        </Field>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>N</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Optional,when Trade Report Trans Type (487)=0. Indicatesthedate and time the trade took place. Nanosecond level resolution.</Description>
+        </Field>
+        <Field>
+          <Tag>75</Tag>
+          <Name>TradeDate</Name>
+          <Required>N</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Optional. If specified, must match the date component of Transact- Time (60).</Description>
+        </Field>
+        <Field>
+          <Tag>150</Tag>
+          <Name>ExecType</Name>
+          <Required>N</Required>
+          <Type>char</Type>
+          <Description>Must be F = Trade</Description>
+        </Field>
+        <Field>
+          <Tag>207</Tag>
+          <Name>SecurityExchange</Name>
+          <Required>N</Required>
+          <Type>Exchange</Type>
+          <Description>Usedwhen IDSource (22)=4(ISIN)toidentifyaspecificmarket. If presentmustbeavalid Reutersexchangecodeor ISOMICcode. For APA trade reports, may optionally be left blank to use the primary line as designated by Cboe.</Description>
+        </Field>
+        <Field>
+          <Tag>381</Tag>
+          <Name>GrossTradeAmt</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Total amount traded, expressed in units of currency. A value of of zero or an indicative total amount traded price may be used if the priceispending,asdenotedby Trade Price Condition. Thistagisonly considered when Last Px is not specified. Supports a maximum of 9 digits before decimal.</Description>
+        </Field>
+        <Field>
+          <Tag>487</Tag>
+          <Name>TradeReportTransType</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Specifies whether this trade report is new, a cancellation, an amend- ment or a release. Trades reported under the APA service may be cancelled or amended by the participant. Trades that are currently being delayed from publication can be released for immediate publi- cation. Defaults to ‘new’ if unspecified. 0 = New 1 = Cancel 2 = Replace 3 = Release</Description>
+        </Field>
+        <Field>
+          <Tag>571</Tag>
+          <Name>TradeReportID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Day-unique ID chosen by client. Cboe will enforce port level day- uniqueness. 20 characters or less. Characters in ASCII range 33–126 are allowed, except for comma, semicolon, and pipe. If the Trade Report ID matches a live trade report (one that has been acked,butnotconfirmedordeclined),itwillberejectedasduplicate. When it comes to day-uniqueness, Trade Report ID of trade reports that were published are considered used, and cannot be used in a new trade report. Forexample, atradereportfromthepreviousday, deferredandpub- lished today at noon, as soon as this trade report is published, its Trade Report ID cannot be used for new trade reports. Similarly, a trade report that was submitted after hours, when it subsequently gets published at open, its Trade Report ID cannot be used for new trade reports either.</Description>
+        </Field>
+        <Field>
+          <Tag>574</Tag>
+          <Name>MatchType</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Where Venue Type (1430)=O(offbook),thisfieldmodelsthe MMT Level 2 ‘Trading Mode’ field, and takes the following values: 1 = Trade Reporting (Off-Exchange) 3 = Trade Reporting (On-Exchange) 9 = Trade Reporting (Systematic Internalizer)</Description>
+        </Field>
+        <Field>
+          <Tag>828</Tag>
+          <Name>TrdType</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>This field corresponds to the MMT Level 3.1 field ‘Transaction Cat- egory’. 0 = Regular Trade (when none of the following applies) 2 = Exchange For Physicals (XFPH), for RTS 2 non-equities only 50 = Portfolio Trade Refer to p. 5 for more details. This corre- spondsto MMTLevel3.11field‘Portfolio’,PORT.Shouldonly be set to this value when used in conjunction with Secondary- Trd Type (855) = 64 (BENC) and Tertiary Trd Type (2896) = 65 (CONT). 62 = Dark Trade 65 = Package Trade (TPAC) which are not Exchange for Physicals (XFPH), for RTS 2 non-equities only. Use 2 if it’s Exchange for Physicals (XFPH) If Trade Price Condition(1839)=14(Tradewith Price Improvement) isspecified,thenthevaluespecifiedin Trd Type (828)willbeignored. Trade with Price Improvement takes precedence above the values listed here.</Description>
+        </Field>
+        <Field>
+          <Tag>855</Tag>
+          <Name>SecondaryTrdType</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>This optional field corresponds to the MMT Level 3.5 field ‘Bench- mark Indicator’(BENC).Benchmarktradesmaybeindicatedbyset- ting Secondary Trd Type (855) = 64. Other values are invalid. Refer to p. 5 for more details 50 = Portfolio Trade (MMT Level 3.11 field ‘Portfolio’, PORT) - Effective1December2025,on UKAPA,ifthisissetfora RTS 2 non-equity along with Package Trade ( Trd Type (828) = 65 ), the PORT value will be ignored, as TPAC and PORT are mutually exclusive. 61=RFMDGive-up Trade(MMTLevel3.13field‘Give-up’,GIVE) 64 = Benchmark (MMT Level 3.5 field ‘Benchmark Indicator’, BENC) 65 = Contingent Transaction (RTS 1 equities only) (MMT Level 3.12 field ‘Contingent’, CONT) 67 = Benchmark Transactions Executed At the Market Close Price (MMT Level 3.5 field ‘Benchmark At Market Close Price’, CLSE) (Supported in UK APA, RTS 1 equities only). This cannot be used in conjunction with Trd Reg Publication Reasons (8013) = 3: Reference Price (Dark Book) (for MTF only) (RFPT)</Description>
+        </Field>
+        <Field>
+          <Tag>856</Tag>
+          <Name>TradeReportType</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Must be 0 (Submit)</Description>
+        </Field>
+        <Field>
+          <Tag>1003</Tag>
+          <Name>TradeID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Usedtospecifyapreviouslyreportedtradetobeamended, cancelled or released. Mandatory when Trade Report Trans Type (487) = 1, 2 or 3, must be absent when Trade Report Trans Type (487) = 0.</Description>
+        </Field>
+        <Field>
+          <Tag>1123</Tag>
+          <Name>TradeHandlingInstr</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Must be 1 (Two-Party Report)</Description>
+        </Field>
+        <Field>
+          <Tag>1390</Tag>
+          <Name>TradePublishIndicator</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Thisfieldcorrespondstothe MMTLevel4.1field’Publication Mode’, and can be used by the participant to request that the publication be delayed. It is ignored if the trade does not qualify for delayed publication. This field may not be amended, however trades currently being de- layed may be released prior to their maximum delay duration using Trade Report Trans Type (487) = 3. Supported values: 0 = Do Not Publish 1 = Publish trade (immediately) 2 = Deferred Publication</Description>
+        </Field>
+        <Field>
+          <Tag>1430</Tag>
+          <Name>VenueType</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Indicates the type of venue on which this trade occurred. This field models the MMT Level 1 field ‘Market Mechanism’, and has the following possible values: B = Central Limit Order Book Q = Quote Driven Market D = Dark Order Book O = Off Book A = Periodic Auctions N = Request for Quotes H = Hybrid Market z = Other (Excluding Hybrid)</Description>
+        </Field>
+        <Field>
+          <Tag>1838</Tag>
+          <Name>NoTradePriceConditions</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Ifpresent,indicatesthenumberof Trade Price Condition(1839)fields.</Description>
+        </Field>
+        <Field>
+          <Tag>1839</Tag>
+          <Name>TradePriceCondition</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Optional. Used to indicate values in MMT v3 levels 3.6 and 3.8 For MMTLevel3.6‘Special Divided Indicator’,supportedvaluesare: 13 = Special Dividend (SDIV) For MMT Level 3.8 ‘Contribution to Price Formation or the Price Discovery Process’, supported values are: 16 = Trade not Contributing to the Price Discovery Process (TNCP) (Invalid for EU APA). 17 = Price is Pending (PNDG)</Description>
+        </Field>
+        <Field>
+          <Tag>2373</Tag>
+          <Name>IntraFirmTradeIndicator</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Thisfieldindicatesifatransactionisbetweenentitieswithinthesame groupcarriedoutforintragroupriskmanagementpurposestotrans- fer risk accumulated as a result of previously executed transactions or where necessary to comply with regulatory requirements (IGRP). N = Not an intra-group transaction (default) Y = Is an intra-group transaction</Description>
+        </Field>
+        <Field>
+          <Tag>2405</Tag>
+          <Name>ExecMethod</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Optional. Used to indicate that the method by which the trade was executed. This field corresponds to the proposed MMT Level 3.7 ‘Offbook Automated Liquidity Indicator’. The following values are supported: 0 = Unspecified (default) 1 = Manual 2 = Automated</Description>
+        </Field>
+        <Field>
+          <Tag>2667</Tag>
+          <Name>AlgorithmicTradeIndicator</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Indicatesthatthesubmittedtradewasaresultofaninvestmentfirm engaging in algorithmic trading. Optional. 0 = No algorithm was involved (the default). 1 = The trade was an algorithmic trade (ALGO).</Description>
+        </Field>
+        <Field>
+          <Tag>2896</Tag>
+          <Name>TertiaryTrdType</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Refer to p. 5 formore details 50 = Portfolio Trade (MMT Level 3.11 field ‘Portfolio’, PORT) - Effective1December2025,on UKAPA,ifthisissetfora RTS 2 non-equity along with Package Trade ( Trd Type (828) = 65 ), the PORT value will be ignored, as TPAC and PORT are mutually exclusive. 61=RFMDGive-up Trade(MMTLevel3.13field‘Give-up’,GIVE) 64 = Benchmark (MMT Level 3.5 field ‘Benchmark Indicator’, BENC) 65 = Contingent Transaction (RTS 1 equities only) (MMT Level 3.12 field ‘Contingent’, CONT) 67 = Benchmark Transactions Executed At the Market Close Price (MMT Level 3.5 field ‘Benchmark At Market Close Price’, CLSE) (Supported in UK APA, for RTS 1 equities only). This cannot be used in conjunction with Trd Reg Publication Reasons (8013) = 3: Reference Price (Dark Book) (for MTF only) (RFPT)</Description>
+        </Field>
+        <Field>
+          <Tag>2963</Tag>
+          <Name>MultiJurisdictionReportingIndica</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>to Trhis field indicates that trade eligible for being reported more than once due to overlapping regulatory reporting rules in different juris- dictions (XBDT). 0 = This trade is not reported in more than one jurisdiction. (de- fault) 1 = This trade is reported in multiple jurisdictions.</Description>
+        </Field>
+        <Field>
+          <Tag>8013</Tag>
+          <Name>TrdRegPublication Reasons</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Optional,toindicate MMTWaiversand Deferralsusedforthetrade. Valid values are: 0 = Negotiated Trade in Liquid Instrument (for MTF only) (NLIQ) 1=Negotiated Tradein Illiquid Instrument(for MTFonly)(OILQ) 2 = Negotiated Trade Subject to Conditions Other Than Current Market Price (for MTF only) (PRIC) 3 = Reference Price (Dark Book) (for MTF only) (RFPT) 6 = Deferral for Large in Scale (LRGS) 17=Negotiated Trade Subjecttoa Pre-Trade Transparency Waiver (replaces NLIQ, OLIQ, and PRIC) (for MTF only) (NETW) 9 = Negotiated Trade Larger Than LIS brought onto a venue for which Pre-Trade transparency can be waived (NTLS) (for UK MTF only) 24=Deferralfortransactionsin ETCs,ETNs,etc(for RTS2only), only applicable on EU APA (DEFF) 99 = Indicates a Net Asset Value (NAV) Trade. Cboe will publish suchtradesimmediatelyonreceiptandtheywillnotbeconsid- ered as late reporting, regardless of the arrangement time on the message. Negotiated Trade Indicatorsand Pre-Trade Transparency Waiversare MMT Level 3.2 values. Reference Price is a MMT Level 3.5 value. Deferral Reasons are MMT Level 4.1 values. Deferral Reasons are represented by MMT Levels 4.3, and 4.4, in addition to Level 4.1. Multiple values can be supplied in a space separated list. Not all combinations are valid. The Negotiated Trade Indicators (NLIQ, OILQ, PRIC and NETW) and Reference Price Waiver(RFPT)are MTFOnlyandareallmutally exclusive (i.e. only one value can be supplied). For MTFreportingto UKAPA,thenew Negotiated Trade Subjectto a Pre-Trade Transparency Waiver(NETW)shouldbeusedinsteadof NLIQ, OLIQ and PRIC. NETW should not be used before that date. The Pre-Trade Transparency Waivers ILQD and SIZE are SI Only and can be requested individually or together (e.g. 4 5). Thebusinessconfirmationcontainsthewaiver(s)anddeferral(s)that have been appplied.</Description>
+        </Field>
+        <Group>
+          <Name>NoSides</Name>
+          <Required>N</Required>
+        </Group>
+        <Field>
+          <Tag>829</Tag>
+          <Name>TrdSubType</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>This optional field corresponds to the MMT Level 3.3 field ‘Agency Cross Trade Indicator’ (ACTX). Agency Cross trades may be indi- cated by setting Trd Sub Type (829) = 37. This is deprecated. Other values are invalid.</Description>
+        </Field>
+        <Field>
+          <Tag>1839</Tag>
+          <Name>TradePriceCondition</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Optional. Used to indicate values in MMT v3 level 3.1 ‘Transaction Category’: 14 = Trade with Price Improvement (RPRI). Trd Type (828) = 0 should be set.</Description>
+        </Field>
+        <Field>
+          <Tag>8013</Tag>
+          <Name>TrdRegPublication Reasons</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Optional,toindicate MMTWaiversand Deferralsusedforthetrade. 4 = Pre-Trade Transparency Waiver for Illiquid Instrument (for SI only) (ILQD) 5 = Pre-Trade Transparency Waiver for Above Standard Market Size (for SI only) (SIZE) 7 = Deferral for Illiquid Instrument (for RTS2 only) (ILQD) 8 = Deferral for Size Specific (for RTS2 only) (SIZE) The Deferral Reasons can be supplied individually or in a space sep- arated list. LRGS and SIZE are mutually exclusive and so (6 8) is invalid.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Quote (S) -->
+    <Message>
+      <Name>Quote</Name>
+      <MsgType>S</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>117</Tag>
+          <Name>QuoteID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Mandatory unique ID chosen by client for a Quote or Quote Cancel. 18 characters or less. Characters in ASCII range 33–126 are allowed, except for comma, semicolon, and pipe. Note: Cboe only enforces the uniqueness of Quote ID values amongcurrentlylivequotes. However,westronglyrecommend that you keep your Quote ID values day unique.</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Security symbol. See Symbology (p. 4) for additional notes.</Description>
+        </Field>
+        <Field>
+          <Tag>48</Tag>
+          <Name>SecurityID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>ISIN, or RIC if IDSource (22) is set.</Description>
+        </Field>
+        <Field>
+          <Tag>22</Tag>
+          <Name>IDSource</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Values supported by the TRF: 4 = ISIN 5 = RIC Required if Symbol (55) is not set.</Description>
+        </Field>
+        <Field>
+          <Tag>207</Tag>
+          <Name>SecurityExchange</Name>
+          <Required>N</Required>
+          <Type>Exchange</Type>
+          <Description>Usedwhen IDSource (22)=4(ISIN)toidentifyaspecificmarket. If presentmustbeavalid Reutersexchangecodeor ISOMICcode. For APA trade reports, may optionally be left blank to use the primary line as designated by Cboe.</Description>
+        </Field>
+        <Field>
+          <Tag>132</Tag>
+          <Name>BidPx</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Specifies the bid quote price. If omitted, indicates the bid quote is nottobechanged,and Bid Size (134)mustalsobeomitted. If Bid Px (132) = 0, indicates the bid quote is to be cancelled, and Bid Size (134) = 0 must also be present.</Description>
+        </Field>
+        <Field>
+          <Tag>133</Tag>
+          <Name>OfferPx</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Specifies the offer quote price. If omitted, indicates the offer quote is not to be changed, and Offer Size (135) must also be omitted. If Offer Px (133) = 0, indicates the offer quote is to be cancelled, and Offer Size (135) = 0 must also be present.</Description>
+        </Field>
+        <Field>
+          <Tag>134</Tag>
+          <Name>BidSize</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Thequantityofthebidquote. Mustbezerowhencancellingaquote.</Description>
+        </Field>
+        <Field>
+          <Tag>135</Tag>
+          <Name>OfferSize</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>The quantity of the offer (ask) quote. Must be zero when cancelling a quote.</Description>
+        </Field>
+        <Field>
+          <Tag>15</Tag>
+          <Name>Currency</Name>
+          <Required>N</Required>
+          <Type>Currency</Type>
+          <Description>Required if IDSource (22) = 4 (ISIN). If Currency (15) is included when other symbology is used, it must match the currency expected by Cboe for the given symbol.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- QuoteCancel (Z) -->
+    <Message>
+      <Name>QuoteCancel</Name>
+      <MsgType>Z</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>117</Tag>
+          <Name>QuoteID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Mandatory unique ID chosen by client for a Quote or Quote Cancel. 18 characters or less. Characters in ASCII range 33–126 are allowed, except for comma, semicolon, and pipe. Note: Cboe only enforces the uniqueness of Quote ID values amongcurrentlylivequotes. However,westronglyrecommend that you keep your Quote ID values day unique.</Description>
+        </Field>
+        <Field>
+          <Tag>298</Tag>
+          <Name>QuoteCancelType</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Supported values: 1 = Cancel for Symbol 4 = Cancel for All Quotes This field is optional, and defaults to 1. When Quote Cancel Type (298)=4,therequestwillbeacknowledged with one Quote Status Report message for each existing quote.</Description>
+        </Field>
+        <Group>
+          <Name>NoQuoteEntries</Name>
+          <Required>N</Required>
+        </Group>
+      </Fields>
+    </Message>
+
+    <!-- Trade Capture Report Ack (AR) -->
+    <Message>
+      <Name>Trade Capture Report Ack</Name>
+      <MsgType>AR</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>15</Tag>
+          <Name>Currency</Name>
+          <Required>N</Required>
+          <Type>Currency</Type>
+          <Description>Copied from the incoming Trade Capture Report, if present.</Description>
+        </Field>
+        <Field>
+          <Tag>22</Tag>
+          <Name>IDSource</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Copied from the incoming Trade Capture Report, if present.</Description>
+        </Field>
+        <Field>
+          <Tag>30</Tag>
+          <Name>LastMkt</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Copied from the incoming Trade Capture Report, if present.</Description>
+        </Field>
+        <Field>
+          <Tag>31</Tag>
+          <Name>LastPx</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Copied from the incoming Trade Capture Report, if present. If Gross Trade Amt was used instead of Last Px, the value here will be indicative. Price is adjusted for allowed precision.</Description>
+        </Field>
+        <Field>
+          <Tag>32</Tag>
+          <Name>LastQty</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Copied from the incoming Trade Capture Report.</Description>
+        </Field>
+        <Field>
+          <Tag>48</Tag>
+          <Name>SecurityID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Copied from the incoming Trade Capture Report, if present.</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Copied from the incoming Trade Capture Report, if present.</Description>
+        </Field>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>If present, indicates reason for the message. Format is one letter reason code followed by colon and space followed by free form text message. Reason codes are: A = Admin (Refer to p. 27 for details) D = Duplicate Trade Report ID H = Halted Y = Symbol Not Supported Z = Unforseen Reason m = Market Access Risk Limit Exceeded o = Max Open Trade Count Exceeded</Description>
+        </Field>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>N</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Copied from the incoming Trade Capture Report.</Description>
+        </Field>
+        <Field>
+          <Tag>75</Tag>
+          <Name>TradeDate</Name>
+          <Required>N</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Copied from the incoming Trade Capture Report.</Description>
+        </Field>
+        <Field>
+          <Tag>150</Tag>
+          <Name>ExecType</Name>
+          <Required>N</Required>
+          <Type>char</Type>
+          <Description>Copied from the incoming Trade Capture Report.</Description>
+        </Field>
+        <Field>
+          <Tag>207</Tag>
+          <Name>SecurityExchange</Name>
+          <Required>N</Required>
+          <Type>Exchange</Type>
+          <Description>Copied from the incoming Trade Capture Report, if present.</Description>
+        </Field>
+        <Field>
+          <Tag>381</Tag>
+          <Name>GrossTradeAmt</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Copied from the incoming Trade Capture Report, if present.</Description>
+        </Field>
+        <Field>
+          <Tag>487</Tag>
+          <Name>TradeReportTransType</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Copied from the incoming Trade Capture Report.</Description>
+        </Field>
+        <Field>
+          <Tag>571</Tag>
+          <Name>TradeReportID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Copied from the incoming Trade Capture Report.</Description>
+        </Field>
+        <Field>
+          <Tag>572</Tag>
+          <Name>TradeReportRefID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Unique identifier for the trade report as provided by Cboe</Description>
+        </Field>
+        <Field>
+          <Tag>574</Tag>
+          <Name>MatchType</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Copied from the incoming Trade Capture Report.</Description>
+        </Field>
+        <Field>
+          <Tag>828</Tag>
+          <Name>TrdType</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Omitted if Trade Price Condition (1839) = 14 (Trade with Price Improvement) is set. Otherwise, copied from the incoming Trade Capture Report.</Description>
+        </Field>
+        <Field>
+          <Tag>829</Tag>
+          <Name>TrdSubType</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Copied from the incoming Trade Capture Report.</Description>
+        </Field>
+        <Field>
+          <Tag>855</Tag>
+          <Name>SecondaryTrdType</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Copied from the incoming Trade Capture Report.</Description>
+        </Field>
+        <Field>
+          <Tag>856</Tag>
+          <Name>TradeReportType</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Copied from the incoming Trade Capture Report.</Description>
+        </Field>
+        <Field>
+          <Tag>939</Tag>
+          <Name>TrdRptStatus</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Will be 0 (Accepted) or 1 (Rejected)</Description>
+        </Field>
+        <Field>
+          <Tag>1003</Tag>
+          <Name>TradeID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Copied from the incoming Trade Capture Report, if present.</Description>
+        </Field>
+        <Field>
+          <Tag>1123</Tag>
+          <Name>TradeHandlingInstr</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Copied from the incoming Trade Capture Report.</Description>
+        </Field>
+        <Field>
+          <Tag>1390</Tag>
+          <Name>TradePublishIndicator</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Copied from the incoming Trade Capture Report.</Description>
+        </Field>
+        <Field>
+          <Tag>1430</Tag>
+          <Name>VenueType</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Copied from the incoming Trade Capture Report.</Description>
+        </Field>
+        <Field>
+          <Tag>1838</Tag>
+          <Name>NoTradePriceConditions</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Copied from the incoming Trade Capture Report.</Description>
+        </Field>
+        <Field>
+          <Tag>2373</Tag>
+          <Name>IntraFirmTradeIndicator</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Thisfieldindicatesifatransactionisbetweenentitieswithinthesame groupcarriedoutforintragroupriskmanagementpurposestotrans- fer risk accumulated as a result of previously executed transactions or where necessary to comply with regulatory requirements. It is set to Y if it is an intra-group transaction (IGRP).</Description>
+        </Field>
+        <Field>
+          <Tag>2405</Tag>
+          <Name>ExecMethod</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Copied from the incoming Trade Capture Report, if present.</Description>
+        </Field>
+        <Field>
+          <Tag>2667</Tag>
+          <Name>AlgorithmicTradeIndicator</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Copied from the incoming Trade Capture Report, if present.</Description>
+        </Field>
+        <Field>
+          <Tag>2896</Tag>
+          <Name>TertiaryTrdType</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Copied from the incoming Trade Capture Report, if present.</Description>
+        </Field>
+        <Field>
+          <Tag>2963</Tag>
+          <Name>MultiJurisdictionReportingIndica</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>to Trhis field indicates that trade eligible for being reported more than once due to overlapping regulatory reporting rules in different juris- dictions. Set to 1 if the trade is reported in multiple jurisdictions (XBDT).</Description>
+        </Field>
+        <Field>
+          <Tag>8013</Tag>
+          <Name>TrdRegPublicationReasons</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Copied from the incoming Trade Capture Report, if present.</Description>
+        </Field>
+        <Field>
+          <Tag>552</Tag>
+          <Name>NoSides</Name>
+          <Required>N</Required>
+          <Type>NumInGroup</Type>
+          <Description>Copied from the incoming Trade Capture Report.</Description>
+        </Field>
+        <Field>
+          <Tag>9688</Tag>
+          <Name>OrigCompID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Drop only. Target Comp ID (56)oforiginal FIXTrade Capture Report from Cboeto the Participant. Dropport mustbeconfiguredto send this optional field.</Description>
+        </Field>
+        <Field>
+          <Tag>9689</Tag>
+          <Name>OrigSubID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Drop only. Target Sub ID (57) of original FIX Trade Capture Report from Cboeto the Participant. Dropport mustbeconfiguredto send this optional field.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Quote Status Report (AI) -->
+    <Message>
+      <Name>Quote Status Report</Name>
+      <MsgType>AI</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>117</Tag>
+          <Name>QuoteID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Copiedfromthecorresponding Quote / Quote Cancel,ifapplicable. Unsolicited Quote Statusmessagescanbesentduetosystemevents, and in such circumstances, Quote ID may be omitted.</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Copied from the incoming Quote/Quote Cancel, if present.</Description>
+        </Field>
+        <Field>
+          <Tag>48</Tag>
+          <Name>SecurityID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Copied from the incoming Quote/Quote Cancel, if present.</Description>
+        </Field>
+        <Field>
+          <Tag>22</Tag>
+          <Name>IDSource</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Copied from the incoming Quote/Quote Cancel, if present.</Description>
+        </Field>
+        <Field>
+          <Tag>207</Tag>
+          <Name>SecurityExchange</Name>
+          <Required>N</Required>
+          <Type>Exchange</Type>
+          <Description>Copied from the incoming Quote/Quote Cancel, if present.</Description>
+        </Field>
+        <Field>
+          <Tag>15</Tag>
+          <Name>Currency</Name>
+          <Required>N</Required>
+          <Type>Currency</Type>
+          <Description>Copied from the incoming Quote/Quote Cancel, if present.</Description>
+        </Field>
+        <Field>
+          <Tag>132</Tag>
+          <Name>BidPx</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>For valid Quote messages (Quote Status (297) = 0 or 1), the new price and size fields are returned in the corresponding Quote Status message. These may be zero if there is no applicable quote on this side. Typically, these will match the values sent in the corresponding Quote, unless that Quote message opted to change one side of the quote only.</Description>
+        </Field>
+        <Field>
+          <Tag>133</Tag>
+          <Name>OfferPx</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>The quote’s offer price, or zero. See Bid Px (132) for more details.</Description>
+        </Field>
+        <Field>
+          <Tag>134</Tag>
+          <Name>BidSize</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>The quote’s bid quantity, or zero. See Bid Px (132) for more details.</Description>
+        </Field>
+        <Field>
+          <Tag>135</Tag>
+          <Name>OfferSize</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Thequote’sofferquantity,orzero. See Bid Px (132)formoredetails.</Description>
+        </Field>
+        <Field>
+          <Tag>297</Tag>
+          <Name>QuoteStatus</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Indicates the acceptance or otherwise of a Quote or Quote Cancel message. 0: Accepted - indicates acceptance of a Quote message. 1: Cancelled - sent in respose to a successful Quote Cancel message. 5: Rejected - sent in respose to a Quote or Quote Cancel message, indicating the message could not be accepted.</Description>
+        </Field>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>If present, indicates a reason the applicable Quote or Quote Cancel message could not be accepted.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+  </Messages>
+
+  <Groups>
+
+    <!-- NoSides (552) -->
+    <Group>
+      <Name>NoSides</Name>
+      <AnchorTag>552</AnchorTag>
+      <Fields>
+        <Field>
+          <Tag>54</Tag>
+          <Name>Side</Name>
+          <Required>N</Required>
+          <Type>char</Type>
+          <Description>Must be first field in repeating-group 1 = Buy 2 = Sell 8 = Cross</Description>
+        </Field>
+        <Field>
+          <Tag>1</Tag>
+          <Name>Account</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Optional. Reflected back on Trade Capture Report confirmed and declined messages. 16 characters or less (ASCII 33–126).</Description>
+        </Field>
+        <Field>
+          <Tag>447</Tag>
+          <Name>PartyIDSource</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Must always be D (Proprietary / Custom Code)</Description>
+        </Field>
+        <Field>
+          <Tag>452</Tag>
+          <Name>PartyRole</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Specifies the role of the party to the trade. At this time, this field is mandatory on trades reported to the TRF, and must be specified as Party Role (452) = 7.</Description>
+        </Field>
+        <Field>
+          <Tag>453</Tag>
+          <Name>NoPartyIDs</Name>
+          <Required>N</Required>
+          <Type>NumInGroup</Type>
+          <Description>Must always be 1</Description>
+        </Field>
+        <Field>
+          <Tag>448</Tag>
+          <Name>PartyID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>The Cboe Participant ID (4 uppercase letters).</Description>
+        </Field>
+        <Field>
+          <Tag>528</Tag>
+          <Name>OrderCapacity</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Optional. A = Agency P = Principal (default) R = Riskless</Description>
+        </Field>
+        <Field>
+          <Tag>625</Tag>
+          <Name>TradingSessionSubID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Models the MMT Level 2 ‘Trading Mode’ field for scenarios where Venue Type (1430) is not ‘O’ (off book). Use Match Type (574) in- stead, where Venue Type (1430) = O. The following are valid values: 2 = Scheduled Opening Auction 4 = Scheduled Closing Auction 6 = Scheduled Intraday Auction 8 = Unspecified Auction 9 = Unscheduled Auction 3 = Continuous Trading 5 = Post Trading 10 = Out of Main Session Trading The tag must be present on the first side, but is optional in any further sides. If specified in further sides, the values used must be identical to that used in the first.</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+    <!-- NoQuoteEntries (295) -->
+    <Group>
+      <Name>NoQuoteEntries</Name>
+      <AnchorTag>295</AnchorTag>
+      <Fields>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Security symbol. See Symbology (p. 4) for additional notes.</Description>
+        </Field>
+        <Field>
+          <Tag>48</Tag>
+          <Name>SecurityID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>ISIN, or RIC if IDSource (22) is set.</Description>
+        </Field>
+        <Field>
+          <Tag>22</Tag>
+          <Name>IDSource</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Values supported by the TRF: 4 = ISIN 5 = RIC Required if Symbol (55) is not set.</Description>
+        </Field>
+        <Field>
+          <Tag>207</Tag>
+          <Name>SecurityExchange</Name>
+          <Required>N</Required>
+          <Type>Exchange</Type>
+          <Description>Usedwhen IDSource (22)=4(ISIN)toidentifyaspecificmarket. If presentmustbeavalid Reutersexchangecodeor ISOMICcode. For APA trade reports, may optionally be left blank to use the primary line as designated by Cboe.</Description>
+        </Field>
+        <Field>
+          <Tag>15</Tag>
+          <Name>Currency</Name>
+          <Required>N</Required>
+          <Type>Currency</Type>
+          <Description>Required if IDSource (22) = 4 (ISIN). If Currency (15) is included when other symbology is used, it must match the currency expected by Cboe for the given symbol.</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+  </Groups>
+
+  <Values>
+    <!-- BeginString (8) statics. Source: "FIX.4.2 or FIX.4.4 Must be the first field in the message." -->
+    <Value>
+      <Type>BeginString</Type>
+      <Enum>FIX.4.2</Enum>
+      <Kind>Static</Kind>
+      <Description>FIX 4.2</Description>
+    </Value>
+    <Value>
+      <Type>BeginString</Type>
+      <Enum>FIX.4.4</Enum>
+      <Kind>Static</Kind>
+      <Description>FIX 4.4</Description>
+    </Value>
+
+    <!-- AlgorithmicTradeIndicator -->
+    <Value>
+      <Type>AlgorithmicTradeIndicator</Type>
+      <Enum>0</Enum>
+      <Description>No algorithm was involved (the default).</Description>
+    </Value>
+
+    <!-- CentralCounterparty -->
+    <Value>
+      <Type>CentralCounterparty</Type>
+      <Enum>NONE</Enum>
+      <Description>No Clearing</Description>
+    </Value>
+
+    <!-- ExecMethod -->
+    <Value>
+      <Type>ExecMethod</Type>
+      <Enum>0</Enum>
+      <Description>Unspecified (default)</Description>
+    </Value>
+    <Value>
+      <Type>ExecMethod</Type>
+      <Enum>2</Enum>
+      <Description>Automated</Description>
+    </Value>
+
+    <!-- ExecType -->
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>F</Enum>
+      <Description>Trade</Description>
+    </Value>
+
+    <!-- IDSource -->
+    <Value>
+      <Type>IDSource</Type>
+      <Enum>4</Enum>
+      <Description>ISIN</Description>
+    </Value>
+
+    <!-- IntraFirmTradeIndicator -->
+    <Value>
+      <Type>IntraFirmTradeIndicator</Type>
+      <Enum>N</Enum>
+      <Description>Not an intra-group transaction (default)</Description>
+    </Value>
+
+    <!-- MatchType -->
+    <Value>
+      <Type>MatchType</Type>
+      <Enum>1</Enum>
+      <Description>Trade Reporting (Off-Exchange)</Description>
+    </Value>
+    <Value>
+      <Type>MatchType</Type>
+      <Enum>9</Enum>
+      <Description>Trade Reporting (Systematic Internalizer)</Description>
+    </Value>
+
+    <!-- MultiJurisdictionReportingIndica -->
+    <Value>
+      <Type>MultiJurisdictionReportingIndica</Type>
+      <Enum>1</Enum>
+      <Description>This trade is reported in multiple jurisdictions.</Description>
+    </Value>
+
+    <!-- OrderCapacity -->
+    <Value>
+      <Type>OrderCapacity</Type>
+      <Enum>A</Enum>
+      <Description>Agency</Description>
+    </Value>
+    <Value>
+      <Type>OrderCapacity</Type>
+      <Enum>R</Enum>
+      <Description>Riskless</Description>
+    </Value>
+
+    <!-- QuoteCancelType -->
+    <Value>
+      <Type>QuoteCancelType</Type>
+      <Enum>1</Enum>
+      <Description>Cancel for Symbol</Description>
+    </Value>
+
+    <!-- SecondaryTrdType -->
+    <Value>
+      <Type>SecondaryTrdType</Type>
+      <Enum>61</Enum>
+      <Description>RFMDGive-up Trade(MMTLevel3.13field‘Give-up’,GIVE)</Description>
+    </Value>
+
+    <!-- Side -->
+    <Value>
+      <Type>Side</Type>
+      <Enum>1</Enum>
+      <Description>Buy</Description>
+    </Value>
+    <Value>
+      <Type>Side</Type>
+      <Enum>8</Enum>
+      <Description>Cross</Description>
+    </Value>
+
+    <!-- TertiaryTrdType -->
+    <Value>
+      <Type>TertiaryTrdType</Type>
+      <Enum>61</Enum>
+      <Description>RFMDGive-up Trade(MMTLevel3.13field‘Give-up’,GIVE)</Description>
+    </Value>
+
+    <!-- Text -->
+    <Value>
+      <Type>Text</Type>
+      <Enum>A</Enum>
+      <Kind>Constant</Kind>
+      <Description>Admin (Refer to p. 27 for details)</Description>
+    </Value>
+    <Value>
+      <Type>Text</Type>
+      <Enum>H</Enum>
+      <Kind>Constant</Kind>
+      <Description>Halted</Description>
+    </Value>
+    <Value>
+      <Type>Text</Type>
+      <Enum>Z</Enum>
+      <Kind>Constant</Kind>
+      <Description>Unforseen Reason</Description>
+    </Value>
+    <Value>
+      <Type>Text</Type>
+      <Enum>o</Enum>
+      <Kind>Constant</Kind>
+      <Description>Max Open Trade Count Exceeded</Description>
+    </Value>
+
+    <!-- TradePriceCondition -->
+    <Value>
+      <Type>TradePriceCondition</Type>
+      <Enum>17</Enum>
+      <Description>Price is Pending (PNDG)</Description>
+    </Value>
+
+    <!-- TradePublishIndicator -->
+    <Value>
+      <Type>TradePublishIndicator</Type>
+      <Enum>0</Enum>
+      <Description>Do Not Publish</Description>
+    </Value>
+    <Value>
+      <Type>TradePublishIndicator</Type>
+      <Enum>2</Enum>
+      <Description>Deferred Publication</Description>
+    </Value>
+
+    <!-- TradeReportTransType -->
+    <Value>
+      <Type>TradeReportTransType</Type>
+      <Enum>0</Enum>
+      <Description>New</Description>
+    </Value>
+    <Value>
+      <Type>TradeReportTransType</Type>
+      <Enum>2</Enum>
+      <Description>Replace</Description>
+    </Value>
+
+    <!-- TradingSessionSubID -->
+    <Value>
+      <Type>TradingSessionSubID</Type>
+      <Enum>2</Enum>
+      <Description>Scheduled Opening Auction</Description>
+    </Value>
+    <Value>
+      <Type>TradingSessionSubID</Type>
+      <Enum>6</Enum>
+      <Description>Scheduled Intraday Auction</Description>
+    </Value>
+    <Value>
+      <Type>TradingSessionSubID</Type>
+      <Enum>9</Enum>
+      <Description>Unscheduled Auction</Description>
+    </Value>
+    <Value>
+      <Type>TradingSessionSubID</Type>
+      <Enum>5</Enum>
+      <Description>Post Trading</Description>
+    </Value>
+
+    <!-- TrdRegPublication Reasons -->
+    <Value>
+      <Type>TrdRegPublication Reasons</Type>
+      <Enum>0</Enum>
+      <Description>Negotiated Trade in Liquid Instrument (for MTF only) (NLIQ)</Description>
+    </Value>
+    <Value>
+      <Type>TrdRegPublication Reasons</Type>
+      <Enum>3</Enum>
+      <Description>Reference Price (Dark Book) (for MTF only) (RFPT)</Description>
+    </Value>
+    <Value>
+      <Type>TrdRegPublication Reasons</Type>
+      <Enum>7</Enum>
+      <Description>Deferral for Illiquid Instrument (for RTS2 only) (ILQD)</Description>
+    </Value>
+
+    <!-- TrdType -->
+    <Value>
+      <Type>TrdType</Type>
+      <Enum>0</Enum>
+      <Description>Regular Trade (when none of the following applies)</Description>
+    </Value>
+    <Value>
+      <Type>TrdType</Type>
+      <Enum>62</Enum>
+      <Description>Dark Trade</Description>
+    </Value>
+
+    <!-- VenueType -->
+    <Value>
+      <Type>VenueType</Type>
+      <Enum>B</Enum>
+      <Description>Central Limit Order Book</Description>
+    </Value>
+    <Value>
+      <Type>VenueType</Type>
+      <Enum>D</Enum>
+      <Description>Dark Order Book</Description>
+    </Value>
+    <Value>
+      <Type>VenueType</Type>
+      <Enum>A</Enum>
+      <Description>Periodic Auctions</Description>
+    </Value>
+    <Value>
+      <Type>VenueType</Type>
+      <Enum>H</Enum>
+      <Description>Hybrid Market</Description>
+    </Value>
+
+
+    <!-- IDSource (completed from the PDF) -->
+    <Value>
+      <Type>IDSource</Type>
+      <Enum>5</Enum>
+      <Description>RIC</Description>
+    </Value>
+
+    <!-- TradeReportTransType (completed from the PDF) -->
+    <Value>
+      <Type>TradeReportTransType</Type>
+      <Enum>1</Enum>
+      <Description>Cancel</Description>
+    </Value>
+    <Value>
+      <Type>TradeReportTransType</Type>
+      <Enum>3</Enum>
+      <Description>Release</Description>
+    </Value>
+
+    <!-- MatchType (completed from the PDF) -->
+    <Value>
+      <Type>MatchType</Type>
+      <Enum>3</Enum>
+      <Description>Trade Reporting (On-Exchange)</Description>
+    </Value>
+
+    <!-- TrdType (completed from the PDF) -->
+    <Value>
+      <Type>TrdType</Type>
+      <Enum>2</Enum>
+      <Description>Exchange For Physicals (XFPH), for RTS 2 non-equities only</Description>
+    </Value>
+    <Value>
+      <Type>TrdType</Type>
+      <Enum>50</Enum>
+      <Description>Portfolio Trade Refer to p. 5 for more details. This corre- spondstoMMTLevel3.11field‘Portfolio’,PORT.Shouldonly be set to this value when used in conjunction with Secondary- TrdType (855) = 64 (BENC) and TertiaryTrdType (2896) = 65 (CONT).</Description>
+    </Value>
+    <Value>
+      <Type>TrdType</Type>
+      <Enum>65</Enum>
+      <Description>Package Trade (TPAC) which are not Exchange for Physicals (XFPH), for RTS 2 non-equities only. Use 2 if it’s Exchange for Physicals (XFPH)</Description>
+    </Value>
+
+    <!-- SecondaryTrdType (completed from the PDF) -->
+    <Value>
+      <Type>SecondaryTrdType</Type>
+      <Enum>50</Enum>
+      <Description>Portfolio Trade (MMT Level 3.11 field ‘Portfolio’, PORT) - Effective1December2025,onUKAPA,ifthisissetforaRTS 2 non-equity along with Package Trade ( TrdType (828) = 65 ), the PORT value will be ignored, as TPAC and PORT are mutually exclusive.</Description>
+    </Value>
+    <Value>
+      <Type>SecondaryTrdType</Type>
+      <Enum>64</Enum>
+      <Description>Benchmark (MMT Level 3.5 field ‘Benchmark Indicator’, BENC)</Description>
+    </Value>
+    <Value>
+      <Type>SecondaryTrdType</Type>
+      <Enum>65</Enum>
+      <Description>Contingent Transaction (RTS 1 equities only) (MMT Level 3.12 field ‘Contingent’, CONT)</Description>
+    </Value>
+    <Value>
+      <Type>SecondaryTrdType</Type>
+      <Enum>67</Enum>
+      <Description>Benchmark Transactions Executed At the Market Close Price (MMT Level 3.5 field ‘Benchmark At Market Close Price’, CLSE) (Supported in UK APA, RTS 1 equities only). This cannot be used in conjunction with TrdRegPublicationReasons (8013) = 3: Reference Price (Dark Book) (for MTF only) (RFPT)</Description>
+    </Value>
+
+    <!-- TradePublishIndicator (completed from the PDF) -->
+    <Value>
+      <Type>TradePublishIndicator</Type>
+      <Enum>1</Enum>
+      <Description>Publish trade (immediately)</Description>
+    </Value>
+
+    <!-- VenueType (completed from the PDF) -->
+    <Value>
+      <Type>VenueType</Type>
+      <Enum>Q</Enum>
+      <Description>Quote Driven Market</Description>
+    </Value>
+    <Value>
+      <Type>VenueType</Type>
+      <Enum>O</Enum>
+      <Description>Off Book</Description>
+    </Value>
+    <Value>
+      <Type>VenueType</Type>
+      <Enum>N</Enum>
+      <Description>Request for Quotes</Description>
+    </Value>
+    <Value>
+      <Type>VenueType</Type>
+      <Enum>z</Enum>
+      <Description>Other (Excluding Hybrid)</Description>
+    </Value>
+
+    <!-- IntraFirmTradeIndicator (completed from the PDF) -->
+    <Value>
+      <Type>IntraFirmTradeIndicator</Type>
+      <Enum>Y</Enum>
+      <Description>Is an intra-group transaction</Description>
+    </Value>
+
+    <!-- ExecMethod (completed from the PDF) -->
+    <Value>
+      <Type>ExecMethod</Type>
+      <Enum>1</Enum>
+      <Description>Manual</Description>
+    </Value>
+
+    <!-- AlgorithmicTradeIndicator (completed from the PDF) -->
+    <Value>
+      <Type>AlgorithmicTradeIndicator</Type>
+      <Enum>1</Enum>
+      <Description>The trade was an algorithmic trade (ALGO).</Description>
+    </Value>
+
+    <!-- TertiaryTrdType (completed from the PDF) -->
+    <Value>
+      <Type>TertiaryTrdType</Type>
+      <Enum>50</Enum>
+      <Description>Portfolio Trade (MMT Level 3.11 field ‘Portfolio’, PORT) - Effective1December2025,onUKAPA,ifthisissetforaRTS 2 non-equity along with Package Trade ( TrdType (828) = 65 ), the PORT value will be ignored, as TPAC and PORT are mutually exclusive.</Description>
+    </Value>
+    <Value>
+      <Type>TertiaryTrdType</Type>
+      <Enum>64</Enum>
+      <Description>Benchmark (MMT Level 3.5 field ‘Benchmark Indicator’, BENC)</Description>
+    </Value>
+    <Value>
+      <Type>TertiaryTrdType</Type>
+      <Enum>65</Enum>
+      <Description>Contingent Transaction (RTS 1 equities only) (MMT Level 3.12 field ‘Contingent’, CONT)</Description>
+    </Value>
+    <Value>
+      <Type>TertiaryTrdType</Type>
+      <Enum>67</Enum>
+      <Description>Benchmark Transactions Executed At the Market Close Price (MMT Level 3.5 field ‘Benchmark At Market Close Price’, CLSE) (Supported in UK APA, for RTS 1 equities only). This cannot be used in conjunction with TrdRegPublicationReasons (8013) = 3: Reference Price (Dark Book) (for MTF only) (RFPT)</Description>
+    </Value>
+
+    <!-- TrdRegPublicationReasons (completed from the PDF) -->
+    <Value>
+      <Type>TrdRegPublicationReasons</Type>
+      <Enum>1</Enum>
+      <Description>NegotiatedTradeinIlliquidInstrument(forMTFonly)(OILQ)</Description>
+    </Value>
+    <Value>
+      <Type>TrdRegPublicationReasons</Type>
+      <Enum>2</Enum>
+      <Description>Negotiated Trade Subject to Conditions Other Than Current Market Price (for MTF only) (PRIC)</Description>
+    </Value>
+    <Value>
+      <Type>TrdRegPublicationReasons</Type>
+      <Enum>6</Enum>
+      <Description>Deferral for Large in Scale (LRGS)</Description>
+    </Value>
+    <Value>
+      <Type>TrdRegPublicationReasons</Type>
+      <Enum>17</Enum>
+      <Description>NegotiatedTradeSubjecttoaPre-TradeTransparencyWaiver (replaces NLIQ, OLIQ, and PRIC) (for MTF only) (NETW)</Description>
+    </Value>
+    <Value>
+      <Type>TrdRegPublicationReasons</Type>
+      <Enum>9</Enum>
+      <Description>Negotiated Trade Larger Than LIS brought onto a venue for which Pre-Trade transparency can be waived (NTLS) (for UK MTF only)</Description>
+    </Value>
+    <Value>
+      <Type>TrdRegPublicationReasons</Type>
+      <Enum>24</Enum>
+      <Description>DeferralfortransactionsinETCs,ETNs,etc(forRTS2only), only applicable on EU APA (DEFF)</Description>
+    </Value>
+    <Value>
+      <Type>TrdRegPublicationReasons</Type>
+      <Enum>99</Enum>
+      <Description>Indicates a Net Asset Value (NAV) Trade. Cboe will publish suchtradesimmediatelyonreceiptandtheywillnotbeconsid- ered as late reporting, regardless of the arrangement time on the message.</Description>
+    </Value>
+    <Value>
+      <Type>TrdRegPublicationReasons</Type>
+      <Enum>4</Enum>
+      <Description>Pre-Trade Transparency Waiver for Illiquid Instrument (for SI only) (ILQD)</Description>
+    </Value>
+    <Value>
+      <Type>TrdRegPublicationReasons</Type>
+      <Enum>5</Enum>
+      <Description>Pre-Trade Transparency Waiver for Above Standard Market Size (for SI only) (SIZE)</Description>
+    </Value>
+    <Value>
+      <Type>TrdRegPublicationReasons</Type>
+      <Enum>8</Enum>
+      <Description>Deferral for Size Specific (for RTS2 only) (SIZE)</Description>
+    </Value>
+
+    <!-- QuoteCancelType (completed from the PDF) -->
+    <Value>
+      <Type>QuoteCancelType</Type>
+      <Enum>4</Enum>
+      <Description>Cancel for All Quotes</Description>
+    </Value>
+
+    <!-- Text (completed from the PDF) -->
+    <Value>
+      <Type>Text</Type>
+      <Enum>D</Enum>
+      <Kind>Constant</Kind>
+      <Description>Duplicate TradeReportID</Description>
+    </Value>
+    <Value>
+      <Type>Text</Type>
+      <Enum>Y</Enum>
+      <Kind>Constant</Kind>
+      <Description>Symbol Not Supported</Description>
+    </Value>
+    <Value>
+      <Type>Text</Type>
+      <Enum>m</Enum>
+      <Kind>Constant</Kind>
+      <Description>Market Access Risk Limit Exceeded</Description>
+    </Value>
+  </Values>
+
+</OmiFixPdf>

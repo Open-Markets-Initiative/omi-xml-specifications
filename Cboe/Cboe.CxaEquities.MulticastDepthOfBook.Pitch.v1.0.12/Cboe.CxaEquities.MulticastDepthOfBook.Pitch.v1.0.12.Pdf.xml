@@ -1,0 +1,785 @@
+<OmiPitchCxaEquitiesPdf>
+
+  <Messages>
+
+    <!-- Unit Clear Message -->
+    <Message>
+      <Name>Unit Clear Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x97</Code>
+      <Description>Instructs feed recipients to clear all orders for the CXA book in the unit specified in the Sequenced Unit Header. Distributed in rare recovery events such as a datacentre fail-over.</Description>
+      <Fields>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Reserved (undefined).</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Trading Status Message -->
+    <Message>
+      <Name>Trading Status Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x3B</Code>
+      <Description>Indicates the current trading status of a security. A Trading Status message will be sent whenever trading status changes for a security.</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>Binary UTC Timestamp</Type>
+          <Size>8</Size>
+          <Description>Nanoseconds since epoch.</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Printable ASCII</Type>
+          <Size>6</Size>
+          <Description>Symbol (right padded with spaces).</Description>
+        </Field>
+        <Field>
+          <Name>Trading Status</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Trading status of the session for the symbol.</Description>
+        </Field>
+        <Field>
+          <Name>Market Id Code</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Market Identifier Code (right padded with spaces).</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>Binary</Type>
+          <Size>1</Size>
+          <Description>Reserved (undefined).</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Add Order Message -->
+    <Message>
+      <Name>Add Order Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x37</Code>
+      <Description>Represents a newly accepted visible or undisclosed order on the CXA book. Includes a day-specific Order Id assigned by CXA to the order.</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>Binary UTC Timestamp</Type>
+          <Size>8</Size>
+          <Description>Nanoseconds since epoch.</Description>
+        </Field>
+        <Field>
+          <Name>Order Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Day-specific identifier assigned to this order. Order Ids received on PITCH may be compared to those received on order acknowledgements in FIX or BOE by converting the decimal value to a base 36 value.</Description>
+        </Field>
+        <Field>
+          <Name>Side Indicator</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Side of the order.</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Number of shares being added to the book. For undisclosed orders, the number of shares is zero.</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Printable ASCII</Type>
+          <Size>6</Size>
+          <Description>Symbol (right padded with spaces).</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Binary Price</Type>
+          <Size>8</Size>
+          <Description>The display price of the order.</Description>
+        </Field>
+        <Field>
+          <Name>PID</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Participant ID (right padded with spaces). Blank (spaces) if not attributed.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>Binary</Type>
+          <Size>1</Size>
+          <Description>Reserved (undefined).</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Order Executed Message -->
+    <Message>
+      <Name>Order Executed Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x38</Code>
+      <Description>Sent when a visible order on the CXA book is executed in whole or in part. The execution price equals the order price found in the original Add Order message or the order price in the latest Modify Order message referencing the Order Id.</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>Binary UTC Timestamp</Type>
+          <Size>8</Size>
+          <Description>Nanoseconds since epoch.</Description>
+        </Field>
+        <Field>
+          <Name>Order Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Order Id of a previously sent Add Order message that was executed.</Description>
+        </Field>
+        <Field>
+          <Name>Executed Quantity</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Number of shares executed.</Description>
+        </Field>
+        <Field>
+          <Name>Execution Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>CXA generated day-unique execution identifier of this execution. Execution Id is also referenced in the Trade Break message.</Description>
+        </Field>
+        <Field>
+          <Name>Contra Order Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Order Id of the contra order that matched with this order.</Description>
+        </Field>
+        <Field>
+          <Name>Contra PID</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Contra Participant ID (right padded with spaces). Blank (spaces) if not attributed.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>Binary</Type>
+          <Size>1</Size>
+          <Description>Reserved (undefined).</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Order Executed at Price Message -->
+    <Message>
+      <Name>Order Executed at Price Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x58</Code>
+      <Description>Used to update lit orders that have fully or partially executed in an auction. There is one Order Executed at Price message per auction trade, which includes the order IDs of both resting orders matched in the trade. Each message is followed by either a Reduce Size message (if the contra order has partially executed) or a Delete Order message (if the contra order has fully executed).</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>Binary UTC Timestamp</Type>
+          <Size>8</Size>
+          <Description>Nanoseconds since epoch.</Description>
+        </Field>
+        <Field>
+          <Name>Order Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Order Id of a previously sent Add Order message that was executed.</Description>
+        </Field>
+        <Field>
+          <Name>Executed Quantity</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Number of shares/contracts executed.</Description>
+        </Field>
+        <Field>
+          <Name>Execution Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>CXA generated day-unique execution identifier of this execution. Execution Id is also referenced in the Trade Break message.</Description>
+        </Field>
+        <Field>
+          <Name>Contra Order Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Order Id of the contra order that matched with this order.</Description>
+        </Field>
+        <Field>
+          <Name>Contra PID</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Contra Participant ID (right padded with spaces). Blank (spaces) if not attributed.</Description>
+        </Field>
+        <Field>
+          <Name>Execution Type</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Type of auction execution.</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Binary Price</Type>
+          <Size>8</Size>
+          <Description>The execution price of the order.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>Binary</Type>
+          <Size>1</Size>
+          <Description>Reserved (undefined).</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Reduce Size Message -->
+    <Message>
+      <Name>Reduce Size Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x39</Code>
+      <Description>Sent when a visible order on the CXA book is partially reduced.</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>Binary UTC Timestamp</Type>
+          <Size>8</Size>
+          <Description>Nanoseconds since epoch.</Description>
+        </Field>
+        <Field>
+          <Name>Order Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Order Id of a previously sent Add Order message that has been reduced.</Description>
+        </Field>
+        <Field>
+          <Name>Cancelled Quantity</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Number of shares cancelled.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Modify Order Message -->
+    <Message>
+      <Name>Modify Order Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x3A</Code>
+      <Description>Sent whenever an open order is visibly modified. The Order Id refers to the Order Id of the original Add Order message. Modify Order messages that appear to be "no ops" (i.e., they do not appear to modify any relevant fields) will still lose priority.</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>Binary UTC Timestamp</Type>
+          <Size>8</Size>
+          <Description>Nanoseconds since epoch.</Description>
+        </Field>
+        <Field>
+          <Name>Order Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Order Id of a previously sent Add Order message that has been modified.</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Number of shares associated with this order after this modify (may be less than the number entered). For undisclosed orders, the number of shares is zero.</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Binary Price</Type>
+          <Size>8</Size>
+          <Description>The order price after this modify.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>Binary</Type>
+          <Size>1</Size>
+          <Description>Reserved (undefined).</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Delete Order Message -->
+    <Message>
+      <Name>Delete Order Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x3C</Code>
+      <Description>Sent whenever a booked order is cancelled or leaves the order book. The Order Id refers to the Order Id of the original Add Order message.</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>Binary UTC Timestamp</Type>
+          <Size>8</Size>
+          <Description>Nanoseconds since epoch.</Description>
+        </Field>
+        <Field>
+          <Name>Order Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Order Id of a previously sent Add Order message that has been removed from order book.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Trade Message -->
+    <Message>
+      <Name>Trade Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x3D</Code>
+      <Description>Provides information about executions of non-displayed and undisclosed orders (including auction executions of undisclosed orders), on the CXA book or executions that occur off-exchange and reported to CXA. Trade messages for on-exchange electronic executions are necessary to calculate CXA execution-based data. Trade messages do not alter the book and can be ignored if messages are being used solely to build a book.</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>Binary UTC Timestamp</Type>
+          <Size>8</Size>
+          <Description>Nanoseconds since epoch.</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Printable ASCII</Type>
+          <Size>6</Size>
+          <Description>Symbol (right padded with spaces).</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Incremental number of shares executed or reported.</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Binary Price</Type>
+          <Size>8</Size>
+          <Description>The price of the trade.</Description>
+        </Field>
+        <Field>
+          <Name>Execution Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>CXA generated day-unique execution identifier of this execution. Execution Id is also referenced in the Trade Break message.</Description>
+        </Field>
+        <Field>
+          <Name>Order Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Order Id of the executed order.</Description>
+        </Field>
+        <Field>
+          <Name>Contra Order Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Order Id of the contra order that matched with this order.</Description>
+        </Field>
+        <Field>
+          <Name>PID</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Participant ID (right padded with spaces). Blank (spaces) if not attributed.</Description>
+        </Field>
+        <Field>
+          <Name>Contra PID</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Contra Participant ID (right padded with spaces). Blank (spaces) if not attributed.</Description>
+        </Field>
+        <Field>
+          <Name>Trade Type</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Trade type. Auction executions of Undisclosed orders will include one of O, C, or H.</Description>
+        </Field>
+        <Field>
+          <Name>Trade Designation</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Trade designation. Valid only for on-exchange executions, space otherwise.</Description>
+        </Field>
+        <Field>
+          <Name>Trade Report Type</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Trade report type. Valid only for off-exchange trade reports, space otherwise.</Description>
+        </Field>
+        <Field>
+          <Name>Trade Transaction Time</Name>
+          <Type>Binary UTC Timestamp</Type>
+          <Size>8</Size>
+          <Description>Nanosecond timestamp of the off-exchange trade as specified in the Trade Report submitted by the trading participant. Valid only for off-exchange trade reports, zero otherwise.</Description>
+        </Field>
+        <Field>
+          <Name>Flags</Name>
+          <Type>Bit Field</Type>
+          <Size>1</Size>
+          <Description>Trade flags bit field.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Trade Break Message -->
+    <Message>
+      <Name>Trade Break Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x3E</Code>
+      <Description>Sent whenever an execution on CXA or off-exchange trade reported to CXA is cancelled. A trade correction is performed by sending a Trade Break message followed by a new Trade message with the corrected size and price. Applications that simply build a CXA book can ignore Trade Break messages.</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>Binary UTC Timestamp</Type>
+          <Size>8</Size>
+          <Description>Nanoseconds since epoch.</Description>
+        </Field>
+        <Field>
+          <Name>Execution Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>CXA generated day-unique identifier of the execution that was broken. Execution Id refers to previously sent Order Executed or Trade message.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Calculated Value Message -->
+    <Message>
+      <Name>Calculated Value Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0xE3</Code>
+      <Description>Sent when CXA calculates market values for a specified symbol or when a calculated market value is reported to CXA. The specified symbol may not trade on CXA, but instead could represent index or iNAV values reported to CXA from third parties as indicated by the Value Category field. The index values will be reported on each of the unitised CXA PITCH feeds and are not specific to an individual unit.</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>Binary UTC Timestamp</Type>
+          <Size>8</Size>
+          <Description>Nanoseconds since epoch.</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Printable ASCII</Type>
+          <Size>6</Size>
+          <Description>Symbol (right padded with spaces).</Description>
+        </Field>
+        <Field>
+          <Name>Value Category</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Category of the calculated value.</Description>
+        </Field>
+        <Field>
+          <Name>Value</Name>
+          <Type>Binary Price</Type>
+          <Size>8</Size>
+          <Description>The calculated value.</Description>
+        </Field>
+        <Field>
+          <Name>Value Timestamp</Name>
+          <Type>Binary UTC Timestamp</Type>
+          <Size>8</Size>
+          <Description>Timestamp when the calculated value was generated in nanoseconds since epoch.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- End of Session Message -->
+    <Message>
+      <Name>End of Session Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x2D</Code>
+      <Description>Sent for each unit when the unit shuts down. No additional sequenced messages will be delivered for this unit, but heartbeats from the unit may be received.</Description>
+      <Fields>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Reserved (undefined).</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Auction Update Message -->
+    <Message>
+      <Name>Auction Update Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x59</Code>
+      <Description>Sent during Pre-Open and Pre-Close trading states when a symbol has an order update relating to an overlapping order book (where the best bid price is greater than or equal to the best ask price). Includes the potential number of shares and the indicative auction price if the symbol were to undergo an auction now. Only sent if there are updates to the Buy Shares, Sell Shares, or Indicative Price fields.</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>Binary UTC Timestamp</Type>
+          <Size>8</Size>
+          <Description>Nanoseconds since epoch.</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Printable ASCII</Type>
+          <Size>6</Size>
+          <Description>Symbol (right padded with spaces).</Description>
+        </Field>
+        <Field>
+          <Name>Auction Type</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Auction type.</Description>
+        </Field>
+        <Field>
+          <Name>Buy Shares</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Number of shares on buy side eligible to trade at the auction indicative price.</Description>
+        </Field>
+        <Field>
+          <Name>Sell Shares</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Number of shares on sell side eligible to trade at the auction indicative price.</Description>
+        </Field>
+        <Field>
+          <Name>Indicative Price</Name>
+          <Type>Binary Price</Type>
+          <Size>8</Size>
+          <Description>Indicative Auction Price at which the continuous book would match.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>Binary</Type>
+          <Size>1</Size>
+          <Description>Reserved (undefined).</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Auction Summary Message -->
+    <Message>
+      <Name>Auction Summary Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x5A</Code>
+      <Description>Sent at the completion of the Auction per symbol and includes the Auction Price and Shares executed. If there is no overlapping order book at the time of the auction, no auction trades will result, but the Auction Summary message will still be disseminated and contain zeroes in the Price and Shares fields.</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>Binary UTC Timestamp</Type>
+          <Size>8</Size>
+          <Description>Nanoseconds since epoch.</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Printable ASCII</Type>
+          <Size>6</Size>
+          <Description>Symbol (right padded with spaces).</Description>
+        </Field>
+        <Field>
+          <Name>Auction Type</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Auction type.</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Binary Price</Type>
+          <Size>8</Size>
+          <Description>Auction price.</Description>
+        </Field>
+        <Field>
+          <Name>Shares</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Cumulative number of shares executed during the auction.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>Binary</Type>
+          <Size>1</Size>
+          <Description>Reserved (undefined).</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+  </Messages>
+
+  <Enums>
+
+    <!-- Trading Status -->
+    <Enum>
+      <Name>Trading Status</Name>
+      <Values>
+        <Value><Data>C</Data><Name>Closed</Name></Value>
+        <Value><Data>A</Data><Name>Pre-market</Name></Value>
+        <Value><Data>T</Data><Name>Trading</Name></Value>
+        <Value><Data>M</Data><Name>MOC Trading</Name></Value>
+        <Value><Data>P</Data><Name>Post-market</Name></Value>
+        <Value><Data>H</Data><Name>Halted</Name></Value>
+        <Value><Data>S</Data><Name>Trading suspended</Name></Value>
+        <Value><Data>O</Data><Name>Pre-Open</Name></Value>
+        <Value><Data>E</Data><Name>Pre-Close</Name></Value>
+      </Values>
+    </Enum>
+
+    <!-- Market Id Code -->
+    <Enum>
+      <Name>Market Id Code</Name>
+      <Values>
+        <Value><Data>XASX</Data><Name>ASX Symbols</Name></Value>
+        <Value><Data>CXAW</Data><Name>CXA Warrants</Name></Value>
+        <Value><Data>CXAE</Data><Name>CXA ETF</Name></Value>
+        <Value><Data>CXAQ</Data><Name>CXA QMF</Name></Value>
+        <Value><Data>CXAL</Data><Name>CXA Listed</Name></Value>
+      </Values>
+    </Enum>
+
+    <!-- Side Indicator -->
+    <Enum>
+      <Name>Side Indicator</Name>
+      <Values>
+        <Value><Data>B</Data><Name>Buy Order</Name></Value>
+        <Value><Data>S</Data><Name>Sell Order</Name></Value>
+      </Values>
+    </Enum>
+
+    <!-- Execution Type -->
+    <Enum>
+      <Name>Execution Type</Name>
+      <Values>
+        <Value><Data>O</Data><Name>Opening / Intra-day Auction</Name></Value>
+        <Value><Data>C</Data><Name>Closing Auction</Name></Value>
+        <Value><Data>H</Data><Name>Halt Auction (Re-Opening)</Name></Value>
+      </Values>
+    </Enum>
+
+    <!-- Trade Type -->
+    <Enum>
+      <Name>Trade Type</Name>
+      <Values>
+        <Value><Data>B</Data><Name>Broker Preferred Trade</Name></Value>
+        <Value><Data>N</Data><Name>Trade resulting from normal matching logic</Name></Value>
+        <Value><Data>" "</Data><Name>Off-exchange trade report</Name></Value>
+        <Value><Data>O</Data><Name>Opening / Intra-day Auction (undisclosed)</Name></Value>
+        <Value><Data>C</Data><Name>Closing Auction (undisclosed)</Name></Value>
+        <Value><Data>H</Data><Name>Halt Auction Re-Opening (undisclosed)</Name></Value>
+      </Values>
+    </Enum>
+
+    <!-- Trade Designation -->
+    <Enum>
+      <Name>Trade Designation</Name>
+      <Values>
+        <Value><Data>C</Data><Name>CXAC (Limit)</Name></Value>
+        <Value><Data>P</Data><Name>CXAP (Mid-Point)</Name></Value>
+        <Value><Data>N</Data><Name>CXAN (Near Point)</Name></Value>
+        <Value><Data>F</Data><Name>CXAF (Far Point)</Name></Value>
+        <Value><Data>M</Data><Name>CXAM (MOC)</Name></Value>
+        <Value><Data>" "</Data><Name>Not applicable (off-exchange)</Name></Value>
+      </Values>
+    </Enum>
+
+    <!-- Trade Report Type -->
+    <Enum>
+      <Name>Trade Report Type</Name>
+      <Values>
+        <Value><Data>B</Data><Name>Block Trade</Name></Value>
+        <Value><Data>P</Data><Name>Large Portfolio Trade</Name></Value>
+        <Value><Data>T</Data><Name>Large Principal Transaction</Name></Value>
+        <Value><Data>S</Data><Name>Trades with Price Improvement</Name></Value>
+        <Value><Data>L</Data><Name>Permitted Trade During Post Trading Hours Period</Name></Value>
+        <Value><Data>M</Data><Name>Permitted Trade During Pre-Trading Hours Period</Name></Value>
+        <Value><Data>E</Data><Name>Out of Hours Trade</Name></Value>
+        <Value><Data>F</Data><Name>ETF Trade Report for unit creations or redemptions</Name></Value>
+        <Value><Data>" "</Data><Name>Not applicable (on-exchange)</Name></Value>
+      </Values>
+    </Enum>
+
+    <!-- Value Category -->
+    <Enum>
+      <Name>Value Category</Name>
+      <Values>
+        <Value><Data>1</Data><Name>Closing price</Name></Value>
+        <Value><Data>2</Data><Name>iNAV values (ETF)</Name></Value>
+        <Value><Data>3</Data><Name>Index values</Name></Value>
+        <Value><Data>4</Data><Name>EOD NAV from issuer</Name></Value>
+      </Values>
+    </Enum>
+
+    <!-- Auction Type -->
+    <Enum>
+      <Name>Auction Type</Name>
+      <Values>
+        <Value><Data>O</Data><Name>Opening / Intra-day Auction</Name></Value>
+        <Value><Data>C</Data><Name>Closing Auction</Name></Value>
+        <Value><Data>H</Data><Name>Halt Auction (Re-Opening)</Name></Value>
+      </Values>
+    </Enum>
+
+  </Enums>
+
+  <Bitfields>
+
+    <!-- Flags -->
+    <Bitfield>
+      <Name>Flags</Name>
+      <Description>Trade flags.</Description>
+      <Fields>
+        <Field>
+          <Name>Reserved</Name>
+          <Bits>1</Bits>
+          <Type>bit</Type>
+          <Description>Reserved.</Description>
+        </Field>
+        <Field>
+          <Name>Trade from converted order</Name>
+          <Bits>1</Bits>
+          <Type>bit</Type>
+          <Description>0 = Normal trade, 1 = Trade from converted order.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Bits>1</Bits>
+          <Type>bit</Type>
+          <Description>Reserved.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Bits>1</Bits>
+          <Type>bit</Type>
+          <Description>Reserved.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Bits>1</Bits>
+          <Type>bit</Type>
+          <Description>Reserved.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Bits>1</Bits>
+          <Type>bit</Type>
+          <Description>Reserved.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Bits>1</Bits>
+          <Type>bit</Type>
+          <Description>Reserved.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Bits>1</Bits>
+          <Type>bit</Type>
+          <Description>Reserved.</Description>
+        </Field>
+      </Fields>
+    </Bitfield>
+
+  </Bitfields>
+
+</OmiPitchCxaEquitiesPdf>

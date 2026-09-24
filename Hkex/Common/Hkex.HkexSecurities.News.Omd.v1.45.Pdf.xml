@@ -1,0 +1,193 @@
+<OmiOmdPdf>
+
+  <Messages>
+
+    <!-- News Message -->
+    <Message>
+      <Name>News Message</Name>
+      <Description>The News message is generated whenever a news update occurs. The message indicates which markets and/or securities the news applies to. If NoMarketCode and NoSecurityCodes are both zero, the news applies to all markets. News may be fragmented across multiple consecutive messages; LastFragment is 'Y' in the message with the last fragment. Headline is only carried in the first message and blanked from the second message onwards.</Description>
+      <Branch>Payload</Branch>
+      <Dependency>Msg Type</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>News</Category>
+      <Code>22</Code>
+      <Fields>
+        <Field>
+          <Name>NewsType</Name>
+          <Type>String</Type>
+          <Size>3</Size>
+          <Description>Type of Exchange news.</Description>
+        </Field>
+        <Field>
+          <Name>NewsID</Name>
+          <Type>String</Type>
+          <Size>3</Size>
+          <Description>Unique number for the news page within each NewsType.</Description>
+        </Field>
+        <Field>
+          <Name>Headline</Name>
+          <Type>Binary</Type>
+          <Size>320</Size>
+          <Description>News headline. ASCII encoded if NewsType is EXN, Unicode UTF-16LE encoded if NewsType is EXC.</Description>
+        </Field>
+        <Field>
+          <Name>CancelFlag</Name>
+          <Type>String</Type>
+          <Size>1</Size>
+          <Description>Indicator of whether previously released exchange news (identified by NewsType and NewsID) has been cancelled.</Description>
+        </Field>
+        <Field>
+          <Name>LastFragment</Name>
+          <Type>String</Type>
+          <Size>1</Size>
+          <Description>Indicates whether this message is the last in a sequence of messages.</Description>
+        </Field>
+        <Field>
+          <Name>Filler</Name>
+          <Type>String</Type>
+          <Size>4</Size>
+          <Description>Padding.</Description>
+        </Field>
+        <Field>
+          <Name>ReleaseTime</Name>
+          <Type>Uint64</Type>
+          <Size>8</Size>
+          <Description>Release time of the news. Nanoseconds since Unix epoch UTC, precision to the nearest second.</Description>
+        </Field>
+        <Field>
+          <Name>Filler</Name>
+          <Type>String</Type>
+          <Size>2</Size>
+          <Description>Padding.</Description>
+        </Field>
+        <Field>
+          <Name>NoMarketCodes</Name>
+          <Type>Uint16</Type>
+          <Size>2</Size>
+          <Description>Number of Market segment identifiers within this message. 0 to 4.</Description>
+        </Field>
+        <Field>
+          <Name>NewsMarket</Name>
+          <Type>group</Type>
+          <Description>Market code repeating group.</Description>
+        </Field>
+        <Field>
+          <Name>Filler</Name>
+          <Type>String</Type>
+          <Size>2</Size>
+          <Description>Padding.</Description>
+        </Field>
+        <Field>
+          <Name>NoSecurityCodes</Name>
+          <Type>Uint16</Type>
+          <Size>2</Size>
+          <Description>Number of security codes within this message. 0 to 200.</Description>
+        </Field>
+        <Field>
+          <Name>NewsSecurity</Name>
+          <Type>group</Type>
+          <Description>Security code repeating group.</Description>
+        </Field>
+        <Field>
+          <Name>Filler</Name>
+          <Type>String</Type>
+          <Size>2</Size>
+          <Description>Padding.</Description>
+        </Field>
+        <Field>
+          <Name>NoNewsLines</Name>
+          <Type>Uint16</Type>
+          <Size>2</Size>
+          <Description>Number of news lines. Maximum of 10 lines per news page currently supported.</Description>
+        </Field>
+        <Field>
+          <Name>NewsLineItem</Name>
+          <Type>group</Type>
+          <Description>News line repeating group.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+  </Messages>
+
+  <Groups>
+
+    <!-- NewsMarket -->
+    <Group>
+      <Name>NewsMarket</Name>
+      <Description>Repeating group of market codes referenced by this news item.</Description>
+      <Dependency>NoMarketCodes</Dependency>
+      <Fields>
+        <Field>
+          <Name>MarketCode</Name>
+          <Type>String</Type>
+          <Size>4</Size>
+          <Description>Market segment identifier.</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+    <!-- NewsSecurity -->
+    <Group>
+      <Name>NewsSecurity</Name>
+      <Description>Repeating group of security codes referenced by this news item.</Description>
+      <Dependency>NoSecurityCodes</Dependency>
+      <Fields>
+        <Field>
+          <Name>SecurityCode</Name>
+          <Type>Uint32</Type>
+          <Size>4</Size>
+          <Description>5-digit code identifying the security.</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+    <!-- NewsLineItem -->
+    <Group>
+      <Name>NewsLineItem</Name>
+      <Description>Repeating group of news lines.</Description>
+      <Dependency>NoNewsLines</Dependency>
+      <Fields>
+        <Field>
+          <Name>NewsLine</Name>
+          <Type>Binary</Type>
+          <Size>160</Size>
+          <Description>News line. ASCII encoded if NewsType is EXN, Unicode UTF-16LE encoded if NewsType is EXC.</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+  </Groups>
+
+  <Enums>
+
+    <!-- NewsType -->
+    <Enum>
+      <Name>NewsType</Name>
+      <Values>
+        <Value><Data>EXN</Data><Name>Exchange news</Name></Value>
+        <Value><Data>EXC</Data><Name>Chinese Exchange news</Name></Value>
+      </Values>
+    </Enum>
+
+    <!-- CancelFlag -->
+    <Enum>
+      <Name>CancelFlag</Name>
+      <Values>
+        <Value><Data>Y</Data><Name>Cancelled</Name></Value>
+        <Value><Data>N</Data><Name>Not cancelled</Name></Value>
+      </Values>
+    </Enum>
+
+    <!-- LastFragment -->
+    <Enum>
+      <Name>LastFragment</Name>
+      <Values>
+        <Value><Data>Y</Data><Name>Complete</Name></Value>
+        <Value><Data>N</Data><Name>Not complete</Name></Value>
+      </Values>
+    </Enum>
+
+  </Enums>
+
+</OmiOmdPdf>

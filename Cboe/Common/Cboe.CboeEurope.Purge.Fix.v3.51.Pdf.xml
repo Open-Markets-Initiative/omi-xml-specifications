@@ -1,0 +1,923 @@
+<OmiFixPdf>
+
+  <!-- x — Purge -->
+
+  <Header>
+    <Fields>
+      <Field>
+        <Tag>8</Tag>
+        <Name>BeginString</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+        <Description>FIX.4.2 or FIX.4.4 Must be the first field in the message. FIX 4.4 only available if the port is dedicated for trade reporting purposes.</Description>
+      </Field>
+      <Field>
+        <Tag>9</Tag>
+        <Name>BodyLength</Name>
+        <Required>N</Required>
+        <Type>Length</Type>
+        <Fixed>Y</Fixed>
+        <Description>Length of message following Body Length field up to and including the de- limiter preceding the Check Sum (10) field. Must be the second field in the message.</Description>
+      </Field>
+      <Field>
+        <Tag>35</Tag>
+        <Name>MsgType</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+        <Description>Must be the third field in the message.</Description>
+      </Field>
+      <Field>
+        <Tag>34</Tag>
+        <Name>MsgSeqNum</Name>
+        <Required>N</Required>
+        <Type>SeqNum</Type>
+        <Description>Sequential sequence number for the session.</Description>
+      </Field>
+      <Field>
+        <Tag>43</Tag>
+        <Name>PossDupFlag</Name>
+        <Required>N</Required>
+        <Type>Boolean</Type>
+        <Description>Indicates a message resent from the admin level (has a duplicate sequence number). Defaults to N.</Description>
+      </Field>
+      <Field>
+        <Tag>49</Tag>
+        <Name>SenderCompID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Description>ID of sender. Assigned by Cboe for messages sent to Cboe. (Target Comp ID (56) for messages from Cboe.)</Description>
+      </Field>
+      <Field>
+        <Tag>52</Tag>
+        <Name>SendingTime</Name>
+        <Required>N</Required>
+        <Type>UTCTimestamp</Type>
+        <Description>GMT date and time that message was sent. Nanosecond level resolution.</Description>
+      </Field>
+      <Field>
+        <Tag>56</Tag>
+        <Name>TargetCompID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Description>ID of destination. BATS for messages sent to BXE ports. CHIX for messages sent to CXE ports. CEUX for messages sent to DXE ports. (Sender Comp ID (49) for messages from Cboe.)</Description>
+      </Field>
+      <Field>
+        <Tag>57</Tag>
+        <Name>TargetSubID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Description>Sub ID of destination. TEST for messages sent to the Cboe test system. PRODformessagessenttothe Cboeproductionsystem. (Sender Sub ID (50) for messages from Cboe.)</Description>
+      </Field>
+      <Field>
+        <Tag>97</Tag>
+        <Name>PossResend</Name>
+        <Required>N</Required>
+        <Type>Boolean</Type>
+        <Description>Possibleresendflag. Cboehasspecialhandlingforthe Poss Resend for New Order Single messages. See New Order — Single below.</Description>
+      </Field>
+      <Field>
+        <Tag>115</Tag>
+        <Name>OnBehalfOfCompID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Description>Service bureau use. Identifies end-client on messages to Cboe. Must be identifier known to Cboe. May be used by non-service bureau to specify which clearing arrangement to use if multiple are configured.</Description>
+      </Field>
+      <Field>
+        <Tag>116</Tag>
+        <Name>OnBehalfOfSubID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Description>End-client sub identifier. Four characters, alphanumeric, otherwise not validated. Recorded and re- turned in Deliver To Sub ID (129). Available via Drop.</Description>
+      </Field>
+      <Field>
+        <Tag>122</Tag>
+        <Name>OrigSendingTime</Name>
+        <Required>N</Required>
+        <Type>UTCTimestamp</Type>
+        <Description>Formessageswith Poss Dup Flag (43)=Y,indicatestimethatmessagewas first sent. Nanosecond level resolution.</Description>
+      </Field>
+      <Field>
+        <Tag>128</Tag>
+        <Name>DeliverToCompID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Description>Service bureau use. Identifies end-client on message from Cboe. Must be Cboe approved identifier.</Description>
+      </Field>
+      <Field>
+        <Tag>129</Tag>
+        <Name>DeliverToSubID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Description>Returns On Behalf Of Sub ID (116) optionally sent by client.</Description>
+      </Field>
+    </Fields>
+  </Header>
+
+  <Trailer>
+    <Fields>
+      <Field>
+        <Tag>10</Tag>
+        <Name>CheckSum</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+        <Description>Modulo 256 checksum of all characters in the message up to and including thedelimiterprecedingthe Check Sum field. Threedigitswithleadingzeroes if necessary.</Description>
+      </Field>
+    </Fields>
+  </Trailer>
+
+  <Messages>
+
+    <!-- Purge Request (F) -->
+    <Message>
+      <Name>Purge Request</Name>
+      <MsgType>F</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>N</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Time cancel initiated/released. Required by FIX 4.2 but not used by Cboe. Nanosecond level resolution.</Description>
+        </Field>
+        <Field>
+          <Tag>7700</Tag>
+          <Name>MassCancelInst</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>At least one character must be provided (clearing firm Filter). Contiguous characters must be specified up to total length. Truncated (unspecified) characters will default to values indicated below. 1st Character : clearing firm Filter A = No filtering by clearing firm is performed. F = All orders that were sent under the clearing firm specified in On Be- half Of Comp Id (115) will be cancelled. 2nd Character : Acknowledgement Style M = (Default) Individual Execution Reports are sent for each cancelled order. S = Single Purge Acknowledgement sent once all cancels have been pro- cessed. Single Purge Acknowledgement will contain Mass Cancel Id (7695)and Cancelled Order Count (7696). Mass Cancel Id (7695)must be specified or the Purge Request will be rejected. B=Bothindividual Execution Reportsandsingle Purge Acknowledgement. Also requires Mass Cancel Id (7695) to be specified or the Purge Re- quest will be rejected. 3rd Character : Lockout Instruction N = (Default) No lockout L = Lockout until corresponding Risk Reset received. Lockout can be used only with clearing firm Filter set to ”F”, otherwise the Purge Request will be rejected. Lockout will apply to all new orders and cancel/replace orders for the clearing firm (and symbol or Custom- Group Id (7699), if specified). A self-imposed lockout can be released using the Risk Reset (7692) field of the New Order Single message.</Description>
+        </Field>
+        <Field>
+          <Tag>7695</Tag>
+          <Name>MassCancelID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>This field will be echoed back in the resulting Purge Acknowledgement when the second character of Mass Cancel Inst (7700) is set to ”S” or ”B”. Purgerequestscontaininga Mass Cancel ID thatiscurrentlyoutstandingwill be rejected.</Description>
+        </Field>
+        <Field>
+          <Tag>48</Tag>
+          <Name>SecurityID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>ISIN, or RIC if IDSource (22) is set.</Description>
+        </Field>
+        <Field>
+          <Tag>22</Tag>
+          <Name>IDSource</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Values supported by Cboe: 4 = ISIN 5 = RIC Required if Symbol (55) is not set.</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Security symbol. See Symbology (p. 5) for additional notes.</Description>
+        </Field>
+        <Field>
+          <Tag>207</Tag>
+          <Name>SecurityExchange</Name>
+          <Required>N</Required>
+          <Type>Exchange</Type>
+          <Description>Required when IDSource (22) = 4 (ISIN).</Description>
+        </Field>
+        <Field>
+          <Tag>15</Tag>
+          <Name>Currency</Name>
+          <Required>N</Required>
+          <Type>Currency</Type>
+          <Description>Required if IDSource (22) = 4 (ISIN). If Currency (15) is included when other symbology is used, it must match the currency expected by Cboe for the given symbol.</Description>
+        </Field>
+        <Field>
+          <Tag>7698</Tag>
+          <Name>CustomGroupIDCnt</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Number of custom group IDs. Must be between 1 and 10.</Description>
+        </Field>
+        <Field>
+          <Tag>7699</Tag>
+          <Name>CustomGroupID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Custom identifier for a group of orders.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Purge Acknowledgement (8) -->
+    <Message>
+      <Name>Purge Acknowledgement</Name>
+      <MsgType>8</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>20</Tag>
+          <Name>ExecTransType</Name>
+          <Required>N</Required>
+          <Type>char</Type>
+          <Description>3 = Status</Description>
+        </Field>
+        <Field>
+          <Tag>150</Tag>
+          <Name>ExecType</Name>
+          <Required>N</Required>
+          <Type>char</Type>
+          <Description>M = Mass Cancel Complete</Description>
+        </Field>
+        <Field>
+          <Tag>7695</Tag>
+          <Name>MassCancelID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Copied from the incoming Purge Request.</Description>
+        </Field>
+        <Field>
+          <Tag>7696</Tag>
+          <Name>CancelledOrderCount</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Number of orders cancelled from a Purge Request with the specified Mass- Cancel ID</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Purge Reject (9) -->
+    <Message>
+      <Name>Purge Reject</Name>
+      <MsgType>9</MsgType>
+      <Category>app</Category>
+      <Fields>
+        <Field>
+          <Tag>39</Tag>
+          <Name>OrdStatus</Name>
+          <Required>N</Required>
+          <Type>char</Type>
+          <Description>8 = Rejected</Description>
+        </Field>
+        <Field>
+          <Tag>434</Tag>
+          <Name>CxlRejResponseTo</Name>
+          <Required>N</Required>
+          <Type>char</Type>
+          <Description>1 = Cancel</Description>
+        </Field>
+        <Field>
+          <Tag>102</Tag>
+          <Name>CxlRejReason</Name>
+          <Required>N</Required>
+          <Type>int</Type>
+          <Description>2 = Broker Option</Description>
+        </Field>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Free-form text message.</Description>
+        </Field>
+        <Field>
+          <Tag>7695</Tag>
+          <Name>MassCancelID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Copied from the incoming Purge Request.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+  </Messages>
+
+  <Values>
+    <!-- BeginString (8) statics. Source: "FIX.4.2 or FIX.4.4 Must be the first field in the message. FIX 4.4 only available if the port is dedicated for trade reporting purposes." -->
+    <Value>
+      <Type>BeginString</Type>
+      <Enum>FIX.4.2</Enum>
+      <Kind>Static</Kind>
+      <Description>FIX 4.2</Description>
+    </Value>
+    <Value>
+      <Type>BeginString</Type>
+      <Enum>FIX.4.4</Enum>
+      <Kind>Static</Kind>
+      <Description>FIX 4.4</Description>
+    </Value>
+
+    <!-- AlgorithmicTrade Indicator -->
+    <Value>
+      <Type>AlgorithmicTrade Indicator</Type>
+      <Enum>0</Enum>
+      <Description>No algorithm was involved (the default).</Description>
+    </Value>
+
+    <!-- BookingType -->
+    <Value>
+      <Type>BookingType</Type>
+      <Enum>0</Enum>
+      <Description>Regular (default)</Description>
+    </Value>
+
+    <!-- CancelOrigOnReject -->
+    <Value>
+      <Type>CancelOrigOnReject</Type>
+      <Enum>N</Enum>
+      <Description>Leave original order alone (default)</Description>
+    </Value>
+
+    <!-- CentralCounterparty -->
+    <Value>
+      <Type>CentralCounterparty</Type>
+      <Enum>EMCF</Enum>
+      <Description>Cboe Clear</Description>
+    </Value>
+    <Value>
+      <Type>CentralCounterparty</Type>
+      <Enum>XCLR</Enum>
+      <Description>SIX x-clear</Description>
+    </Value>
+
+    <!-- CxlRejReason -->
+    <Value>
+      <Type>CxlRejReason</Type>
+      <Enum>0</Enum>
+      <Description>Too Late to Cancel</Description>
+    </Value>
+    <Value>
+      <Type>CxlRejReason</Type>
+      <Enum>3</Enum>
+      <Description>Already Pending Cancel or Pending Replace</Description>
+    </Value>
+    <Value>
+      <Type>CxlRejReason</Type>
+      <Enum>2</Enum>
+      <Description>Broker Option</Description>
+    </Value>
+
+    <!-- CxlRejResponseTo -->
+    <Value>
+      <Type>CxlRejResponseTo</Type>
+      <Enum>1</Enum>
+      <Description>Cancel</Description>
+    </Value>
+
+    <!-- DisplayIndicator -->
+    <Value>
+      <Type>DisplayIndicator</Type>
+      <Enum>X</Enum>
+      <Description>Displayed Order (default)</Description>
+    </Value>
+
+    <!-- ExecInst -->
+    <Value>
+      <Type>ExecInst</Type>
+      <Enum>P</Enum>
+      <Description>Market Peg (peg buy to PBBO offer, peg sell to PBBO bid)</Description>
+    </Value>
+    <Value>
+      <Type>ExecInst</Type>
+      <Enum>M</Enum>
+      <Description>Midpoint (peg to PBBO midpoint)</Description>
+    </Value>
+
+    <!-- ExecMethod -->
+    <Value>
+      <Type>ExecMethod</Type>
+      <Enum>0</Enum>
+      <Description>Unspecified (default)</Description>
+    </Value>
+    <Value>
+      <Type>ExecMethod</Type>
+      <Enum>2</Enum>
+      <Description>Automated</Description>
+    </Value>
+
+    <!-- ExecRestatement Reason -->
+    <Value>
+      <Type>ExecRestatement Reason</Type>
+      <Enum>5</Enum>
+      <Description>Partial decline of Order Qty</Description>
+    </Value>
+
+    <!-- ExecTransType -->
+    <Value>
+      <Type>ExecTransType</Type>
+      <Enum>0</Enum>
+      <Description>New</Description>
+    </Value>
+    <Value>
+      <Type>ExecTransType</Type>
+      <Enum>1</Enum>
+      <Description>Cancel</Description>
+    </Value>
+    <Value>
+      <Type>ExecTransType</Type>
+      <Enum>3</Enum>
+      <Description>Status</Description>
+    </Value>
+
+    <!-- ExecType -->
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>F</Enum>
+      <Description>Trade</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>0</Enum>
+      <Description>New (acknowledgement of new order)</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>2</Enum>
+      <Description>Fill</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>5</Enum>
+      <Description>Replaced</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>M</Enum>
+      <Description>Mass Cancel Complete</Description>
+    </Value>
+
+    <!-- ExtExecInst -->
+    <Value>
+      <Type>ExtExecInst</Type>
+      <Enum>N</Enum>
+      <Description>None</Description>
+    </Value>
+    <Value>
+      <Type>ExtExecInst</Type>
+      <Enum>R</Enum>
+      <Description>Retail Order</Description>
+    </Value>
+
+    <!-- IDSource -->
+    <Value>
+      <Type>IDSource</Type>
+      <Enum>4</Enum>
+      <Description>ISIN</Description>
+    </Value>
+
+    <!-- IntraFirmTradeIndicator -->
+    <Value>
+      <Type>IntraFirmTradeIndicator</Type>
+      <Enum>N</Enum>
+      <Description>Not an intra-group transaction (default)</Description>
+    </Value>
+
+    <!-- LastCapacity -->
+    <Value>
+      <Type>LastCapacity</Type>
+      <Enum>1</Enum>
+      <Description>Agent (maps to ’AOTC’)</Description>
+    </Value>
+    <Value>
+      <Type>LastCapacity</Type>
+      <Enum>4</Enum>
+      <Description>Principal (maps to ’DEAL’)</Description>
+    </Value>
+
+    <!-- MassCancelInst -->
+    <Value>
+      <Type>MassCancelInst</Type>
+      <Enum>A</Enum>
+      <Description>No filtering by clearing firm is performed.</Description>
+    </Value>
+
+    <!-- MatchType -->
+    <Value>
+      <Type>MatchType</Type>
+      <Enum>3</Enum>
+      <Description>Trade Reporting (On-Exchange).</Description>
+    </Value>
+
+    <!-- OrdRejReason -->
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>0</Enum>
+      <Description>Broker Option</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>2</Enum>
+      <Description>Exchange Closed</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>5</Enum>
+      <Description>Unknown Order</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>8</Enum>
+      <Description>Stale Order</Description>
+    </Value>
+
+    <!-- OrdStatus -->
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>0</Enum>
+      <Description>New</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>2</Enum>
+      <Description>Filled</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>5</Enum>
+      <Description>Replaced</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>8</Enum>
+      <Description>Rejected</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>E</Enum>
+      <Description>Pending Replace</Description>
+    </Value>
+
+    <!-- OrdType -->
+    <Value>
+      <Type>OrdType</Type>
+      <Enum>1</Enum>
+      <Description>Market</Description>
+    </Value>
+
+    <!-- OrderCapacity -->
+    <Value>
+      <Type>OrderCapacity</Type>
+      <Enum>A</Enum>
+      <Description>Agency (maps to ’AOTC’)</Description>
+    </Value>
+    <Value>
+      <Type>OrderCapacity</Type>
+      <Enum>R</Enum>
+      <Description>Riskless (maps to ’MTCH’)</Description>
+    </Value>
+
+    <!-- OrderCategory -->
+    <Value>
+      <Type>OrderCategory</Type>
+      <Enum>3</Enum>
+      <Description>Privately Negotiated Trade</Description>
+    </Value>
+
+    <!-- PartyID -->
+    <Value>
+      <Type>PartyID</Type>
+      <Enum>0</Enum>
+      <Description>NONE (No Client for this order)</Description>
+    </Value>
+
+    <!-- PartyRole -->
+    <Value>
+      <Type>PartyRole</Type>
+      <Enum>3</Enum>
+      <Description>Client ID</Description>
+    </Value>
+    <Value>
+      <Type>PartyRole</Type>
+      <Enum>122</Enum>
+      <Description>Investor ID (the Investment Decision Maker)</Description>
+    </Value>
+    <Value>
+      <Type>PartyRole</Type>
+      <Enum>14</Enum>
+      <Description>Giveup Clearing Firm (Drop only)</Description>
+    </Value>
+    <Value>
+      <Type>PartyRole</Type>
+      <Enum>1</Enum>
+      <Description>Executing Firm</Description>
+    </Value>
+    <Value>
+      <Type>PartyRole</Type>
+      <Enum>6</Enum>
+      <Description>Introducing Firm (Drop only)</Description>
+    </Value>
+
+    <!-- PartyRoleQualifier -->
+    <Value>
+      <Type>PartyRoleQualifier</Type>
+      <Enum>0</Enum>
+      <Description>None (applicable only for the reserved Party IDs)</Description>
+    </Value>
+    <Value>
+      <Type>PartyRoleQualifier</Type>
+      <Enum>23</Enum>
+      <Description>Firm or legal entity (LEI) (applicable to Party Role value 3)</Description>
+    </Value>
+
+    <!-- PartySubIDType -->
+    <Value>
+      <Type>PartySubIDType</Type>
+      <Enum>4001</Enum>
+      <Description>Bats Client Id For Introducing Broker</Description>
+    </Value>
+
+    <!-- PreventParticipant Match -->
+    <Value>
+      <Type>PreventParticipant Match</Type>
+      <Enum>N</Enum>
+      <Description>Cancel Newest</Description>
+    </Value>
+    <Value>
+      <Type>PreventParticipant Match</Type>
+      <Enum>B</Enum>
+      <Description>Cancel Both</Description>
+    </Value>
+    <Value>
+      <Type>PreventParticipant Match</Type>
+      <Enum>M</Enum>
+      <Description>Prevent Match at Trading Firm Level</Description>
+    </Value>
+
+    <!-- RiskReset -->
+    <Value>
+      <Type>RiskReset</Type>
+      <Enum>S</Enum>
+      <Description>Symbol level lockout reset</Description>
+    </Value>
+
+    <!-- RootPartyIDSource -->
+    <Value>
+      <Type>RootPartyIDSource</Type>
+      <Enum>D</Enum>
+      <Description>Proprietary / Custom Code</Description>
+    </Value>
+
+    <!-- RootPartyRole -->
+    <Value>
+      <Type>RootPartyRole</Type>
+      <Enum>10</Enum>
+      <Description>Settlement Location</Description>
+    </Value>
+    <Value>
+      <Type>RootPartyRole</Type>
+      <Enum>6</Enum>
+      <Description>Introducing Firm</Description>
+    </Value>
+
+    <!-- RoutingInst -->
+    <Value>
+      <Type>RoutingInst</Type>
+      <Enum>B</Enum>
+      <Description>Cboe Only (default)</Description>
+    </Value>
+    <Value>
+      <Type>RoutingInst</Type>
+      <Enum>U</Enum>
+      <Description>Dark Sweep (interbook)</Description>
+    </Value>
+    <Value>
+      <Type>RoutingInst</Type>
+      <Enum>W</Enum>
+      <Description>Lit Sweep (interbook, best-price)</Description>
+    </Value>
+    <Value>
+      <Type>RoutingInst</Type>
+      <Enum>BD</Enum>
+      <Description>Cboe Dark Book Only (hidden midpoint peg orders only)</Description>
+    </Value>
+    <Value>
+      <Type>RoutingInst</Type>
+      <Enum>BP</Enum>
+      <Description>Cboe Periodic Auction Book</Description>
+    </Value>
+    <Value>
+      <Type>RoutingInst</Type>
+      <Enum>BU</Enum>
+      <Description>Cboe Closing Cross</Description>
+    </Value>
+    <Value>
+      <Type>RoutingInst</Type>
+      <Enum>N</Enum>
+      <Description>None (implied if 3rd char is not specified)</Description>
+    </Value>
+
+    <!-- SecondaryTrdType -->
+    <Value>
+      <Type>SecondaryTrdType</Type>
+      <Enum>61</Enum>
+      <Description>RFMD Give-up Trade (MMT Level 3.13 field ‘Give-up’, GIVE)</Description>
+    </Value>
+
+    <!-- SettlType -->
+    <Value>
+      <Type>SettlType</Type>
+      <Enum>0</Enum>
+      <Description>Regular (default)</Description>
+    </Value>
+
+    <!-- Side -->
+    <Value>
+      <Type>Side</Type>
+      <Enum>1</Enum>
+      <Description>Buy</Description>
+    </Value>
+    <Value>
+      <Type>Side</Type>
+      <Enum>5</Enum>
+      <Description>Sell Short</Description>
+    </Value>
+    <Value>
+      <Type>Side</Type>
+      <Enum>H</Enum>
+      <Description>Sell Undisclosed</Description>
+    </Value>
+
+    <!-- TertiaryTrdType -->
+    <Value>
+      <Type>TertiaryTrdType</Type>
+      <Enum>61</Enum>
+      <Description>RFMD Give-up Trade (MMT Level 3.13 field ‘Give-up’, GIVE)</Description>
+    </Value>
+
+    <!-- Text -->
+    <Value>
+      <Type>Text</Type>
+      <Enum>A</Enum>
+      <Description>Admin</Description>
+    </Value>
+    <Value>
+      <Type>Text</Type>
+      <Enum>H</Enum>
+      <Description>Halted</Description>
+    </Value>
+    <Value>
+      <Type>Text</Type>
+      <Enum>k</Enum>
+      <Description>Pending periodic auction (BXE and DXE only)</Description>
+    </Value>
+    <Value>
+      <Type>Text</Type>
+      <Enum>N</Enum>
+      <Description>Ran Out of Liquidity to Execute Against</Description>
+    </Value>
+    <Value>
+      <Type>Text</Type>
+      <Enum>P</Enum>
+      <Description>Can’t Modify an Order That is Pending Fill</Description>
+    </Value>
+    <Value>
+      <Type>Text</Type>
+      <Enum>R</Enum>
+      <Description>Routing Unavailable</Description>
+    </Value>
+    <Value>
+      <Type>Text</Type>
+      <Enum>U</Enum>
+      <Description>User Requested</Description>
+    </Value>
+    <Value>
+      <Type>Text</Type>
+      <Enum>W</Enum>
+      <Description>Add Liquidity Only Order Would Remove</Description>
+    </Value>
+    <Value>
+      <Type>Text</Type>
+      <Enum>Y</Enum>
+      <Description>Symbol Not Supported</Description>
+    </Value>
+    <Value>
+      <Type>Text</Type>
+      <Enum>l</Enum>
+      <Description>Large in Scale</Description>
+    </Value>
+    <Value>
+      <Type>Text</Type>
+      <Enum>m</Enum>
+      <Description>Market Access Risk Limit Exceeded</Description>
+    </Value>
+    <Value>
+      <Type>Text</Type>
+      <Enum>p</Enum>
+      <Description>Static Collar Breach</Description>
+    </Value>
+    <Value>
+      <Type>Text</Type>
+      <Enum>v</Enum>
+      <Description>Mi FID II Double Cap related</Description>
+    </Value>
+    <Value>
+      <Type>Text</Type>
+      <Enum>Z</Enum>
+      <Description>Unforseen Reason</Description>
+    </Value>
+    <Value>
+      <Type>Text</Type>
+      <Enum>o</Enum>
+      <Description>Max Open Trade Count Exceeded</Description>
+    </Value>
+
+    <!-- TimeInForce -->
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>0</Enum>
+      <Description>Day</Description>
+    </Value>
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>2</Enum>
+      <Description>At The Open</Description>
+    </Value>
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>6</Enum>
+      <Description>GTD (expires at specified Expire Time for a specific day)</Description>
+    </Value>
+
+    <!-- TradeLiquidity Indicator -->
+    <Value>
+      <Type>TradeLiquidity Indicator</Type>
+      <Enum>A</Enum>
+      <Description>Added Liquidity</Description>
+    </Value>
+    <Value>
+      <Type>TradeLiquidity Indicator</Type>
+      <Enum>C</Enum>
+      <Description>Auction</Description>
+    </Value>
+    <Value>
+      <Type>TradeLiquidity Indicator</Type>
+      <Enum>P</Enum>
+      <Description>Periodic Auction</Description>
+    </Value>
+    <Value>
+      <Type>TradeLiquidity Indicator</Type>
+      <Enum>D</Enum>
+      <Description>Cboe Dark Pool</Description>
+    </Value>
+    <Value>
+      <Type>TradeLiquidity Indicator</Type>
+      <Enum>T</Enum>
+      <Description>Cboe Dark Pool IOC order</Description>
+    </Value>
+    <Value>
+      <Type>TradeLiquidity Indicator</Type>
+      <Enum>I</Enum>
+      <Description>Hidden Liquidity that was price improved</Description>
+    </Value>
+    <Value>
+      <Type>TradeLiquidity Indicator</Type>
+      <Enum>O</Enum>
+      <Description>Open Auction</Description>
+    </Value>
+
+    <!-- TradePublishIndicator -->
+    <Value>
+      <Type>TradePublishIndicator</Type>
+      <Enum>1</Enum>
+      <Description>Publish Trade Immediately</Description>
+    </Value>
+
+    <!-- TradeReportTransType -->
+    <Value>
+      <Type>TradeReportTransType</Type>
+      <Enum>0</Enum>
+      <Description>New</Description>
+    </Value>
+    <Value>
+      <Type>TradeReportTransType</Type>
+      <Enum>2</Enum>
+      <Description>Replace</Description>
+    </Value>
+
+    <!-- TrdRegPublication Reasons -->
+    <Value>
+      <Type>TrdRegPublication Reasons</Type>
+      <Enum>3</Enum>
+      <Description>Reference Price (Dark Book) (RFPT)</Description>
+    </Value>
+    <Value>
+      <Type>TrdRegPublication Reasons</Type>
+      <Enum>0</Enum>
+      <Description>Negotiated Trade in Liquid Instrument (NLIQ)</Description>
+    </Value>
+    <Value>
+      <Type>TrdRegPublication Reasons</Type>
+      <Enum>6</Enum>
+      <Description>Deferral for Large in Scale (LRGS)</Description>
+    </Value>
+
+    <!-- TrdType -->
+    <Value>
+      <Type>TrdType</Type>
+      <Enum>0</Enum>
+      <Description>Regular Trade</Description>
+    </Value>
+
+  </Values>
+
+</OmiFixPdf>

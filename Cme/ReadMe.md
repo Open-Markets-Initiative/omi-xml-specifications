@@ -24,6 +24,7 @@
 | Globex | Mdp3 | Sbe | 1.6 | [files](Cme.Globex.Mdp3.Sbe.v1.6/) |
 | Globex | Mdp3 | Sbe | 1.8 | [files](Cme.Globex.Mdp3.Sbe.v1.8/) |
 | Globex | Mdp3 | Sbe | 1.9 | [files](Cme.Globex.Mdp3.Sbe.v1.9/) |
+| Globex | SessionMgmt | Sbe | 0.2 | [files](Cme.Globex.SessionMgmt.Sbe.v0.2/) |
 | Globex | Settlements | Sbe | 7.0 | [files](Cme.Globex.Settlements.Sbe.v7.0/) |
 | Globex | Streamlined | Sbe | 5.8 | [files](Cme.Globex.Streamlined.Sbe.v5.8/) |
 | Globex | Streamlined | Sbe | 5.9 | [files](Cme.Globex.Streamlined.Sbe.v5.9/) |
