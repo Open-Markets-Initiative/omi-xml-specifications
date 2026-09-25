@@ -141,10 +141,8 @@
 | PsxEquities | TotalView | Itch | 5.0.2018 | [files](Nasdaq.PsxEquities.TotalView.Itch.v5.0.2018/) |
 | Uqdf | Output | Utp | 1.5 | [files](Nasdaq.Uqdf.Output.Utp.v1.5/) |
 | Uqdf | Output | Utp | 3.0.c | [files](Nasdaq.Uqdf.Output.Utp.v3.0.c/) |
-| Uqdf | Output | Utp | 3.0.Hft | [files](Nasdaq.Uqdf.Output.Utp.v3.0.Hft/) |
 | Utdf | Output | Utp | 1.5 | [files](Nasdaq.Utdf.Output.Utp.v1.5/) |
 | Utdf | Output | Utp | 3.0.c | [files](Nasdaq.Utdf.Output.Utp.v3.0.c/) |
-| Utdf | Output | Utp | 3.0.Hft | [files](Nasdaq.Utdf.Output.Utp.v3.0.Hft/) |
 | Utp | Input | Utp | 4.0 | [files](Nasdaq.Utp.Input.Utp.v4.0/) |
 | Utp | Snapshot | Utp | 3.0 | [files](Nasdaq.Utp.Snapshot.Utp.v3.0/) |
 
