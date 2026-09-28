@@ -1,0 +1,1906 @@
+<OmiFixPdf>
+
+  <!--
+  Nasdaq Nordic INET FIX Off-Exchange (APA) Trade Reporting, revision 1.02.5 (2 Feb 2026), INET Nordic.
+
+  Two-party (pre-locked-in) reporting of off-exchange (OTC and systematic internaliser) trades
+  under the Nasdaq Approved Publication Arrangement (APA), with Trade Capture Report [AE] and
+  Trade Capture Report Ack [AR]. FIX 5.0 SP2 (EP228) application messages over the Nasdaq Nordic
+  FIXT 1.1 Transport Layer (revision 1.00.4), whose standard header, trailer and session level
+  messages are transcribed here from that document. BeginString [8] = FIXT.1.1,
+  TargetCompID [56] = INORD and TargetSubID [57] = T; outbound messages relay
+  SenderSubID [50] = T. The same connection can carry on-exchange and APA trade reports.
+  MMT references are MMT 4.1.
+
+  The client sent Trade Capture Report (section 4.1.1) and the venue sent Trade Capture Report
+  (section 4.2.2) share MsgType AE and are told apart by Origin.
+
+  Standard FIX tags carry their FIX 5.0 SP2 data type. This specification has no data type
+  appendix: TradeType [20202] is typed Char as in the On-Exchange Trade Reporting Appendix C.
+  Sizes are the Appendix B max lengths, including the header CompID/SubID lengths (4 and 9),
+  which differ from the FIXT appendix 6.1 INET lengths (6). LastPx [31] and LastQty [32] are
+  18/17: eighteen digits with at most seventeen decimals (section 3.1.2 and 3.1.3), so no fixed
+  decimal count is declared. SecurityIDSource [22] and StrikeValue [968] are named as printed.
+
+  Printed defects carried through: TrdRptStatus [939] has no Req value in section 4.2.1 and is
+  transcribed as not required. The Ack (section 4.2.1) and outbound Trade Capture Report
+  (section 4.2.2) list neither CrdRtg [255] nor, in the outbound report, TotNumTrdRpts [748].
+  -->
+
+  <Header>
+    <Fields>
+      <Field>
+        <Tag>8</Tag>
+        <Name>BeginString</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+        <Description>FIXT.1.1 (Always unencrypted, must be first field in message)</Description>
+      </Field>
+      <Field>
+        <Tag>9</Tag>
+        <Name>BodyLength</Name>
+        <Required>Y</Required>
+        <Type>Length</Type>
+        <Fixed>Y</Fixed>
+        <Description>(Always unencrypted, must be second field in message)</Description>
+      </Field>
+      <Field>
+        <Tag>35</Tag>
+        <Name>MsgType</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+        <Description>(Always unencrypted, must be third field in message)</Description>
+      </Field>
+      <Field>
+        <Tag>34</Tag>
+        <Name>MsgSeqNum</Name>
+        <Required>Y</Required>
+        <Type>SeqNum</Type>
+        <Description>Integer message sequence number. Sequence numbers are initialized at the start of each FIX session starting at 1 (one) and increment throughout the session.</Description>
+      </Field>
+      <Field>
+        <Tag>43</Tag>
+        <Name>PossDupFlag</Name>
+        <Required>N</Required>
+        <Type>Boolean</Type>
+        <Description>Always required for retransmitted messages, whether prompted by the sending system or as the result of a resend request. Indicates possible retransmission of message with this sequence number</Description>
+      </Field>
+      <Field>
+        <Tag>49</Tag>
+        <Name>SenderCompID</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Size>4</Size>
+        <Description>Inbound to Nasdaq: SenderCompID as assigned by Nasdaq Nordic (MPID in INET, FIX Session ID in NDTS). Outbound from Nasdaq: From 56 on the original inbound message.</Description>
+      </Field>
+      <Field>
+        <Tag>50</Tag>
+        <Name>SenderSubID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Size>9</Size>
+        <Description>Inbound to Nasdaq: Trader ID (User ID). This tag is not required on session level messages but is required for application level messages. Outbound from Nasdaq: INET: Indicator to denote which host system was involved (S = Order message, T = Trade Reporting message). NDTS: N/A</Description>
+      </Field>
+      <Field>
+        <Tag>52</Tag>
+        <Name>SendingTime</Name>
+        <Required>Y</Required>
+        <Type>UTCTimestamp</Type>
+        <Description>UTC. Outbound from Nasdaq: Please note that this time is the time the message left the FIX application. It has no relevancy to execution time, reject time, or cancel time in the destination systems.</Description>
+      </Field>
+      <Field>
+        <Tag>56</Tag>
+        <Name>TargetCompID</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Size>4</Size>
+        <Description>Inbound to Nasdaq: As per the information provided by Nasdaq Nordic. Outbound from Nasdaq: From 49 on the original inbound message.</Description>
+      </Field>
+      <Field>
+        <Tag>57</Tag>
+        <Name>TargetSubID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Size>9</Size>
+        <Description>Inbound to Nasdaq: INET: Required 1-character that identifies this entry as an order entry or trade reporting message (S = Order message, T = Trade Reporting message). NDTS: Optional indicator to denote client software version. Outbound from Nasdaq: Receiving party's Trader ID (User ID), if this message is a query/response message. From 50 on the original inbound message. Not specified for On-Behalf-Of message responses. This tag is not required on session level messages.</Description>
+      </Field>
+      <Field>
+        <Tag>97</Tag>
+        <Name>PossResend</Name>
+        <Required>N</Required>
+        <Type>Boolean</Type>
+        <Description>Inbound to Nasdaq: Ignored. Outbound from Nasdaq: N/A</Description>
+      </Field>
+      <Field>
+        <Tag>115</Tag>
+        <Name>OnBehalfOfCompID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Size>4</Size>
+        <Description>Inbound to Nasdaq: Service Bureaus use this field to submit their customer's MPID. This value will be returned to you in tag 128 on the outbound message. Please note that while it is possible for you submit a chain of transactions with inconsistent values for this tag in different messages, you are strongly advised not to do so. Outbound from Nasdaq: N/A</Description>
+      </Field>
+      <Field>
+        <Tag>116</Tag>
+        <Name>OnBehalfOfSubID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Size>9</Size>
+        <Description>Inbound to Nasdaq: When applicable, this tag holds the User ID (Trader ID) for the on behalf of firm. Outbound from Nasdaq: N/A</Description>
+      </Field>
+      <Field>
+        <Tag>122</Tag>
+        <Name>OrigSendingTime</Name>
+        <Required>N</Required>
+        <Type>UTCTimestamp</Type>
+        <Description>Required for message resent as a result of a ResendRequest. If data is not available set to same value as SendingTime. UTC</Description>
+      </Field>
+      <Field>
+        <Tag>128</Tag>
+        <Name>DeliverToCompID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Size>4</Size>
+        <Description>Inbound to Nasdaq: N/A. Outbound from Nasdaq: For drop and service bureau on behalf of messages, this field contains the service bureau's customer's MPID.</Description>
+      </Field>
+      <Field>
+        <Tag>129</Tag>
+        <Name>DeliverToSubID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Size>9</Size>
+        <Description>Inbound to Nasdaq: N/A. Outbound from Nasdaq: For drop and service bureau on behalf of messages, this field contains the value entered in tag 116 on the inbound message.</Description>
+      </Field>
+      <Field>
+        <Tag>145</Tag>
+        <Name>DeliverToLocationID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Description>Inbound to Nasdaq: N/A. Outbound from Nasdaq: For drop messages, this field (if provided) specify the account / port ID used when originally sending the message. Use together with OrigClOrdID [41] and DeliverToCompID [128] to chain an order modification to the original order.</Description>
+      </Field>
+    </Fields>
+  </Header>
+
+  <Trailer>
+    <Fields>
+      <Field>
+        <Tag>10</Tag>
+        <Name>CheckSum</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+      </Field>
+    </Fields>
+  </Trailer>
+
+  <Messages>
+
+    <!-- Reject (3) FIXT 1.1 Transport Layer section 5.2 -->
+    <Message>
+      <Name>Reject</Name>
+      <MsgType>3</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>45</Tag>
+          <Name>RefSeqNum</Name>
+          <Required>Y</Required>
+          <Type>SeqNum</Type>
+          <Description>MsgSeqNum of rejected message</Description>
+        </Field>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Where possible, coded message that includes an indicator and text to explain reason for rejection: Invalid tag number; Required tag missing; Tag not defined for this message type; Undefined Tag; Tag specified without a value; Value is incorrect (out of range) for tag; Incorrect data format for value; Signature problem; Tag CompID problem; SendingTime accuracy problem; Invalid value for MsgType tag; Repeating group fields out of order; Incorrect number in group count for repeating group</Description>
+        </Field>
+        <Field>
+          <Tag>371</Tag>
+          <Name>RefTagID</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>The tag number of the FIX field being referenced.</Description>
+        </Field>
+        <Field>
+          <Tag>372</Tag>
+          <Name>RefMsgType</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>The MsgType of the FIX message being referenced.</Description>
+        </Field>
+        <Field>
+          <Tag>373</Tag>
+          <Name>SessionRejectReason</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Code to identify reason for a session-level Reject message.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Heartbeat (0) FIXT 1.1 Transport Layer section 5.3 -->
+    <Message>
+      <Name>Heartbeat</Name>
+      <MsgType>0</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>112</Tag>
+          <Name>TestReqID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Required when the heartbeat is the result of a Test Request message. It is the TestReqID received from the Test Request message.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Logon (A) FIXT 1.1 Transport Layer section 5.4 -->
+    <Message>
+      <Name>Logon</Name>
+      <MsgType>A</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>98</Tag>
+          <Name>EncryptMethod</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Not supported. Must be 0.</Description>
+        </Field>
+        <Field>
+          <Tag>108</Tag>
+          <Name>HeartBtInt</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Heartbeat Interval in seconds - should be greater than 10 and less than or equal to 60.</Description>
+        </Field>
+        <Field>
+          <Tag>1137</Tag>
+          <Name>DefaultApplVerID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>The default version of FIX messages used in this session.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Test Request (1) FIXT 1.1 Transport Layer section 5.5 -->
+    <Message>
+      <Name>Test Request</Name>
+      <MsgType>1</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>112</Tag>
+          <Name>TestReqID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Date/Time combination</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Resend Request (2) FIXT 1.1 Transport Layer section 5.6 -->
+    <Message>
+      <Name>Resend Request</Name>
+      <MsgType>2</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>7</Tag>
+          <Name>BeginSeqNo</Name>
+          <Required>Y</Required>
+          <Type>SeqNum</Type>
+          <Description>Beginning sequence number of Requested Message</Description>
+        </Field>
+        <Field>
+          <Tag>16</Tag>
+          <Name>EndSeqNo</Name>
+          <Required>Y</Required>
+          <Type>SeqNum</Type>
+          <Description>Ending sequence number of Requested Message</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Sequence Reset (4) FIXT 1.1 Transport Layer section 5.7 -->
+    <Message>
+      <Name>Sequence Reset</Name>
+      <MsgType>4</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>36</Tag>
+          <Name>NewSeqNo</Name>
+          <Required>Y</Required>
+          <Type>SeqNum</Type>
+          <Description>Next expected sequence number</Description>
+        </Field>
+        <Field>
+          <Tag>123</Tag>
+          <Name>GapFillFlag</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Logout (5) FIXT 1.1 Transport Layer section 5.8 -->
+    <Message>
+      <Name>Logout</Name>
+      <MsgType>5</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Trade Capture Report (AE) section 4.1.1, inbound trade report, addendum or trade break -->
+    <Message>
+      <Name>Trade Capture Report</Name>
+      <MsgType>AE</MsgType>
+      <Category>app</Category>
+      <Origin>Client</Origin>
+      <Fields>
+        <Field>
+          <Tag>571</Tag>
+          <Name>TradeReportID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Size>20</Size>
+          <Description>Unique identifier of a trade capture report. Must be unique per day per connector across all messages. 20-character alphanumeric. Price and quantity validations may be bypassed by resubmitting a previously rejected trade report with the same TradeReportID.</Description>
+        </Field>
+        <Field>
+          <Tag>856</Tag>
+          <Name>TradeReportType</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Used to identify message type, type of trade report.</Description>
+        </Field>
+        <Field>
+          <Tag>1123</Tag>
+          <Name>TradeHandlingInstr</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Specifies how the TradeCaptureReport should be handled by the respondent.</Description>
+        </Field>
+        <Field>
+          <Tag>1003</Tag>
+          <Name>TradeID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Size>10</Size>
+          <Description>Required for trade break requests, [856] = 7 and not applicable in other cases. Specifies the identifier of the locked-in trade to be broken.</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Size>6</Size>
+          <Description>Valid value: [N/A]</Description>
+        </Field>
+        <Field>
+          <Tag>22</Tag>
+          <Name>SecurityIDSource</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+        </Field>
+        <Field>
+          <Tag>48</Tag>
+          <Name>SecurityID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Size>12</Size>
+          <Description>Code for the instrument.</Description>
+        </Field>
+        <Field>
+          <Tag>15</Tag>
+          <Name>Currency</Name>
+          <Required>Y</Required>
+          <Type>Currency</Type>
+          <Size>3</Size>
+          <Description>Currency in which the price is expressed.</Description>
+        </Field>
+        <Field>
+          <Tag>31</Tag>
+          <Name>LastPx</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Size>18</Size>
+          <Description>Price of this fill. Limited to 18 digits and max 17 decimals. Mandatory, except when TradePriceCondiition is 17 (PNDG) or 18 (NOAP) in which case it should not be set</Description>
+        </Field>
+        <Field>
+          <Tag>32</Tag>
+          <Name>LastQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Size>18</Size>
+          <Description>Quantity bought/sold on this transaction. Limited to 18 digits and max 17 decimals. For transactions reported in instruments with MiFIR ID 'BOND' or 'SFPS' the reported value should be equal to transaction Notional Amount.</Description>
+        </Field>
+        <Field>
+          <Tag>423</Tag>
+          <Name>PriceType</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Required for instruments with MIFIR ID: BOND, SFPS and DERV with CFI codes starting with 'FFD', 'SR' and 'JR'. Trades in these instrument types will not be accepted with trade type 'Monetary value'.</Description>
+        </Field>
+        <Field>
+          <Tag>1940</Tag>
+          <Name>AssetType</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>For emission allowances (EMAL) and emission allowance derivatives (DERV|EMAL) only</Description>
+        </Field>
+        <Field>
+          <Tag>1925</Tag>
+          <Name>TradeClearingInstruction</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>If not set (default) - Exclude from central counterpart.</Description>
+        </Field>
+        <Field>
+          <Tag>968</Tag>
+          <Name>StrikeValue</Name>
+          <Required>N</Required>
+          <Type>Float</Type>
+          <Description>Transaction notional amount. Should be populated for Derivatives transactions. (Calculated by Nasdaq on outbound message if not reported).</Description>
+        </Field>
+        <Field>
+          <Tag>947</Tag>
+          <Name>StrikeCurrency</Name>
+          <Required>N</Required>
+          <Type>Currency</Type>
+          <Description>Currency in which the notional is denominated.</Description>
+        </Field>
+        <Field>
+          <Tag>996</Tag>
+          <Name>UnitOfMeasure</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>The unit of measure of the underlying commodity upon which the contract is based.</Description>
+        </Field>
+        <Field>
+          <Tag>1147</Tag>
+          <Name>UnitOfMeasureQty</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Used to indicate the quantity of the underlying commodity unit of measure on which the contract is based.</Description>
+        </Field>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>N</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Time when the message was initiated/released by the trader or the trading system.</Description>
+        </Field>
+        <Group>
+          <Name>NoTrdRegTimestamps</Name>
+          <Required>Y</Required>
+        </Group>
+        <Field>
+          <Tag>1430</Tag>
+          <Name>VenueType</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>Corresponds to MMT Level 1 - Market Mechanism</Description>
+        </Field>
+        <Field>
+          <Tag>574</Tag>
+          <Name>MatchType</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Corresponds to MMT Level 2 - Trading Mode</Description>
+        </Field>
+        <Field>
+          <Tag>828</Tag>
+          <Name>TrdType</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Type of trade. Corresponds to MMT Level 3.1 - Transaction Type: Transaction Category</Description>
+        </Field>
+        <Field>
+          <Tag>20202</Tag>
+          <Name>TradeType</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+        </Field>
+        <Field>
+          <Tag>829</Tag>
+          <Name>TrdSubType</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Corresponds to MMT Level 3.3 - Transaction Type: Agency Cross Trade Indicator. ACTX flag is not applicable from 2026-03-02.</Description>
+        </Field>
+        <Field>
+          <Tag>855</Tag>
+          <Name>SecondaryTrdType</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Type of trade. Used in addition to TrdType [828].</Description>
+        </Field>
+        <Field>
+          <Tag>2896</Tag>
+          <Name>TertiaryTrdType</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Type of trade. Used in addition to TrdType [828] and SecondaryTrdType [855].</Description>
+        </Field>
+        <Group>
+          <Name>NoTradePriceConditions</Name>
+          <Required>N</Required>
+        </Group>
+        <Field>
+          <Tag>2405</Tag>
+          <Name>ExecMethod</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Specifies how the transaction was executed. Corresponds to MMT Level 3.7 - Transaction Type: Off-Book Automated Indicator</Description>
+        </Field>
+        <Field>
+          <Tag>1390</Tag>
+          <Name>TradePublishIndicator</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>By including 1390=2 on the inbound message and not including Tags 2668, 2669, 2670 and 7570, INET will automatically apply deferred publication (for all asset classes). The deferral will be applied from the reported time of agreement (Tag 769). Trades that cannot benefit from a deferred publication will be disseminated immediately. For RTS 1 instruments where the trade notional amount is large enough to be allowed for deferred publication, Nasdaq will determine the applicable deferral and publication time is indicated in outbound RptTime message. Trades are deferred in accordance with RTS 1. From 2026-03-02, trade publication deferrals for bonds will be based on Bond Type, Oustanding Amount, Trade Size and Credit Rating. Deferral durations for instruments with MiFIR ID BOND, SFPS, ETNS and ETCS are listed in section 6 of Nasdaq APA Service Description. For other RTS 2 instruments, Nasdaq determines the applicable deferral on either trade size and/or liquidity status.</Description>
+        </Field>
+        <Group>
+          <Name>NoTrdRegPublications</Name>
+          <Required>N</Required>
+        </Group>
+        <Field>
+          <Tag>1934</Tag>
+          <Name>RegulatoryReportType</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Type of regulatory report. Sovereign Bonds eligible for supplementary volume omission deferral will be get flag 'OMIS' populated automatically if deferred publication has been requested under tag 1390. Corresponds to MMT Level 4.2 - Post Trade Deferral or Enrichment: Type</Description>
+        </Field>
+        <Field>
+          <Tag>475</Tag>
+          <Name>InvestorCountryOfResidence</Name>
+          <Required>N</Required>
+          <Type>Country</Type>
+          <Description>The ISO 366 Country code (2 character) identifying which country the beneficial investor is resident. Defaults to the reporting firms nationality.</Description>
+        </Field>
+        <Field>
+          <Tag>748</Tag>
+          <Name>TotNumTrdRpts</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Integer. Number of trades in package or behind publication of sovereign bond trades benefiting from supplementary deferral under 'AGFW' flag. When publishing Sovereign Bond trades with deferral using supplementary deferral 'Four Weeks Aggregation flag', the trade reporting party need to report the volume weighted price in tag 31, the full aggregated volume in tag 32 and 1934 = 37 'AGFW'.</Description>
+        </Field>
+        <Field>
+          <Tag>7570</Tag>
+          <Name>RptTime</Name>
+          <Required>N</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Requested Publication time. Any requested value in incoming AE message will have priority over Nasdaq determined deferral times.</Description>
+        </Field>
+        <Field>
+          <Tag>570</Tag>
+          <Name>PreviouslyReported</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>Corresponds to MMT Level 5.1 - Reporting Circumstance: Duplication within Jurisdiction</Description>
+        </Field>
+        <Field>
+          <Tag>30</Tag>
+          <Name>LastMkt</Name>
+          <Required>N</Required>
+          <Type>Exchange</Type>
+          <Size>4</Size>
+          <Description>Identification of the third-country trading venue where the transaction was executed (MIC code).</Description>
+        </Field>
+        <Field>
+          <Tag>255</Tag>
+          <Name>CrdRtg</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Size>4</Size>
+          <Description>Used to determine the deferral duration for Corporate, Convertible and Other Bonds issued in EUR, USD and GBP. VarChar(4). If no value is set for reported transactions in the abovementioned bond types, the field will be defaulted to 'IG' (Investment Grade). Trade Reporting parties can either report 'IG' for Investment Grade or 'HY' for High Yield or report the rating. Ratings in table 1 of Nasdaq APA Service Description will be translated accordingly.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Trade Capture Report Ack (AR) section 4.2.1, acknowledgement or reject sent only to the originator of an inbound message -->
+    <Message>
+      <Name>Trade Capture Report Ack</Name>
+      <MsgType>AR</MsgType>
+      <Category>app</Category>
+      <Origin>Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>571</Tag>
+          <Name>TradeReportID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Size>20</Size>
+          <Description>As per the Trade Report</Description>
+        </Field>
+        <Field>
+          <Tag>856</Tag>
+          <Name>TradeReportType</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>As per the Trade Report</Description>
+        </Field>
+        <Field>
+          <Tag>1123</Tag>
+          <Name>TradeHandlingInstr</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>As per the Trade Report</Description>
+        </Field>
+        <Field>
+          <Tag>1003</Tag>
+          <Name>TradeID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Size>10</Size>
+          <Description>As per the Trade Report</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Size>6</Size>
+          <Description>As per the Trade Report</Description>
+        </Field>
+        <Field>
+          <Tag>22</Tag>
+          <Name>SecurityIDSource</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>As per the Trade Report</Description>
+        </Field>
+        <Field>
+          <Tag>48</Tag>
+          <Name>SecurityID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Size>12</Size>
+          <Description>As per the Trade Report</Description>
+        </Field>
+        <Field>
+          <Tag>15</Tag>
+          <Name>Currency</Name>
+          <Required>N</Required>
+          <Type>Currency</Type>
+          <Size>3</Size>
+          <Description>As per the Trade Report</Description>
+        </Field>
+        <Field>
+          <Tag>31</Tag>
+          <Name>LastPx</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Size>18</Size>
+          <Description>As per the Trade Report</Description>
+        </Field>
+        <Field>
+          <Tag>32</Tag>
+          <Name>LastQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Size>18</Size>
+          <Description>As per the Trade Report</Description>
+        </Field>
+        <Field>
+          <Tag>423</Tag>
+          <Name>PriceType</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>As per the Trade Report</Description>
+        </Field>
+        <Field>
+          <Tag>1940</Tag>
+          <Name>AssetType</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>As per the Trade Report</Description>
+        </Field>
+        <Field>
+          <Tag>1925</Tag>
+          <Name>TradeClearingInstruction</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>As per the Trade Report</Description>
+        </Field>
+        <Field>
+          <Tag>968</Tag>
+          <Name>StrikeValue</Name>
+          <Required>N</Required>
+          <Type>Float</Type>
+          <Description>As per the Trade Report</Description>
+        </Field>
+        <Field>
+          <Tag>947</Tag>
+          <Name>StrikeCurrency</Name>
+          <Required>N</Required>
+          <Type>Currency</Type>
+          <Description>As per the Trade Report</Description>
+        </Field>
+        <Field>
+          <Tag>996</Tag>
+          <Name>UnitOfMeasure</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>As per the Trade Report</Description>
+        </Field>
+        <Field>
+          <Tag>1147</Tag>
+          <Name>UnitOfMeasureQty</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>As per the Trade Report</Description>
+        </Field>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>N</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>As per the Trade Report</Description>
+        </Field>
+        <Group>
+          <Name>NoTrdRegTimestamps</Name>
+          <Required>Y</Required>
+        </Group>
+        <Field>
+          <Tag>1430</Tag>
+          <Name>VenueType</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>As per the Trade Report</Description>
+        </Field>
+        <Field>
+          <Tag>574</Tag>
+          <Name>MatchType</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>As per the Trade Report</Description>
+        </Field>
+        <Field>
+          <Tag>828</Tag>
+          <Name>TrdType</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>As per the Trade Report</Description>
+        </Field>
+        <Field>
+          <Tag>20202</Tag>
+          <Name>TradeType</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>As per the Trade Report</Description>
+        </Field>
+        <Field>
+          <Tag>829</Tag>
+          <Name>TrdSubType</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>As per the Trade Report</Description>
+        </Field>
+        <Field>
+          <Tag>855</Tag>
+          <Name>SecondaryTrdType</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>As per the Trade Report</Description>
+        </Field>
+        <Field>
+          <Tag>2896</Tag>
+          <Name>TertiaryTrdType</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>As per the Trade Report</Description>
+        </Field>
+        <Group>
+          <Name>NoTradePriceConditions</Name>
+          <Required>N</Required>
+        </Group>
+        <Field>
+          <Tag>2405</Tag>
+          <Name>ExecMethod</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>As per the Trade Report</Description>
+        </Field>
+        <Field>
+          <Tag>1390</Tag>
+          <Name>TradePublishIndicator</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>As per the Trade Report</Description>
+        </Field>
+        <Group>
+          <Name>NoTrdRegPublications</Name>
+          <Required>N</Required>
+        </Group>
+        <Field>
+          <Tag>1934</Tag>
+          <Name>RegulatoryReportType</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>As per the Trade Report</Description>
+        </Field>
+        <Field>
+          <Tag>475</Tag>
+          <Name>InvestorCountryOfResidence</Name>
+          <Required>N</Required>
+          <Type>Country</Type>
+          <Description>As per the Trade Report</Description>
+        </Field>
+        <Field>
+          <Tag>7570</Tag>
+          <Name>RptTime</Name>
+          <Required>N</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>As per the Trade Report or as set by Nasdaq</Description>
+        </Field>
+        <Field>
+          <Tag>570</Tag>
+          <Name>PreviouslyReported</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>As per the Trade Report</Description>
+        </Field>
+        <Field>
+          <Tag>487</Tag>
+          <Name>TradeReportTransType</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Transaction type. Corresponds to MMT Level 3.4 - Transaction Type: Modification Indicator</Description>
+        </Field>
+        <Field>
+          <Tag>939</Tag>
+          <Name>TrdRptStatus</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Status of Trade Report. Only applicable when the venue confirms the receipt of a TCR sent by the client.</Description>
+        </Field>
+        <Field>
+          <Tag>751</Tag>
+          <Name>TradeReportRejectReason</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Reason inbound message was rejected.</Description>
+        </Field>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>In applicable cases, specifies the cause of the reject</Description>
+        </Field>
+        <Field>
+          <Tag>30</Tag>
+          <Name>LastMkt</Name>
+          <Required>N</Required>
+          <Type>Exchange</Type>
+          <Size>4</Size>
+          <Description>As per the Trade Report</Description>
+        </Field>
+        <Field>
+          <Tag>748</Tag>
+          <Name>TotNumTrdRpts</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>As per the Trade Report</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Trade Capture Report (AE) section 4.2.2, trade confirmation, correction (amend) and break relayed by the venue -->
+    <Message>
+      <Name>Trade Capture Report</Name>
+      <MsgType>AE</MsgType>
+      <Category>app</Category>
+      <Origin>Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>571</Tag>
+          <Name>TradeReportID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Size>20</Size>
+          <Description>As per the Trade Report</Description>
+        </Field>
+        <Field>
+          <Tag>572</Tag>
+          <Name>TradeReportRefID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Size>20</Size>
+          <Description>Contains the value indicated in TradeReportID [571] in the original trade entry message.</Description>
+        </Field>
+        <Field>
+          <Tag>856</Tag>
+          <Name>TradeReportType</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>As per the Trade Report</Description>
+        </Field>
+        <Field>
+          <Tag>1123</Tag>
+          <Name>TradeHandlingInstr</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Specifies how the TradeCaptureReport should be handled by the respondent. Inbound to Nasdaq Nordic limited to 1.</Description>
+        </Field>
+        <Field>
+          <Tag>1003</Tag>
+          <Name>TradeID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Size>10</Size>
+          <Description>As per the Trade Report</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Size>6</Size>
+          <Description>As per the Trade Report</Description>
+        </Field>
+        <Field>
+          <Tag>22</Tag>
+          <Name>SecurityIDSource</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>As per the Trade Report</Description>
+        </Field>
+        <Field>
+          <Tag>48</Tag>
+          <Name>SecurityID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Size>12</Size>
+          <Description>As per the Trade Report</Description>
+        </Field>
+        <Field>
+          <Tag>15</Tag>
+          <Name>Currency</Name>
+          <Required>N</Required>
+          <Type>Currency</Type>
+          <Size>3</Size>
+          <Description>As per the Trade Report</Description>
+        </Field>
+        <Field>
+          <Tag>31</Tag>
+          <Name>LastPx</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Size>18</Size>
+          <Description>As per the Trade Report</Description>
+        </Field>
+        <Field>
+          <Tag>32</Tag>
+          <Name>LastQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Size>18</Size>
+          <Description>As per the Trade Report</Description>
+        </Field>
+        <Field>
+          <Tag>423</Tag>
+          <Name>PriceType</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>As per the Trade Report</Description>
+        </Field>
+        <Field>
+          <Tag>1940</Tag>
+          <Name>AssetType</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>As per the Trade Report</Description>
+        </Field>
+        <Field>
+          <Tag>1925</Tag>
+          <Name>TradeClearingInstruction</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>As per the Trade Report</Description>
+        </Field>
+        <Field>
+          <Tag>968</Tag>
+          <Name>StrikeValue</Name>
+          <Required>N</Required>
+          <Type>Float</Type>
+          <Description>As per the Trade Report</Description>
+        </Field>
+        <Field>
+          <Tag>947</Tag>
+          <Name>StrikeCurrency</Name>
+          <Required>N</Required>
+          <Type>Currency</Type>
+          <Description>As per the Trade Report</Description>
+        </Field>
+        <Field>
+          <Tag>996</Tag>
+          <Name>UnitOfMeasure</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>As per the Trade Report</Description>
+        </Field>
+        <Field>
+          <Tag>1147</Tag>
+          <Name>UnitOfMeasureQty</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>As per the Trade Report</Description>
+        </Field>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>N</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>As per the Trade Report</Description>
+        </Field>
+        <Group>
+          <Name>NoTrdRegTimestamps</Name>
+          <Required>Y</Required>
+        </Group>
+        <Field>
+          <Tag>1430</Tag>
+          <Name>VenueType</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>As per the Trade Report</Description>
+        </Field>
+        <Field>
+          <Tag>574</Tag>
+          <Name>MatchType</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>As per the Trade Report</Description>
+        </Field>
+        <Field>
+          <Tag>828</Tag>
+          <Name>TrdType</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>As per the Trade Report</Description>
+        </Field>
+        <Field>
+          <Tag>20202</Tag>
+          <Name>TradeType</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>As per the Trade Report</Description>
+        </Field>
+        <Field>
+          <Tag>829</Tag>
+          <Name>TrdSubType</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>As per the Trade Report</Description>
+        </Field>
+        <Field>
+          <Tag>855</Tag>
+          <Name>SecondaryTrdType</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>As per the Trade Report</Description>
+        </Field>
+        <Field>
+          <Tag>2896</Tag>
+          <Name>TertiaryTrdType</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>As per the Trade Report</Description>
+        </Field>
+        <Group>
+          <Name>NoTradePriceConditions</Name>
+          <Required>N</Required>
+        </Group>
+        <Field>
+          <Tag>2405</Tag>
+          <Name>ExecMethod</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>As per the Trade Report</Description>
+        </Field>
+        <Field>
+          <Tag>1390</Tag>
+          <Name>TradePublishIndicator</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>As per the Trade Report</Description>
+        </Field>
+        <Group>
+          <Name>NoTrdRegPublications</Name>
+          <Required>N</Required>
+        </Group>
+        <Field>
+          <Tag>1934</Tag>
+          <Name>RegulatoryReportType</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>As per the Trade Report</Description>
+        </Field>
+        <Field>
+          <Tag>475</Tag>
+          <Name>InvestorCountryOfResidence</Name>
+          <Required>N</Required>
+          <Type>Country</Type>
+          <Description>As per the Trade Report</Description>
+        </Field>
+        <Field>
+          <Tag>7570</Tag>
+          <Name>RptTime</Name>
+          <Required>N</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>As per the Trade Report or as set by Nasdaq</Description>
+        </Field>
+        <Field>
+          <Tag>570</Tag>
+          <Name>PreviouslyReported</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>As per the Trade Report</Description>
+        </Field>
+        <Field>
+          <Tag>487</Tag>
+          <Name>TradeReportTransType</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Transaction type. Corresponds to MMT Level 3.4 - Transaction Type: Modification Indicator</Description>
+        </Field>
+        <Field>
+          <Tag>150</Tag>
+          <Name>ExecType</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>Type of execution being reported</Description>
+        </Field>
+        <Field>
+          <Tag>30</Tag>
+          <Name>LastMkt</Name>
+          <Required>N</Required>
+          <Type>Exchange</Type>
+          <Size>4</Size>
+          <Description>As per the Trade Report</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+  </Messages>
+
+  <Groups>
+
+    <!-- NoTrdRegTimestamps (768) Valid values: 1 -->
+    <Group>
+      <Name>NoTrdRegTimestamps</Name>
+      <AnchorTag>768</AnchorTag>
+      <Fields>
+        <Field>
+          <Tag>769</Tag>
+          <Name>TrdRegTimestamp</Name>
+          <Required>Y</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Timestamp - Time of Agreement</Description>
+        </Field>
+        <Field>
+          <Tag>770</Tag>
+          <Name>TrdRegTimestampType</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+        </Field>
+      </Fields>
+    </Group>
+
+    <!-- NoTradePriceConditions (1838) Indicates the number of TradePriceConditions to follow -->
+    <Group>
+      <Name>NoTradePriceConditions</Name>
+      <AnchorTag>1838</AnchorTag>
+      <Fields>
+        <Field>
+          <Tag>1839</Tag>
+          <Name>TradePriceCondition</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Corresponds to MMT Level 3.6 - Transaction Type: Special Dividend Indicator, MMT Level 3.1 - Transaction Type: Transaction Category and MMT Level 3.8 - Transaction Type: Contributing to price formation or the price discovery process</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+    <!-- NoTrdRegPublications (2668) Valid value: 1 -->
+    <Group>
+      <Name>NoTrdRegPublications</Name>
+      <AnchorTag>2668</AnchorTag>
+      <Fields>
+        <Field>
+          <Tag>2669</Tag>
+          <Name>TrdRegPublicationType</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+        </Field>
+        <Field>
+          <Tag>2670</Tag>
+          <Name>TrdRegPublicationReason</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Flags are set automatically on outbound message if the Trade Reporting Party has requested deferral under tag 1390 and the trade qualifies for deferred publication. Corresponds to MMT Level 4.1 - Publication Mode / Post-Trade Deferral: Reason. Values 6, 7 and 8 are not valid for bonds, ETNs, ETCS and SFPS from 2026-03-02, from which date 18 to 23 apply for Bonds (MMT Level 4.1) and 24 is added for ETCs, ETNs, SFPs and emission allowances. The existing flags in tag 2670 will no longer be possible to submit for MiFIR ID 'BOND'. Bond trades reported with flags 'LRGS', 'ILQD' or 'SSTI' will be rejected.</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+  </Groups>
+
+  <Values>
+
+    <!-- BeginString (8) -->
+    <Value>
+      <Type>BeginString</Type>
+      <Enum>FIXT.1.1</Enum>
+      <Kind>Static</Kind>
+      <Description>FIXT.1.1</Description>
+    </Value>
+
+    <!-- PossDupFlag (43) -->
+    <Value>
+      <Type>PossDupFlag</Type>
+      <Enum>N</Enum>
+      <Description>Original transmission</Description>
+    </Value>
+    <Value>
+      <Type>PossDupFlag</Type>
+      <Enum>Y</Enum>
+      <Description>Possible duplicate</Description>
+    </Value>
+
+    <!-- SenderSubID (50) -->
+    <Value>
+      <Type>SenderSubID</Type>
+      <Enum>S</Enum>
+      <Kind>Constant</Kind>
+      <Description>Order message</Description>
+    </Value>
+    <Value>
+      <Type>SenderSubID</Type>
+      <Enum>T</Enum>
+      <Kind>Constant</Kind>
+      <Description>Trade Reporting message</Description>
+    </Value>
+
+    <!-- TargetCompID (56) -->
+    <Value>
+      <Type>TargetCompID</Type>
+      <Enum>INORD</Enum>
+      <Kind>Constant</Kind>
+      <Description>Nasdaq Nordic INET (TargetCompID [56] = INORD per the application specification Connectivity section)</Description>
+    </Value>
+
+    <!-- TargetSubID (57) -->
+    <Value>
+      <Type>TargetSubID</Type>
+      <Enum>S</Enum>
+      <Kind>Constant</Kind>
+      <Description>Order message</Description>
+    </Value>
+    <Value>
+      <Type>TargetSubID</Type>
+      <Enum>T</Enum>
+      <Kind>Constant</Kind>
+      <Description>Trade Reporting message</Description>
+    </Value>
+
+    <!-- SessionRejectReason (373) -->
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>0</Enum>
+      <Description>Invalid tag number</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>1</Enum>
+      <Description>Required tag missing</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>2</Enum>
+      <Description>Tag not defined for this message type</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>3</Enum>
+      <Description>Undefined tag</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>4</Enum>
+      <Description>Tag specified without a value</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>5</Enum>
+      <Description>Value is incorrect (out of range) for this tag</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>6</Enum>
+      <Description>Incorrect data format for value</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>7</Enum>
+      <Description>Decryption problem</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>8</Enum>
+      <Description>Signature problem</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>9</Enum>
+      <Description>CompID problem</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>10</Enum>
+      <Description>SendingTime accuracy problem</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>11</Enum>
+      <Description>Invalid MsgType</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>15</Enum>
+      <Description>Repeating group fields out of order</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>16</Enum>
+      <Description>Incorrect number in group count for repeating group</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>99</Enum>
+      <Description>Other</Description>
+    </Value>
+
+    <!-- EncryptMethod (98) -->
+    <Value>
+      <Type>EncryptMethod</Type>
+      <Enum>0</Enum>
+      <Description>None</Description>
+    </Value>
+
+    <!-- DefaultApplVerID (1137) -->
+    <Value>
+      <Type>DefaultApplVerID</Type>
+      <Enum>9</Enum>
+      <Description>FIX50SP2</Description>
+    </Value>
+
+    <!-- GapFillFlag (123) -->
+    <Value>
+      <Type>GapFillFlag</Type>
+      <Enum>Y</Enum>
+      <Description>Gap Fill message, MsgSeqNum field valid</Description>
+    </Value>
+
+    <!-- TradeReportType (856) -->
+    <Value>
+      <Type>TradeReportType</Type>
+      <Enum>0</Enum>
+      <Description>Submit (default)</Description>
+    </Value>
+    <Value>
+      <Type>TradeReportType</Type>
+      <Enum>4</Enum>
+      <Description>Addendum</Description>
+    </Value>
+    <Value>
+      <Type>TradeReportType</Type>
+      <Enum>7</Enum>
+      <Description>(Locked-in) Trade Break</Description>
+    </Value>
+
+    <!-- TradeHandlingInstr (1123) -->
+    <Value>
+      <Type>TradeHandlingInstr</Type>
+      <Enum>1</Enum>
+      <Description>Two-party report</Description>
+    </Value>
+    <Value>
+      <Type>TradeHandlingInstr</Type>
+      <Enum>0</Enum>
+      <Description>Trade confirmation</Description>
+    </Value>
+    <Value>
+      <Type>TradeHandlingInstr</Type>
+      <Enum>7</Enum>
+      <Description>Trade break</Description>
+    </Value>
+
+    <!-- SecurityIDSource (22) -->
+    <Value>
+      <Type>SecurityIDSource</Type>
+      <Enum>4</Enum>
+      <Description>ISIN</Description>
+    </Value>
+    <Value>
+      <Type>SecurityIDSource</Type>
+      <Enum>O</Enum>
+      <Description>Other</Description>
+    </Value>
+
+    <!-- PriceType (423) -->
+    <Value>
+      <Type>PriceType</Type>
+      <Enum>1</Enum>
+      <Description>Percentage</Description>
+    </Value>
+    <Value>
+      <Type>PriceType</Type>
+      <Enum>2</Enum>
+      <Description>Monetary value (default)</Description>
+    </Value>
+    <Value>
+      <Type>PriceType</Type>
+      <Enum>9</Enum>
+      <Description>Yield</Description>
+    </Value>
+    <Value>
+      <Type>PriceType</Type>
+      <Enum>22</Enum>
+      <Description>Basis points</Description>
+    </Value>
+
+    <!-- AssetType (1940) -->
+    <Value>
+      <Type>AssetType</Type>
+      <Enum>EUAE</Enum>
+      <Description>EUA</Description>
+    </Value>
+    <Value>
+      <Type>AssetType</Type>
+      <Enum>CERE</Enum>
+      <Description>CER</Description>
+    </Value>
+    <Value>
+      <Type>AssetType</Type>
+      <Enum>ERUE</Enum>
+      <Description>ERU</Description>
+    </Value>
+    <Value>
+      <Type>AssetType</Type>
+      <Enum>EUAA</Enum>
+      <Description>EUAA</Description>
+    </Value>
+    <Value>
+      <Type>AssetType</Type>
+      <Enum>OTHR</Enum>
+      <Description>Other</Description>
+    </Value>
+
+    <!-- TradeClearingInstruction (1925) -->
+    <Value>
+      <Type>TradeClearingInstruction</Type>
+      <Enum>6</Enum>
+      <Description>Clear against central counterparty</Description>
+    </Value>
+
+    <!-- UnitOfMeasure (996) -->
+    <Value>
+      <Type>UnitOfMeasure</Type>
+      <Enum>t</Enum>
+      <Description>Metric tonnes (TONE)</Description>
+    </Value>
+    <Value>
+      <Type>UnitOfMeasure</Type>
+      <Enum>tnCO2</Enum>
+      <Description>tonnes of carbon dioxide equivalent, for any contract related to emission allowances (TOCD)</Description>
+    </Value>
+    <Value>
+      <Type>UnitOfMeasure</Type>
+      <Enum>MWh</Enum>
+      <Description>Megawatt hours (MWHO)</Description>
+    </Value>
+    <Value>
+      <Type>UnitOfMeasure</Type>
+      <Enum>MMBtu</Enum>
+      <Description>One Million British Thermal Units (MBTU)</Description>
+    </Value>
+    <Value>
+      <Type>UnitOfMeasure</Type>
+      <Enum>thrm</Enum>
+      <Description>Therms (THMS)</Description>
+    </Value>
+    <Value>
+      <Type>UnitOfMeasure</Type>
+      <Enum>Day</Enum>
+      <Description>Days (DAYS)</Description>
+    </Value>
+
+    <!-- VenueType (1430) -->
+    <Value>
+      <Type>VenueType</Type>
+      <Enum>O</Enum>
+      <Description>Off Book (default)</Description>
+    </Value>
+
+    <!-- MatchType (574) -->
+    <Value>
+      <Type>MatchType</Type>
+      <Enum>1</Enum>
+      <Description>Off Exchange</Description>
+    </Value>
+    <Value>
+      <Type>MatchType</Type>
+      <Enum>9</Enum>
+      <Description>Systematic Internaliser</Description>
+    </Value>
+
+    <!-- TrdType (828) -->
+    <Value>
+      <Type>TrdType</Type>
+      <Enum>0</Enum>
+      <Description>Regular Trade (default)</Description>
+    </Value>
+    <Value>
+      <Type>TrdType</Type>
+      <Enum>2</Enum>
+      <Description>Exchange for physical (XFPH)</Description>
+    </Value>
+    <Value>
+      <Type>TrdType</Type>
+      <Enum>50</Enum>
+      <Description>Portfolio Trade (PORT). Corresponds to MMT Level 3.11 - Transaction Type: Portfolio</Description>
+    </Value>
+    <Value>
+      <Type>TrdType</Type>
+      <Enum>65</Enum>
+      <Description>Package Trade (TPAC)</Description>
+    </Value>
+
+    <!-- TradeType (20202) -->
+    <Value>
+      <Type>TradeType</Type>
+      <Enum>9</Enum>
+      <Description>OTC Standard Trade (default for MatchType = 1)</Description>
+    </Value>
+    <Value>
+      <Type>TradeType</Type>
+      <Enum>A</Enum>
+      <Description>OTC Non Standard Trade</Description>
+    </Value>
+    <Value>
+      <Type>TradeType</Type>
+      <Enum>B</Enum>
+      <Description>SI Standard Trade (default for MatchType = 9)</Description>
+    </Value>
+    <Value>
+      <Type>TradeType</Type>
+      <Enum>C</Enum>
+      <Description>SI Non Standard Trade</Description>
+    </Value>
+    <Value>
+      <Type>TradeType</Type>
+      <Enum>O</Enum>
+      <Description>OTC Loan Payment (For Danish Covered Bonds only)</Description>
+    </Value>
+    <Value>
+      <Type>TradeType</Type>
+      <Enum>P</Enum>
+      <Description>OTC Primary Transaction (For Danish Covered Bonds only)</Description>
+    </Value>
+
+    <!-- TrdSubType (829) -->
+    <Value>
+      <Type>TrdSubType</Type>
+      <Enum>37</Enum>
+      <Description>Agency Cross Trade (ACTX)</Description>
+    </Value>
+
+    <!-- SecondaryTrdType (855) -->
+    <Value>
+      <Type>SecondaryTrdType</Type>
+      <Enum>64</Enum>
+      <Description>Benchmark (BENC). Corresponds to MMT Level 3.5 - Transaction Type: Benchmark or Reference Price Indicator</Description>
+    </Value>
+    <Value>
+      <Type>SecondaryTrdType</Type>
+      <Enum>65</Enum>
+      <Description>Contingent Transaction (CONT). Corresponds to MMT Level 3.12 - Transaction Type: Contingent</Description>
+    </Value>
+
+    <!-- TertiaryTrdType (2896) -->
+    <Value>
+      <Type>TertiaryTrdType</Type>
+      <Enum>50</Enum>
+      <Description>Portfolio Trade (PORT). Corresponds to MMT Level 3.11 - Transaction Type: Portfolio</Description>
+    </Value>
+    <Value>
+      <Type>TertiaryTrdType</Type>
+      <Enum>65</Enum>
+      <Description>Contingent Transaction (CONT). Corresponds to MMT Level 3.12 - Transaction Type: Contingent</Description>
+    </Value>
+
+    <!-- ExecMethod (2405) -->
+    <Value>
+      <Type>ExecMethod</Type>
+      <Enum>0</Enum>
+      <Description>Unspecified or does not apply (default)</Description>
+    </Value>
+    <Value>
+      <Type>ExecMethod</Type>
+      <Enum>1</Enum>
+      <Description>Off Book Non-Automated</Description>
+    </Value>
+    <Value>
+      <Type>ExecMethod</Type>
+      <Enum>2</Enum>
+      <Description>Off Book Automated</Description>
+    </Value>
+
+    <!-- TradePublishIndicator (1390) -->
+    <Value>
+      <Type>TradePublishIndicator</Type>
+      <Enum>1</Enum>
+      <Description>Publish Trade Immediately (default)</Description>
+    </Value>
+    <Value>
+      <Type>TradePublishIndicator</Type>
+      <Enum>2</Enum>
+      <Description>Deferred Publication</Description>
+    </Value>
+
+    <!-- RegulatoryReportType (1934) -->
+    <Value>
+      <Type>RegulatoryReportType</Type>
+      <Enum>11</Enum>
+      <Description>Limited Details Trade (LMTF)</Description>
+    </Value>
+    <Value>
+      <Type>RegulatoryReportType</Type>
+      <Enum>12</Enum>
+      <Description>Daily Aggregated Trade (DATF)</Description>
+    </Value>
+    <Value>
+      <Type>RegulatoryReportType</Type>
+      <Enum>13</Enum>
+      <Description>Volume Omission Trade (VOLO)</Description>
+    </Value>
+    <Value>
+      <Type>RegulatoryReportType</Type>
+      <Enum>14</Enum>
+      <Description>Four Weeks Aggregation Trade (FWAF)</Description>
+    </Value>
+    <Value>
+      <Type>RegulatoryReportType</Type>
+      <Enum>15</Enum>
+      <Description>Indefinite Aggregation Trade (IDAF)</Description>
+    </Value>
+    <Value>
+      <Type>RegulatoryReportType</Type>
+      <Enum>16</Enum>
+      <Description>Volume Omission Trade, Eligible for Subsequent Enrichment in Aggregated Form (VOLW)</Description>
+    </Value>
+    <Value>
+      <Type>RegulatoryReportType</Type>
+      <Enum>35</Enum>
+      <Description>OMIS (Volume omission flag)</Description>
+    </Value>
+    <Value>
+      <Type>RegulatoryReportType</Type>
+      <Enum>37</Enum>
+      <Description>AGFW (Four weeks aggregation flag)</Description>
+    </Value>
+
+    <!-- PreviouslyReported (570) -->
+    <Value>
+      <Type>PreviouslyReported</Type>
+      <Enum>N</Enum>
+      <Description>Not reported to counterparty or market (default)</Description>
+    </Value>
+    <Value>
+      <Type>PreviouslyReported</Type>
+      <Enum>Y</Enum>
+      <Description>Previously reported to counterparty or market (DUPL)</Description>
+    </Value>
+
+    <!-- CrdRtg (255) -->
+    <Value>
+      <Type>CrdRtg</Type>
+      <Enum>IG</Enum>
+      <Kind>Constant</Kind>
+      <Description>Investment Grade (default)</Description>
+    </Value>
+    <Value>
+      <Type>CrdRtg</Type>
+      <Enum>HY</Enum>
+      <Kind>Constant</Kind>
+      <Description>High Yield</Description>
+    </Value>
+
+    <!-- TradeReportTransType (487) -->
+    <Value>
+      <Type>TradeReportTransType</Type>
+      <Enum>0</Enum>
+      <Description>New (default)</Description>
+    </Value>
+    <Value>
+      <Type>TradeReportTransType</Type>
+      <Enum>1</Enum>
+      <Description>Cancel</Description>
+    </Value>
+    <Value>
+      <Type>TradeReportTransType</Type>
+      <Enum>2</Enum>
+      <Description>Replace</Description>
+    </Value>
+
+    <!-- TrdRptStatus (939) -->
+    <Value>
+      <Type>TrdRptStatus</Type>
+      <Enum>0</Enum>
+      <Description>Accepted (new)</Description>
+    </Value>
+    <Value>
+      <Type>TrdRptStatus</Type>
+      <Enum>1</Enum>
+      <Description>Rejected</Description>
+    </Value>
+
+    <!-- TradeReportRejectReason (751) -->
+    <Value>
+      <Type>TradeReportRejectReason</Type>
+      <Enum>1</Enum>
+      <Description>Invalid party information</Description>
+    </Value>
+    <Value>
+      <Type>TradeReportRejectReason</Type>
+      <Enum>2</Enum>
+      <Description>Unknown instrument</Description>
+    </Value>
+    <Value>
+      <Type>TradeReportRejectReason</Type>
+      <Enum>3</Enum>
+      <Description>Unauthorized to report trades</Description>
+    </Value>
+    <Value>
+      <Type>TradeReportRejectReason</Type>
+      <Enum>4</Enum>
+      <Description>Invalid trade type</Description>
+    </Value>
+    <Value>
+      <Type>TradeReportRejectReason</Type>
+      <Enum>6</Enum>
+      <Description>Incorrect data format for value</Description>
+    </Value>
+    <Value>
+      <Type>TradeReportRejectReason</Type>
+      <Enum>99</Enum>
+      <Description>Other</Description>
+    </Value>
+
+    <!-- ExecType (150) -->
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>F</Enum>
+      <Description>Trade</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>G</Enum>
+      <Description>Trade correction</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>H</Enum>
+      <Description>Trade cancel</Description>
+    </Value>
+
+    <!-- TrdRegTimestampType (770) -->
+    <Value>
+      <Type>TrdRegTimestampType</Type>
+      <Enum>1</Enum>
+      <Description>Time of trade agreement (default)</Description>
+    </Value>
+
+    <!-- TradePriceCondition (1839) -->
+    <Value>
+      <Type>TradePriceCondition</Type>
+      <Enum>13</Enum>
+      <Description>Special Dividend Trade (SDIV)</Description>
+    </Value>
+    <Value>
+      <Type>TradePriceCondition</Type>
+      <Enum>14</Enum>
+      <Description>Price improvement (RPRI) - Not applicable from 2026-03-02.</Description>
+    </Value>
+    <Value>
+      <Type>TradePriceCondition</Type>
+      <Enum>17</Enum>
+      <Description>Price is pending (PNDG)</Description>
+    </Value>
+    <Value>
+      <Type>TradePriceCondition</Type>
+      <Enum>18</Enum>
+      <Description>Price not applicable (NOAP)</Description>
+    </Value>
+
+    <!-- TrdRegPublicationType (2669) -->
+    <Value>
+      <Type>TrdRegPublicationType</Type>
+      <Enum>1</Enum>
+      <Description>PostTradeDeferral</Description>
+    </Value>
+
+    <!-- TrdRegPublicationReason (2670) -->
+    <Value>
+      <Type>TrdRegPublicationReason</Type>
+      <Enum>6</Enum>
+      <Description>Deferral due to "Large in Scale" (LRGS). Corresponds to MMT Level 4.1 - Publication Mode / Post-Trade Deferral: Reason</Description>
+    </Value>
+    <Value>
+      <Type>TrdRegPublicationReason</Type>
+      <Enum>7</Enum>
+      <Description>Deferral due to "Illiquid instrument" (ILQD). Corresponds to MMT Level 4.1 - Publication Mode / Post-Trade Deferral: Illiquid Instrument</Description>
+    </Value>
+    <Value>
+      <Type>TrdRegPublicationReason</Type>
+      <Enum>8</Enum>
+      <Description>Deferral due to "Size specific" (SIZE). Corresponds to MMT Level 4.1 - Publication Mode / Post-Trade Deferral: Size Specific</Description>
+    </Value>
+    <Value>
+      <Type>TrdRegPublicationReason</Type>
+      <Enum>18</Enum>
+      <Description>MLF1 (Medium Liquid)</Description>
+    </Value>
+    <Value>
+      <Type>TrdRegPublicationReason</Type>
+      <Enum>19</Enum>
+      <Description>MIF2 (Medium Illiquid Flag)</Description>
+    </Value>
+    <Value>
+      <Type>TrdRegPublicationReason</Type>
+      <Enum>20</Enum>
+      <Description>LLF3 (Large Liquid Flag)</Description>
+    </Value>
+    <Value>
+      <Type>TrdRegPublicationReason</Type>
+      <Enum>21</Enum>
+      <Description>LIF4 (Large Illiquid Flag)</Description>
+    </Value>
+    <Value>
+      <Type>TrdRegPublicationReason</Type>
+      <Enum>22</Enum>
+      <Description>VLF5 (Very Large Liquid Flag)</Description>
+    </Value>
+    <Value>
+      <Type>TrdRegPublicationReason</Type>
+      <Enum>23</Enum>
+      <Description>VIF5 (Very Large Illiquid Flag)</Description>
+    </Value>
+    <Value>
+      <Type>TrdRegPublicationReason</Type>
+      <Enum>24</Enum>
+      <Description>DEFF</Description>
+    </Value>
+
+  </Values>
+
+</OmiFixPdf>
