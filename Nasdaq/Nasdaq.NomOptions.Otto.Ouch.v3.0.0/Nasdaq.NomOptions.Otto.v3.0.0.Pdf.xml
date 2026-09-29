@@ -1,0 +1,4463 @@
+<OmiItchNasdaqPdf>
+
+  <!--
+  Nasdaq Options Market (NOM) copy of the all-markets Nasdaq options Ouch to Trade Options (OTTO) 3.0.0 transcription
+  (Common/Options/Nasdaq.Options.Otto.v3.0.0.Pdf.xml in its original form), leaving out what the document scopes to
+  other markets:
+    - Subscription Request and Response (F, f): not available on NOM (4.8)
+    - complex instruments: "Phlx, ISE and MRX will support the following types of complex instruments" (3.3.2)
+    - AuctionType B, H, P and S (Block, Facilitation, PIM, Solicitation): not on NOM
+    - AuctionType E (Complex Exposure): Phlx, ISE and MRX
+    - AuctionType X (Flex): Phlx and ISE
+    - extended trading hours (MRX): SessionEligibility (the regular edition keeps a 9 byte reserved field), EventCode P and D, ClosingType E
+  -->
+
+  <!--
+  Nasdaq Ouch to Trade Options (OTTO) Specifications, Version 3.0.0, North American Trading Services.
+
+  Transcribed from the extended trading hours edition Options_ETH_OTTO.pdf (August 17, 2026), a
+  superset of the regular edition Options_OTTO.pdf (April 30, 2026) with the same message layouts:
+  the ETH edition gives the first byte of the 9 byte reserved field of New Order (Long Form) and
+  Order Accepted (Long Form) to SessionEligibility (message lengths unchanged), and adds the P and D
+  System Event Codes and ClosingType E. Covers Phlx, NOM, ISE, GEMX and MRX.
+
+  Types: Integer is unsigned big-endian binary; Price is a signed 8 byte integer with an implied
+  scale of 6, transcribed as Integer 8 and made signed with scale -6 by the reference edits (this
+  loader types Price as 2 or 4 bytes); Alpha/Alphanumeric are left-justified, space padded.
+  Offsets are blank in the document; lengths are the Len column.
+
+  Requests (section 4) are client unsequenced messages; notifications and other messages
+  (sections 5 and 6) are sequenced server messages. The Primary Side / Contra Side blocks of
+  New Cross Order and Cross Order Accepted are flattened with Primary and Contra prefixes.
+  -->
+
+  <Messages>
+
+    <!-- New Order Long Form (A) section 4.1.1 -->
+    <Message>
+      <Name>New Order Long Form Message</Name>
+      <Dependency>Unsequenced Message Type</Dependency>
+      <Branch>Unsequenced Message</Branch>
+      <Code>A</Code>
+      <Category>Application</Category>
+      <Description>Long form of the New Order request provides full flexibility of configuring order attributes: simple and multi-leg instruments (up to 10 legs), clearing overrides, preferenced, AON/FOK, reserve and attributable orders, one-sided auction initiation (Block, Exposure and Flex auctions), auction responses and Do Not Trade Through orders. Acknowledged by Order Accepted (Long Form).</Description>
+      <Fields>
+        <Field>
+          <Name>FirmID</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Firm ID (e.g. ABCD, 123A)</Description>
+        </Field>
+        <Field>
+          <Name>InstrumentId</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Instrument ID, as specified by Option Directory notifications</Description>
+        </Field>
+        <Field>
+          <Name>ClOrdId</Name>
+          <Type>Alphanumeric</Type>
+          <Size>16</Size>
+          <Description>See Client Order Id</Description>
+        </Field>
+        <Field>
+          <Name>CMTA</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>CMTA</Description>
+        </Field>
+        <Field>
+          <Name>ClearingAccount</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Sub-account/MM Identifier at the registered exchange; all four characters will be provided to OCC</Description>
+        </Field>
+        <Field>
+          <Name>OCCAccount</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>OCC # to use for clearing (give up)</Description>
+        </Field>
+        <Field>
+          <Name>CustAcct</Name>
+          <Type>Alphanumeric</Type>
+          <Size>10</Size>
+          <Description>Account on the customer system (pass-through)</Description>
+        </Field>
+        <Field>
+          <Name>PreferredParty</Name>
+          <Type>Alpha</Type>
+          <Size>3</Size>
+          <Description>IFI of the preferred Market Maker. Blank if none.</Description>
+        </Field>
+        <Field>
+          <Name>ALOInst</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>N=Not ALO, Y=ALO</Description>
+        </Field>
+        <Field>
+          <Name>ISO</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>N=Not ISO, I=ISO</Description>
+        </Field>
+        <Field>
+          <Name>Side</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>B=Buy, S=Sell</Description>
+        </Field>
+        <Field>
+          <Name>OrderType</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>L=Limit, M=Market</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Limit price. Should be set to 0 if Order Type = M.</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Number of contracts</Description>
+        </Field>
+        <Field>
+          <Name>MinQty</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>0 or Quantity</Description>
+        </Field>
+        <Field>
+          <Name>TIF</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>See Time in Force Field (TIF)</Description>
+        </Field>
+        <Field>
+          <Name>Capacity</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>See Order Capacity Field</Description>
+        </Field>
+        <Field>
+          <Name>AuctionType</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>See Auction Type Field</Description>
+        </Field>
+        <Field>
+          <Name>AuctionId</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Identifies the Auction being responded. 0 if this order is not an auction response.</Description>
+        </Field>
+        <Field>
+          <Name>AuctionDuration</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>User defined field for Auction Duration. In milliseconds between 3,000 and 300,000. Only required for Flex auctions. Must be 0 for Non-Flex Auctions.</Description>
+        </Field>
+        <Field>
+          <Name>DisclosureMask</Name>
+          <Type>Integer</Type>
+          <Size>1</Size>
+          <Description>See Disclosure Mask Field (bits 0-5: Firm, Clearing Account, CMTA Account, Side, Price, Quantity; a set bit makes the attribute visible)</Description>
+        </Field>
+        <Field>
+          <Name>PriceProtection</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>L=Local Market, N=National Market</Description>
+        </Field>
+        <Field>
+          <Name>DisplayQty</Name>
+          <Type>Integer</Type>
+          <Size>2</Size>
+          <Description>Initial Display Quantity</Description>
+        </Field>
+        <Field>
+          <Name>DisplayWhen</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>I=Immediate, E=Exhaust, N=N/A</Description>
+        </Field>
+        <Field>
+          <Name>DisplayMethod</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>I=Initial, R=Random, N=None</Description>
+        </Field>
+        <Field>
+          <Name>DisplayLowQty</Name>
+          <Type>Integer</Type>
+          <Size>2</Size>
+          <Description>If DisplayMethod = Random</Description>
+        </Field>
+        <Field>
+          <Name>DisplayHighQty</Name>
+          <Type>Integer</Type>
+          <Size>2</Size>
+          <Description>If DisplayMethod = Random</Description>
+        </Field>
+        <Field>
+          <Name>PositionEffectMask</Name>
+          <Type>Integer</Type>
+          <Size>2</Size>
+          <Description>See Position Effect Mask Field (bit n = leg n; set bit = Open, cleared bit = Close)</Description>
+        </Field>
+        <Field>
+          <Name>StockLegShortSale</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>N=Not Applicable, H=Sell Short, E=Sell Short Exempt. If this is a multi-leg order for a stock combo where stock leg is on the Sell side StockLegShortSale may be set to H or E. In all other cases value N should be used.</Description>
+        </Field>
+        <Field>
+          <Name>StockLegMpid</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Give-up for the stock leg</Description>
+        </Field>
+        <Field>
+          <Name>StockCapacity</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>P=Principal, A=Agency, R=Riskless Principal, space=Not Applicable</Description>
+        </Field>
+        <Field>
+          <Name>(Reserved)</Name>
+          <Type>Integer</Type>
+          <Size>9</Size>
+          <Description>Reserved for future use</Description>
+        </Field>
+        <Field>
+          <Name>Number of Flex Legs</Name>
+          <Type>Integer</Type>
+          <Size>1</Size>
+          <Description>To be used for notifying Leg Deltas on Delta-Adjusted At Close feature as well as Leg Prices on Flex instruments. It will be 0 for non-Flex instruments.</Description>
+        </Field>
+        <Field>
+          <Name>Flex Leg Prices</Name>
+          <Type>group</Type>
+          <Description>Leg Definitions (1-10)</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- New Order Short Form (B) section 4.1.2 -->
+    <Message>
+      <Name>New Order Short Form Message</Name>
+      <Dependency>Unsequenced Message Type</Dependency>
+      <Branch>Unsequenced Message</Branch>
+      <Code>B</Code>
+      <Category>Application</Category>
+      <Description>Short format of the New Order request is a compact message (50 bytes) with limited flexibility: simple and multi-leg instruments, quantity up to 65535, auction responses, default clearing configuration for the Firm. Acknowledged by Order Accepted (Short Form).</Description>
+      <Fields>
+        <Field>
+          <Name>FirmID</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Firm ID (e.g. ABCD, 123A)</Description>
+        </Field>
+        <Field>
+          <Name>InstrumentId</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Instrument ID, as specified by Option Directory notifications</Description>
+        </Field>
+        <Field>
+          <Name>ClOrdId</Name>
+          <Type>Alphanumeric</Type>
+          <Size>16</Size>
+          <Description>See Client Order Id</Description>
+        </Field>
+        <Field>
+          <Name>ALOInst</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>N=Not ALO, Y=ALO</Description>
+        </Field>
+        <Field>
+          <Name>ISO</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>N=Not ISO, I=ISO</Description>
+        </Field>
+        <Field>
+          <Name>Side</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>B=Buy, S=Sell</Description>
+        </Field>
+        <Field>
+          <Name>OrderType</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>L=Limit, M=Market</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Limit price. Should be set to 0 if Order Type = M.</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>Integer</Type>
+          <Size>2</Size>
+          <Description>Number of contracts</Description>
+        </Field>
+        <Field>
+          <Name>TIF</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>See Time in Force Field (TIF)</Description>
+        </Field>
+        <Field>
+          <Name>Capacity</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>See Order Capacity Field</Description>
+        </Field>
+        <Field>
+          <Name>AuctionType</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>See Auction Type Field</Description>
+        </Field>
+        <Field>
+          <Name>AuctionId</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Identifies the Auction being responded. 0 if this order is not an auction response.</Description>
+        </Field>
+        <Field>
+          <Name>PriceProtection</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>L=Local Market, N=National Market</Description>
+        </Field>
+        <Field>
+          <Name>PositionEffectMask</Name>
+          <Type>Integer</Type>
+          <Size>2</Size>
+          <Description>See Position Effect Mask Field</Description>
+        </Field>
+        <Field>
+          <Name>StockCapacity</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>P=Principal, A=Agency, R=Riskless Principal, space=Not Applicable</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Replace Order (R) section 4.2 -->
+    <Message>
+      <Name>Replace Order Message</Name>
+      <Dependency>Unsequenced Message Type</Dependency>
+      <Branch>Unsequenced Message</Branch>
+      <Code>R</Code>
+      <Category>Application</Category>
+      <Description>Replace Order message is used to modify an existing order for both simple and complex instruments. It can also be used to alter price of the contra side of Cross Orders. The order to be replaced is identified by OrigClOrdId.</Description>
+      <Fields>
+        <Field>
+          <Name>FirmID</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Firm ID (e.g. ABCD, 123A)</Description>
+        </Field>
+        <Field>
+          <Name>OrigClOrdId</Name>
+          <Type>Alphanumeric</Type>
+          <Size>16</Size>
+          <Description>Client Order Identifier of the order to be replaced. If no open order with such identifier is found, request is rejected.</Description>
+        </Field>
+        <Field>
+          <Name>ClOrdId</Name>
+          <Type>Alphanumeric</Type>
+          <Size>16</Size>
+          <Description>Client Order Identifier for the replacement order. See Client Order Id.</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Total Intended Order Quantity (including the amount already executed for this chain of orders)</Description>
+        </Field>
+        <Field>
+          <Name>OrderType</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>L=Limit, M=Market</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Price</Description>
+        </Field>
+        <Field>
+          <Name>TIF</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>See Time in Force Field (TIF)</Description>
+        </Field>
+        <Field>
+          <Name>CustAcct</Name>
+          <Type>Alphanumeric</Type>
+          <Size>10</Size>
+          <Description>Account on the customer system (pass-through)</Description>
+        </Field>
+        <Field>
+          <Name>PriceProtection</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>L=Local, N=National</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Cancel Order (C) section 4.3.1 -->
+    <Message>
+      <Name>Cancel Order Message</Name>
+      <Dependency>Unsequenced Message Type</Dependency>
+      <Branch>Unsequenced Message</Branch>
+      <Code>C</Code>
+      <Category>Application</Category>
+      <Description>Cancel Order by Client ID. Deletes a single simple order, a single complex order, or a Cross Order (terminating an ongoing auction). The order to be deleted is identified by the ClOrdId field.</Description>
+      <Fields>
+        <Field>
+          <Name>FirmID</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Firm ID (e.g. ABCD, 123A)</Description>
+        </Field>
+        <Field>
+          <Name>ClOrdId</Name>
+          <Type>Alphanumeric</Type>
+          <Size>16</Size>
+          <Description>Client Order Identifier of the order to be canceled. If no open order with such identifier is found, request is rejected.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Mass Cancel (U) section 4.4 -->
+    <Message>
+      <Name>Mass Cancel Message</Name>
+      <Dependency>Unsequenced Message Type</Dependency>
+      <Branch>Unsequenced Message</Branch>
+      <Code>U</Code>
+      <Category>Application</Category>
+      <Description>This message is used to mass-delete multiple open orders based on the specified Scope. The sequence of Order Canceled messages is terminated with a single Mass Cancel Response.</Description>
+      <Fields>
+        <Field>
+          <Name>FirmID</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Firm ID (e.g. ABCD, 123A)</Description>
+        </Field>
+        <Field>
+          <Name>ClRequestId</Name>
+          <Type>Alphanumeric</Type>
+          <Size>16</Size>
+          <Description>Client identifier of the request. It is echoed back with either Mass Cancel Response or Reject</Description>
+        </Field>
+        <Field>
+          <Name>InstrumentType</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>A=All, O=Simple Instrument, C=Standard Combination, S=Stock Combination</Description>
+        </Field>
+        <Field>
+          <Name>Scope</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>Scope of the deletion request: P=Product (requires ProductID, InstrumentID must be 0), I=Instrument (requires InstrumentID, ProductID must be 0), F=Firm (ProductId and InstrumentId must be set to zero)</Description>
+        </Field>
+        <Field>
+          <Name>ProductId</Name>
+          <Type>Integer</Type>
+          <Size>2</Size>
+          <Description>Product (Underlying) ID, as specified by Option Directory notifications. Must be populated if Scope=P and UnderlyingSymbol not populated.</Description>
+        </Field>
+        <Field>
+          <Name>InstrumentId</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Instrument ID, as specified by Option Directory notifications. Must be populated if Scope=I</Description>
+        </Field>
+        <Field>
+          <Name>UnderlyingSymbol</Name>
+          <Type>Alpha</Type>
+          <Size>13</Size>
+          <Description>Denotes the unique underlying stock symbol for the option symbol. Must be populated if Scope = P and ProductID not populated.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- New Cross Order (X) section 4.5 -->
+    <Message>
+      <Name>New Cross Order Message</Name>
+      <Dependency>Unsequenced Message Type</Dependency>
+      <Branch>Unsequenced Message</Branch>
+      <Code>X</Code>
+      <Category>Application</Category>
+      <Description>Cross Order message allows specifying two opposite sides to trade against each other. The primary side of the order is exposed in an auction if CrossType is set to A (Auction). Other cross types (QCC and CCC) trade the two sides without market exposure. The Primary Side and Contra Side blocks of the document are carried as Primary and Contra prefixed fields.</Description>
+      <Fields>
+        <Field>
+          <Name>FirmID</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Firm ID (e.g. ABCD, 123A)</Description>
+        </Field>
+        <Field>
+          <Name>InstrumentId</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Instrument ID, as specified by Instrument Directory Messages</Description>
+        </Field>
+        <Field>
+          <Name>CrossType</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>A=Auction, Q=QCC, C=CCC</Description>
+        </Field>
+        <Field>
+          <Name>AuctionType</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>See Auction Type Field. If CrossType is set to A, acceptable values are P, H, S, X. For other CrossTypes value N must be used</Description>
+        </Field>
+        <Field>
+          <Name>AuctionAllocPct</Name>
+          <Type>Integer</Type>
+          <Size>1</Size>
+          <Description>Order Allocation percentage 0 &lt;= n &lt;= 40. 0 for Simple and Complex Solicitation.</Description>
+        </Field>
+        <Field>
+          <Name>Side</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>Side of the primary part of the Cross Order. Contra part is implied to be on the opposite side. B=Buy, S=Sell</Description>
+        </Field>
+        <Field>
+          <Name>ISO</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>N=Not ISO, I=ISO</Description>
+        </Field>
+        <Field>
+          <Name>PriceProtection</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>L=Local, N=National</Description>
+        </Field>
+        <Field>
+          <Name>EffectiveTime</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Agreed upon time for the stopped price. UTC time in milliseconds.</Description>
+        </Field>
+        <Field>
+          <Name>DisclosureMask</Name>
+          <Type>Integer</Type>
+          <Size>1</Size>
+          <Description>See Disclosure Mask Field</Description>
+        </Field>
+        <Field>
+          <Name>AuctionDuration</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>User defined field for Auction Duration. In Milliseconds between 3,000 and 300,000. Only required for Flex auctions. Must be 0 for others.</Description>
+        </Field>
+        <Field>
+          <Name>(Reserved)</Name>
+          <Type>Integer</Type>
+          <Size>9</Size>
+          <Description>Reserved for future use</Description>
+        </Field>
+        <Field>
+          <Name>Primary ClOrdId</Name>
+          <Type>Alphanumeric</Type>
+          <Size>16</Size>
+          <Description>See Client Order Id</Description>
+        </Field>
+        <Field>
+          <Name>Primary CMTA</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>CMTA</Description>
+        </Field>
+        <Field>
+          <Name>Primary ClearingAccount</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Sub-account/MM Identifier at the registered exchange; all four characters will be provided to OCC</Description>
+        </Field>
+        <Field>
+          <Name>Primary OCCAccount</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>OCC # to use for clearing (give up)</Description>
+        </Field>
+        <Field>
+          <Name>Primary CustAcct</Name>
+          <Type>Alphanumeric</Type>
+          <Size>10</Size>
+          <Description>Account on the customer system (pass-through)</Description>
+        </Field>
+        <Field>
+          <Name>Primary Price</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Limit price. Primary Side of a Cross order cannot be Market.</Description>
+        </Field>
+        <Field>
+          <Name>Primary Quantity</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Number of contracts</Description>
+        </Field>
+        <Field>
+          <Name>Primary Capacity</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>See Order Capacity Field</Description>
+        </Field>
+        <Field>
+          <Name>Primary PositionEffectMask</Name>
+          <Type>Integer</Type>
+          <Size>2</Size>
+          <Description>See Position Effect Mask Field</Description>
+        </Field>
+        <Field>
+          <Name>Primary StockLegShortSale</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>N=Not Applicable, H=Sell Short, E=Sell Short Exempt. If this is a multi-leg order for a stock combo where stock leg is on the Sell side StockLegShortSale may be set to H or E. In all other cases value N should be used.</Description>
+        </Field>
+        <Field>
+          <Name>Primary StockLegMpid</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Give-up for the stock leg</Description>
+        </Field>
+        <Field>
+          <Name>Primary StockCapacity</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>P=Principal, A=Agency, R=Riskless Principal, space=Not Applicable</Description>
+        </Field>
+        <Field>
+          <Name>Contra ClOrdId</Name>
+          <Type>Alphanumeric</Type>
+          <Size>16</Size>
+          <Description>See Client Order Id</Description>
+        </Field>
+        <Field>
+          <Name>Contra CMTA</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>CMTA</Description>
+        </Field>
+        <Field>
+          <Name>Contra ClearingAccount</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Sub-account/MM Identifier at the registered exchange; all four characters will be provided to OCC</Description>
+        </Field>
+        <Field>
+          <Name>Contra OCCAccount</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>OCC # to use for clearing (give up)</Description>
+        </Field>
+        <Field>
+          <Name>Contra CustAcct</Name>
+          <Type>Alphanumeric</Type>
+          <Size>10</Size>
+          <Description>Account on the customer system (pass-through)</Description>
+        </Field>
+        <Field>
+          <Name>Contra OrderType</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>L=Limit, M=Market</Description>
+        </Field>
+        <Field>
+          <Name>Contra Price</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Limit price. Should be set to 0 if Order Type = M.</Description>
+        </Field>
+        <Field>
+          <Name>Contra Quantity</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Number of contracts</Description>
+        </Field>
+        <Field>
+          <Name>Contra Capacity</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>See Order Capacity Field</Description>
+        </Field>
+        <Field>
+          <Name>Contra PositionEffectMask</Name>
+          <Type>Integer</Type>
+          <Size>2</Size>
+          <Description>See Position Effect Mask Field</Description>
+        </Field>
+        <Field>
+          <Name>Contra StockLegShortSale</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>N=Not Applicable, H=Sell Short, E=Sell Short Exempt. If this is a multi-leg order for a stock combo where stock leg is on the Sell side StockLegShortSale may be set to H or E. In all other cases value N should be used.</Description>
+        </Field>
+        <Field>
+          <Name>Contra StockLegMpid</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Give-up for the stock leg</Description>
+        </Field>
+        <Field>
+          <Name>Contra StockCapacity</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>P=Principal, A=Agency, R=Riskless Principal, space=Not Applicable</Description>
+        </Field>
+        <Field>
+          <Name>Number of Flex Legs</Name>
+          <Type>Integer</Type>
+          <Size>1</Size>
+          <Description>To be used for notifying Leg Deltas on Delta-Adjusted At Close feature as well as Leg Prices on Flex instruments. It will be 0 for non-Flex instruments.</Description>
+        </Field>
+        <Field>
+          <Name>Flex Leg Prices</Name>
+          <Type>group</Type>
+          <Description>Leg Definitions (1-10)</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Modify Trade (M) section 4.7 -->
+    <Message>
+      <Name>Modify Trade Message</Name>
+      <Dependency>Unsequenced Message Type</Dependency>
+      <Branch>Unsequenced Message</Branch>
+      <Code>M</Code>
+      <Category>Application</Category>
+      <Description>The Modify Trade request is used to change clearing information on an existing trade as well as split a trade into multiple components with different clearing assignments. The trade to be changed is identified by the MatchId field. Acknowledged by Modify Trade Response.</Description>
+      <Fields>
+        <Field>
+          <Name>FirmID</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Firm ID (e.g. ABCD, 123A)</Description>
+        </Field>
+        <Field>
+          <Name>InstrumentId</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Instrument ID, as specified by Option Directory notifications</Description>
+        </Field>
+        <Field>
+          <Name>ClRequestId</Name>
+          <Type>Alphanumeric</Type>
+          <Size>16</Size>
+          <Description>Client identifier of the request. It is echoed back with either Modify Trade Response or Reject</Description>
+        </Field>
+        <Field>
+          <Name>ClOrdId</Name>
+          <Type>Alphanumeric</Type>
+          <Size>16</Size>
+          <Description>Identifies Order whose execution is being modified</Description>
+        </Field>
+        <Field>
+          <Name>CrossId</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>CrossId of the trade being modified</Description>
+        </Field>
+        <Field>
+          <Name>MatchId</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>MatchId of the trade to be modified</Description>
+        </Field>
+        <Field>
+          <Name>Side</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>Side where modifications are to be made</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Size of the trade being split</Description>
+        </Field>
+        <Field>
+          <Name>NumSplits</Name>
+          <Type>Integer</Type>
+          <Size>2</Size>
+          <Description>Number of parties this trade is being split into (1 &lt;= n &lt;= 10)</Description>
+        </Field>
+        <Field>
+          <Name>Trade Splits</Name>
+          <Type>group</Type>
+          <Description>Trade Splits [1..10]</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Member Kill Switch Request (K) section 4.8 -->
+    <Message>
+      <Name>Member Kill Switch Request Message</Name>
+      <Dependency>Unsequenced Message Type</Dependency>
+      <Branch>Unsequenced Message</Branch>
+      <Code>K</Code>
+      <Category>Application</Category>
+      <Description>The Member Kill Switch Request is used to block ability to enter new orders, alter existing orders, delete orders, and create complex instruments. Scope of the Kill Switch Request is one firm per request. Answered by Member Kill Switch Notification or Reject.</Description>
+      <Fields>
+        <Field>
+          <Name>FirmID</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Firm ID issuing the request</Description>
+        </Field>
+        <Field>
+          <Name>ClRequestId</Name>
+          <Type>Alphanumeric</Type>
+          <Size>16</Size>
+          <Description>Client identifier of the request.</Description>
+        </Field>
+        <Field>
+          <Name>TargetFirmID</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Firm ID being targeted by the Kill Switch Request</Description>
+        </Field>
+        <Field>
+          <Name>KillAction</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>A=Block Entry of new requests and delete all open orders</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- System Event (z) section 5.1 -->
+    <Message>
+      <Name>System Event Message</Name>
+      <Dependency>Sequenced Message Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>z</Code>
+      <Category>Application</Category>
+      <Description>System Event message informs of a market or a session-level event.</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Nanoseconds since midnight</Description>
+        </Field>
+        <Field>
+          <Name>EventCode</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>See System Event Codes</Description>
+        </Field>
+        <Field>
+          <Name>Version</Name>
+          <Type>Integer</Type>
+          <Size>1</Size>
+          <Description>Version of OTTO Interface. Currently set to 3</Description>
+        </Field>
+        <Field>
+          <Name>Sub-version</Name>
+          <Type>Integer</Type>
+          <Size>1</Size>
+          <Description>Sub-version of the interface. Currently set to 0.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Simple Instrument Directory (o) section 5.2.1 -->
+    <Message>
+      <Name>Simple Instrument Directory Message</Name>
+      <Dependency>Sequenced Message Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>o</Code>
+      <Category>Application</Category>
+      <Description>At the start of each trading day and during intra-day market state changes, the system disseminates directory messages for all symbols trading on the system.</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Nanoseconds since midnight</Description>
+        </Field>
+        <Field>
+          <Name>ProductId</Name>
+          <Type>Integer</Type>
+          <Size>2</Size>
+          <Description>Product (Underlying) ID</Description>
+        </Field>
+        <Field>
+          <Name>ProductName</Name>
+          <Type>Alphanumeric</Type>
+          <Size>13</Size>
+          <Description>Product (Underlying) name</Description>
+        </Field>
+        <Field>
+          <Name>InstrumentId</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Instrument (Option) ID</Description>
+        </Field>
+        <Field>
+          <Name>ExpirYear</Name>
+          <Type>Integer</Type>
+          <Size>1</Size>
+          <Description>Expiration Year (less 2000)</Description>
+        </Field>
+        <Field>
+          <Name>ExpirMon</Name>
+          <Type>Integer</Type>
+          <Size>1</Size>
+          <Description>Expiration Month (1-12)</Description>
+        </Field>
+        <Field>
+          <Name>ExpirDay</Name>
+          <Type>Integer</Type>
+          <Size>1</Size>
+          <Description>Expiration Day (1-31)</Description>
+        </Field>
+        <Field>
+          <Name>StrikePrice</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Strike Price</Description>
+        </Field>
+        <Field>
+          <Name>OptionType</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>C=Call, P=Put</Description>
+        </Field>
+        <Field>
+          <Name>ClosingType</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>N=Normal Hours, L=Late Hours, W=WCO Early Closing at 12:00 Noon, E=Extended Close (extended trading hours edition)</Description>
+        </Field>
+        <Field>
+          <Name>Tradable</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>Y=Tradable, N=Not Tradable</Description>
+        </Field>
+        <Field>
+          <Name>Closing Only</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>N=Unrestricted, Y=Option is Closing Position Only. Only MM origin orders can have open position in the series</Description>
+        </Field>
+        <Field>
+          <Name>Contract Size</Name>
+          <Type>Integer</Type>
+          <Size>2</Size>
+          <Description>Underlying Deliverable size</Description>
+        </Field>
+        <Field>
+          <Name>MPV</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>E=Penny Everywhere, S=Scaled, P=Penny Pilot</Description>
+        </Field>
+        <Field>
+          <Name>Security Symbol</Name>
+          <Type>Alphanumeric</Type>
+          <Size>8</Size>
+          <Description>Industry assigned security symbol for the option contract</Description>
+        </Field>
+        <Field>
+          <Name>(Reserved)</Name>
+          <Type>Alpha</Type>
+          <Size>16</Size>
+          <Description>Reserved for future use</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Instrument Trading Action (i) section 5.3 -->
+    <Message>
+      <Name>Instrument Trading Action Message</Name>
+      <Dependency>Sequenced Message Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>i</Code>
+      <Category>Application</Category>
+      <Description>This message notifies of changes to the trading status of an instrument.</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Nanoseconds since midnight</Description>
+        </Field>
+        <Field>
+          <Name>ProductId</Name>
+          <Type>Integer</Type>
+          <Size>2</Size>
+          <Description>Product (Underlying) ID</Description>
+        </Field>
+        <Field>
+          <Name>InstrumentId</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Instrument (Option) ID</Description>
+        </Field>
+        <Field>
+          <Name>TradingState</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>H=Halted, T=Trading. At the start of day all instruments are assumed to be Trading unless notified as Halted by this message.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Auction Notification (n) section 5.4 -->
+    <Message>
+      <Name>Auction Notification Message</Name>
+      <Dependency>Sequenced Message Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>n</Code>
+      <Category>Application</Category>
+      <Description>Auction Notification message announces that a new Auction has started in the market for Nasdaq PHLX, ISE, GEMX and MRX. Auction orders include Block, Complex Exposure, Simple Exposed order, Facilitation, Solicitation, and PIM.</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Nanoseconds since midnight</Description>
+        </Field>
+        <Field>
+          <Name>InstrumentType</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>O=Simple Instrument, C=Standard Combination, S=Stock Combination</Description>
+        </Field>
+        <Field>
+          <Name>InstrumentId</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Instrument ID, as specified by Instrument Directory notifications</Description>
+        </Field>
+        <Field>
+          <Name>AuctionId</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Identifies new Auction. AuctionId is unique across all instruments for the duration of the trading session.</Description>
+        </Field>
+        <Field>
+          <Name>OrderType</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>L=Limit, M=Market, N=Not Disclosed</Description>
+        </Field>
+        <Field>
+          <Name>Side</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>B=Bid, O=Offer, N=Not Disclosed</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Price/Premium. 0 if price is Not Disclosed or a Market order.</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Quantity. 0 if volume is not disclosed.</Description>
+        </Field>
+        <Field>
+          <Name>ExecFlag</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>0=None, 1=AON</Description>
+        </Field>
+        <Field>
+          <Name>Order Capacity</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>See Order Capacity Field</Description>
+        </Field>
+        <Field>
+          <Name>FirmID</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Spaces when auction not flagged Attributable</Description>
+        </Field>
+        <Field>
+          <Name>OCCAccount</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Account number used for clearing give up. 0 when auction not flagged Attributable</Description>
+        </Field>
+        <Field>
+          <Name>CMTA</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>0 when auction not flagged Attributable</Description>
+        </Field>
+        <Field>
+          <Name>AuctionEvent</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>S=Start, U=Auction Update, E=End of Auction</Description>
+        </Field>
+        <Field>
+          <Name>AuctionType</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>See Auction Type Field</Description>
+        </Field>
+        <Field>
+          <Name>AuctionDuration</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>User defined field for Auction Duration. In Milliseconds between 3,000 and 300,000. Populated only for Flex instruments and only valid for Start of Auction event S; 0 otherwise.</Description>
+        </Field>
+        <Field>
+          <Name>BestResponsePrice</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Best response price; 0 if not disclosed. BestResponsePrice of 0 is valid for Exposure auctions if BestResponseSize is not 0</Description>
+        </Field>
+        <Field>
+          <Name>BestResponseSize</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Aggregated quantity at Best response price; 0 if not disclosed</Description>
+        </Field>
+        <Field>
+          <Name>(Reserved)</Name>
+          <Type>Integer</Type>
+          <Size>9</Size>
+          <Description>Reserved for future use</Description>
+        </Field>
+        <Field>
+          <Name>Number of Flex DAC Legs</Name>
+          <Type>Integer</Type>
+          <Size>1</Size>
+          <Description>To be used in future to support Delta-Adjusted at Close functionality on Flex.</Description>
+        </Field>
+        <Field>
+          <Name>Flex Dac Legs</Name>
+          <Type>group</Type>
+          <Description>Leg Definitions (1-10)</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Order Accepted Long Form (a) section 5.5.1 -->
+    <Message>
+      <Name>Order Accepted Long Form Message</Name>
+      <Dependency>Sequenced Message Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>a</Code>
+      <Category>Application</Category>
+      <Description>Acknowledges the receipt and acceptance of a valid New Order (Long Form). The data fields from the New Order Message are echoed back. Order Accepted messages always come before any Order Executed or Order Canceled Messages for an order. Does not include Leg Prices or Auction Duration.</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Nanoseconds since midnight</Description>
+        </Field>
+        <Field>
+          <Name>FirmID</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Firm ID (e.g. ABCD, 123A)</Description>
+        </Field>
+        <Field>
+          <Name>InstrumentId</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Instrument ID, as specified by Option Directory notifications</Description>
+        </Field>
+        <Field>
+          <Name>OrderId</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Day-unique Order identifier assigned by exchange</Description>
+        </Field>
+        <Field>
+          <Name>ClOrdId</Name>
+          <Type>Alphanumeric</Type>
+          <Size>16</Size>
+          <Description>Client Order Identifier</Description>
+        </Field>
+        <Field>
+          <Name>CMTA</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>CMTA</Description>
+        </Field>
+        <Field>
+          <Name>ClearingAccount</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Sub-account/MM Identifier at the registered exchange</Description>
+        </Field>
+        <Field>
+          <Name>OCCAccount</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>OCC # to use for clearing (give up)</Description>
+        </Field>
+        <Field>
+          <Name>CustAcct</Name>
+          <Type>Alphanumeric</Type>
+          <Size>10</Size>
+          <Description>Account on the customer system (pass-through)</Description>
+        </Field>
+        <Field>
+          <Name>PreferredParty</Name>
+          <Type>Alpha</Type>
+          <Size>3</Size>
+          <Description>IFI of the preferred Market Maker. Blank if none.</Description>
+        </Field>
+        <Field>
+          <Name>ALOInst</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>N=Not ALO, Y=ALO</Description>
+        </Field>
+        <Field>
+          <Name>ISO</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>N=Not ISO, I=ISO</Description>
+        </Field>
+        <Field>
+          <Name>Side</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>B=Buy, S=Sell</Description>
+        </Field>
+        <Field>
+          <Name>OrderType</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>L=Limit, M=Market</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Price order accepted at</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Number of contracts accepted</Description>
+        </Field>
+        <Field>
+          <Name>MinQty</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>0 or Quantity</Description>
+        </Field>
+        <Field>
+          <Name>TIF</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>See Time in Force Field (TIF)</Description>
+        </Field>
+        <Field>
+          <Name>Capacity</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>See Order Capacity Field</Description>
+        </Field>
+        <Field>
+          <Name>AuctionType</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>See Auction Type Field</Description>
+        </Field>
+        <Field>
+          <Name>AuctionId</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Identifies the Auction being responded. 0 if this order is not an auction response.</Description>
+        </Field>
+        <Field>
+          <Name>DisclosureMask</Name>
+          <Type>Integer</Type>
+          <Size>1</Size>
+          <Description>See Disclosure Mask Field</Description>
+        </Field>
+        <Field>
+          <Name>PriceProtection</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>L=Local Market, N=National Market</Description>
+        </Field>
+        <Field>
+          <Name>DisplayQty</Name>
+          <Type>Integer</Type>
+          <Size>2</Size>
+          <Description>Initial Display Quantity</Description>
+        </Field>
+        <Field>
+          <Name>DisplayWhen</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>I=Immediate, E=Exhaust, N=N/A</Description>
+        </Field>
+        <Field>
+          <Name>DisplayMethod</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>I=Initial, R=Random, N=None</Description>
+        </Field>
+        <Field>
+          <Name>DisplayLowQty</Name>
+          <Type>Integer</Type>
+          <Size>2</Size>
+          <Description>If DisplayMethod = Random</Description>
+        </Field>
+        <Field>
+          <Name>DisplayHighQty</Name>
+          <Type>Integer</Type>
+          <Size>2</Size>
+          <Description>If DisplayMethod = Random</Description>
+        </Field>
+        <Field>
+          <Name>PositionEffectMask</Name>
+          <Type>Integer</Type>
+          <Size>2</Size>
+          <Description>See Position Effect Mask Field</Description>
+        </Field>
+        <Field>
+          <Name>StockLegShortSale</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>N=Not Applicable, H=Sell Short, E=Sell Short Exempt</Description>
+        </Field>
+        <Field>
+          <Name>StockLegMpid</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Give-up for the stock leg</Description>
+        </Field>
+        <Field>
+          <Name>StockCapacity</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>P=Principal, A=Agency, R=Riskless Principal, space=Not Applicable</Description>
+        </Field>
+        <Field>
+          <Name>(Reserved)</Name>
+          <Type>Integer</Type>
+          <Size>9</Size>
+          <Description>Reserved for future use</Description>
+        </Field>
+        <Field>
+          <Name>Number of Flex Legs</Name>
+          <Type>Integer</Type>
+          <Size>1</Size>
+          <Description>To be used for notifying Leg Deltas on Delta-Adjusted At Close feature as well as Leg Prices on Flex Instruments. It will be 0 for non-Flex instruments.</Description>
+        </Field>
+        <Field>
+          <Name>Flex Legs</Name>
+          <Type>group</Type>
+          <Description>Leg Definitions (1-10)</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Order Accepted Short Form (b) section 5.5.2 -->
+    <Message>
+      <Name>Order Accepted Short Form Message</Name>
+      <Dependency>Sequenced Message Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>b</Code>
+      <Category>Application</Category>
+      <Description>This message is used to acknowledge a valid order submitted via New Order (Short Form).</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Nanoseconds since midnight</Description>
+        </Field>
+        <Field>
+          <Name>FirmID</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Firm ID (e.g. ABCD, 123A)</Description>
+        </Field>
+        <Field>
+          <Name>InstrumentId</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Instrument ID, as specified by Option Directory notifications</Description>
+        </Field>
+        <Field>
+          <Name>OrderId</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Day-unique Order identifier assigned by exchange</Description>
+        </Field>
+        <Field>
+          <Name>ClOrdId</Name>
+          <Type>Alphanumeric</Type>
+          <Size>16</Size>
+          <Description>See Client Order Id</Description>
+        </Field>
+        <Field>
+          <Name>ALOInst</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>N=Not ALO, Y=ALO</Description>
+        </Field>
+        <Field>
+          <Name>ISO</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>N=Not ISO, I=ISO</Description>
+        </Field>
+        <Field>
+          <Name>Side</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>B=Buy, S=Sell</Description>
+        </Field>
+        <Field>
+          <Name>OrderType</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>L=Limit, M=Market</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Price order accepted at</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>Integer</Type>
+          <Size>2</Size>
+          <Description>Number of contracts accepted</Description>
+        </Field>
+        <Field>
+          <Name>TIF</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>See Time in Force Field (TIF)</Description>
+        </Field>
+        <Field>
+          <Name>Capacity</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>See Order Capacity Field</Description>
+        </Field>
+        <Field>
+          <Name>AuctionType</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>See Auction Type Field</Description>
+        </Field>
+        <Field>
+          <Name>AuctionId</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Identifies the Auction being responded. 0 if this order is not an auction response.</Description>
+        </Field>
+        <Field>
+          <Name>PriceProtection</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>L=Local, N=National</Description>
+        </Field>
+        <Field>
+          <Name>PositionEffectMask</Name>
+          <Type>Integer</Type>
+          <Size>2</Size>
+          <Description>See Position Effect Mask Field</Description>
+        </Field>
+        <Field>
+          <Name>StockCapacity</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>P=Principal, A=Agency, R=Riskless Principal, space=Not Applicable</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Order Replaced (r) section 5.6 -->
+    <Message>
+      <Name>Order Replaced Message</Name>
+      <Dependency>Sequenced Message Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>r</Code>
+      <Category>Application</Category>
+      <Description>Acknowledges a Replace Order request.</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Nanoseconds since midnight</Description>
+        </Field>
+        <Field>
+          <Name>FirmID</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Firm ID (e.g. ABCD, 123A)</Description>
+        </Field>
+        <Field>
+          <Name>InstrumentId</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Instrument ID, as specified by Option Directory notifications</Description>
+        </Field>
+        <Field>
+          <Name>OrigOrderId</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Exchange ID of the replaced order</Description>
+        </Field>
+        <Field>
+          <Name>OrderId</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Exchange ID of the replacement order</Description>
+        </Field>
+        <Field>
+          <Name>OrigClOrdId</Name>
+          <Type>Alphanumeric</Type>
+          <Size>16</Size>
+          <Description>Client Order Identifier of the replaced order</Description>
+        </Field>
+        <Field>
+          <Name>ClOrdId</Name>
+          <Type>Alphanumeric</Type>
+          <Size>16</Size>
+          <Description>Client Order Identifier of the replacement order</Description>
+        </Field>
+        <Field>
+          <Name>ALOInst</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>N=Not ALO, Y=ALO</Description>
+        </Field>
+        <Field>
+          <Name>ISO</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>N=Not ISO, I=ISO</Description>
+        </Field>
+        <Field>
+          <Name>Side</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>B=Buy, S=Sell</Description>
+        </Field>
+        <Field>
+          <Name>OrderType</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>L=Limit, M=Market</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Price replacement accepted at</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Number of open contracts after replacement</Description>
+        </Field>
+        <Field>
+          <Name>TIF</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>See Time in Force Field (TIF)</Description>
+        </Field>
+        <Field>
+          <Name>CustAcct</Name>
+          <Type>Alphanumeric</Type>
+          <Size>10</Size>
+          <Description>Account on the customer system (pass-through)</Description>
+        </Field>
+        <Field>
+          <Name>Capacity</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>See Order Capacity Field</Description>
+        </Field>
+        <Field>
+          <Name>AuctionType</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>See Auction Type Field</Description>
+        </Field>
+        <Field>
+          <Name>AuctionId</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Identifies the Auction being responded. 0 if this order is not an auction response.</Description>
+        </Field>
+        <Field>
+          <Name>PositionEffectMask</Name>
+          <Type>Integer</Type>
+          <Size>2</Size>
+          <Description>See Position Effect Mask Field</Description>
+        </Field>
+        <Field>
+          <Name>PriceProtection</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>L=Local, N=National</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Order Canceled (c) section 5.7 -->
+    <Message>
+      <Name>Order Canceled Message</Name>
+      <Dependency>Sequenced Message Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>c</Code>
+      <Category>Application</Category>
+      <Description>An Order Canceled Message informs you that an order has been fully canceled. This could be acknowledging a Cancel Order Message, or it could be the result of the order being canceled automatically by the system.</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Nanoseconds since midnight</Description>
+        </Field>
+        <Field>
+          <Name>FirmID</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Firm ID (e.g. ABCD, 123A)</Description>
+        </Field>
+        <Field>
+          <Name>InstrumentId</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Instrument ID, as specified by Option Directory notifications</Description>
+        </Field>
+        <Field>
+          <Name>OrderId</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Exchange ID of the canceled order</Description>
+        </Field>
+        <Field>
+          <Name>ClOrdId</Name>
+          <Type>Alphanumeric</Type>
+          <Size>16</Size>
+          <Description>Client Order Identifier of the canceled order</Description>
+        </Field>
+        <Field>
+          <Name>CancelReason</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>See Cancel Reason</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Order Executed (e) section 5.8 -->
+    <Message>
+      <Name>Order Executed Message</Name>
+      <Dependency>Sequenced Message Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>e</Code>
+      <Category>Application</Category>
+      <Description>Order Executed message reports an execution of an order for a simple instrument, a complex instrument, or an option or stock leg of a complex order.</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Nanoseconds since midnight</Description>
+        </Field>
+        <Field>
+          <Name>FirmID</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Firm ID (e.g. ABCD, 123A)</Description>
+        </Field>
+        <Field>
+          <Name>ProductId</Name>
+          <Type>Integer</Type>
+          <Size>2</Size>
+          <Description>Product (Underlying) ID</Description>
+        </Field>
+        <Field>
+          <Name>OrdExecType</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>Type of the execution being reported: A=Execution of an order for a simple instrument (option), B=Execution of an order for a complex instrument, C=Execution of an option leg of a complex order, D=Execution of a stock leg of a complex order</Description>
+        </Field>
+        <Field>
+          <Name>InstrumentId</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Instrument ID, as specified by Instrument Directory notifications. Identifies a Combo Instrument if OrdExecType is B, C or D.</Description>
+        </Field>
+        <Field>
+          <Name>LegInstrumentId</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Leg Instrument ID. Only populated for OrdExecType=C. Zero otherwise.</Description>
+        </Field>
+        <Field>
+          <Name>LegId</Name>
+          <Type>Integer</Type>
+          <Size>1</Size>
+          <Description>0-based LegId within complex instrument identified by the InstrumentId field. Only meaningful for OrdExecType C or D.</Description>
+        </Field>
+        <Field>
+          <Name>AuctionType</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>See Auction Type Field</Description>
+        </Field>
+        <Field>
+          <Name>OrderId</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Exchange ID of the executed order</Description>
+        </Field>
+        <Field>
+          <Name>ClOrdId</Name>
+          <Type>Alphanumeric</Type>
+          <Size>16</Size>
+          <Description>Client Order Identifier of the executed order</Description>
+        </Field>
+        <Field>
+          <Name>CrossId</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>An order that matches against one or more opposing orders or quotes generates a cross for each price level executed. CrossId is unique for the day within entire trading system.</Description>
+        </Field>
+        <Field>
+          <Name>MatchId</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Cross consists of one or more execution pairs. Each side of such a pair carries a unique MatchId.</Description>
+        </Field>
+        <Field>
+          <Name>Side</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>B=Bought, S=Sold</Description>
+        </Field>
+        <Field>
+          <Name>StockLegShortSale</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>N=Not Applicable, H=Sold Short, E=Sold Short Exempt</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Execution Price</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Number of contracts executed</Description>
+        </Field>
+        <Field>
+          <Name>LiquidityInd</Name>
+          <Type>Integer</Type>
+          <Size>1</Size>
+          <Description>See Liquidity (Maker/Taker) Field Codes</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Trade Details (t) section 5.9 -->
+    <Message>
+      <Name>Trade Details Message</Name>
+      <Dependency>Sequenced Message Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>t</Code>
+      <Category>Application</Category>
+      <Description>A Trade Details message contains additional details, specifically clearing information. This message is sent out with a nominal delay after Order Executed message. Trade Busts and Adjustments are made against individual MatchIds; Modify Trade results are reported with TransType B for the original trade and C for the new trades.</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Nanoseconds since midnight</Description>
+        </Field>
+        <Field>
+          <Name>FirmID</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Firm ID (e.g. ABCD, 123A)</Description>
+        </Field>
+        <Field>
+          <Name>ProductId</Name>
+          <Type>Integer</Type>
+          <Size>2</Size>
+          <Description>Product (Underlying) ID</Description>
+        </Field>
+        <Field>
+          <Name>OrdExecType</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>Type of the execution being reported: A=Execution of an order for a simple instrument (option), C=Execution of an option leg of a complex order, D=Execution of a stock leg of a complex order</Description>
+        </Field>
+        <Field>
+          <Name>InstrumentId</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Instrument ID, as specified by Instrument Directory notifications. Identifies a Combo Instrument if OrdExecType is C or D.</Description>
+        </Field>
+        <Field>
+          <Name>LegInstrumentId</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Leg Instrument ID. Only populated for OrdExecType=C. Zero otherwise.</Description>
+        </Field>
+        <Field>
+          <Name>LegId</Name>
+          <Type>Integer</Type>
+          <Size>1</Size>
+          <Description>Only meaningful for OrdExecType C or D. Identifies leg within complex strategy.</Description>
+        </Field>
+        <Field>
+          <Name>TransType</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>A=New Trade, B=Trade Busted, C=Modified Trade</Description>
+        </Field>
+        <Field>
+          <Name>EventSource</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>A=Matching Engine, M=Manual Trade Entry, U=Trade Modification (user), C=Trade Modification (contra-side user), E=Trade Modification (exchange), B=Trade Bust (exchange)</Description>
+        </Field>
+        <Field>
+          <Name>AuctionType</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>See Auction Type Field</Description>
+        </Field>
+        <Field>
+          <Name>OrderId</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Exchange ID of the executed order</Description>
+        </Field>
+        <Field>
+          <Name>ClOrdId</Name>
+          <Type>Alphanumeric</Type>
+          <Size>16</Size>
+          <Description>Client Order Identifier of the executed order</Description>
+        </Field>
+        <Field>
+          <Name>CrossId</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>An order that matches against one or more opposing orders or quotes generates a cross for each price level executed. CrossId is unique for the day within entire trading system.</Description>
+        </Field>
+        <Field>
+          <Name>MatchId</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Cross consists of one or more execution pairs. Each side of such a pair carries a unique MatchId.</Description>
+        </Field>
+        <Field>
+          <Name>RefMatchId</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>For TransType=C indicates MatchId of the original trade. 0 (zero) for TransType=A, B</Description>
+        </Field>
+        <Field>
+          <Name>Side</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>B=Bought, S=Sold</Description>
+        </Field>
+        <Field>
+          <Name>StockLegShortSale</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>N=Not Applicable, H=Sold Short, E=Sold Short Exempt</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Execution Price</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Number of contracts executed</Description>
+        </Field>
+        <Field>
+          <Name>LiquidityInd</Name>
+          <Type>Integer</Type>
+          <Size>1</Size>
+          <Description>See Liquidity (Maker/Taker) Field Codes</Description>
+        </Field>
+        <Field>
+          <Name>CMTA</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>CMTA</Description>
+        </Field>
+        <Field>
+          <Name>ClearingAccount</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Sub-account/MM Identifier at the registered exchange</Description>
+        </Field>
+        <Field>
+          <Name>OCCAccount</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>OCC # to use for clearing (give up)</Description>
+        </Field>
+        <Field>
+          <Name>CustAcct</Name>
+          <Type>Alphanumeric</Type>
+          <Size>10</Size>
+          <Description>Account on the customer system (pass-through)</Description>
+        </Field>
+        <Field>
+          <Name>StockVenue</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>See Stock Execution Venues</Description>
+        </Field>
+        <Field>
+          <Name>StockLegMpid</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Give-up for the stock leg</Description>
+        </Field>
+        <Field>
+          <Name>Capacity</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>See Order Capacity Field</Description>
+        </Field>
+        <Field>
+          <Name>OpenClose</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>O=Open, C=Closed, space=Carry Forward</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Cross Order Accepted (x) section 5.10 -->
+    <Message>
+      <Name>Cross Order Accepted Message</Name>
+      <Dependency>Sequenced Message Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>x</Code>
+      <Category>Application</Category>
+      <Description>Acknowledges a valid New Cross Order. The Primary Side and Contra Side blocks of the document are carried as Primary and Contra prefixed fields.</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Nanoseconds since midnight</Description>
+        </Field>
+        <Field>
+          <Name>FirmID</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Firm ID (e.g. ABCD, 123A)</Description>
+        </Field>
+        <Field>
+          <Name>InstrumentId</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Instrument ID, as specified by Instrument Directory Messages</Description>
+        </Field>
+        <Field>
+          <Name>CrossType</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>A=Auction, Q=QCC, C=CCC</Description>
+        </Field>
+        <Field>
+          <Name>AuctionType</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>See Auction Type Field. If CrossType is set to A, possible values are P, H, S. For other CrossTypes value N must be used</Description>
+        </Field>
+        <Field>
+          <Name>AuctionId</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Identifies the Auction being accepted. 0 if this order is not an auction.</Description>
+        </Field>
+        <Field>
+          <Name>AuctionAllocPct</Name>
+          <Type>Integer</Type>
+          <Size>1</Size>
+          <Description>Order Allocation percentage 0 &lt;= n &lt;= 40</Description>
+        </Field>
+        <Field>
+          <Name>Side</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>Side of the primary part of the Cross Order. Contra part is implied to be on the opposite side. B=Buy, S=Sell</Description>
+        </Field>
+        <Field>
+          <Name>ISO</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>N=Not ISO, I=ISO</Description>
+        </Field>
+        <Field>
+          <Name>PriceProtection</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>L=Local, N=National</Description>
+        </Field>
+        <Field>
+          <Name>EffectiveTime</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Agreed upon time for the stopped price. UTC time in milliseconds.</Description>
+        </Field>
+        <Field>
+          <Name>DisclosureMask</Name>
+          <Type>Integer</Type>
+          <Size>1</Size>
+          <Description>See Disclosure Mask Field</Description>
+        </Field>
+        <Field>
+          <Name>Primary OrderId</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Day-unique Order identifier assigned by exchange</Description>
+        </Field>
+        <Field>
+          <Name>Primary ClOrdId</Name>
+          <Type>Alphanumeric</Type>
+          <Size>16</Size>
+          <Description>See Client Order Id</Description>
+        </Field>
+        <Field>
+          <Name>Primary CMTA</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>CMTA</Description>
+        </Field>
+        <Field>
+          <Name>Primary ClearingAccount</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Sub-account/MM Identifier at the registered exchange</Description>
+        </Field>
+        <Field>
+          <Name>Primary OCCAccount</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>OCC # to use for clearing (give up)</Description>
+        </Field>
+        <Field>
+          <Name>Primary CustAcct</Name>
+          <Type>Alphanumeric</Type>
+          <Size>10</Size>
+          <Description>Account on the customer system (pass-through)</Description>
+        </Field>
+        <Field>
+          <Name>Primary Price</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Limit price. Primary Side of a Cross order cannot be Market.</Description>
+        </Field>
+        <Field>
+          <Name>Primary Quantity</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Number of contracts</Description>
+        </Field>
+        <Field>
+          <Name>Primary Capacity</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>See Order Capacity Field</Description>
+        </Field>
+        <Field>
+          <Name>Primary PositionEffectMask</Name>
+          <Type>Integer</Type>
+          <Size>2</Size>
+          <Description>See Position Effect Mask Field</Description>
+        </Field>
+        <Field>
+          <Name>Primary StockLegShortSale</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>N=Not Applicable, H=Sell Short, E=Sell Short Exempt. If this is a multi-leg order for a stock combo where stock leg is on the Sell side StockLegShortSale may be set to H or E. In all other cases value N should be used.</Description>
+        </Field>
+        <Field>
+          <Name>Primary StockLegMpid</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Give-up for the stock leg</Description>
+        </Field>
+        <Field>
+          <Name>Contra OrderId</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Day-unique Order identifier assigned by exchange</Description>
+        </Field>
+        <Field>
+          <Name>Contra ClOrdId</Name>
+          <Type>Alphanumeric</Type>
+          <Size>16</Size>
+          <Description>See Client Order Id</Description>
+        </Field>
+        <Field>
+          <Name>Contra CMTA</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>CMTA</Description>
+        </Field>
+        <Field>
+          <Name>Contra ClearingAccount</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Sub-account/MM Identifier at the registered exchange</Description>
+        </Field>
+        <Field>
+          <Name>Contra OCCAccount</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>OCC # to use for clearing (give up)</Description>
+        </Field>
+        <Field>
+          <Name>Contra CustAcct</Name>
+          <Type>Alphanumeric</Type>
+          <Size>10</Size>
+          <Description>Account on the customer system (pass-through)</Description>
+        </Field>
+        <Field>
+          <Name>Contra OrderType</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>L=Limit, M=Market</Description>
+        </Field>
+        <Field>
+          <Name>Contra Price</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Limit price. Should be set to 0 if Order Type = M.</Description>
+        </Field>
+        <Field>
+          <Name>Contra Quantity</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Number of contracts</Description>
+        </Field>
+        <Field>
+          <Name>Contra Capacity</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>See Order Capacity Field</Description>
+        </Field>
+        <Field>
+          <Name>Contra PositionEffectMask</Name>
+          <Type>Integer</Type>
+          <Size>2</Size>
+          <Description>See Position Effect Mask Field</Description>
+        </Field>
+        <Field>
+          <Name>Contra StockLegShortSale</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>N=Not Applicable, H=Sell Short, E=Sell Short Exempt. If this is a multi-leg order for a stock combo where stock leg is on the Sell side StockLegShortSale may be set to H or E. In all other cases value N should be used.</Description>
+        </Field>
+        <Field>
+          <Name>Contra StockLegMpid</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Give-up for the stock leg</Description>
+        </Field>
+        <Field>
+          <Name>(Reserved)</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>Reserved for Future Use</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Member Kill Switch Notification (k) section 5.11 -->
+    <Message>
+      <Name>Member Kill Switch Notification Message</Name>
+      <Dependency>Sequenced Message Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>k</Code>
+      <Category>Application</Category>
+      <Description>The Member Kill Switch Notification informs of a Member Kill Switch Request issued by this OTTO account, or a Kill Switch Action (User or System initiated) targeting Firm ID(s) associated with this OTTO account.</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Nanoseconds since midnight</Description>
+        </Field>
+        <Field>
+          <Name>FirmID</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Firm ID issuing the request, blank if system initiated</Description>
+        </Field>
+        <Field>
+          <Name>ClRequestId</Name>
+          <Type>Alphanumeric</Type>
+          <Size>16</Size>
+          <Description>Client identifier of the request, blank if system initiated</Description>
+        </Field>
+        <Field>
+          <Name>TargetFirmID</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Firm ID affected by the Kill Switch Request</Description>
+        </Field>
+        <Field>
+          <Name>KillAction</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>A=Block Entry of new requests and delete all open orders, R=Kill-switch block removed (by Exchange support personnel), B=Block entry of new requests</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Mass Cancel Response (u) section 6.1 -->
+    <Message>
+      <Name>Mass Cancel Response Message</Name>
+      <Dependency>Sequenced Message Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>u</Code>
+      <Category>Application</Category>
+      <Description>Mass Cancel Response is sent out upon completion of processing of a valid Mass Cancel Request.</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Nanoseconds since midnight</Description>
+        </Field>
+        <Field>
+          <Name>FirmID</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Firm ID</Description>
+        </Field>
+        <Field>
+          <Name>ClRequestId</Name>
+          <Type>Alphanumeric</Type>
+          <Size>16</Size>
+          <Description>Client identifier of the Mass Cancel Request</Description>
+        </Field>
+        <Field>
+          <Name>NumCanceled</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Number of orders canceled</Description>
+        </Field>
+        <Field>
+          <Name>NumPending</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Number of orders where cancelation is pending due to paused instrument state</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Modify Trade Response (m) section 6.3 -->
+    <Message>
+      <Name>Modify Trade Response Message</Name>
+      <Dependency>Sequenced Message Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>m</Code>
+      <Category>Application</Category>
+      <Description>Modify Trade Response is sent when a valid Modify Trade Request is accepted.</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Nanoseconds since midnight</Description>
+        </Field>
+        <Field>
+          <Name>FirmID</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Firm ID (e.g. ABCD, 123A)</Description>
+        </Field>
+        <Field>
+          <Name>InstrumentId</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Instrument ID, as specified by Options Directory notifications</Description>
+        </Field>
+        <Field>
+          <Name>ClRequestId</Name>
+          <Type>Alphanumeric</Type>
+          <Size>16</Size>
+          <Description>Client identifier of the Modify Trade Request</Description>
+        </Field>
+        <Field>
+          <Name>ClOrdId</Name>
+          <Type>Alphanumeric</Type>
+          <Size>16</Size>
+          <Description>Identifies Order whose execution is being modified</Description>
+        </Field>
+        <Field>
+          <Name>CrossId</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>CrossId of the trade being modified</Description>
+        </Field>
+        <Field>
+          <Name>MatchId</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>MatchId of the trade being modified</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Reject (j) section 6.5 -->
+    <Message>
+      <Name>Reject Message</Name>
+      <Dependency>Sequenced Message Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>j</Code>
+      <Category>Application</Category>
+      <Description>Reject is sent in response to a Request that is deemed invalid. Reject message contains error code explaining the reason for rejection.</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Nanoseconds since midnight</Description>
+        </Field>
+        <Field>
+          <Name>RejectMsgType</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>Type of the message being rejected</Description>
+        </Field>
+        <Field>
+          <Name>ClOrdId</Name>
+          <Type>Alphanumeric</Type>
+          <Size>16</Size>
+          <Description>Client order Id or Request Id of the message being rejected</Description>
+        </Field>
+        <Field>
+          <Name>RejectCode</Name>
+          <Type>Integer</Type>
+          <Size>2</Size>
+          <Description>Reason for the reject. See Reject Codes</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Pending Response (p) section 6.6 -->
+    <Message>
+      <Name>Pending Response Message</Name>
+      <Dependency>Sequenced Message Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>p</Code>
+      <Category>Application</Category>
+      <Description>A Pending Response is sent by OTTO when a Request cannot be immediately, fully processed or validated, and indicates that the final status of the Request is not yet known (typically, any Request for a pending instrument). It is eventually followed by the Notification associated with the Request or a Reject.</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Nanoseconds since midnight</Description>
+        </Field>
+        <Field>
+          <Name>FirmID</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Firm ID (e.g. ABCD, 123A)</Description>
+        </Field>
+        <Field>
+          <Name>InstrumentId</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Instrument ID, as specified by Option Directory notifications</Description>
+        </Field>
+        <Field>
+          <Name>PendingMsgType</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>Type of the message placed in pending state</Description>
+        </Field>
+        <Field>
+          <Name>ClOrdId</Name>
+          <Type>Alphanumeric</Type>
+          <Size>16</Size>
+          <Description>Client order id</Description>
+        </Field>
+        <Field>
+          <Name>PendingReason</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>A=Request In Progress</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+  </Messages>
+
+  <Groups>
+
+    <Group>
+      <Name>Flex Leg Prices</Name>
+      <Dependency>Number of Flex Legs</Dependency>
+      <Description>Leg Definitions (1-10) of New Order (Long Form) and New Cross Order: Leg Prices on Flex instruments, to be used for Leg Deltas on the Delta-Adjusted At Close feature</Description>
+      <Fields>
+        <Field>
+          <Name>Leg Prices</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Price of the individual leg</Description>
+        </Field>
+        <Field>
+          <Name>(Reserved)</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Reserved for future use.</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+    <Group>
+      <Name>Flex Legs</Name>
+      <Dependency>Number of Flex Legs</Dependency>
+      <Description>Leg Definitions (1-10) of Order Accepted (Long Form); leg prices are not echoed</Description>
+      <Fields>
+        <Field>
+          <Name>(Reserved)</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Reserved for future use</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+    <Group>
+      <Name>Flex Dac Legs</Name>
+      <Dependency>Number of Flex DAC Legs</Dependency>
+      <Description>Leg Definitions (1-10) of Auction Notification, to be used in future to support Delta-Adjusted at Close functionality on Flex</Description>
+      <Fields>
+        <Field>
+          <Name>(Reserved)</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Reserved for future use</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+    <Group>
+      <Name>Complex Instrument Legs</Name>
+      <Dependency>NumLegs</Dependency>
+      <Description>Leg Definitions (2-10) of Add Complex Instrument</Description>
+      <Fields>
+        <Field>
+          <Name>LegType</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>O=Option, S=Stock</Description>
+        </Field>
+        <Field>
+          <Name>LegInstrumentId</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Instrument ID, as specified by Simple Option Directory notifications. Use 0 for a Stock Leg.</Description>
+        </Field>
+        <Field>
+          <Name>LegSide</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>B=Buy, S=Sell</Description>
+        </Field>
+        <Field>
+          <Name>LegRatio</Name>
+          <Type>Integer</Type>
+          <Size>2</Size>
+          <Description>1 &lt;= n &lt;= 9,999</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+    <Group>
+      <Name>Complex Directory Legs</Name>
+      <Dependency>NumLegs</Dependency>
+      <Description>Leg Definitions (2-10) of Complex Instrument Directory</Description>
+      <Fields>
+        <Field>
+          <Name>LegType</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>O=Option, S=Stock</Description>
+        </Field>
+        <Field>
+          <Name>LegInstrumentId</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Instrument ID, as specified by Simple Option Directory notifications. 0 for a Stock Leg.</Description>
+        </Field>
+        <Field>
+          <Name>LegSide</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>B=Buy, S=Sell</Description>
+        </Field>
+        <Field>
+          <Name>LegRatio</Name>
+          <Type>Integer</Type>
+          <Size>2</Size>
+          <Description>1 &lt;= n &lt;= 9,999</Description>
+        </Field>
+        <Field>
+          <Name>LegId</Name>
+          <Type>Integer</Type>
+          <Size>1</Size>
+          <Description>Leg identifier within this strategy. This is an exchange-assigned 0-based index. E.g. Nth leg has LegId=N-1.</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+    <Group>
+      <Name>Trade Splits</Name>
+      <Dependency>NumSplits</Dependency>
+      <Description>Trade Splits [1..10] of Modify Trade: clearing configuration for each party the trade is being split into</Description>
+      <Fields>
+        <Field>
+          <Name>AllocQty</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Quantity being allocated to the specified clearing configuration</Description>
+        </Field>
+        <Field>
+          <Name>CMTA</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>CMTA (0=remove)</Description>
+        </Field>
+        <Field>
+          <Name>ClearingAccount</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Sub-account/MM Identifier at the registered exchange (blanks=remove); all four characters will be provided to OCC.</Description>
+        </Field>
+        <Field>
+          <Name>OCCAccount</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>OCC # to use for clearing (give up)</Description>
+        </Field>
+        <Field>
+          <Name>CustAcct</Name>
+          <Type>Alphanumeric</Type>
+          <Size>10</Size>
+          <Description>Account on the customer system (pass-through)</Description>
+        </Field>
+        <Field>
+          <Name>StockLegMpid</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Give-up for the stock leg</Description>
+        </Field>
+        <Field>
+          <Name>Capacity</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>See Order Capacity Field</Description>
+        </Field>
+        <Field>
+          <Name>OpenClose</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>O=Open, C=Closed, space=Carry Forward</Description>
+        </Field>
+        <Field>
+          <Name>StockCapacity</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>P=Principal, A=Agency, R=Riskless Principal, space=Not Applicable</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+  </Groups>
+
+  <Enums>
+
+    <Enum>
+      <Name>Side</Name>
+      <Values>
+        <Value>
+          <Data>B</Data>
+          <Name>Buy</Name>
+          <Description>Buy (Bought on executions, Bid on Auction Notification)</Description>
+        </Value>
+        <Value>
+          <Data>S</Data>
+          <Name>Sell</Name>
+          <Description>Sell (Sold on executions)</Description>
+        </Value>
+        <Value>
+          <Data>O</Data>
+          <Name>Offer</Name>
+          <Description>Offer (Auction Notification only)</Description>
+        </Value>
+        <Value>
+          <Data>N</Data>
+          <Name>Not Disclosed</Name>
+          <Description>Not Disclosed (Auction Notification only)</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>OrderType</Name>
+      <Values>
+        <Value>
+          <Data>L</Data>
+          <Name>Limit</Name>
+          <Description>Limit</Description>
+        </Value>
+        <Value>
+          <Data>M</Data>
+          <Name>Market</Name>
+          <Description>Market</Description>
+        </Value>
+        <Value>
+          <Data>N</Data>
+          <Name>Not Disclosed</Name>
+          <Description>Not Disclosed (Auction Notification only)</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>ALOInst</Name>
+      <Values>
+        <Value>
+          <Data>N</Data>
+          <Name>Not ALO</Name>
+          <Description>Not ALO</Description>
+        </Value>
+        <Value>
+          <Data>Y</Data>
+          <Name>ALO</Name>
+          <Description>ALO</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>ISO</Name>
+      <Values>
+        <Value>
+          <Data>N</Data>
+          <Name>Not ISO</Name>
+          <Description>Not ISO</Description>
+        </Value>
+        <Value>
+          <Data>I</Data>
+          <Name>ISO</Name>
+          <Description>ISO</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>TIF</Name>
+      <Values>
+        <Value>
+          <Data>D</Data>
+          <Name>Day</Name>
+          <Description>Day</Description>
+        </Value>
+        <Value>
+          <Data>F</Data>
+          <Name>FOK</Name>
+          <Description>Fill or Kill</Description>
+        </Value>
+        <Value>
+          <Data>I</Data>
+          <Name>IOC</Name>
+          <Description>Immediate or Cancel</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>Capacity</Name>
+      <Values>
+        <Value>
+          <Data>C</Data>
+          <Name>Customer</Name>
+          <Description>Customer</Description>
+        </Value>
+        <Value>
+          <Data>F</Data>
+          <Name>Firm</Name>
+          <Description>Firm</Description>
+        </Value>
+        <Value>
+          <Data>M</Data>
+          <Name>Market Maker</Name>
+          <Description>Market Maker</Description>
+        </Value>
+        <Value>
+          <Data>O</Data>
+          <Name>Other Exchange Registered Market Maker</Name>
+          <Description>Other-Exchange Registered Market Maker (FARMM/AWAYMM)</Description>
+        </Value>
+        <Value>
+          <Data>P</Data>
+          <Name>Professional Customer</Name>
+          <Description>Professional Customer</Description>
+        </Value>
+        <Value>
+          <Data>B</Data>
+          <Name>Broker Dealer</Name>
+          <Description>Broker/Dealer</Description>
+        </Value>
+        <Value>
+          <Data>J</Data>
+          <Name>Joint Back Office</Name>
+          <Description>Joint BackOffice (JBO). Supported on PHLX and NOM; placeholder on ISE, GEMX and MRX</Description>
+        </Value>
+        <Value>
+          <Data>R</Data>
+          <Name>Retail</Name>
+          <Description>Retail. Placeholder in all venues</Description>
+        </Value>
+        <Value>
+          <Data>" "</Data>
+          <Name>Not Applicable</Name>
+          <Description>Space = N/A</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>Order Capacity</Name>
+      <Values>
+        <Value>
+          <Data>C</Data>
+          <Name>Customer</Name>
+          <Description>Customer</Description>
+        </Value>
+        <Value>
+          <Data>F</Data>
+          <Name>Firm</Name>
+          <Description>Firm</Description>
+        </Value>
+        <Value>
+          <Data>M</Data>
+          <Name>Market Maker</Name>
+          <Description>Market Maker</Description>
+        </Value>
+        <Value>
+          <Data>O</Data>
+          <Name>Other Exchange Registered Market Maker</Name>
+          <Description>Other-Exchange Registered Market Maker (FARMM/AWAYMM)</Description>
+        </Value>
+        <Value>
+          <Data>P</Data>
+          <Name>Professional Customer</Name>
+          <Description>Professional Customer</Description>
+        </Value>
+        <Value>
+          <Data>B</Data>
+          <Name>Broker Dealer</Name>
+          <Description>Broker/Dealer</Description>
+        </Value>
+        <Value>
+          <Data>J</Data>
+          <Name>Joint Back Office</Name>
+          <Description>Joint BackOffice (JBO). Supported on PHLX and NOM; placeholder on ISE, GEMX and MRX</Description>
+        </Value>
+        <Value>
+          <Data>R</Data>
+          <Name>Retail</Name>
+          <Description>Retail. Placeholder in all venues</Description>
+        </Value>
+        <Value>
+          <Data>" "</Data>
+          <Name>Not Applicable</Name>
+          <Description>Space = N/A</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>StockCapacity</Name>
+      <Values>
+        <Value>
+          <Data>P</Data>
+          <Name>Principal</Name>
+          <Description>Principal</Description>
+        </Value>
+        <Value>
+          <Data>A</Data>
+          <Name>Agency</Name>
+          <Description>Agency</Description>
+        </Value>
+        <Value>
+          <Data>R</Data>
+          <Name>Riskless Principal</Name>
+          <Description>Riskless Principal</Description>
+        </Value>
+        <Value>
+          <Data>" "</Data>
+          <Name>Not Applicable</Name>
+          <Description>Not Applicable</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>AuctionType</Name>
+      <Values>
+        <Value>
+          <Data>F</Data>
+          <Name>Simple Exposure Order</Name>
+          <Description>Simple Exposure Order</Description>
+        </Value>
+        <Value>
+          <Data>O</Data>
+          <Name>Opening Auction</Name>
+          <Description>Opening Auction</Description>
+        </Value>
+        <Value>
+          <Data>N</Data>
+          <Name>None</Name>
+          <Description>Order is neither an initiation nor a response to an Auction</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>PriceProtection</Name>
+      <Values>
+        <Value>
+          <Data>L</Data>
+          <Name>Local</Name>
+          <Description>Local Market</Description>
+        </Value>
+        <Value>
+          <Data>N</Data>
+          <Name>National</Name>
+          <Description>National Market</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>DisplayWhen</Name>
+      <Values>
+        <Value>
+          <Data>I</Data>
+          <Name>Immediate</Name>
+          <Description>Immediate</Description>
+        </Value>
+        <Value>
+          <Data>E</Data>
+          <Name>Exhaust</Name>
+          <Description>Exhaust</Description>
+        </Value>
+        <Value>
+          <Data>N</Data>
+          <Name>Not Applicable</Name>
+          <Description>N/A</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>DisplayMethod</Name>
+      <Values>
+        <Value>
+          <Data>I</Data>
+          <Name>Initial</Name>
+          <Description>Initial</Description>
+        </Value>
+        <Value>
+          <Data>R</Data>
+          <Name>Random</Name>
+          <Description>Random</Description>
+        </Value>
+        <Value>
+          <Data>N</Data>
+          <Name>None</Name>
+          <Description>None</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>StockLegShortSale</Name>
+      <Values>
+        <Value>
+          <Data>N</Data>
+          <Name>Not Applicable</Name>
+          <Description>Not Applicable</Description>
+        </Value>
+        <Value>
+          <Data>H</Data>
+          <Name>Sell Short</Name>
+          <Description>Sell Short (Sold Short on executions)</Description>
+        </Value>
+        <Value>
+          <Data>E</Data>
+          <Name>Sell Short Exempt</Name>
+          <Description>Sell Short Exempt (Sold Short Exempt on executions)</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>InstrumentType</Name>
+      <Values>
+        <Value>
+          <Data>A</Data>
+          <Name>All</Name>
+          <Description>All (Mass Cancel only)</Description>
+        </Value>
+        <Value>
+          <Data>O</Data>
+          <Name>Simple Instrument</Name>
+          <Description>Simple Instrument</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>Scope</Name>
+      <Values>
+        <Value>
+          <Data>P</Data>
+          <Name>Product</Name>
+          <Description>Cancel all open orders for the specified FirmID/ProductID/InstrumentType</Description>
+        </Value>
+        <Value>
+          <Data>I</Data>
+          <Name>Instrument</Name>
+          <Description>Cancel all the open orders for the specified FirmID/InstrumentID</Description>
+        </Value>
+        <Value>
+          <Data>F</Data>
+          <Name>Firm</Name>
+          <Description>Cancel all open orders for the specified FirmID/InstrumentType</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>CrossType</Name>
+      <Values>
+        <Value>
+          <Data>A</Data>
+          <Name>Auction</Name>
+          <Description>Auction</Description>
+        </Value>
+        <Value>
+          <Data>Q</Data>
+          <Name>Qcc</Name>
+          <Description>QCC</Description>
+        </Value>
+        <Value>
+          <Data>C</Data>
+          <Name>Ccc</Name>
+          <Description>CCC</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>LegType</Name>
+      <Values>
+        <Value>
+          <Data>O</Data>
+          <Name>Option</Name>
+          <Description>Option</Description>
+        </Value>
+        <Value>
+          <Data>S</Data>
+          <Name>Stock</Name>
+          <Description>Stock</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>LegSide</Name>
+      <Values>
+        <Value>
+          <Data>B</Data>
+          <Name>Buy</Name>
+          <Description>Buy</Description>
+        </Value>
+        <Value>
+          <Data>S</Data>
+          <Name>Sell</Name>
+          <Description>Sell</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>OpenClose</Name>
+      <Values>
+        <Value>
+          <Data>O</Data>
+          <Name>Open</Name>
+          <Description>Open</Description>
+        </Value>
+        <Value>
+          <Data>C</Data>
+          <Name>Closed</Name>
+          <Description>Closed</Description>
+        </Value>
+        <Value>
+          <Data>" "</Data>
+          <Name>Carry Forward</Name>
+          <Description>Blank Space = Carry Forward</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>KillAction</Name>
+      <Values>
+        <Value>
+          <Data>A</Data>
+          <Name>Block And Delete</Name>
+          <Description>Block Entry of new requests and delete all open orders</Description>
+        </Value>
+        <Value>
+          <Data>R</Data>
+          <Name>Block Removed</Name>
+          <Description>Kill-switch block removed (by Exchange support personnel)</Description>
+        </Value>
+        <Value>
+          <Data>B</Data>
+          <Name>Block</Name>
+          <Description>Block entry of new requests</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>EventCode</Name>
+      <Values>
+        <Value>
+          <Data>O</Data>
+          <Name>Start of Messages</Name>
+          <Description>Start of Messages. This is always the first message sent in any trading day.</Description>
+        </Value>
+        <Value>
+          <Data>S</Data>
+          <Name>Start of System Hours</Name>
+          <Description>Start of System Hours. The system is up and ready to start accepting orders.</Description>
+        </Value>
+        <Value>
+          <Data>Q</Data>
+          <Name>Start of Opening Process</Name>
+          <Description>Start of Opening Process. The system has started its opening process.</Description>
+        </Value>
+        <Value>
+          <Data>W</Data>
+          <Name>End of Wco Early Closing</Name>
+          <Description>End of WCO Early closing. No new orders or changes to existing orders on last trading date of WCO options.</Description>
+        </Value>
+        <Value>
+          <Data>N</Data>
+          <Name>End of Normal Hours Processing</Name>
+          <Description>End of Normal Hours Processing. No new executions for options that trade during normal hours.</Description>
+        </Value>
+        <Value>
+          <Data>L</Data>
+          <Name>End of Late Hours Processing</Name>
+          <Description>End of Late Hours Processing. No new executions for options that trade during extended hours.</Description>
+        </Value>
+        <Value>
+          <Data>E</Data>
+          <Name>End of System Hours</Name>
+          <Description>End of System Hours. The system is now closed.</Description>
+        </Value>
+        <Value>
+          <Data>C</Data>
+          <Name>End of Messages</Name>
+          <Description>End of Messages. This is always the last message sent in any trading day.</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>OptionType</Name>
+      <Values>
+        <Value>
+          <Data>C</Data>
+          <Name>Call</Name>
+          <Description>Call</Description>
+        </Value>
+        <Value>
+          <Data>P</Data>
+          <Name>Put</Name>
+          <Description>Put</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>ClosingType</Name>
+      <Values>
+        <Value>
+          <Data>N</Data>
+          <Name>Normal Hours</Name>
+          <Description>Normal Hours</Description>
+        </Value>
+        <Value>
+          <Data>L</Data>
+          <Name>Late Hours</Name>
+          <Description>Late Hours</Description>
+        </Value>
+        <Value>
+          <Data>W</Data>
+          <Name>Wco Early Closing</Name>
+          <Description>WCO Early Closing at 12:00 Noon</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>Tradable</Name>
+      <Values>
+        <Value>
+          <Data>Y</Data>
+          <Name>Tradable</Name>
+          <Description>Tradable</Description>
+        </Value>
+        <Value>
+          <Data>N</Data>
+          <Name>Not Tradable</Name>
+          <Description>Not Tradable</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>Closing Only</Name>
+      <Values>
+        <Value>
+          <Data>N</Data>
+          <Name>Unrestricted</Name>
+          <Description>Unrestricted</Description>
+        </Value>
+        <Value>
+          <Data>Y</Data>
+          <Name>Closing Position Only</Name>
+          <Description>Option is Closing Position Only. Only MM origin orders can have open position in the series</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>MPV</Name>
+      <Values>
+        <Value>
+          <Data>E</Data>
+          <Name>Penny Everywhere</Name>
+          <Description>Penny Everywhere</Description>
+        </Value>
+        <Value>
+          <Data>S</Data>
+          <Name>Scaled</Name>
+          <Description>Scaled</Description>
+        </Value>
+        <Value>
+          <Data>P</Data>
+          <Name>Penny Pilot</Name>
+          <Description>Penny Pilot</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>TradingState</Name>
+      <Values>
+        <Value>
+          <Data>H</Data>
+          <Name>Halted</Name>
+          <Description>Halted</Description>
+        </Value>
+        <Value>
+          <Data>T</Data>
+          <Name>Trading</Name>
+          <Description>Trading</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>ExecFlag</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>None</Name>
+          <Description>None</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Aon</Name>
+          <Description>AON</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>AuctionEvent</Name>
+      <Values>
+        <Value>
+          <Data>S</Data>
+          <Name>Start</Name>
+          <Description>Start</Description>
+        </Value>
+        <Value>
+          <Data>U</Data>
+          <Name>Auction Update</Name>
+          <Description>Auction Update</Description>
+        </Value>
+        <Value>
+          <Data>E</Data>
+          <Name>End of Auction</Name>
+          <Description>End of Auction</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>OrdExecType</Name>
+      <Values>
+        <Value>
+          <Data>A</Data>
+          <Name>Simple Instrument</Name>
+          <Description>Execution of an order for a simple instrument (option)</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>TransType</Name>
+      <Values>
+        <Value>
+          <Data>A</Data>
+          <Name>New Trade</Name>
+          <Description>New Trade</Description>
+        </Value>
+        <Value>
+          <Data>B</Data>
+          <Name>Trade Busted</Name>
+          <Description>Trade Busted</Description>
+        </Value>
+        <Value>
+          <Data>C</Data>
+          <Name>Modified Trade</Name>
+          <Description>Modified Trade</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>EventSource</Name>
+      <Values>
+        <Value>
+          <Data>A</Data>
+          <Name>Matching Engine</Name>
+          <Description>Matching Engine</Description>
+        </Value>
+        <Value>
+          <Data>M</Data>
+          <Name>Manual Trade Entry</Name>
+          <Description>Manual Trade Entry</Description>
+        </Value>
+        <Value>
+          <Data>U</Data>
+          <Name>Trade Modification User</Name>
+          <Description>Trade Modification (user)</Description>
+        </Value>
+        <Value>
+          <Data>C</Data>
+          <Name>Trade Modification Contra Side User</Name>
+          <Description>Trade Modification (contra-side user)</Description>
+        </Value>
+        <Value>
+          <Data>E</Data>
+          <Name>Trade Modification Exchange</Name>
+          <Description>Trade Modification (exchange)</Description>
+        </Value>
+        <Value>
+          <Data>B</Data>
+          <Name>Trade Bust Exchange</Name>
+          <Description>Trade Bust (exchange)</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>CancelReason</Name>
+      <Values>
+        <Value>
+          <Data>U</Data>
+          <Name>User Requested</Name>
+          <Description>User requested cancel. Sent in response to a Cancel Message</Description>
+        </Value>
+        <Value>
+          <Data>I</Data>
+          <Name>Immediate or Cancel</Name>
+          <Description>Immediate or Cancel order. No further matches were available on the book so the remaining unexecuted contracts were immediately canceled</Description>
+        </Value>
+        <Value>
+          <Data>S</Data>
+          <Name>Supervisory</Name>
+          <Description>Supervisory. This order was manually canceled by an Exchange supervisory terminal</Description>
+        </Value>
+        <Value>
+          <Data>D</Data>
+          <Name>Regulatory Restriction</Name>
+          <Description>This order cannot be executed because of a regulatory restriction (e.g. trade through restrictions)</Description>
+        </Value>
+        <Value>
+          <Data>Q</Data>
+          <Name>Anti Internalize</Name>
+          <Description>Anti-Internalize. The order was cancelled by the system to avoid trading with another order or quote with the same firm Id</Description>
+        </Value>
+        <Value>
+          <Data>B</Data>
+          <Name>Alo Not Displayable</Name>
+          <Description>ALO Order canceled to avoid being displayed at the price other than its limit</Description>
+        </Value>
+        <Value>
+          <Data>A</Data>
+          <Name>Unexecuted Auction Response</Name>
+          <Description>Unexecuted Auction Response</Description>
+        </Value>
+        <Value>
+          <Data>K</Data>
+          <Name>Kill Switch</Name>
+          <Description>Cancel triggered by Kill Switch</Description>
+        </Value>
+        <Value>
+          <Data>C</Data>
+          <Name>Cancel on Disconnect</Name>
+          <Description>Cancel on Disconnect</Description>
+        </Value>
+        <Value>
+          <Data>O</Data>
+          <Name>Open Delay Timer</Name>
+          <Description>Open Delay Timer Cancellation</Description>
+        </Value>
+        <Value>
+          <Data>P</Data>
+          <Name>Atr Limit</Name>
+          <Description>ATR Limit Cancellation</Description>
+        </Value>
+        <Value>
+          <Data>Z</Data>
+          <Name>Rejected Cancel Replace</Name>
+          <Description>Original Order Cancel due to rejected Cancel Replace Attempt</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>StockVenue</Name>
+      <Values>
+        <Value>
+          <Data>X</Data>
+          <Name>Not Applicable</Name>
+          <Description>Not Applicable (non-QCC stock leg execution)</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>PendingReason</Name>
+      <Values>
+        <Value>
+          <Data>A</Data>
+          <Name>Request In Progress</Name>
+          <Description>Request In Progress</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>Primary Capacity</Name>
+      <Values>
+        <Value>
+          <Data>C</Data>
+          <Name>Customer</Name>
+          <Description>Customer</Description>
+        </Value>
+        <Value>
+          <Data>F</Data>
+          <Name>Firm</Name>
+          <Description>Firm</Description>
+        </Value>
+        <Value>
+          <Data>M</Data>
+          <Name>Market Maker</Name>
+          <Description>Market Maker</Description>
+        </Value>
+        <Value>
+          <Data>O</Data>
+          <Name>Other Exchange Registered Market Maker</Name>
+          <Description>Other-Exchange Registered Market Maker (FARMM/AWAYMM)</Description>
+        </Value>
+        <Value>
+          <Data>P</Data>
+          <Name>Professional Customer</Name>
+          <Description>Professional Customer</Description>
+        </Value>
+        <Value>
+          <Data>B</Data>
+          <Name>Broker Dealer</Name>
+          <Description>Broker/Dealer</Description>
+        </Value>
+        <Value>
+          <Data>J</Data>
+          <Name>Joint Back Office</Name>
+          <Description>Joint BackOffice (JBO). Supported on PHLX and NOM; placeholder on ISE, GEMX and MRX</Description>
+        </Value>
+        <Value>
+          <Data>R</Data>
+          <Name>Retail</Name>
+          <Description>Retail. Placeholder in all venues</Description>
+        </Value>
+        <Value>
+          <Data>" "</Data>
+          <Name>Not Applicable</Name>
+          <Description>Space = N/A</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>Primary StockCapacity</Name>
+      <Values>
+        <Value>
+          <Data>P</Data>
+          <Name>Principal</Name>
+          <Description>Principal</Description>
+        </Value>
+        <Value>
+          <Data>A</Data>
+          <Name>Agency</Name>
+          <Description>Agency</Description>
+        </Value>
+        <Value>
+          <Data>R</Data>
+          <Name>Riskless Principal</Name>
+          <Description>Riskless Principal</Description>
+        </Value>
+        <Value>
+          <Data>" "</Data>
+          <Name>Not Applicable</Name>
+          <Description>Not Applicable</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>Primary StockLegShortSale</Name>
+      <Values>
+        <Value>
+          <Data>N</Data>
+          <Name>Not Applicable</Name>
+          <Description>Not Applicable</Description>
+        </Value>
+        <Value>
+          <Data>H</Data>
+          <Name>Sell Short</Name>
+          <Description>Sell Short</Description>
+        </Value>
+        <Value>
+          <Data>E</Data>
+          <Name>Sell Short Exempt</Name>
+          <Description>Sell Short Exempt</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>Contra Capacity</Name>
+      <Values>
+        <Value>
+          <Data>C</Data>
+          <Name>Customer</Name>
+          <Description>Customer</Description>
+        </Value>
+        <Value>
+          <Data>F</Data>
+          <Name>Firm</Name>
+          <Description>Firm</Description>
+        </Value>
+        <Value>
+          <Data>M</Data>
+          <Name>Market Maker</Name>
+          <Description>Market Maker</Description>
+        </Value>
+        <Value>
+          <Data>O</Data>
+          <Name>Other Exchange Registered Market Maker</Name>
+          <Description>Other-Exchange Registered Market Maker (FARMM/AWAYMM)</Description>
+        </Value>
+        <Value>
+          <Data>P</Data>
+          <Name>Professional Customer</Name>
+          <Description>Professional Customer</Description>
+        </Value>
+        <Value>
+          <Data>B</Data>
+          <Name>Broker Dealer</Name>
+          <Description>Broker/Dealer</Description>
+        </Value>
+        <Value>
+          <Data>J</Data>
+          <Name>Joint Back Office</Name>
+          <Description>Joint BackOffice (JBO). Supported on PHLX and NOM; placeholder on ISE, GEMX and MRX</Description>
+        </Value>
+        <Value>
+          <Data>R</Data>
+          <Name>Retail</Name>
+          <Description>Retail. Placeholder in all venues</Description>
+        </Value>
+        <Value>
+          <Data>" "</Data>
+          <Name>Not Applicable</Name>
+          <Description>Space = N/A</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>Contra StockCapacity</Name>
+      <Values>
+        <Value>
+          <Data>P</Data>
+          <Name>Principal</Name>
+          <Description>Principal</Description>
+        </Value>
+        <Value>
+          <Data>A</Data>
+          <Name>Agency</Name>
+          <Description>Agency</Description>
+        </Value>
+        <Value>
+          <Data>R</Data>
+          <Name>Riskless Principal</Name>
+          <Description>Riskless Principal</Description>
+        </Value>
+        <Value>
+          <Data>" "</Data>
+          <Name>Not Applicable</Name>
+          <Description>Not Applicable</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>Contra StockLegShortSale</Name>
+      <Values>
+        <Value>
+          <Data>N</Data>
+          <Name>Not Applicable</Name>
+          <Description>Not Applicable</Description>
+        </Value>
+        <Value>
+          <Data>H</Data>
+          <Name>Sell Short</Name>
+          <Description>Sell Short</Description>
+        </Value>
+        <Value>
+          <Data>E</Data>
+          <Name>Sell Short Exempt</Name>
+          <Description>Sell Short Exempt</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>Contra OrderType</Name>
+      <Values>
+        <Value>
+          <Data>L</Data>
+          <Name>Limit</Name>
+          <Description>Limit</Description>
+        </Value>
+        <Value>
+          <Data>M</Data>
+          <Name>Market</Name>
+          <Description>Market</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>LiquidityInd</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>None</Name>
+          <Description>None</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Maker</Name>
+          <Description>Maker</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Taker</Name>
+          <Description>Taker</Description>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>Response</Name>
+          <Description>Response</Description>
+        </Value>
+        <Value>
+          <Data>5</Data>
+          <Name>Hidden</Name>
+          <Description>Hidden</Description>
+        </Value>
+        <Value>
+          <Data>6</Data>
+          <Name>Opening Rotation</Name>
+          <Description>Opening Rotation</Description>
+        </Value>
+        <Value>
+          <Data>7</Data>
+          <Name>Cross</Name>
+          <Description>Cross</Description>
+        </Value>
+        <Value>
+          <Data>8</Data>
+          <Name>Flashed Order</Name>
+          <Description>Flashed Order</Description>
+        </Value>
+        <Value>
+          <Data>9</Data>
+          <Name>Flash Response</Name>
+          <Description>Flash Response</Description>
+        </Value>
+        <Value>
+          <Data>10</Data>
+          <Name>Routed Out</Name>
+          <Description>Routed Out</Description>
+        </Value>
+        <Value>
+          <Data>11</Data>
+          <Name>Trade Report</Name>
+          <Description>Trade Report</Description>
+        </Value>
+        <Value>
+          <Data>12</Data>
+          <Name>Combo Maker Against Combo</Name>
+          <Description>Combo Maker Against Combo</Description>
+        </Value>
+        <Value>
+          <Data>13</Data>
+          <Name>Combo Taker Against Combo</Name>
+          <Description>Combo Taker Against Combo</Description>
+        </Value>
+        <Value>
+          <Data>14</Data>
+          <Name>Combo Response Against Combo</Name>
+          <Description>Combo Response Against Combo</Description>
+        </Value>
+        <Value>
+          <Data>15</Data>
+          <Name>Combo Hidden Against Combo</Name>
+          <Description>Combo Hidden Against Combo</Description>
+        </Value>
+        <Value>
+          <Data>16</Data>
+          <Name>Combo Opening Rotation</Name>
+          <Description>Combo Opening Rotation</Description>
+        </Value>
+        <Value>
+          <Data>17</Data>
+          <Name>Combo Cross</Name>
+          <Description>Combo Cross</Description>
+        </Value>
+        <Value>
+          <Data>18</Data>
+          <Name>Combo Taker Against Regular</Name>
+          <Description>Combo Taker Against Regular</Description>
+        </Value>
+        <Value>
+          <Data>19</Data>
+          <Name>Regular Maker Against Combo</Name>
+          <Description>Regular Maker Against Combo</Description>
+        </Value>
+        <Value>
+          <Data>20</Data>
+          <Name>Combo Taker Against IO</Name>
+          <Description>Combo Taker Against IO</Description>
+        </Value>
+        <Value>
+          <Data>21</Data>
+          <Name>Regular (incl. PIM) Taker Against IO</Name>
+          <Description>Regular (incl. PIM) Taker Against IO</Description>
+        </Value>
+        <Value>
+          <Data>22</Data>
+          <Name>IO Maker Against Combo</Name>
+          <Description>IO Maker Against Combo</Description>
+        </Value>
+        <Value>
+          <Data>23</Data>
+          <Name>IO Maker Against Regular</Name>
+          <Description>IO Maker Against Regular</Description>
+        </Value>
+        <Value>
+          <Data>24</Data>
+          <Name>Regular Maker Against IO Participant</Name>
+          <Description>Regular Maker Against IO Participant</Description>
+        </Value>
+        <Value>
+          <Data>25</Data>
+          <Name>IO Participant Taker Against Regular</Name>
+          <Description>IO Participant Taker Against Regular</Description>
+        </Value>
+        <Value>
+          <Data>26</Data>
+          <Name>Broken Price Improvement</Name>
+          <Description>Broken Price Improvement</Description>
+        </Value>
+        <Value>
+          <Data>27</Data>
+          <Name>Broken Facilitation</Name>
+          <Description>Broken Facilitation</Description>
+        </Value>
+        <Value>
+          <Data>28</Data>
+          <Name>Broken Solicitation</Name>
+          <Description>Broken Solicitation</Description>
+        </Value>
+        <Value>
+          <Data>29</Data>
+          <Name>Combo Broken Price Improvement</Name>
+          <Description>Combo Broken Price Improvement</Description>
+        </Value>
+        <Value>
+          <Data>30</Data>
+          <Name>Combo Broken Facilitation</Name>
+          <Description>Combo Broken Facilitation</Description>
+        </Value>
+        <Value>
+          <Data>31</Data>
+          <Name>Combo Broken Solicitation</Name>
+          <Description>Combo Broken Solicitation</Description>
+        </Value>
+        <Value>
+          <Data>32</Data>
+          <Name>Block</Name>
+          <Description>Block</Description>
+        </Value>
+        <Value>
+          <Data>33</Data>
+          <Name>Block Response</Name>
+          <Description>Block Response</Description>
+        </Value>
+        <Value>
+          <Data>34</Data>
+          <Name>Directed Response</Name>
+          <Description>Directed Response</Description>
+        </Value>
+        <Value>
+          <Data>35</Data>
+          <Name>Facilitation</Name>
+          <Description>Facilitation</Description>
+        </Value>
+        <Value>
+          <Data>36</Data>
+          <Name>Facilitation Response</Name>
+          <Description>Facilitation Response</Description>
+        </Value>
+        <Value>
+          <Data>37</Data>
+          <Name>Price Improvement</Name>
+          <Description>Price Improvement</Description>
+        </Value>
+        <Value>
+          <Data>38</Data>
+          <Name>Price improvement Response</Name>
+          <Description>Price improvement Response</Description>
+        </Value>
+        <Value>
+          <Data>39</Data>
+          <Name>Solicitation</Name>
+          <Description>Solicitation</Description>
+        </Value>
+        <Value>
+          <Data>40</Data>
+          <Name>Solicitation Response</Name>
+          <Description>Solicitation Response</Description>
+        </Value>
+        <Value>
+          <Data>41</Data>
+          <Name>Qualified Contingent Cross</Name>
+          <Description>Qualified Contingent Cross</Description>
+        </Value>
+        <Value>
+          <Data>42</Data>
+          <Name>Customer to Customer</Name>
+          <Description>Customer to Customer</Description>
+        </Value>
+        <Value>
+          <Data>43</Data>
+          <Name>Combo Facilitation</Name>
+          <Description>Combo Facilitation</Description>
+        </Value>
+        <Value>
+          <Data>44</Data>
+          <Name>Combo Facilitation Response</Name>
+          <Description>Combo Facilitation Response</Description>
+        </Value>
+        <Value>
+          <Data>45</Data>
+          <Name>Combo Price Improvement</Name>
+          <Description>Combo Price Improvement</Description>
+        </Value>
+        <Value>
+          <Data>46</Data>
+          <Name>Combo Price Improvement Response</Name>
+          <Description>Combo Price Improvement Response</Description>
+        </Value>
+        <Value>
+          <Data>47</Data>
+          <Name>Combo Solicitation</Name>
+          <Description>Combo Solicitation</Description>
+        </Value>
+        <Value>
+          <Data>48</Data>
+          <Name>Combo Solicitation Response</Name>
+          <Description>Combo Solicitation Response</Description>
+        </Value>
+        <Value>
+          <Data>49</Data>
+          <Name>Combo Qualified Contingent Cross</Name>
+          <Description>Combo Qualified Contingent Cross</Description>
+        </Value>
+        <Value>
+          <Data>50</Data>
+          <Name>Combo Customer to Customer</Name>
+          <Description>Combo Customer to Customer</Description>
+        </Value>
+        <Value>
+          <Data>51</Data>
+          <Name>Sweep Routed Out</Name>
+          <Description>Sweep Routed Out</Description>
+        </Value>
+        <Value>
+          <Data>52</Data>
+          <Name>Sweep Trade Report</Name>
+          <Description>Sweep Trade Report</Description>
+        </Value>
+        <Value>
+          <Data>53</Data>
+          <Name>Combo Taker Against Regular - Thru NBBO</Name>
+          <Description>Combo Taker Against Regular - Thru NBBO</Description>
+        </Value>
+        <Value>
+          <Data>54</Data>
+          <Name>Combo Taker Against IO - Thru NBBO</Name>
+          <Description>Combo Taker Against IO - Thru NBBO</Description>
+        </Value>
+        <Value>
+          <Data>55</Data>
+          <Name>Simple Exposure Order Initiator Upon Receipt</Name>
+          <Description>Simple Exposure Order Initiator Upon Receipt</Description>
+        </Value>
+        <Value>
+          <Data>56</Data>
+          <Name>Simple Exposure Order Initiator</Name>
+          <Description>Simple Exposure Order Initiator</Description>
+        </Value>
+        <Value>
+          <Data>57</Data>
+          <Name>Simple Exposure Order Responder</Name>
+          <Description>Simple Exposure Order Responder</Description>
+        </Value>
+        <Value>
+          <Data>58</Data>
+          <Name>Flex Auction</Name>
+          <Description>Flex Auction</Description>
+        </Value>
+        <Value>
+          <Data>59</Data>
+          <Name>Flex Auction Responder</Name>
+          <Description>Flex Auction Responder</Description>
+        </Value>
+        <Value>
+          <Data>60</Data>
+          <Name>Flex Price Improvement</Name>
+          <Description>Flex Price Improvement</Description>
+        </Value>
+        <Value>
+          <Data>61</Data>
+          <Name>Flex Price Improvement Responder</Name>
+          <Description>Flex Price Improvement Responder</Description>
+        </Value>
+        <Value>
+          <Data>62</Data>
+          <Name>Flex Broken Price Improvement</Name>
+          <Description>Flex Broken Price Improvement</Description>
+        </Value>
+        <Value>
+          <Data>63</Data>
+          <Name>Flex Solicitation</Name>
+          <Description>Flex Solicitation</Description>
+        </Value>
+        <Value>
+          <Data>64</Data>
+          <Name>Flex Solicitation Responder</Name>
+          <Description>Flex Solicitation Responder</Description>
+        </Value>
+        <Value>
+          <Data>65</Data>
+          <Name>Flex Broken Solicitation</Name>
+          <Description>Flex Broken Solicitation</Description>
+        </Value>
+        <Value>
+          <Data>66</Data>
+          <Name>Combo Flex Auction</Name>
+          <Description>Combo Flex Auction</Description>
+        </Value>
+        <Value>
+          <Data>67</Data>
+          <Name>Combo Flex Auction Responder</Name>
+          <Description>Combo Flex Auction Responder</Description>
+        </Value>
+        <Value>
+          <Data>68</Data>
+          <Name>Combo Flex Price Improvement</Name>
+          <Description>Combo Flex Price Improvement</Description>
+        </Value>
+        <Value>
+          <Data>69</Data>
+          <Name>Combo Flex Price Improvement Responder</Name>
+          <Description>Combo Flex Price Improvement Responder</Description>
+        </Value>
+        <Value>
+          <Data>70</Data>
+          <Name>Combo Flex Broken Price Improvement</Name>
+          <Description>Combo Flex Broken Price Improvement</Description>
+        </Value>
+        <Value>
+          <Data>71</Data>
+          <Name>Combo Flex Solicitation</Name>
+          <Description>Combo Flex Solicitation</Description>
+        </Value>
+        <Value>
+          <Data>72</Data>
+          <Name>Combo Flex Solicitation Responder</Name>
+          <Description>Combo Flex Solicitation Responder</Description>
+        </Value>
+        <Value>
+          <Data>73</Data>
+          <Name>Combo Flex Broken Solicitation</Name>
+          <Description>Combo Flex Broken Solicitation</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>RejectCode</Name>
+      <Values>
+        <Value>
+          <Data>10</Data>
+          <Name>Invalid Firm</Name>
+          <Description>Invalid Firm</Description>
+        </Value>
+        <Value>
+          <Data>11</Data>
+          <Name>Invalid Instrument</Name>
+          <Description>Invalid Instrument</Description>
+        </Value>
+        <Value>
+          <Data>12</Data>
+          <Name>Invalid InstrumentType</Name>
+          <Description>Invalid InstrumentType</Description>
+        </Value>
+        <Value>
+          <Data>13</Data>
+          <Name>Invalid Quantity</Name>
+          <Description>Invalid Quantity</Description>
+        </Value>
+        <Value>
+          <Data>14</Data>
+          <Name>Invalid Price</Name>
+          <Description>Invalid Price</Description>
+        </Value>
+        <Value>
+          <Data>15</Data>
+          <Name>Invalid Side</Name>
+          <Description>Invalid Side</Description>
+        </Value>
+        <Value>
+          <Data>16</Data>
+          <Name>Invalid Tif</Name>
+          <Description>Invalid Tif</Description>
+        </Value>
+        <Value>
+          <Data>17</Data>
+          <Name>Invalid Iso</Name>
+          <Description>Invalid Iso</Description>
+        </Value>
+        <Value>
+          <Data>18</Data>
+          <Name>Invalid AuctionType</Name>
+          <Description>Invalid AuctionType</Description>
+        </Value>
+        <Value>
+          <Data>19</Data>
+          <Name>Invalid AuctionId</Name>
+          <Description>Invalid AuctionId</Description>
+        </Value>
+        <Value>
+          <Data>20</Data>
+          <Name>Invalid OrderType</Name>
+          <Description>Invalid OrderType</Description>
+        </Value>
+        <Value>
+          <Data>21</Data>
+          <Name>Invalid PrefParty</Name>
+          <Description>Invalid PrefParty</Description>
+        </Value>
+        <Value>
+          <Data>22</Data>
+          <Name>Invalid ALO</Name>
+          <Description>Invalid ALO</Description>
+        </Value>
+        <Value>
+          <Data>23</Data>
+          <Name>Invalid Capacity</Name>
+          <Description>Invalid Capacity</Description>
+        </Value>
+        <Value>
+          <Data>24</Data>
+          <Name>Invalid ReservedInst</Name>
+          <Description>Invalid ReservedInst</Description>
+        </Value>
+        <Value>
+          <Data>25</Data>
+          <Name>Invalid Trade</Name>
+          <Description>Invalid Trade</Description>
+        </Value>
+        <Value>
+          <Data>26</Data>
+          <Name>Invalid Format</Name>
+          <Description>Invalid Format</Description>
+        </Value>
+        <Value>
+          <Data>27</Data>
+          <Name>Invalid CrossType</Name>
+          <Description>Invalid CrossType</Description>
+        </Value>
+        <Value>
+          <Data>28</Data>
+          <Name>Invalid MinQuantity</Name>
+          <Description>Invalid MinQuantity</Description>
+        </Value>
+        <Value>
+          <Data>29</Data>
+          <Name>Invalid PriceProtection</Name>
+          <Description>Invalid PriceProtection</Description>
+        </Value>
+        <Value>
+          <Data>30</Data>
+          <Name>Invalid Reserve</Name>
+          <Description>Invalid Reserve</Description>
+        </Value>
+        <Value>
+          <Data>31</Data>
+          <Name>Invalid Persist</Name>
+          <Description>Invalid Persist</Description>
+        </Value>
+        <Value>
+          <Data>32</Data>
+          <Name>Invalid ShortSaleInd</Name>
+          <Description>Invalid ShortSaleInd</Description>
+        </Value>
+        <Value>
+          <Data>33</Data>
+          <Name>Invalid Product</Name>
+          <Description>Invalid Product</Description>
+        </Value>
+        <Value>
+          <Data>34</Data>
+          <Name>Invalid Scope</Name>
+          <Description>Invalid Scope</Description>
+        </Value>
+        <Value>
+          <Data>35</Data>
+          <Name>Invalid Clearing Info</Name>
+          <Description>Invalid Clearing Info</Description>
+        </Value>
+        <Value>
+          <Data>36</Data>
+          <Name>Invalid Position Effect</Name>
+          <Description>Invalid Position Effect</Description>
+        </Value>
+        <Value>
+          <Data>37</Data>
+          <Name>Invalid CrossId</Name>
+          <Description>Invalid CrossId</Description>
+        </Value>
+        <Value>
+          <Data>38</Data>
+          <Name>Invalid MatchId</Name>
+          <Description>Invalid MatchId</Description>
+        </Value>
+        <Value>
+          <Data>39</Data>
+          <Name>Invalid Client Order Id</Name>
+          <Description>Invalid Client Order Id</Description>
+        </Value>
+        <Value>
+          <Data>40</Data>
+          <Name>Invalid Killswitch Action</Name>
+          <Description>Invalid Killswitch Action</Description>
+        </Value>
+        <Value>
+          <Data>41</Data>
+          <Name>Invalid Leg Count</Name>
+          <Description>Invalid Leg Count</Description>
+        </Value>
+        <Value>
+          <Data>42</Data>
+          <Name>Invalid Leg Type</Name>
+          <Description>Invalid Leg Type</Description>
+        </Value>
+        <Value>
+          <Data>43</Data>
+          <Name>Invalid Leg Ratio</Name>
+          <Description>Invalid Leg Ratio</Description>
+        </Value>
+        <Value>
+          <Data>44</Data>
+          <Name>Invalid Mpid</Name>
+          <Description>Invalid Mpid</Description>
+        </Value>
+        <Value>
+          <Data>45</Data>
+          <Name>Invalid Time</Name>
+          <Description>Invalid Time</Description>
+        </Value>
+        <Value>
+          <Data>46</Data>
+          <Name>Invalid Msg Type</Name>
+          <Description>Invalid Msg Type</Description>
+        </Value>
+        <Value>
+          <Data>47</Data>
+          <Name>Invalid Disclosure Mask</Name>
+          <Description>Invalid Disclosure Mask</Description>
+        </Value>
+        <Value>
+          <Data>48</Data>
+          <Name>Post Only Reprice</Name>
+          <Description>Post Only Reprice</Description>
+        </Value>
+        <Value>
+          <Data>49</Data>
+          <Name>UnAuthorized GiveUp</Name>
+          <Description>UnAuthorized GiveUp</Description>
+        </Value>
+        <Value>
+          <Data>50</Data>
+          <Name>InvalidSession</Name>
+          <Description>InvalidSession</Description>
+        </Value>
+        <Value>
+          <Data>101</Data>
+          <Name>Not Free Trading</Name>
+          <Description>Not Free Trading</Description>
+        </Value>
+        <Value>
+          <Data>102</Data>
+          <Name>Pref Not Allowed</Name>
+          <Description>Pref Not Allowed</Description>
+        </Value>
+        <Value>
+          <Data>103</Data>
+          <Name>Stock Combo Not Allowed</Name>
+          <Description>Stock Combo Not Allowed</Description>
+        </Value>
+        <Value>
+          <Data>104</Data>
+          <Name>Instrument Halted</Name>
+          <Description>Instrument Halted</Description>
+        </Value>
+        <Value>
+          <Data>105</Data>
+          <Name>Kill Switch In Effect</Name>
+          <Description>Kill Switch In Effect</Description>
+        </Value>
+        <Value>
+          <Data>106</Data>
+          <Name>System Closed</Name>
+          <Description>System Closed</Description>
+        </Value>
+        <Value>
+          <Data>107</Data>
+          <Name>Test Mode</Name>
+          <Description>Test Mode</Description>
+        </Value>
+        <Value>
+          <Data>108</Data>
+          <Name>Order Not Found</Name>
+          <Description>Order Not Found</Description>
+        </Value>
+        <Value>
+          <Data>109</Data>
+          <Name>Too Late To Act</Name>
+          <Description>Too Late To Act</Description>
+        </Value>
+        <Value>
+          <Data>110</Data>
+          <Name>Instrument Closed</Name>
+          <Description>Instrument Closed</Description>
+        </Value>
+        <Value>
+          <Data>111</Data>
+          <Name>Instrument State</Name>
+          <Description>Instrument State</Description>
+        </Value>
+        <Value>
+          <Data>112</Data>
+          <Name>Action Not Allowed</Name>
+          <Description>Action Not Allowed</Description>
+        </Value>
+        <Value>
+          <Data>113</Data>
+          <Name>LULD In Effect</Name>
+          <Description>LULD In Effect</Description>
+        </Value>
+        <Value>
+          <Data>114</Data>
+          <Name>Too Many Combos</Name>
+          <Description>Too Many Combos</Description>
+        </Value>
+        <Value>
+          <Data>115</Data>
+          <Name>Request Cancelled</Name>
+          <Description>Request Cancelled</Description>
+        </Value>
+        <Value>
+          <Data>116</Data>
+          <Name>Below Minimum Reserve</Name>
+          <Description>Below Minimum Reserve</Description>
+        </Value>
+        <Value>
+          <Data>117</Data>
+          <Name>Port Rate Breached</Name>
+          <Description>Port Rate Breached</Description>
+        </Value>
+        <Value>
+          <Data>118</Data>
+          <Name>Invalid Trader ID</Name>
+          <Description>Invalid Trader ID</Description>
+        </Value>
+        <Value>
+          <Data>119</Data>
+          <Name>Stop Price Not Allowed</Name>
+          <Description>Stop Price Not Allowed</Description>
+        </Value>
+        <Value>
+          <Data>120</Data>
+          <Name>Stop Price</Name>
+          <Description>Stop Price</Description>
+        </Value>
+        <Value>
+          <Data>121</Data>
+          <Name>Firm Suspended</Name>
+          <Description>Firm Suspended</Description>
+        </Value>
+        <Value>
+          <Data>122</Data>
+          <Name>Trader Suspended</Name>
+          <Description>Trader Suspended</Description>
+        </Value>
+        <Value>
+          <Data>123</Data>
+          <Name>Port Suspended</Name>
+          <Description>Port Suspended</Description>
+        </Value>
+        <Value>
+          <Data>124</Data>
+          <Name>Invalid Investment Decision</Name>
+          <Description>Invalid Investment Decision</Description>
+        </Value>
+        <Value>
+          <Data>125</Data>
+          <Name>Invalid Execution Decision</Name>
+          <Description>Invalid Execution Decision</Description>
+        </Value>
+        <Value>
+          <Data>126</Data>
+          <Name>Invalid Dea</Name>
+          <Description>Invalid Dea</Description>
+        </Value>
+        <Value>
+          <Data>127</Data>
+          <Name>Invalid ClientId</Name>
+          <Description>Invalid ClientId</Description>
+        </Value>
+        <Value>
+          <Data>128</Data>
+          <Name>Invalid Party Role Qualifier</Name>
+          <Description>Invalid Party Role Qualifier</Description>
+        </Value>
+        <Value>
+          <Data>129</Data>
+          <Name>Order Expired</Name>
+          <Description>Order Expired</Description>
+        </Value>
+        <Value>
+          <Data>130</Data>
+          <Name>Invalid Good Til Date</Name>
+          <Description>Invalid Good Til Date</Description>
+        </Value>
+        <Value>
+          <Data>131</Data>
+          <Name>Instrument Expired</Name>
+          <Description>Instrument Expired</Description>
+        </Value>
+        <Value>
+          <Data>132</Data>
+          <Name>Invalid Self Match PrevId</Name>
+          <Description>Invalid Self Match PrevId</Description>
+        </Value>
+        <Value>
+          <Data>133</Data>
+          <Name>Spread</Name>
+          <Description>Spread</Description>
+        </Value>
+        <Value>
+          <Data>134</Data>
+          <Name>Not Permitted</Name>
+          <Description>Not Permitted</Description>
+        </Value>
+        <Value>
+          <Data>135</Data>
+          <Name>Size</Name>
+          <Description>Size</Description>
+        </Value>
+        <Value>
+          <Data>136</Data>
+          <Name>Attribute</Name>
+          <Description>Attribute</Description>
+        </Value>
+        <Value>
+          <Data>137</Data>
+          <Name>Reentry Required</Name>
+          <Description>Reentry Required</Description>
+        </Value>
+        <Value>
+          <Data>138</Data>
+          <Name>Opening Rotation</Name>
+          <Description>Opening Rotation</Description>
+        </Value>
+        <Value>
+          <Data>139</Data>
+          <Name>KillSwitch Reentry Required</Name>
+          <Description>KillSwitch Reentry Required</Description>
+        </Value>
+        <Value>
+          <Data>140</Data>
+          <Name>Auction</Name>
+          <Description>Auction</Description>
+        </Value>
+        <Value>
+          <Data>141</Data>
+          <Name>Market Closed</Name>
+          <Description>Market Closed</Description>
+        </Value>
+        <Value>
+          <Data>142</Data>
+          <Name>Pending</Name>
+          <Description>Pending</Description>
+        </Value>
+        <Value>
+          <Data>143</Data>
+          <Name>System Error</Name>
+          <Description>System Error</Description>
+        </Value>
+        <Value>
+          <Data>144</Data>
+          <Name>Cancel on Disconnect</Name>
+          <Description>Cancel on Disconnect</Description>
+        </Value>
+        <Value>
+          <Data>145</Data>
+          <Name>Auction Duration</Name>
+          <Description>Auction Duration</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+  </Enums>
+
+</OmiItchNasdaqPdf>

@@ -1,0 +1,1640 @@
+<OmiFixPdf>
+
+  <!--
+  Nasdaq MRX copy of the all-markets Nasdaq options FIX DROP 2.1 transcription
+  (Common/Options/Nasdaq.Options.DropCopy.Fix.v2.1.Pdf.xml in its original form), leaving out what the document scopes to
+  other markets:
+    - JBO CustomerOrFirm 7: "Joint Back Office (PHLX, NOM and BX only)"
+  -->
+
+  <!--
+  FIX DROP 2.1, Phlx, NOM, ISE, GEMX and MRX (August 2026, revision 2.1e), North American Trading
+  Services: the FIX 4.2 drop copy of the replatformed Nasdaq US options markets. Trade, order or both
+  types of updates, selected by Account, Firm, OCC Account Number and/or CMTA, are delivered to the
+  subscriber as Execution Reports on an outbound sequenced FIX session.
+
+  Field names are the FIX 4.2 names where the document misspells or renames a tag: OrdTyp (40) is
+  OrdType, StockCapacity (Rule80A) (47) is Rule80A, CallOrPut (201) is PutOrCall, Stepup Price Type /
+  Stepup Price (9043/9044) are StepUpPriceType/StepUpPrice. The document swaps the names of tags 810
+  and 879 (810 UnderlyingQty, 879 UnderlyingPrice); they are transcribed with the FIX 4.2 names
+  UnderlyingPx (810) and UnderlyingQty (879), as in the Nasdaq Options FIX System 13.4 dictionary.
+  SeriesID (5333) is listed twice in the Execution Report table and is transcribed once. Data types are
+  FIX 4.2 (section 3: Nasdaq follows FIX standard for data types); Required C (conditional) is
+  transcribed as N with the condition in the description.
+
+  The session messages are standard FIX 4.2 (section 2); their fields are the FIX 4.2 standard fields.
+  EncryptMethod (98) is ignored (FIX level encryption is not supported).
+
+  Changes from FIX DROP 2.0 (ISE_GEMX_MRX_FIX_Drop_2.0.pdf, ISE, MRX and GEMX): LeavesQty (151),
+  CallOrPut (201), CustomerOrFirm (204), DisplayWhen (1083), FloorBrokerNumber (9405) and OrderSource
+  (7300) added to the Execution Report; ExDestination (100), ClientID (109) and CrossType (549) removed;
+  OrdStatus (39) is now conditional (absent for manual trades) and manual trades, trade cancels and
+  post trade allocations report ExecType (150) and OrdStatus 2 (Filled) instead of 0; AuctionType X
+  (Flex Auction); liquidity codes 58 to 73; LastMkt drops the stock execution venue codes (1, 3, 8, 9,
+  10) and adds space (Nasdaq Execution Services), G (MX2) and V (IEX), T renamed NASDAQ TX Options;
+  CounterpartyCustomerOrFirm (9404) drops 9 (PHLX Market Maker). Leg Prices (566) and Auction
+  Duration (9379) are not supported on FIX Drop.
+  -->
+
+  <!--
+  FIX DROP 2.1 (revision 2.1e, July 2026), one edition for all the replatformed markets: MRX (2.0,
+  November 2022), GEMX (2.0, November 2023), ISE (2.0, September 2024), Phlx (2.1, December 2025) and
+  NOM (2.1d, August 2026). It supersedes the ISE/GEMX/MRX FIX DROP 2.0 (ISE_GEMX_MRX_FIX_Drop_2.0.pdf)
+  and the pre-replatform ISE/GEMX/MRX FIX DROP 1.1.x (ISE-GEMX-MRX-FIX-Drop.pdf 1.1.2,
+  0299-Q24_ISE-FIX-Drop-V1.1.3.pdf), whose Drop Copy and Order Drop message types were replaced by the
+  Execution Report in trade versus order mode. Nasdaq TX Options (formerly BX Options) keeps its own
+  FIX DROP 2.3f, carried under NtxOptions.
+
+  No extended trading hours edition of the FIX DROP is published.
+
+  Changes from 2.0: LeavesQty (151), PutOrCall (201), CustomerOrFirm (204), DisplayWhen (1083),
+  FloorBrokerNumber (9405) and OrderSource (7300) added to the Execution Report; ExDestination (100),
+  ClientID (109, decommissioned) and CrossType (549) removed; OrdStatus (39) conditional and ExecType /
+  OrdStatus 2 (Filled) on manual trades, trade cancels and post trade allocations; AuctionType X (Flex);
+  liquidity codes 58 to 73; IEX Options (V) and MX2 (G) added to LastMkt (30).
+  -->
+
+  <Header>
+    <Fields>
+      <Field>
+        <Tag>8</Tag>
+        <Name>BeginString</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+        <Description>FIX.4.2. Must be the first field in message.</Description>
+      </Field>
+      <Field>
+        <Tag>9</Tag>
+        <Name>BodyLength</Name>
+        <Required>Y</Required>
+        <Type>Length</Type>
+        <Fixed>Y</Fixed>
+        <Description>Must be second field in the message.</Description>
+      </Field>
+      <Field>
+        <Tag>35</Tag>
+        <Name>MsgType</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+        <Description>Must be the third field in the message.</Description>
+      </Field>
+      <Field>
+        <Tag>34</Tag>
+        <Name>MsgSeqNum</Name>
+        <Required>Y</Required>
+        <Type>SeqNum</Type>
+        <Description>Message sequence number.</Description>
+      </Field>
+      <Field>
+        <Tag>49</Tag>
+        <Name>SenderCompID</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Description>SenderCompID as assigned by NASDAQ. The maximum size is 4 to 6 characters.</Description>
+      </Field>
+      <Field>
+        <Tag>56</Tag>
+        <Name>TargetCompID</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Description>TargetCompID as assigned by NASDAQ. The maximum size is 4 to 6 characters.</Description>
+      </Field>
+      <Field>
+        <Tag>52</Tag>
+        <Name>SendingTime</Name>
+        <Required>Y</Required>
+        <Type>UTCTimestamp</Type>
+        <Description>Required by FIX but not validated by NASDAQ.</Description>
+      </Field>
+      <Field>
+        <Tag>50</Tag>
+        <Name>SenderSubID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Description>Ignored. When sending execution report NASDAQ will send INET in this field.</Description>
+      </Field>
+      <Field>
+        <Tag>57</Tag>
+        <Name>TargetSubID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Description>Ignored. When sending execution report NASDAQ will provide SenderSubID in this field.</Description>
+      </Field>
+      <Field>
+        <Tag>43</Tag>
+        <Name>PossDupFlag</Name>
+        <Required>N</Required>
+        <Type>Boolean</Type>
+        <Description>Should be present on retransmitted messages, whether prompted by the sending system or as the result of a resend request.</Description>
+      </Field>
+      <Field>
+        <Tag>97</Tag>
+        <Name>PossResend</Name>
+        <Required>N</Required>
+        <Type>Boolean</Type>
+        <Description>Required when message may be duplicate of another message sent under a different sequence number.</Description>
+      </Field>
+      <Field>
+        <Tag>122</Tag>
+        <Name>OrigSendingTime</Name>
+        <Required>N</Required>
+        <Type>UTCTimestamp</Type>
+        <Description>Required for message resends but not validated by NASDAQ.</Description>
+      </Field>
+    </Fields>
+  </Header>
+
+  <Trailer>
+    <Fields>
+      <Field>
+        <Tag>10</Tag>
+        <Name>CheckSum</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+        <Description>Modulo 256 checksum of all characters in message up to and including the delimiter preceding the CheckSum field. Three digits with leading zeroes if necessary.</Description>
+      </Field>
+    </Fields>
+  </Trailer>
+
+  <Messages>
+
+    <!-- Heartbeat (0) -->
+    <Message>
+      <Name>Heartbeat</Name>
+      <MsgType>0</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Description>Standard FIX 4.2 session message. Sent when the agreed HeartbeatInterval has elapsed since the last message sent, and in reply to a Test Request.</Description>
+      <Fields>
+        <Field>
+          <Tag>112</Tag>
+          <Name>TestReqID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Required when the heartbeat is the result of a Test Request message. FIX 4.2 standard field.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- TestRequest (1) -->
+    <Message>
+      <Name>TestRequest</Name>
+      <MsgType>1</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Description>Standard FIX 4.2 session message.</Description>
+      <Fields>
+        <Field>
+          <Tag>112</Tag>
+          <Name>TestReqID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Identifier included in the Test Request message to be returned in the resulting Heartbeat. FIX 4.2 standard field.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- ResendRequest (2) -->
+    <Message>
+      <Name>ResendRequest</Name>
+      <MsgType>2</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Description>Standard FIX 4.2 session message. Open (EndSeqNo 0) and closed sequence ranges are honored.</Description>
+      <Fields>
+        <Field>
+          <Tag>7</Tag>
+          <Name>BeginSeqNo</Name>
+          <Required>Y</Required>
+          <Type>SeqNum</Type>
+          <Description>Message sequence number of first message in range to be resent. FIX 4.2 standard field.</Description>
+        </Field>
+        <Field>
+          <Tag>16</Tag>
+          <Name>EndSeqNo</Name>
+          <Required>Y</Required>
+          <Type>SeqNum</Type>
+          <Description>Message sequence number of last message in range to be resent; 0 for infinity. FIX 4.2 standard field.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Reject (3) -->
+    <Message>
+      <Name>Reject</Name>
+      <MsgType>3</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Description>Standard FIX 4.2 session message. Session level rejects indicate violations of the session protocol or missing (or invalid) fields.</Description>
+      <Fields>
+        <Field>
+          <Tag>45</Tag>
+          <Name>RefSeqNum</Name>
+          <Required>Y</Required>
+          <Type>SeqNum</Type>
+          <Description>MsgSeqNum of rejected message. FIX 4.2 standard field.</Description>
+        </Field>
+        <Field>
+          <Tag>371</Tag>
+          <Name>RefTagID</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>The tag number of the FIX field being referenced. FIX 4.2 standard field.</Description>
+        </Field>
+        <Field>
+          <Tag>372</Tag>
+          <Name>RefMsgType</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>The MsgType of the FIX message being referenced. FIX 4.2 standard field.</Description>
+        </Field>
+        <Field>
+          <Tag>373</Tag>
+          <Name>SessionRejectReason</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Code to identify reason for a session-level Reject message. FIX 4.2 standard field.</Description>
+        </Field>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Where possible, message to explain reason for rejection. FIX 4.2 standard field.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- SequenceReset (4) -->
+    <Message>
+      <Name>SequenceReset</Name>
+      <MsgType>4</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Description>Standard FIX 4.2 session message. Gap Fill (GapFillFlag = Y) messages follow standard sequencing; Reset (GapFillFlag not Y) is used only as a last resort, by human intervention.</Description>
+      <Fields>
+        <Field>
+          <Tag>123</Tag>
+          <Name>GapFillFlag</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>Indicates that the Sequence Reset message is replacing administrative or application messages which will not be resent. FIX 4.2 standard field.</Description>
+        </Field>
+        <Field>
+          <Tag>36</Tag>
+          <Name>NewSeqNo</Name>
+          <Required>Y</Required>
+          <Type>SeqNum</Type>
+          <Description>New sequence number. FIX 4.2 standard field.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Logout (5) -->
+    <Message>
+      <Name>Logout</Name>
+      <MsgType>5</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Description>Standard FIX 4.2 session message. Either side may issue a Logout to gracefully close the session.</Description>
+      <Fields>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Free format text. FIX 4.2 standard field.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Logon (A) -->
+    <Message>
+      <Name>Logon</Name>
+      <MsgType>A</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Description>The Logon must be the first message sent by the subscriber after the TCP connection is established. The IP Address of the subscriber, the SenderCompId and TargetCompId will be validated; if validation fails, the connection will be dropped. After an unexpected disconnect, a Logon Acknowledgement with a sequence number greater than expected means in-flight messages were missed and should be recovered with a Resend Request.</Description>
+      <Fields>
+        <Field>
+          <Tag>98</Tag>
+          <Name>EncryptMethod</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>FIX 4.2 standard required field. Ignored: FIX level encryption is not supported.</Description>
+        </Field>
+        <Field>
+          <Tag>108</Tag>
+          <Name>HeartBtInt</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>HeartbeatInterval must be specified by the subscriber in whole seconds; the accepted value is returned on the Logon Acknowledgement. A value as low as possible is recommended so disconnects are detected sooner.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- ExecutionReport (8) -->
+    <Message>
+      <Name>ExecutionReport</Name>
+      <MsgType>8</MsgType>
+      <Category>app</Category>
+      <Origin>Exchange</Origin>
+      <Description>Outbound sequenced drop copy of order and trade activity, configurable to trade, order or both types of messages. Confirms the receipt of an order, changes to and cancelation of an existing order, relays fill information on working orders and reports trade busts or other post-trade corrections. Regular orders are reported atomically, multi-leg orders per leg, regular crossing orders per side and multi-leg crossing orders per leg per side, in any order. Manual trades omit order related tags (ClOrdID, QuoteID, Price, OrdType, TimeInForce) and OrdStatus, report ExecType 2 and ExecTransType 0 with OrderQty, LeavesQty, CumQty and AvgPx 0. Trade cancellations report ExecTransType 1 with ExecRefID; successful post trade allocations or corrections report a trade cancel followed by a new trade, both with ExecRefID.</Description>
+      <Fields>
+        <Field>
+          <Tag>1</Tag>
+          <Name>Account</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+        </Field>
+        <Field>
+          <Tag>6</Tag>
+          <Name>AvgPx</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Will be 0 for busts or other post-trade corrections</Description>
+        </Field>
+        <Field>
+          <Tag>11</Tag>
+          <Name>ClOrdID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Unique order identifier per incoming protocol connection (may not be unique for the drop session)</Description>
+        </Field>
+        <Field>
+          <Tag>117</Tag>
+          <Name>QuoteID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Identifier of the SQF quote/sweep being reported. If TIF = 3 (IOC) and this tag is present, it refers to a sweep-id sent by the client. If TIF = 0 (DAY) and this tag is present, it refers to a quote-id sent by the client. 8-byte binary SQF Ids are encoded as 16-byte ASCII strings where each byte is represented by two 0-F ASCII characters, e.g. 5E for 0x5e.</Description>
+        </Field>
+        <Field>
+          <Tag>14</Tag>
+          <Name>CumQty</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Will be 0 for busts or other post-trade corrections</Description>
+        </Field>
+        <Field>
+          <Tag>17</Tag>
+          <Name>ExecID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Internal trade ID</Description>
+        </Field>
+        <Field>
+          <Tag>18</Tag>
+          <Name>ExecInst</Name>
+          <Required>N</Required>
+          <Type>MultipleValueString</Type>
+          <Description>G = All Or None (AON), f = Intermarket Sweep Order (ISO). Fill or Kill orders are represented with ExecInst G and TimeInForce IOC.</Description>
+        </Field>
+        <Field>
+          <Tag>19</Tag>
+          <Name>ExecRefID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Populated with the reference ExecID on trade cancellations and on the cancel and new trade messages of post trade allocations and corrections.</Description>
+        </Field>
+        <Field>
+          <Tag>20</Tag>
+          <Name>ExecTransType</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>0 = New, 1 = Cancel. Trade breaks will be sent with an ExecTransType of 1. NASDAQ does not support trade corrections.</Description>
+        </Field>
+        <Field>
+          <Tag>30</Tag>
+          <Name>LastMkt</Name>
+          <Required>N</Required>
+          <Type>Exchange</Type>
+          <Description>For stock trades, market that executed the stock leg: space = Nasdaq Execution Services. For option linkage trades, away execution exchange. All values NON-STANDARD.</Description>
+        </Field>
+        <Field>
+          <Tag>31</Tag>
+          <Name>LastPx</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+        </Field>
+        <Field>
+          <Tag>32</Tag>
+          <Name>LastShares</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+        </Field>
+        <Field>
+          <Tag>37</Tag>
+          <Name>OrderID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Unique ID assigned by exchange. Populated on busts and other post trade corrections.</Description>
+        </Field>
+        <Field>
+          <Tag>38</Tag>
+          <Name>OrderQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>Will be 0 for manual trades.</Description>
+        </Field>
+        <Field>
+          <Tag>39</Tag>
+          <Name>OrdStatus</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>Conditional: necessary for electronic trades and absent for manual trades. 0 = New, 1 = Partially Filled, 2 = Filled, 4 = Canceled, 5 = Replaced. 2 (Filled) on trade cancellations and post trade allocations when the original trade is not a manual trade.</Description>
+        </Field>
+        <Field>
+          <Tag>40</Tag>
+          <Name>OrdType</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>Named OrdTyp in the document. Not present on manual trades.</Description>
+        </Field>
+        <Field>
+          <Tag>41</Tag>
+          <Name>OrigClOrdID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+        </Field>
+        <Field>
+          <Tag>44</Tag>
+          <Name>Price</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Not present on manual trades.</Description>
+        </Field>
+        <Field>
+          <Tag>47</Tag>
+          <Name>Rule80A</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>Named StockCapacity (Rule80A) in the document: capacity of the stock leg.</Description>
+        </Field>
+        <Field>
+          <Tag>54</Tag>
+          <Name>Side</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Security symbol for option executions or will populate with underlying on stock leg executions</Description>
+        </Field>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Free format text string. In case of orders, replaces and fills, will be an optional 13 character supplementary id if specified on order entry. In case of cancel will also contain NASDAQ cancel reason code (#SUP = Supervisory: the order was manually cancelled or reduced by a NASDAQ supervisory terminal).</Description>
+        </Field>
+        <Field>
+          <Tag>59</Tag>
+          <Name>TimeInForce</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>Not present on manual trades.</Description>
+        </Field>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>Y</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Time of execution. YYYYMMDD-HH-mm:SS (seconds), YYYYMMDD-HH-mm:SS.sss (milliseconds) or YYYYMMDD-HH-mm:SS.sss.sssssssss (nanoseconds); firm can choose level of confirmation at the port level</Description>
+        </Field>
+        <Field>
+          <Tag>76</Tag>
+          <Name>ExecBroker</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Order updates will provide only if provided on original inbound order. Execution updates will always provide give-up from execution</Description>
+        </Field>
+        <Field>
+          <Tag>77</Tag>
+          <Name>OpenClose</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Not present for a stock leg.</Description>
+        </Field>
+        <Field>
+          <Tag>99</Tag>
+          <Name>StopPx</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Populated on busts and other post trade corrections.</Description>
+        </Field>
+        <Field>
+          <Tag>111</Tag>
+          <Name>MaxFloor</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Populated on busts and other post trade corrections.</Description>
+        </Field>
+        <Field>
+          <Tag>150</Tag>
+          <Name>ExecType</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>0 = New, 1 = Partially Filled, 2 = Filled, 4 = Canceled, 5 = Replace. 2 (Filled) for manual trades, trade cancellations and post trade allocations or corrections.</Description>
+        </Field>
+        <Field>
+          <Tag>151</Tag>
+          <Name>LeavesQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>Number of contracts open for further execution. If the OrdStatus is Cancelled, DoneForTheDay, Expired, Calculated, or Rejected (in which case the order is no longer active) then LeavesQty could be 0, otherwise LeavesQty = OrderQty - CumQty. 0 on busts and other post trade corrections.</Description>
+        </Field>
+        <Field>
+          <Tag>167</Tag>
+          <Name>SecurityType</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>CS, OPT or MLEG (configurable by request). Multi-leg orders are reported per leg: MLEG (default) for all legs, or CS and OPT depending on the leg instrument type.</Description>
+        </Field>
+        <Field>
+          <Tag>201</Tag>
+          <Name>PutOrCall</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Named CallOrPut in the document. 0 = Put, 1 = Call. Not present for a stock leg.</Description>
+        </Field>
+        <Field>
+          <Tag>202</Tag>
+          <Name>StrikePrice</Name>
+          <Required>Y</Required>
+          <Type>Price</Type>
+          <Description>Not present for a stock leg.</Description>
+        </Field>
+        <Field>
+          <Tag>204</Tag>
+          <Name>CustomerOrFirm</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>0 = Customer, 1 = Firm, 5 = Nasdaq registered Market Maker, 2 = Broker Dealer, 8 = Professional Customer, 4 = Other exchange registered Market Maker, 7 = Joint Back Office (PHLX, NOM and BX only). Can be configured to provide OCC Capacity.</Description>
+        </Field>
+        <Field>
+          <Tag>541</Tag>
+          <Name>MaturityDate</Name>
+          <Required>Y</Required>
+          <Type>LocalMktDate</Type>
+          <Description>Month, Day and Year of the maturity. Format YYYYMMDD (e.g. 20100918 to represent Sept 18, 2010). Not present for a stock leg.</Description>
+        </Field>
+        <Field>
+          <Tag>424</Tag>
+          <Name>DayOrderQty</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>GTC/GTD orders only: DayOrderQty is the OrderQty minus the contracts that were traded on previous days.</Description>
+        </Field>
+        <Field>
+          <Tag>425</Tag>
+          <Name>DayCumQty</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>GTC/GTD orders only: the number of contracts that have traded today. Will be 0 for busts or other post-trade corrections</Description>
+        </Field>
+        <Field>
+          <Tag>426</Tag>
+          <Name>DayAvgPx</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>GTC/GTD orders only: the average price of contracts that have traded today. Will be 0 for busts or other post-trade corrections</Description>
+        </Field>
+        <Field>
+          <Tag>439</Tag>
+          <Name>ClearingFirm</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>CMTA</Description>
+        </Field>
+        <Field>
+          <Tag>440</Tag>
+          <Name>ClearingAccount</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>OCC sub-account</Description>
+        </Field>
+        <Field>
+          <Tag>442</Tag>
+          <Name>MultiLegReportingType</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>2 = Individual leg of a multi-leg security, 3 = Multi-leg security</Description>
+        </Field>
+        <Field>
+          <Tag>548</Tag>
+          <Name>CrossID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+        </Field>
+        <Field>
+          <Tag>654</Tag>
+          <Name>LegRefID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+        </Field>
+        <Field>
+          <Tag>5333</Tag>
+          <Name>SeriesID</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>InstrumentID. Listed twice in the document table. Not present for a stock leg.</Description>
+        </Field>
+        <Field>
+          <Tag>9076</Tag>
+          <Name>StockLegGiveUp</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Stock Leg Give Up</Description>
+        </Field>
+        <Field>
+          <Tag>9370</Tag>
+          <Name>AuctionID</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+        </Field>
+        <Field>
+          <Tag>9373</Tag>
+          <Name>AuctionType</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>P = PIM, F = Facilitation, S = Solicitation, B = Block, C = Customer to Customer Cross, Q = QCC, X = Flex Auction</Description>
+        </Field>
+        <Field>
+          <Tag>810</Tag>
+          <Name>UnderlyingPx</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Named UnderlyingQty in the document (FIX 4.2 tag 810 is UnderlyingPx). Present only in QCC Order ER (if user provided at order entry).</Description>
+        </Field>
+        <Field>
+          <Tag>879</Tag>
+          <Name>UnderlyingQty</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Named UnderlyingPrice in the document (FIX tag 879 is UnderlyingQty). Present only in QCC Order ER (if user provided at order entry).</Description>
+        </Field>
+        <Field>
+          <Tag>847</Tag>
+          <Name>RoutingStrategy</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>DNR, SRCH, FIND or POST</Description>
+        </Field>
+        <Field>
+          <Tag>1083</Tag>
+          <Name>DisplayWhen</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>1 = Immediate, 2 = Exhaust. As specified for the reserve order.</Description>
+        </Field>
+        <Field>
+          <Tag>1092</Tag>
+          <Name>PriceProtectionScope</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Populated on busts and other post trade corrections.</Description>
+        </Field>
+        <Field>
+          <Tag>9043</Tag>
+          <Name>StepUpPriceType</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>Named Stepup Price Type in the document. 1 = Market, 2 = Limit</Description>
+        </Field>
+        <Field>
+          <Tag>9044</Tag>
+          <Name>StepUpPrice</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Named Stepup Price in the document.</Description>
+        </Field>
+        <Field>
+          <Tag>9439</Tag>
+          <Name>CounterpartyExecBrokerClearingFirm</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Trade counter-party CMTA. NON-STANDARD field - DROP COPY ONLY</Description>
+        </Field>
+        <Field>
+          <Tag>9176</Tag>
+          <Name>CounterpartyExecBroker</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Trade counterparty OCC Number. NON-STANDARD field - DROP COPY ONLY</Description>
+        </Field>
+        <Field>
+          <Tag>9404</Tag>
+          <Name>CounterpartyCustomerOrFirm</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Trade counter-party client category: 0 = Customer, 1 = Firm, 5 = Nasdaq registered Market Maker, 2 = Broker Dealer, 8 = Professional Customer, 4 = Other exchange registered Market Maker, 7 = Joint Back Office (not supported at this time)</Description>
+        </Field>
+        <Field>
+          <Tag>9405</Tag>
+          <Name>FloorBrokerNumber</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>The Floor Broker Number in case of a Floor Order or Trade</Description>
+        </Field>
+        <Field>
+          <Tag>7300</Tag>
+          <Name>OrderSource</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>B = Floor/FBMS. This tag will only be present in case of Floor orders/Trades.</Description>
+        </Field>
+        <Field>
+          <Tag>9730</Tag>
+          <Name>LiquidityIndicator</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Liquidity code of the execution</Description>
+        </Field>
+        <Field>
+          <Tag>9811</Tag>
+          <Name>PriceDelta</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Present only in QCC Order ER (if user provided at order entry)</Description>
+        </Field>
+        <Field>
+          <Tag>432</Tag>
+          <Name>ExpireDate</Name>
+          <Required>N</Required>
+          <Type>LocalMktDate</Type>
+        </Field>
+        <Field>
+          <Tag>8020</Tag>
+          <Name>DisplayRange</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+        </Field>
+      </Fields>
+    </Message>
+
+  </Messages>
+
+  <Values>
+
+    <!-- BeginString -->
+    <Value>
+      <Type>BeginString</Type>
+      <Kind>Static</Kind>
+      <Enum>FIX.4.2</Enum>
+      <Description>FIX 4.2</Description>
+    </Value>
+
+    <!-- EncryptMethod -->
+    <Value>
+      <Type>EncryptMethod</Type>
+      <Enum>0</Enum>
+      <Description>None</Description>
+    </Value>
+
+    <!-- PossDupFlag -->
+    <Value>
+      <Type>PossDupFlag</Type>
+      <Enum>N</Enum>
+      <Description>Original transmission</Description>
+    </Value>
+    <Value>
+      <Type>PossDupFlag</Type>
+      <Enum>Y</Enum>
+      <Description>Possible duplicate</Description>
+    </Value>
+
+    <!-- GapFillFlag -->
+    <Value>
+      <Type>GapFillFlag</Type>
+      <Enum>N</Enum>
+      <Description>Sequence Reset, ignore MsgSeqNum</Description>
+    </Value>
+    <Value>
+      <Type>GapFillFlag</Type>
+      <Enum>Y</Enum>
+      <Description>Gap Fill message, MsgSeqNum field valid</Description>
+    </Value>
+
+    <!-- SessionRejectReason -->
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>0</Enum>
+      <Description>Invalid tag number</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>1</Enum>
+      <Description>Required tag missing</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>2</Enum>
+      <Description>Tag not defined for this message type</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>3</Enum>
+      <Description>Undefined Tag</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>4</Enum>
+      <Description>Tag specified without a value</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>5</Enum>
+      <Description>Value is incorrect (out of range) for this tag</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>6</Enum>
+      <Description>Incorrect data format for value</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>7</Enum>
+      <Description>Decryption problem</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>8</Enum>
+      <Description>Signature problem</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>9</Enum>
+      <Description>CompID problem</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>10</Enum>
+      <Description>SendingTime accuracy problem</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>11</Enum>
+      <Description>Invalid MsgType</Description>
+    </Value>
+
+    <!-- ExecInst -->
+    <Value>
+      <Type>ExecInst</Type>
+      <Enum>G</Enum>
+      <Description>All Or None (AON)</Description>
+    </Value>
+    <Value>
+      <Type>ExecInst</Type>
+      <Enum>f</Enum>
+      <Description>Intermarket Sweep Order (ISO)</Description>
+    </Value>
+
+    <!-- ExecTransType -->
+    <Value>
+      <Type>ExecTransType</Type>
+      <Enum>0</Enum>
+      <Description>New</Description>
+    </Value>
+    <Value>
+      <Type>ExecTransType</Type>
+      <Enum>1</Enum>
+      <Description>Cancel</Description>
+    </Value>
+
+    <!-- LastMkt -->
+    <Value>
+      <Type>LastMkt</Type>
+      <Enum>&quot; &quot;</Enum>
+      <Description>Nasdaq Execution Services (stock trades)</Description>
+    </Value>
+    <Value>
+      <Type>LastMkt</Type>
+      <Enum>A</Enum>
+      <Description>NYSE AMEX</Description>
+    </Value>
+    <Value>
+      <Type>LastMkt</Type>
+      <Enum>B</Enum>
+      <Description>BOX</Description>
+    </Value>
+    <Value>
+      <Type>LastMkt</Type>
+      <Enum>C</Enum>
+      <Description>CBOE</Description>
+    </Value>
+    <Value>
+      <Type>LastMkt</Type>
+      <Enum>D</Enum>
+      <Description>MIAX Emerald</Description>
+    </Value>
+    <Value>
+      <Type>LastMkt</Type>
+      <Enum>E</Enum>
+      <Description>EDGX</Description>
+    </Value>
+    <Value>
+      <Type>LastMkt</Type>
+      <Enum>G</Enum>
+      <Description>MX2</Description>
+    </Value>
+    <Value>
+      <Type>LastMkt</Type>
+      <Enum>H</Enum>
+      <Description>GEMX</Description>
+    </Value>
+    <Value>
+      <Type>LastMkt</Type>
+      <Enum>I</Enum>
+      <Description>ISE</Description>
+    </Value>
+    <Value>
+      <Type>LastMkt</Type>
+      <Enum>J</Enum>
+      <Description>MRX</Description>
+    </Value>
+    <Value>
+      <Type>LastMkt</Type>
+      <Enum>M</Enum>
+      <Description>Miami</Description>
+    </Value>
+    <Value>
+      <Type>LastMkt</Type>
+      <Enum>P</Enum>
+      <Description>MIAX Pearl</Description>
+    </Value>
+    <Value>
+      <Type>LastMkt</Type>
+      <Enum>N</Enum>
+      <Description>NYSE ARCA</Description>
+    </Value>
+    <Value>
+      <Type>LastMkt</Type>
+      <Enum>Q</Enum>
+      <Description>NASDAQ</Description>
+    </Value>
+    <Value>
+      <Type>LastMkt</Type>
+      <Enum>S</Enum>
+      <Description>MIAX Sapphire</Description>
+    </Value>
+    <Value>
+      <Type>LastMkt</Type>
+      <Enum>T</Enum>
+      <Description>NASDAQ TX Options</Description>
+    </Value>
+    <Value>
+      <Type>LastMkt</Type>
+      <Enum>U</Enum>
+      <Description>MEMX</Description>
+    </Value>
+    <Value>
+      <Type>LastMkt</Type>
+      <Enum>V</Enum>
+      <Description>IEX</Description>
+    </Value>
+    <Value>
+      <Type>LastMkt</Type>
+      <Enum>W</Enum>
+      <Description>C2</Description>
+    </Value>
+    <Value>
+      <Type>LastMkt</Type>
+      <Enum>X</Enum>
+      <Description>NASDAQ PHLX</Description>
+    </Value>
+    <Value>
+      <Type>LastMkt</Type>
+      <Enum>Z</Enum>
+      <Description>BATS</Description>
+    </Value>
+
+    <!-- OrdStatus -->
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>0</Enum>
+      <Description>New</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>1</Enum>
+      <Description>Partially Filled</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>2</Enum>
+      <Description>Filled</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>4</Enum>
+      <Description>Canceled</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>5</Enum>
+      <Description>Replaced</Description>
+    </Value>
+
+    <!-- ExecType -->
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>0</Enum>
+      <Description>New</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>1</Enum>
+      <Description>Partially Filled</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>2</Enum>
+      <Description>Filled</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>4</Enum>
+      <Description>Canceled</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>5</Enum>
+      <Description>Replace</Description>
+    </Value>
+
+    <!-- SecurityType -->
+    <Value>
+      <Type>SecurityType</Type>
+      <Enum>CS</Enum>
+      <Description>Common stock (stock leg)</Description>
+    </Value>
+    <Value>
+      <Type>SecurityType</Type>
+      <Enum>OPT</Enum>
+      <Description>Option</Description>
+    </Value>
+    <Value>
+      <Type>SecurityType</Type>
+      <Enum>MLEG</Enum>
+      <Description>Multi-leg (default for all legs)</Description>
+    </Value>
+
+    <!-- PutOrCall -->
+    <Value>
+      <Type>PutOrCall</Type>
+      <Enum>0</Enum>
+      <Description>Put</Description>
+    </Value>
+    <Value>
+      <Type>PutOrCall</Type>
+      <Enum>1</Enum>
+      <Description>Call</Description>
+    </Value>
+
+    <!-- CustomerOrFirm -->
+    <Value>
+      <Type>CustomerOrFirm</Type>
+      <Enum>0</Enum>
+      <Description>Customer</Description>
+    </Value>
+    <Value>
+      <Type>CustomerOrFirm</Type>
+      <Enum>1</Enum>
+      <Description>Firm</Description>
+    </Value>
+    <Value>
+      <Type>CustomerOrFirm</Type>
+      <Enum>5</Enum>
+      <Description>Nasdaq registered Market Maker</Description>
+    </Value>
+    <Value>
+      <Type>CustomerOrFirm</Type>
+      <Enum>2</Enum>
+      <Description>Broker Dealer</Description>
+    </Value>
+    <Value>
+      <Type>CustomerOrFirm</Type>
+      <Enum>8</Enum>
+      <Description>Professional Customer</Description>
+    </Value>
+    <Value>
+      <Type>CustomerOrFirm</Type>
+      <Enum>4</Enum>
+      <Description>Other exchange registered Market Maker</Description>
+    </Value>
+
+    <!-- MultiLegReportingType -->
+    <Value>
+      <Type>MultiLegReportingType</Type>
+      <Enum>2</Enum>
+      <Description>Individual leg of a multi-leg security</Description>
+    </Value>
+    <Value>
+      <Type>MultiLegReportingType</Type>
+      <Enum>3</Enum>
+      <Description>Multi-leg security</Description>
+    </Value>
+
+    <!-- AuctionType -->
+    <Value>
+      <Type>AuctionType</Type>
+      <Enum>P</Enum>
+      <Description>PIM</Description>
+    </Value>
+    <Value>
+      <Type>AuctionType</Type>
+      <Enum>F</Enum>
+      <Description>Facilitation</Description>
+    </Value>
+    <Value>
+      <Type>AuctionType</Type>
+      <Enum>S</Enum>
+      <Description>Solicitation</Description>
+    </Value>
+    <Value>
+      <Type>AuctionType</Type>
+      <Enum>B</Enum>
+      <Description>Block</Description>
+    </Value>
+    <Value>
+      <Type>AuctionType</Type>
+      <Enum>C</Enum>
+      <Description>Customer to Customer Cross</Description>
+    </Value>
+    <Value>
+      <Type>AuctionType</Type>
+      <Enum>Q</Enum>
+      <Description>QCC</Description>
+    </Value>
+    <Value>
+      <Type>AuctionType</Type>
+      <Enum>X</Enum>
+      <Description>Flex Auction</Description>
+    </Value>
+
+    <!-- RoutingStrategy -->
+    <Value>
+      <Type>RoutingStrategy</Type>
+      <Enum>DNR</Enum>
+      <Description>DNR</Description>
+    </Value>
+    <Value>
+      <Type>RoutingStrategy</Type>
+      <Enum>SRCH</Enum>
+      <Description>SRCH</Description>
+    </Value>
+    <Value>
+      <Type>RoutingStrategy</Type>
+      <Enum>FIND</Enum>
+      <Description>FIND</Description>
+    </Value>
+    <Value>
+      <Type>RoutingStrategy</Type>
+      <Enum>POST</Enum>
+      <Description>POST</Description>
+    </Value>
+
+    <!-- DisplayWhen -->
+    <Value>
+      <Type>DisplayWhen</Type>
+      <Enum>1</Enum>
+      <Description>Immediate</Description>
+    </Value>
+    <Value>
+      <Type>DisplayWhen</Type>
+      <Enum>2</Enum>
+      <Description>Exhaust</Description>
+    </Value>
+
+    <!-- StepUpPriceType -->
+    <Value>
+      <Type>StepUpPriceType</Type>
+      <Enum>1</Enum>
+      <Description>Market</Description>
+    </Value>
+    <Value>
+      <Type>StepUpPriceType</Type>
+      <Enum>2</Enum>
+      <Description>Limit</Description>
+    </Value>
+
+    <!-- CounterpartyCustomerOrFirm -->
+    <Value>
+      <Type>CounterpartyCustomerOrFirm</Type>
+      <Enum>0</Enum>
+      <Description>Customer</Description>
+    </Value>
+    <Value>
+      <Type>CounterpartyCustomerOrFirm</Type>
+      <Enum>1</Enum>
+      <Description>Firm</Description>
+    </Value>
+    <Value>
+      <Type>CounterpartyCustomerOrFirm</Type>
+      <Enum>5</Enum>
+      <Description>Nasdaq registered Market Maker</Description>
+    </Value>
+    <Value>
+      <Type>CounterpartyCustomerOrFirm</Type>
+      <Enum>2</Enum>
+      <Description>Broker Dealer</Description>
+    </Value>
+    <Value>
+      <Type>CounterpartyCustomerOrFirm</Type>
+      <Enum>8</Enum>
+      <Description>Professional Customer</Description>
+    </Value>
+    <Value>
+      <Type>CounterpartyCustomerOrFirm</Type>
+      <Enum>4</Enum>
+      <Description>Other exchange registered Market Maker</Description>
+    </Value>
+    <Value>
+      <Type>CounterpartyCustomerOrFirm</Type>
+      <Enum>7</Enum>
+      <Description>Joint Back Office (not supported at this time)</Description>
+    </Value>
+
+    <!-- OrderSource -->
+    <Value>
+      <Type>OrderSource</Type>
+      <Enum>B</Enum>
+      <Description>Floor/FBMS</Description>
+    </Value>
+
+    <!-- LiquidityIndicator -->
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>0</Enum>
+      <Description>undefined</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>1</Enum>
+      <Description>Maker</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>2</Enum>
+      <Description>Taker</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>4</Enum>
+      <Description>Hidden</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>5</Enum>
+      <Description>Opening</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>6</Enum>
+      <Description>Cross</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>7</Enum>
+      <Description>Response</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>8</Enum>
+      <Description>Flashed Order</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>9</Enum>
+      <Description>Flash Response</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>10</Enum>
+      <Description>Routed Out</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>11</Enum>
+      <Description>Trade Report</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>12</Enum>
+      <Description>Combo Maker Against Combo</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>13</Enum>
+      <Description>Combo Taker Against Combo</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>14</Enum>
+      <Description>Combo Response Against Combo</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>15</Enum>
+      <Description>Combo Hidden Against Combo</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>16</Enum>
+      <Description>Combo Opening Rotation</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>17</Enum>
+      <Description>Combo Cross</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>18</Enum>
+      <Description>Combo Taker Against Regular</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>19</Enum>
+      <Description>Regular Maker Against Combo</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>20</Enum>
+      <Description>Combo Taker Against IO</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>21</Enum>
+      <Description>Regular Taker Against IO (incl. PIM)</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>22</Enum>
+      <Description>IO Maker Against Combo</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>23</Enum>
+      <Description>IO Maker Against Regular</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>24</Enum>
+      <Description>Regular Maker Against IO Participant</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>25</Enum>
+      <Description>IO Participant Taker Against Regular</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>26</Enum>
+      <Description>Broken Price Improvement</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>27</Enum>
+      <Description>Broken Facilitation</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>28</Enum>
+      <Description>Broken Solicitation</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>29</Enum>
+      <Description>Combo Broken Price Improvement</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>30</Enum>
+      <Description>Combo Broken Facilitation</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>31</Enum>
+      <Description>Combo Broken Solicitation</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>32</Enum>
+      <Description>Block</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>33</Enum>
+      <Description>Block Response</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>34</Enum>
+      <Description>Directed Response</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>35</Enum>
+      <Description>Facilitation</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>36</Enum>
+      <Description>Facilitation Response</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>37</Enum>
+      <Description>Price Improvement</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>38</Enum>
+      <Description>Price improvement Response</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>39</Enum>
+      <Description>Solicitation</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>40</Enum>
+      <Description>Solicitation Response</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>41</Enum>
+      <Description>Qualified Contingent Cross</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>42</Enum>
+      <Description>Customer to Customer</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>43</Enum>
+      <Description>Combo Facilitation</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>44</Enum>
+      <Description>Combo Facilitation Response</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>45</Enum>
+      <Description>Combo Price Improvement</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>46</Enum>
+      <Description>Combo Price Improvement Response</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>47</Enum>
+      <Description>Combo Solicitation</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>48</Enum>
+      <Description>Combo Solicitation Response</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>49</Enum>
+      <Description>Combo Qualified Contingent Cross</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>50</Enum>
+      <Description>Combo Customer to Customer</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>51</Enum>
+      <Description>Sweep Routed Out</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>52</Enum>
+      <Description>Sweep Trade Report</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>53</Enum>
+      <Description>Combo Taker Against Regular - Thru NBBO</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>54</Enum>
+      <Description>Combo Taker Against IO - Thru NBBO</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>55</Enum>
+      <Description>Simple Exposure Order - Upon Receipt</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>56</Enum>
+      <Description>Simple Exposure Order - Subsequent</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>57</Enum>
+      <Description>Simplex Exposure Order - Responder</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>58</Enum>
+      <Description>Flex Auction</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>59</Enum>
+      <Description>Flex Auction Responder</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>60</Enum>
+      <Description>Flex Price Improvement</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>61</Enum>
+      <Description>Flex Price Improvement Responder</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>62</Enum>
+      <Description>Flex Broken Price Improvement</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>63</Enum>
+      <Description>Flex Solicitation</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>64</Enum>
+      <Description>Flex Solicitation Responder</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>65</Enum>
+      <Description>Flex Broken Solicitation</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>66</Enum>
+      <Description>Combo Flex Auction</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>67</Enum>
+      <Description>Combo Flex Auction Responder</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>68</Enum>
+      <Description>Combo Flex Price Improvement</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>69</Enum>
+      <Description>Combo Flex Price Improvement Responder</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>70</Enum>
+      <Description>Combo Flex Broken Price Improvement</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>71</Enum>
+      <Description>Combo Flex Solicitation</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>72</Enum>
+      <Description>Combo Flex Solicitation Responder</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityIndicator</Type>
+      <Enum>73</Enum>
+      <Description>Combo Flex Broken Solicitation</Description>
+    </Value>
+
+  </Values>
+
+</OmiFixPdf>

@@ -1,0 +1,341 @@
+<OmiItchNasdaqEquitiesPdf>
+
+  <!--
+  Nasdaq Canada GLIMPSE 1.0 (September 2025 edition, correcting the session protocol to
+  SoupTCP). GLIMPSE replays the current state of the book in the CHIXMMD message formats:
+  System Event, Stock Status and the standard and long form Add Order messages. The field
+  types follow the CHIXMMD specification: the GLIMPSE Add Order tables print Alphanumeric for
+  Order Reference, Shares and the long form Broker and Numeric for Buy/Sell Indicator, which
+  contradicts the Data Types section and CHIXMMD, so the CHIXMMD types are used.
+
+  The Snapshot Message (G, a 10 digit CHIXMMD sequence number) is not transcribed: the
+  specification prints it without the leading Time Stamp every other message carries, so
+  its type byte sits at offset 0 where the others have it at offset 8, and the SoupTCP
+  sequenced message header (Time Stamp then Message Type) cannot dispatch it.
+  -->
+
+  <Messages>
+
+    <!-- System Event Message -->
+
+    <Message>
+      <Name>System Event Message</Name>
+      <Dependency>messagetype</Dependency>
+      <Branch>sequencedmessage</Branch>
+      <Code>S</Code>
+      <Description>The system event message type is used to signal a market or data feed handler event.</Description>
+      <Fields>
+        <Field>
+          <Name>Event Code</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>System event code, see Event Code values</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Stock Status Message -->
+
+    <Message>
+      <Name>Stock Status Message</Name>
+      <Dependency>messagetype</Dependency>
+      <Branch>sequencedmessage</Branch>
+      <Code>H</Code>
+      <Description>At the start of each Canada GLIMPSE transmission, Nasdaq will disseminate stock status messages for all symbols in Nasdaq execution system for the current trading day. The Symbol Status spin may include halted issues.</Description>
+      <Fields>
+        <Field>
+          <Name>Stock</Name>
+          <Type>Alphanumeric</Type>
+          <Size>10</Size>
+          <Description>Stock symbol</Description>
+        </Field>
+        <Field>
+          <Name>Trading State</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>H = Halted, T = Trading</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Reserved for future use</Description>
+        </Field>
+        <Field>
+          <Name>Listing Market</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>T = TSX, V = Venture, C = CSE, N = Neo</Description>
+        </Field>
+        <Field>
+          <Name>Board Lot Size</Name>
+          <Type>Numeric</Type>
+          <Size>4</Size>
+          <Description>Board Lot Size in Shares</Description>
+        </Field>
+        <Field>
+          <Name>Currency</Name>
+          <Type>Alphanumeric</Type>
+          <Size>3</Size>
+          <Description>CAD = Canadian Dollars, USD = US Dollars</Description>
+        </Field>
+        <Field>
+          <Name>GEF Eligible</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Y = GEF Eligible, N = Not GEF Eligible</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Add Order Message -->
+
+    <Message>
+      <Name>Add Order Message</Name>
+      <Dependency>messagetype</Dependency>
+      <Branch>sequencedmessage</Branch>
+      <Code>A</Code>
+      <Description>An Add Order Message indicates that CXC or CX2 has accepted a visible order into the book. It includes a day-unique Order Reference key assigned to the order. The issuing of an Add Order Message is not necessarily always for a new order (see Modification of Existing Orders). Not applicable to CXD.</Description>
+      <Fields>
+        <Field>
+          <Name>Order Reference</Name>
+          <Type>Numeric</Type>
+          <Size>9</Size>
+          <Description>Day unique order reference number</Description>
+        </Field>
+        <Field>
+          <Name>Buy/Sell Indicator</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>B = Buy Order; S = Sell Order</Description>
+        </Field>
+        <Field>
+          <Name>Shares</Name>
+          <Type>Numeric</Type>
+          <Size>6</Size>
+          <Description>Total number of shares being added to the book (may be less than the number of shares entered because part of the order may trade before being posted to the book).</Description>
+        </Field>
+        <Field>
+          <Name>Stock</Name>
+          <Type>Alphanumeric</Type>
+          <Size>10</Size>
+          <Description>Stock symbol right padded with spaces.</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Price</Type>
+          <Size>10</Size>
+          <Description>The display price of the order.</Description>
+        </Field>
+        <Field>
+          <Name>Broker</Name>
+          <Type>Numeric</Type>
+          <Size>3</Size>
+          <Description>The three digit numeric TSX Broker Number or 001 for anonymous.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Long Form Add Order Message -->
+
+    <Message>
+      <Name>Long Form Add Order Message</Name>
+      <Dependency>messagetype</Dependency>
+      <Branch>sequencedmessage</Branch>
+      <Code>a</Code>
+      <Description>An Add Order Message indicates that CXC or CX2 has accepted a visible order into the book. It includes a day-unique Order Reference key assigned to the order. The issuing of an Add Order Message is not necessarily always for a new order (see Modification of Existing Orders). Not applicable to CXD. Long form messages are used when either the price or size is larger than the standard messages can permit.</Description>
+      <Fields>
+        <Field>
+          <Name>Order Reference</Name>
+          <Type>Numeric</Type>
+          <Size>9</Size>
+          <Description>Day unique order reference number</Description>
+        </Field>
+        <Field>
+          <Name>Buy/Sell Indicator</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>B = Buy Order; S = Sell Order</Description>
+        </Field>
+        <Field>
+          <Name>Shares</Name>
+          <Type>Numeric</Type>
+          <Size>10</Size>
+          <Description>Total number of shares being added to the book (may be less than the number of shares entered because part of the order may trade before being posted to the book).</Description>
+        </Field>
+        <Field>
+          <Name>Stock</Name>
+          <Type>Alphanumeric</Type>
+          <Size>10</Size>
+          <Description>Stock symbol right padded with spaces.</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Price</Type>
+          <Size>19</Size>
+          <Description>The display price of the order. Long form price: 12 whole number places followed by 7 implied decimal digits.</Description>
+        </Field>
+        <Field>
+          <Name>Broker</Name>
+          <Type>Numeric</Type>
+          <Size>3</Size>
+          <Description>The three digit numeric TSX Broker Number or 001 for anonymous.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+  </Messages>
+
+  <Enums>
+
+    <!-- Buy/Sell Indicator -->
+
+    <Enum>
+      <Name>Buy/Sell Indicator</Name>
+      <Values>
+        <Value>
+          <Data>B</Data>
+          <Name>Buy</Name>
+          <Description>Buy Order</Description>
+        </Value>
+        <Value>
+          <Data>S</Data>
+          <Name>Sell</Name>
+          <Description>Sell Order</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Event Code -->
+
+    <Enum>
+      <Name>Event Code</Name>
+      <Values>
+        <Value>
+          <Data>O</Data>
+          <Name>Start of Messages</Name>
+          <Description>First message of the day</Description>
+        </Value>
+        <Value>
+          <Data>S</Data>
+          <Name>Start of Nasdaq Canada Trading Session</Name>
+          <Description>Start of Nasdaq Canada Trading Session</Description>
+        </Value>
+        <Value>
+          <Data>Q</Data>
+          <Name>Start of Primary Market Trading Session</Name>
+          <Description>Start of Primary Market Trading Session</Description>
+        </Value>
+        <Value>
+          <Data>M</Data>
+          <Name>End of Primary Market Trading Session</Name>
+          <Description>End of Primary Market Trading Session. Indicates that Pegged orders are no longer available for execution.</Description>
+        </Value>
+        <Value>
+          <Data>E</Data>
+          <Name>End of System Hours</Name>
+          <Description>End of System Hours. Nasdaq Canada is closed and not accepting orders. It is still possible to receive Broken Trade messages and Order Cancel Messages.</Description>
+        </Value>
+        <Value>
+          <Data>C</Data>
+          <Name>End of Messages</Name>
+          <Description>End of Messages. Last message of the day.</Description>
+        </Value>
+        <Value>
+          <Data>W</Data>
+          <Name>Market-Wide Circuit Breaker Halt</Name>
+          <Description>Trading Halted due to Market-Wide Circuit Breaker</Description>
+        </Value>
+        <Value>
+          <Data>R</Data>
+          <Name>Market-Wide Circuit Breaker Resumption</Name>
+          <Description>Trading Resumed following Market-Wide Circuit Breaker</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Trading State -->
+
+    <Enum>
+      <Name>Trading State</Name>
+      <Values>
+        <Value>
+          <Data>H</Data>
+          <Name>Halted</Name>
+          <Description>Halted</Description>
+        </Value>
+        <Value>
+          <Data>T</Data>
+          <Name>Trading</Name>
+          <Description>Trading</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Listing Market -->
+
+    <Enum>
+      <Name>Listing Market</Name>
+      <Values>
+        <Value>
+          <Data>T</Data>
+          <Name>TSX</Name>
+          <Description>TSX</Description>
+        </Value>
+        <Value>
+          <Data>V</Data>
+          <Name>TSX Venture</Name>
+          <Description>TSX Venture</Description>
+        </Value>
+        <Value>
+          <Data>C</Data>
+          <Name>CSE</Name>
+          <Description>CSE</Description>
+        </Value>
+        <Value>
+          <Data>N</Data>
+          <Name>Neo</Name>
+          <Description>Neo</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Currency -->
+
+    <Enum>
+      <Name>Currency</Name>
+      <Values>
+        <Value>
+          <Data>CAD</Data>
+          <Name>Canadian Dollars</Name>
+          <Description>Canadian Dollars</Description>
+        </Value>
+        <Value>
+          <Data>USD</Data>
+          <Name>US Dollars</Name>
+          <Description>US Dollars</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- GEF Eligible -->
+
+    <Enum>
+      <Name>GEF Eligible</Name>
+      <Values>
+        <Value>
+          <Data>Y</Data>
+          <Name>GEF Eligible</Name>
+          <Description>GEF Eligible</Description>
+        </Value>
+        <Value>
+          <Data>N</Data>
+          <Name>Not GEF Eligible</Name>
+          <Description>Not GEF Eligible</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+  </Enums>
+
+</OmiItchNasdaqEquitiesPdf>

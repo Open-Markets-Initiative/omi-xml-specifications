@@ -1,0 +1,3200 @@
+<OmiOuchNasdaq50Pdf>
+
+  <!--
+  Nasdaq Canada OUCH 5.0 Order Entry Specification, Version 1.4 (2 September 2026).
+  One interface for the CXC, CX2 and CXD books, selected per order by ExDestination.
+
+  Field names are as printed, except that the Reason fields are named for the table
+  they draw on so that their three code sets stay apart: Cancel Reason (Order Canceled
+  and STP Canceled, Appendix C), Reject Reason (Rejected and Cancel Reject, Appendix D)
+  and Restate Reason (Order Restated). The outbound Q message is named Account Query
+  Response (the PDF table repeats "Account Query Request Message").
+
+  Prices are 8 byte unsigned with 8 implied decimals (section 1.2); every price is typed
+  Price here, including the ones the PDF types Numeric, and PegOffset is Signed Price.
+  The Ouch.Nasdaq50.Pdf loader gives Price four decimals, so the reference replaces
+  the scale. Time In Force carries no type in the PDF and is typed Alpha. Offsets in
+  the PDF count the one byte Type; the sizes below were checked against them.
+
+  Appendage Length is transcribed on every message. Revision 1.3 made it required on
+  the inbound messages (length 0 when no appendage), although section 2.3 and 2.4
+  still say it is optional; Account Query Response carries it only when the request
+  did (see the Edits file).
+  -->
+
+  <Messages>
+
+    <!-- INBOUND -->
+
+    <!-- 2.1 Type O -->
+    <Message>
+      <Name>Enter Order Message</Name>
+      <Dependency>Unsequenced Message Type</Dependency>
+      <Branch>Unsequenced Message</Branch>
+      <Code>O</Code>
+      <Category>Technical</Category>
+      <Description>Enter Order Message</Description>
+      <Fields>
+        <Field>
+          <Name>UserRefNum</Name>
+          <Type>UserRefNum</Type>
+          <Size>4</Size>
+          <Description>As described above in Data Types. UserRefNum must be day-unique and strictly increasing for each OUCH account</Description>
+        </Field>
+        <Field>
+          <Name>OrderQty</Name>
+          <Type>Numeric</Type>
+          <Size>4</Size>
+          <Description>Total number of shares</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Price</Type>
+          <Size>8</Size>
+          <Description>Maximum 999,999. A price of 0 will be treated as a market order. Implied 8 decimal places</Description>
+        </Field>
+        <Field>
+          <Name>Side</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>1 = Buy; 2 = Sell; 5 = Sell Short</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Alpha</Type>
+          <Size>10</Size>
+          <Description>Local/exchange symbol only</Description>
+        </Field>
+        <Field>
+          <Name>Time In Force</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>0 = Day; 3 = Immediate or Cancel; 6 = Good Till Date (GTD), must be used with ExpireTime; 8 = Stream Or Kill (SOK), CXD PureStream only; P = Post-Only Order</Description>
+        </Field>
+        <Field>
+          <Name>ExDestination</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>Indicates how the order should be routed: C = CXC; 2 = CX2; D = CXD; S = Smart Order Router (requires RoutingStrategy)</Description>
+        </Field>
+        <Field>
+          <Name>UMIRAccountType</Name>
+          <Type>Alpha</Type>
+          <Size>2</Size>
+          <Description>Required for Canadian regulatory reporting</Description>
+        </Field>
+        <Field>
+          <Name>UMIRUserID</Name>
+          <Type>Alpha</Type>
+          <Size>8</Size>
+          <Description>Required for Canadian regulatory reporting, and represents the trading system's user ID for the trader</Description>
+        </Field>
+        <Field>
+          <Name>Appendage Length</Name>
+          <Type>Numeric</Type>
+          <Size>2</Size>
+          <Description>The length of the remaining Optional Appendage Field. Required. If no optional appendage, length=0</Description>
+        </Field>
+        <Field>
+          <Name>Enter Order Appendage</Name>
+          <Type>appendage</Type>
+          <Size>variable</Size>
+          <Description>The available options supported on this message</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- 2.2 Type U -->
+    <Message>
+      <Name>Replace Order Request Message</Name>
+      <Dependency>Unsequenced Message Type</Dependency>
+      <Branch>Unsequenced Message</Branch>
+      <Code>U</Code>
+      <Category>Technical</Category>
+      <Description>The Replace Order Message allows you to alter most of the attributes of an order in a single message. This is more efficient than canceling an existing order and immediately succeeding it with a new order.</Description>
+      <Fields>
+        <Field>
+          <Name>OrigUserRefNum</Name>
+          <Type>UserRefNum</Type>
+          <Size>4</Size>
+          <Description>This must be filled out with the Order UserRefNum sent on the Enter Order Message or last Replace Order Message</Description>
+        </Field>
+        <Field>
+          <Name>UserRefNum</Name>
+          <Type>UserRefNum</Type>
+          <Size>4</Size>
+          <Description>As described above in Data Types. The replacement order UserRefNum must be day-unique and strictly increasing for each OUCH account</Description>
+        </Field>
+        <Field>
+          <Name>OrderQty</Name>
+          <Type>Numeric</Type>
+          <Size>4</Size>
+          <Description>Total number of shares</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Price</Type>
+          <Size>8</Size>
+          <Description>Maximum 999,999. A price of 0 will be treated as a market order. Implied 8 decimal places</Description>
+        </Field>
+        <Field>
+          <Name>Side</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>1 = Buy; 2 = Sell; 5 = Sell Short</Description>
+        </Field>
+        <Field>
+          <Name>Time In Force</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>0 = Day; 3 = Immediate or Cancel; 6 = Good Till Date (GTD), must be used with ExpireTime; 8 = Stream Or Kill (SOK), CXD PureStream only; P = Post-Only Order</Description>
+        </Field>
+        <Field>
+          <Name>Appendage Length</Name>
+          <Type>Numeric</Type>
+          <Size>2</Size>
+          <Description>The length of the remaining Optional Appendage Field. Required. If no optional appendage, length=0</Description>
+        </Field>
+        <Field>
+          <Name>Replace Order Request Appendage</Name>
+          <Type>appendage</Type>
+          <Size>variable</Size>
+          <Description>The available options supported on this message</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- 2.3 Type X -->
+    <Message>
+      <Name>Cancel Order Request Message</Name>
+      <Dependency>Unsequenced Message Type</Dependency>
+      <Branch>Unsequenced Message</Branch>
+      <Code>X</Code>
+      <Category>Technical</Category>
+      <Description>The Cancel Order Message is used to request that an order be canceled or reduced. You must specify the new intended order size, the maximum number of shares that can be executed in total after the cancel is applied.</Description>
+      <Fields>
+        <Field>
+          <Name>UserRefNum</Name>
+          <Type>UserRefNum</Type>
+          <Size>4</Size>
+          <Description>The UserRefNum on the order that was last acknowledged</Description>
+        </Field>
+        <Field>
+          <Name>OrderQty</Name>
+          <Type>Numeric</Type>
+          <Size>4</Size>
+          <Description>This is the new intended order size. This limits the maximum number of shares that can potentially be executed in total after the cancel is applied. Entering a zero here will cancel any remaining open shares on this order</Description>
+        </Field>
+        <Field>
+          <Name>Appendage Length</Name>
+          <Type>Numeric</Type>
+          <Size>2</Size>
+          <Description>The length of the remaining Optional Appendage Field. Required. If no optional appendage, length=0</Description>
+        </Field>
+        <Field>
+          <Name>Cancel Order Request Appendage</Name>
+          <Type>appendage</Type>
+          <Size>variable</Size>
+          <Description>The available options supported on this message</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- 2.4 Type Q -->
+    <Message>
+      <Name>Account Query Request Message</Name>
+      <Dependency>Unsequenced Message Type</Dependency>
+      <Branch>Unsequenced Message</Branch>
+      <Code>Q</Code>
+      <Category>Technical</Category>
+      <Description>The Account Query Request message can be used when recovering state to request the next available UserRefNum that can be used for identifying new transactions.</Description>
+      <Fields>
+        <Field>
+          <Name>Appendage Length</Name>
+          <Type>Numeric</Type>
+          <Size>2</Size>
+          <Description>The length of the remaining Optional Appendage Field. Required. If no optional appendage, length=0</Description>
+        </Field>
+        <Field>
+          <Name>Account Query Request Appendage</Name>
+          <Type>appendage</Type>
+          <Size>variable</Size>
+          <Description>The available options supported on this message</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- OUTBOUND -->
+
+    <!-- 3.1 Type S -->
+    <Message>
+      <Name>System Event Message</Name>
+      <Dependency>sequencedmessagetype</Dependency>
+      <Branch>sequencedmessage</Branch>
+      <Code>S</Code>
+      <Category>Technical</Category>
+      <Description>System Event Messages signal events that affect the entire Nasdaq Canada system.</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>Timestamp</Type>
+          <Size>8</Size>
+          <Description>Expressed as nanoseconds since midnight</Description>
+        </Field>
+        <Field>
+          <Name>Event Code</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>S = Start of Day; E = End of Day</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- 3.2 Type A -->
+    <Message>
+      <Name>Order Accepted Message</Name>
+      <Dependency>sequencedmessagetype</Dependency>
+      <Branch>sequencedmessage</Branch>
+      <Code>A</Code>
+      <Category>Technical</Category>
+      <Description>This message acknowledges the receipt and acceptance of a valid Enter Order Message. The data fields from the Enter Order Message are echoed back in this message. When the Order State is Order Dead (D) the order was accepted and automatically canceled and no additional messages will be received for it.</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>Timestamp</Type>
+          <Size>8</Size>
+          <Description>Expressed as nanoseconds since midnight</Description>
+        </Field>
+        <Field>
+          <Name>UserRefNum</Name>
+          <Type>UserRefNum</Type>
+          <Size>4</Size>
+          <Description>As described above in Data Types. UserRefNum must be day-unique and strictly increasing for each OUCH account</Description>
+        </Field>
+        <Field>
+          <Name>OrderQty</Name>
+          <Type>Numeric</Type>
+          <Size>4</Size>
+          <Description>Total number of shares</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Price</Type>
+          <Size>8</Size>
+          <Description>Maximum 999,999. A price of 0 will be treated as a market order. Implied 8 decimal places</Description>
+        </Field>
+        <Field>
+          <Name>Side</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>1 = Buy; 2 = Sell; 5 = Sell Short</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Alpha</Type>
+          <Size>10</Size>
+          <Description>Local/exchange symbol only</Description>
+        </Field>
+        <Field>
+          <Name>Time In Force</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>0 = Day; 3 = Immediate or Cancel; 6 = Good Till Date (GTD), must be used with ExpireTime; 8 = Stream Or Kill (SOK), CXD PureStream only; P = Post-Only Order</Description>
+        </Field>
+        <Field>
+          <Name>ExDestination</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>Indicates how the order should be routed: C = CXC; 2 = CX2; D = CXD; S = Smart Order Router (requires RoutingStrategy)</Description>
+        </Field>
+        <Field>
+          <Name>UMIRAccountType</Name>
+          <Type>Alpha</Type>
+          <Size>2</Size>
+          <Description>Required for Canadian regulatory reporting</Description>
+        </Field>
+        <Field>
+          <Name>UMIRUserID</Name>
+          <Type>Alpha</Type>
+          <Size>8</Size>
+          <Description>Required for Canadian regulatory reporting, and represents the trading system's user ID for the trader</Description>
+        </Field>
+        <Field>
+          <Name>Order Reference Number</Name>
+          <Type>Numeric</Type>
+          <Size>8</Size>
+          <Description>The day-unique Order Reference Number assigned by Nasdaq Canada to this order</Description>
+        </Field>
+        <Field>
+          <Name>Order State</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>L = Order Live; D = Order Dead</Description>
+        </Field>
+        <Field>
+          <Name>Appendage Length</Name>
+          <Type>Numeric</Type>
+          <Size>2</Size>
+          <Description>The length of the remaining Optional Appendage Field</Description>
+        </Field>
+        <Field>
+          <Name>Order Accepted Appendage</Name>
+          <Type>appendage</Type>
+          <Size>variable</Size>
+          <Description>The available options supported on this message</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- 3.3 Type U -->
+    <Message>
+      <Name>Order Replaced Message</Name>
+      <Dependency>sequencedmessagetype</Dependency>
+      <Branch>sequencedmessage</Branch>
+      <Code>U</Code>
+      <Category>Technical</Category>
+      <Description>This message acknowledges the receipt and acceptance of a valid Replace Order Message. The data fields from the Replace Order Message are echoed back in this message. The OrderQty indicates how many shares were left exposed when the replacement completed.</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>Timestamp</Type>
+          <Size>8</Size>
+          <Description>Expressed as nanoseconds since midnight</Description>
+        </Field>
+        <Field>
+          <Name>OrigUserRefNum</Name>
+          <Type>UserRefNum</Type>
+          <Size>4</Size>
+          <Description>This must be filled out with the Order UserRefNum sent on the Enter Order Message or last Replace Order Message</Description>
+        </Field>
+        <Field>
+          <Name>UserRefNum</Name>
+          <Type>UserRefNum</Type>
+          <Size>4</Size>
+          <Description>The order UserRefNum that was acknowledged</Description>
+        </Field>
+        <Field>
+          <Name>OrderQty</Name>
+          <Type>Numeric</Type>
+          <Size>4</Size>
+          <Description>Total number of shares</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Price</Type>
+          <Size>8</Size>
+          <Description>Maximum 999,999. A price of 0 will be treated as a market order. Implied 8 decimal places</Description>
+        </Field>
+        <Field>
+          <Name>Side</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>1 = Buy; 2 = Sell; 5 = Sell Short</Description>
+        </Field>
+        <Field>
+          <Name>Time In Force</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>0 = Day; 3 = Immediate or Cancel; 6 = Good Till Date (GTD), must be used with ExpireTime; 8 = Stream Or Kill (SOK), CXD PureStream only; P = Post-Only Order</Description>
+        </Field>
+        <Field>
+          <Name>Order Reference Number</Name>
+          <Type>Numeric</Type>
+          <Size>8</Size>
+          <Description>The day-unique Order Reference Number assigned by Nasdaq Canada to this order</Description>
+        </Field>
+        <Field>
+          <Name>Order State</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>L = Order Live; D = Order Dead</Description>
+        </Field>
+        <Field>
+          <Name>Appendage Length</Name>
+          <Type>Numeric</Type>
+          <Size>2</Size>
+          <Description>The length of the remaining Optional Appendage Field</Description>
+        </Field>
+        <Field>
+          <Name>Order Replaced Appendage</Name>
+          <Type>appendage</Type>
+          <Size>variable</Size>
+          <Description>The available options supported on this message</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- 3.4 Type C -->
+    <Message>
+      <Name>Order Canceled Message</Name>
+      <Dependency>sequencedmessagetype</Dependency>
+      <Branch>sequencedmessage</Branch>
+      <Code>C</Code>
+      <Category>Technical</Category>
+      <Description>A Canceled Message informs you that an order has been reduced or canceled. This could be acknowledging a Cancel Order Message, or it could be the result of the order timing out or being canceled automatically.</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>Timestamp</Type>
+          <Size>8</Size>
+          <Description>Expressed as nanoseconds since midnight</Description>
+        </Field>
+        <Field>
+          <Name>UserRefNum</Name>
+          <Type>UserRefNum</Type>
+          <Size>4</Size>
+          <Description>The Order UserRefNum that was acknowledged</Description>
+        </Field>
+        <Field>
+          <Name>OrderQty</Name>
+          <Type>Numeric</Type>
+          <Size>4</Size>
+          <Description>The number of shares being decremented from the order. This number is incremental, not cumulative.</Description>
+        </Field>
+        <Field>
+          <Name>Cancel Reason</Name>
+          <Type>Alpha</Type>
+          <Size>4</Size>
+          <Description>Reasons the order was reduced or canceled. See Appendix C for the available reasons (printed as Reason)</Description>
+        </Field>
+        <Field>
+          <Name>Appendage Length</Name>
+          <Type>Numeric</Type>
+          <Size>2</Size>
+          <Description>The length of the remaining Optional Appendage Field</Description>
+        </Field>
+        <Field>
+          <Name>Order Canceled Appendage</Name>
+          <Type>appendage</Type>
+          <Size>variable</Size>
+          <Description>The available options supported on this message</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- 3.5 Type D -->
+    <Message>
+      <Name>STP Canceled Message</Name>
+      <Dependency>sequencedmessagetype</Dependency>
+      <Branch>sequencedmessage</Branch>
+      <Code>D</Code>
+      <Category>Technical</Category>
+      <Description>STP Canceled Message</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>Timestamp</Type>
+          <Size>8</Size>
+          <Description>Expressed as nanoseconds since midnight</Description>
+        </Field>
+        <Field>
+          <Name>UserRefNum</Name>
+          <Type>UserRefNum</Type>
+          <Size>4</Size>
+          <Description>The Order UserRefNum that was last acknowledged</Description>
+        </Field>
+        <Field>
+          <Name>Decrement Shares</Name>
+          <Type>Numeric</Type>
+          <Size>4</Size>
+          <Description>Total quantity of the order cancelled due to STP</Description>
+        </Field>
+        <Field>
+          <Name>Cancel Reason</Name>
+          <Type>Alpha</Type>
+          <Size>4</Size>
+          <Description>Reason the order was reduced or canceled (printed as Reason)</Description>
+        </Field>
+        <Field>
+          <Name>Quantity Prevented from Trading</Name>
+          <Type>Numeric</Type>
+          <Size>4</Size>
+          <Description>Shares that would have executed if the trade would have occurred. Depending on the STP type and the sizes of orders in question, the value for this field could differ from that in the Decrement Shares field.</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Price</Type>
+          <Size>8</Size>
+          <Description>The price at which the trade would have occurred</Description>
+        </Field>
+        <Field>
+          <Name>Liquidity Flag</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>Liquidity flag the order received. See Appendix E</Description>
+        </Field>
+        <Field>
+          <Name>Appendage Length</Name>
+          <Type>Numeric</Type>
+          <Size>2</Size>
+          <Description>The length of the remaining Optional Appendage Field</Description>
+        </Field>
+        <Field>
+          <Name>STP Canceled Appendage</Name>
+          <Type>appendage</Type>
+          <Size>variable</Size>
+          <Description>The available options supported on this message</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- 3.6 Type E -->
+    <Message>
+      <Name>Order Executed Message</Name>
+      <Dependency>sequencedmessagetype</Dependency>
+      <Branch>sequencedmessage</Branch>
+      <Code>E</Code>
+      <Category>Technical</Category>
+      <Description>An Executed Order Message informs you that all or part of an order has been executed.</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>Timestamp</Type>
+          <Size>8</Size>
+          <Description>Expressed as nanoseconds since midnight</Description>
+        </Field>
+        <Field>
+          <Name>UserRefNum</Name>
+          <Type>UserRefNum</Type>
+          <Size>4</Size>
+          <Description>The Order UserRefNum that was last acknowledged</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>Numeric</Type>
+          <Size>4</Size>
+          <Description>The incremental number of shares just executed</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Price</Type>
+          <Size>8</Size>
+          <Description>The price at which the shares were executed</Description>
+        </Field>
+        <Field>
+          <Name>Liquidity Flag</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>Liquidity flag the order received. See Appendix E</Description>
+        </Field>
+        <Field>
+          <Name>MatchNumber</Name>
+          <Type>Numeric</Type>
+          <Size>8</Size>
+          <Description>Assigned by the exchange to identify the trade. Both the buy and sell executions participating in the trade will have the same match number</Description>
+        </Field>
+        <Field>
+          <Name>ExecBroker</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>See Appendix F</Description>
+        </Field>
+        <Field>
+          <Name>Contra Broker</Name>
+          <Type>Numeric</Type>
+          <Size>4</Size>
+          <Description>TSX Broker Number on the opposite side of the trade. Will be set to 0 if the contra order is anonymous</Description>
+        </Field>
+        <Field>
+          <Name>Appendage Length</Name>
+          <Type>Numeric</Type>
+          <Size>2</Size>
+          <Description>The length of the remaining Optional Appendage Field</Description>
+        </Field>
+        <Field>
+          <Name>Order Executed Appendage</Name>
+          <Type>appendage</Type>
+          <Size>variable</Size>
+          <Description>The available options supported on this message</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- 3.7 Type B -->
+    <Message>
+      <Name>Corrected Trade Message</Name>
+      <Dependency>sequencedmessagetype</Dependency>
+      <Branch>sequencedmessage</Branch>
+      <Code>B</Code>
+      <Category>Technical</Category>
+      <Description>A Corrected Trade Message informs you that an execution has been corrected. The corrected trade details are provided in the message. You will always get an Executed Order Message prior to getting a Corrected Trade Message for a given execution. If no Optional Appendage fields are present, the Appendage Length will be set to 0.</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>Timestamp</Type>
+          <Size>8</Size>
+          <Description>Expressed as nanoseconds since midnight</Description>
+        </Field>
+        <Field>
+          <Name>UserRefNum</Name>
+          <Type>UserRefNum</Type>
+          <Size>4</Size>
+          <Description>The UserRefNum of the order being corrected</Description>
+        </Field>
+        <Field>
+          <Name>MatchNumber</Name>
+          <Type>Numeric</Type>
+          <Size>8</Size>
+          <Description>The MatchNumber being corrected</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>Numeric</Type>
+          <Size>4</Size>
+          <Description>Adjusted trade quantity</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Price</Type>
+          <Size>8</Size>
+          <Description>Adjusted trade price</Description>
+        </Field>
+        <Field>
+          <Name>Appendage Length</Name>
+          <Type>Numeric</Type>
+          <Size>2</Size>
+          <Description>The length of the remaining Optional Appendage Field</Description>
+        </Field>
+        <Field>
+          <Name>Corrected Trade Appendage</Name>
+          <Type>appendage</Type>
+          <Size>variable</Size>
+          <Description>The available options supported on this message</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- 3.8 Type J -->
+    <Message>
+      <Name>Rejected Order Message</Name>
+      <Dependency>sequencedmessagetype</Dependency>
+      <Branch>sequencedmessage</Branch>
+      <Code>J</Code>
+      <Category>Technical</Category>
+      <Description>Rejected Order Message</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>Timestamp</Type>
+          <Size>8</Size>
+          <Description>Expressed as nanoseconds since midnight</Description>
+        </Field>
+        <Field>
+          <Name>UserRefNum</Name>
+          <Type>UserRefNum</Type>
+          <Size>4</Size>
+          <Description>The UserRefNum of the order being rejected</Description>
+        </Field>
+        <Field>
+          <Name>Reject Reason</Name>
+          <Type>Alpha</Type>
+          <Size>4</Size>
+          <Description>The reason the order was rejected. See Appendix D (printed as Reason)</Description>
+        </Field>
+        <Field>
+          <Name>Appendage Length</Name>
+          <Type>Numeric</Type>
+          <Size>2</Size>
+          <Description>The length of the remaining Optional Appendage Field</Description>
+        </Field>
+        <Field>
+          <Name>Rejected Order Appendage</Name>
+          <Type>appendage</Type>
+          <Size>variable</Size>
+          <Description>The available options supported on this message</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- 3.9 Type I -->
+    <Message>
+      <Name>Cancel Reject Message</Name>
+      <Dependency>sequencedmessagetype</Dependency>
+      <Branch>sequencedmessage</Branch>
+      <Code>I</Code>
+      <Category>Technical</Category>
+      <Description>Cancel Reject Message</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>Timestamp</Type>
+          <Size>8</Size>
+          <Description>Expressed as nanoseconds since midnight</Description>
+        </Field>
+        <Field>
+          <Name>UserRefNum</Name>
+          <Type>UserRefNum</Type>
+          <Size>4</Size>
+          <Description>The UserRefNum of the order being rejected</Description>
+        </Field>
+        <Field>
+          <Name>Reject Reason</Name>
+          <Type>Alpha</Type>
+          <Size>4</Size>
+          <Description>The reason the order was rejected. See Appendix D (printed as Reason)</Description>
+        </Field>
+        <Field>
+          <Name>Appendage Length</Name>
+          <Type>Numeric</Type>
+          <Size>2</Size>
+          <Description>The length of the remaining Optional Appendage Field</Description>
+        </Field>
+        <Field>
+          <Name>Cancel Reject Appendage</Name>
+          <Type>appendage</Type>
+          <Size>variable</Size>
+          <Description>The available options supported on this message</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- 3.10 Type R -->
+    <Message>
+      <Name>Order Restated Message</Name>
+      <Dependency>sequencedmessagetype</Dependency>
+      <Branch>sequencedmessage</Branch>
+      <Code>R</Code>
+      <Category>Technical</Category>
+      <Description>The Order Restated Message is sent to indicate that the system has modified an order as part of its order management.</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>Timestamp</Type>
+          <Size>8</Size>
+          <Description>Expressed as nanoseconds since midnight</Description>
+        </Field>
+        <Field>
+          <Name>UserRefNum</Name>
+          <Type>UserRefNum</Type>
+          <Size>4</Size>
+          <Description>The UserRefNum of the order being restated</Description>
+        </Field>
+        <Field>
+          <Name>Restate Reason</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>The reason for this order being restated (printed as Reason)</Description>
+        </Field>
+        <Field>
+          <Name>Appendage Length</Name>
+          <Type>Numeric</Type>
+          <Size>2</Size>
+          <Description>The length of the remaining Optional Appendage Field</Description>
+        </Field>
+        <Field>
+          <Name>Order Restated Appendage</Name>
+          <Type>appendage</Type>
+          <Size>variable</Size>
+          <Description>The available options supported on this message</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- 3.11 Type Q -->
+    <Message>
+      <Name>Account Query Response Message</Name>
+      <Dependency>sequencedmessagetype</Dependency>
+      <Branch>sequencedmessage</Branch>
+      <Code>Q</Code>
+      <Category>Technical</Category>
+      <Description>The Account Query Response message is sent in response to an Account Query Request to indicate the next available UserRefNum that can be used to identify new transactions. It only carries the Appendage Length and Optional Appendage fields if the Appendage Length was specified on the inbound message.</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>Timestamp</Type>
+          <Size>8</Size>
+          <Description>Expressed as nanoseconds since midnight</Description>
+        </Field>
+        <Field>
+          <Name>NextUserRefNum</Name>
+          <Type>UserRefNum</Type>
+          <Size>4</Size>
+          <Description>The next available UserRefNum</Description>
+        </Field>
+        <Field>
+          <Name>Appendage Length</Name>
+          <Type>Numeric</Type>
+          <Size>2</Size>
+          <Description>The length of the remaining Optional Appendage Field</Description>
+        </Field>
+        <Field>
+          <Name>Account Query Response Appendage</Name>
+          <Type>appendage</Type>
+          <Size>variable</Size>
+          <Description>The available options supported on this message</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+  </Messages>
+
+  <Appendages>
+
+    <Appendage>
+      <Name>Enter Order</Name>
+      <Dependency>Appendage Length</Dependency>
+      <Description>Optional appendage fields for Enter Order Message</Description>
+      <Fields>
+        <Field>UserRefIdx</Field>
+        <Field>Account</Field>
+        <Field>PegType</Field>
+        <Field>MinQtyType</Field>
+        <Field>MinQty</Field>
+        <Field>MaxFloor</Field>
+        <Field>ExpireTime</Field>
+        <Field>PegOffset</Field>
+        <Field>TargetStrategy</Field>
+        <Field>OrderOrigination</Field>
+        <Field>RoutingArrangementIndicator</Field>
+        <Field>BasketTrade</Field>
+        <Field>ProgramTrade</Field>
+        <Field>Jitney</Field>
+        <Field>GEFEligible</Field>
+        <Field>Anonymous</Field>
+        <Field>UMIRRegulationID</Field>
+        <Field>Bypass</Field>
+        <Field>TSXNCIB</Field>
+        <Field>NoTradeFeat</Field>
+        <Field>NoTradeKey</Field>
+        <Field>ShortMarkingExempt</Field>
+        <Field>POComment</Field>
+        <Field>DisplayRange</Field>
+        <Field>CustomerAccount</Field>
+        <Field>AlgorithmID</Field>
+        <Field>CustomerLEI</Field>
+        <Field>BrokerLEI</Field>
+        <Field>ConditionalOrder</Field>
+        <Field>AllowConditional</Field>
+        <Field>FirmUpID</Field>
+        <Field>CXDConnect</Field>
+        <Field>PureStreamConnect</Field>
+        <Field>MinRate</Field>
+        <Field>MaxRate</Field>
+        <Field>RoutingStrategy</Field>
+        <Field>HandlInst</Field>
+      </Fields>
+    </Appendage>
+
+    <Appendage>
+      <Name>Replace Order Request</Name>
+      <Dependency>Appendage Length</Dependency>
+      <Description>Optional appendage fields for Replace Order Request Message</Description>
+      <Fields>
+        <Field>UserRefIdx</Field>
+        <Field>MinQtyType</Field>
+        <Field>PegType</Field>
+        <Field>MinQty</Field>
+        <Field>MaxFloor</Field>
+        <Field>ExpireTime</Field>
+        <Field>PegOffset</Field>
+        <Field>TargetStrategy</Field>
+        <Field>OrderOrigination</Field>
+        <Field>RoutingArrangementIndicator</Field>
+        <Field>UMIRRegulationID</Field>
+        <Field>Anonymous</Field>
+        <Field>DisplayRange</Field>
+        <Field>CustomerAccount</Field>
+        <Field>AlgorithmID</Field>
+        <Field>CustomerLEI</Field>
+        <Field>BrokerLEI</Field>
+        <Field>AllowConditional</Field>
+        <Field>CXDConnect</Field>
+        <Field>PureStreamConnect</Field>
+        <Field>MinRate</Field>
+        <Field>MaxRate</Field>
+        <Field>HandlInst</Field>
+      </Fields>
+    </Appendage>
+
+    <Appendage>
+      <Name>Cancel Order Request</Name>
+      <Dependency>Appendage Length</Dependency>
+      <Description>Optional appendage fields for Cancel Order Request Message</Description>
+      <Fields>
+        <Field>UserRefIdx</Field>
+      </Fields>
+    </Appendage>
+
+    <Appendage>
+      <Name>Account Query Request</Name>
+      <Dependency>Appendage Length</Dependency>
+      <Description>Optional appendage fields for Account Query Request Message</Description>
+      <Fields>
+        <Field>UserRefIdx</Field>
+      </Fields>
+    </Appendage>
+
+    <Appendage>
+      <Name>Order Accepted</Name>
+      <Dependency>Appendage Length</Dependency>
+      <Description>Optional appendage fields for Order Accepted Message</Description>
+      <Fields>
+        <Field>UserRefIdx</Field>
+        <Field>Account</Field>
+        <Field>PegType</Field>
+        <Field>MinQtyType</Field>
+        <Field>MinQty</Field>
+        <Field>MaxFloor</Field>
+        <Field>ExpireTime</Field>
+        <Field>PegOffset</Field>
+        <Field>TargetStrategy</Field>
+        <Field>OrderOrigination</Field>
+        <Field>RoutingArrangementIndicator</Field>
+        <Field>BasketTrade</Field>
+        <Field>ProgramTrade</Field>
+        <Field>Jitney</Field>
+        <Field>GEFEligible</Field>
+        <Field>Anonymous</Field>
+        <Field>UMIRRegulationID</Field>
+        <Field>Bypass</Field>
+        <Field>TSXNCIB</Field>
+        <Field>NoTradeFeat</Field>
+        <Field>NoTradeKey</Field>
+        <Field>ShortMarkingExempt</Field>
+        <Field>POComment</Field>
+        <Field>DisplayRange</Field>
+        <Field>CustomerAccount</Field>
+        <Field>AlgorithmID</Field>
+        <Field>CustomerLEI</Field>
+        <Field>BrokerLEI</Field>
+        <Field>ConditionalOrder</Field>
+        <Field>AllowConditional</Field>
+        <Field>FirmUpID</Field>
+        <Field>CXDConnect</Field>
+        <Field>PureStreamConnect</Field>
+        <Field>MinRate</Field>
+        <Field>MaxRate</Field>
+        <Field>RoutingStrategy</Field>
+        <Field>HandlInst</Field>
+        <Field>RepriceReason</Field>
+        <Field>NBBOSetter</Field>
+      </Fields>
+    </Appendage>
+
+    <Appendage>
+      <Name>Order Replaced</Name>
+      <Dependency>Appendage Length</Dependency>
+      <Description>Optional appendage fields for Order Replaced Message</Description>
+      <Fields>
+        <Field>UserRefIdx</Field>
+        <Field>MinQtyType</Field>
+        <Field>PegType</Field>
+        <Field>MinQty</Field>
+        <Field>MaxFloor</Field>
+        <Field>ExpireTime</Field>
+        <Field>PegOffset</Field>
+        <Field>TargetStrategy</Field>
+        <Field>OrderOrigination</Field>
+        <Field>RoutingArrangementIndicator</Field>
+        <Field>UMIRRegulationID</Field>
+        <Field>Anonymous</Field>
+        <Field>DisplayRange</Field>
+        <Field>CustomerAccount</Field>
+        <Field>AlgorithmID</Field>
+        <Field>CustomerLEI</Field>
+        <Field>BrokerLEI</Field>
+        <Field>AllowConditional</Field>
+        <Field>CXDConnect</Field>
+        <Field>PureStreamConnect</Field>
+        <Field>MinRate</Field>
+        <Field>MaxRate</Field>
+        <Field>HandlInst</Field>
+        <Field>RepriceReason</Field>
+        <Field>NBBOSetter</Field>
+      </Fields>
+    </Appendage>
+
+    <Appendage>
+      <Name>Order Canceled</Name>
+      <Dependency>Appendage Length</Dependency>
+      <Description>Optional appendage fields for Order Canceled Message</Description>
+      <Fields>
+        <Field>UserRefIdx</Field>
+      </Fields>
+    </Appendage>
+
+    <Appendage>
+      <Name>STP Canceled</Name>
+      <Dependency>Appendage Length</Dependency>
+      <Description>Optional appendage fields for STP Canceled Message</Description>
+      <Fields>
+        <Field>UserRefIdx</Field>
+      </Fields>
+    </Appendage>
+
+    <Appendage>
+      <Name>Order Executed</Name>
+      <Dependency>Appendage Length</Dependency>
+      <Description>Optional appendage fields for Order Executed Message</Description>
+      <Fields>
+        <Field>UserRefIdx</Field>
+        <Field>ExecuteMatch</Field>
+        <Field>SecondaryOrderID</Field>
+        <Field>BrokerPref</Field>
+        <Field>PrincipalTrade</Field>
+        <Field>WashTrade</Field>
+        <Field>CumRate</Field>
+      </Fields>
+    </Appendage>
+
+    <Appendage>
+      <Name>Corrected Trade</Name>
+      <Dependency>Appendage Length</Dependency>
+      <Description>Optional appendage fields for Corrected Trade Message</Description>
+      <Fields>
+        <Field>UserRefIdx</Field>
+      </Fields>
+    </Appendage>
+
+    <Appendage>
+      <Name>Rejected Order</Name>
+      <Dependency>Appendage Length</Dependency>
+      <Description>Optional appendage fields for Rejected Order Message</Description>
+      <Fields>
+        <Field>UserRefIdx</Field>
+      </Fields>
+    </Appendage>
+
+    <Appendage>
+      <Name>Cancel Reject</Name>
+      <Dependency>Appendage Length</Dependency>
+      <Description>Optional appendage fields for Cancel Reject Message</Description>
+      <Fields>
+        <Field>UserRefIdx</Field>
+      </Fields>
+    </Appendage>
+
+    <Appendage>
+      <Name>Order Restated</Name>
+      <Dependency>Appendage Length</Dependency>
+      <Description>Optional appendage fields for Order Restated Message</Description>
+      <Fields>
+        <Field>UserRefIdx</Field>
+        <Field>FirmUpID</Field>
+      </Fields>
+    </Appendage>
+
+    <Appendage>
+      <Name>Account Query Response</Name>
+      <Dependency>Appendage Length</Dependency>
+      <Description>Optional appendage fields for Account Query Response Message</Description>
+      <Fields>
+        <Field>UserRefIdx</Field>
+      </Fields>
+    </Appendage>
+
+  </Appendages>
+
+  <!-- Appendix B Optional Fields -->
+
+  <Optionals>
+
+    <Optional>
+      <Id>1</Id>
+      <Name>Account</Name>
+      <Type>Alpha</Type>
+      <Size>15</Size>
+      <Description>Account</Description>
+    </Optional>
+
+    <Optional>
+      <Id>2</Id>
+      <Name>PegType</Name>
+      <Type>Alpha</Type>
+      <Size>1</Size>
+      <Description>M = Midpoint Peg; R = Primary Peg; x = Minimum Price Improvement; S = Seek Price Improvement; L = M-ELO (CXC Only); o = Odd Lot Liquidity Providing (OLP) (CXD Only)</Description>
+    </Optional>
+
+    <Optional>
+      <Id>3</Id>
+      <Name>MinQtyType</Name>
+      <Type>Alpha</Type>
+      <Size>1</Size>
+      <Description>N = MAQ; m = MAQ at touch (CXD only); t = MQ at touch (CXD only); z = Minimum Quantity (MQ). Default N</Description>
+    </Optional>
+
+    <Optional>
+      <Id>4</Id>
+      <Name>MinQty</Name>
+      <Type>Numeric</Type>
+      <Size>4</Size>
+      <Description>Works in conjunction with MinQtyType. Order will be rejected if Bypass=Y is combined with MinQty. Requires MaxFloor=0 (Hidden). Default 0 (zero), no minimum quantity</Description>
+    </Optional>
+
+    <Optional>
+      <Id>5</Id>
+      <Name>MaxFloor</Name>
+      <Type>Numeric</Type>
+      <Size>4</Size>
+      <Description>Represents the portion of the order to be displayed (0=Hidden). Default Max Floor=OrderQty</Description>
+    </Optional>
+
+    <Optional>
+      <Id>6</Id>
+      <Name>ExpireTime</Name>
+      <Type>Numeric</Type>
+      <Size>4</Size>
+      <Description>Seconds to live. Must be less than 86400 (number of seconds in a day). Default 0 (zero), no expire time</Description>
+    </Optional>
+
+    <Optional>
+      <Id>7</Id>
+      <Name>PegOffset</Name>
+      <Type>Signed Price</Type>
+      <Size>8</Size>
+      <Description>Offset amount for the pegged value. Default 0 (zero), no peg offset</Description>
+    </Optional>
+
+    <Optional>
+      <Id>8</Id>
+      <Name>TargetStrategy</Name>
+      <Type>Numeric</Type>
+      <Size>2</Size>
+      <Description>1000 = Liquidity Rate 5-15%; 1001 = Liquidity Rate 5-30%; 1002 = Mach Two 10 - 200%; 1003 = Custom Liquidity Rate</Description>
+    </Optional>
+
+    <Optional>
+      <Id>9</Id>
+      <Name>OrderOrigination</Name>
+      <Type>Char</Type>
+      <Size>1</Size>
+      <Description>Broker/Dealer needs to report, as specified by the customer</Description>
+    </Optional>
+
+    <Optional>
+      <Id>10</Id>
+      <Name>RoutingArrangementIndicator</Name>
+      <Type>Alpha</Type>
+      <Size>1</Size>
+      <Description>0 = No routing arrangement in place; 1 = Routing arrangement in place</Description>
+    </Optional>
+
+    <Optional>
+      <Id>11</Id>
+      <Name>BasketTrade</Name>
+      <Type>Alpha</Type>
+      <Size>1</Size>
+      <Description>N = No; Y = Yes. Default N (No)</Description>
+    </Optional>
+
+    <Optional>
+      <Id>12</Id>
+      <Name>ProgramTrade</Name>
+      <Type>Alpha</Type>
+      <Size>1</Size>
+      <Description>N = No; Y = Yes. Default N (No)</Description>
+    </Optional>
+
+    <Optional>
+      <Id>13</Id>
+      <Name>PrincipalTrade</Name>
+      <Type>Alpha</Type>
+      <Size>1</Size>
+      <Description>N = No; Y = Yes. Default N (No)</Description>
+    </Optional>
+
+    <Optional>
+      <Id>14</Id>
+      <Name>Jitney</Name>
+      <Type>Alpha</Type>
+      <Size>3</Size>
+      <Description>To mark an order as being executed on behalf of another broker: TSX Broker Number, 3 digit numbers</Description>
+    </Optional>
+
+    <Optional>
+      <Id>15</Id>
+      <Name>GEFEligible</Name>
+      <Type>Alpha</Type>
+      <Size>1</Size>
+      <Description>N = No; Y = Yes. Default N (No)</Description>
+    </Optional>
+
+    <Optional>
+      <Id>16</Id>
+      <Name>Anonymous</Name>
+      <Type>Alpha</Type>
+      <Size>1</Size>
+      <Description>N = No; Y = Yes. Default N (No)</Description>
+    </Optional>
+
+    <Optional>
+      <Id>17</Id>
+      <Name>UMIRRegulationID</Name>
+      <Type>Alpha</Type>
+      <Size>2</Size>
+      <Description>IA = Insider Account; SS = Significant Shareholder</Description>
+    </Optional>
+
+    <Optional>
+      <Id>18</Id>
+      <Name>Bypass</Name>
+      <Type>Alpha</Type>
+      <Size>1</Size>
+      <Description>Order marker that indicates the order should only trade with displayed quantity. N = No; Y = Yes. Default N (No)</Description>
+    </Optional>
+
+    <Optional>
+      <Id>19</Id>
+      <Name>TSXNCIB</Name>
+      <Type>Alpha</Type>
+      <Size>1</Size>
+      <Description>Identifies Normal-Course Issuer Bid (NCIB) orders. N = No; Y = Yes. Default N (No)</Description>
+    </Optional>
+
+    <Optional>
+      <Id>20</Id>
+      <Name>NoTradeFeat</Name>
+      <Type>Alpha</Type>
+      <Size>1</Size>
+      <Description>Defines the behavior of self-trade prevention when using NoTradeKey. If option E is selected, resulting trades are suppressed on public market data, and ExecuteMatch appendage will be returned to entry firm. Default N (Cancel Newest)</Description>
+    </Optional>
+
+    <Optional>
+      <Id>21</Id>
+      <Name>NoTradeKey</Name>
+      <Type>Alpha</Type>
+      <Size>6</Size>
+      <Description>Participant-generated key prevents the order from trading against orders with the same key value</Description>
+    </Optional>
+
+    <Optional>
+      <Id>22</Id>
+      <Name>ShortMarkingExempt</Name>
+      <Type>Alpha</Type>
+      <Size>1</Size>
+      <Description>0 = SME</Description>
+    </Optional>
+
+    <Optional>
+      <Id>23</Id>
+      <Name>POComment</Name>
+      <Type>Alpha</Type>
+      <Size>32</Size>
+      <Description>A free-form pass-through field for use by the participants</Description>
+    </Optional>
+
+    <Optional>
+      <Id>24</Id>
+      <Name>DisplayRange</Name>
+      <Type>Numeric</Type>
+      <Size>4</Size>
+      <Description>Quantity assigned to max floor orders indicating the range in which the displayed quantity will randomly increase or decrease.</Description>
+    </Optional>
+
+    <Optional>
+      <Id>25</Id>
+      <Name>CustomerAccount</Name>
+      <Type>Alpha</Type>
+      <Size>20</Size>
+      <Description>Account number for clients not eligible to obtain an LEI</Description>
+    </Optional>
+
+    <Optional>
+      <Id>26</Id>
+      <Name>AlgorithmID</Name>
+      <Type>Alpha</Type>
+      <Size>20</Size>
+      <Description>Unique identifier for the end-client (orders automatically generated on a predetermined basis)</Description>
+    </Optional>
+
+    <Optional>
+      <Id>27</Id>
+      <Name>CustomerLEI</Name>
+      <Type>Alpha</Type>
+      <Size>52</Size>
+      <Description>LEI for clients eligible to obtain an LEI including LEI of the foreign dealer equivalent (Encryption Required)</Description>
+    </Optional>
+
+    <Optional>
+      <Id>28</Id>
+      <Name>BrokerLEI</Name>
+      <Type>Alpha</Type>
+      <Size>20</Size>
+      <Description>Non-PO IIROC Dealer Member (Correspondent Broker)</Description>
+    </Optional>
+
+    <Optional>
+      <Id>29</Id>
+      <Name>ConditionalOrder</Name>
+      <Type>Alpha</Type>
+      <Size>1</Size>
+      <Description>C = Conditional Order (CXD only); X = eXtended Firm-up Time (XFT) conditional order (CXD only)</Description>
+    </Optional>
+
+    <Optional>
+      <Id>30</Id>
+      <Name>AllowConditional</Name>
+      <Type>Alpha</Type>
+      <Size>1</Size>
+      <Description>N = No; Y = Yes. Default N (No)</Description>
+    </Optional>
+
+    <Optional>
+      <Id>31</Id>
+      <Name>FirmUpID</Name>
+      <Type>Numeric</Type>
+      <Size>8</Size>
+      <Description>Unique firm up ID for a Conditional match</Description>
+    </Optional>
+
+    <Optional>
+      <Id>32</Id>
+      <Name>CXDConnect</Name>
+      <Type>Alpha</Type>
+      <Size>1</Size>
+      <Description>Y = Yes; N = No. Default N (No)</Description>
+    </Optional>
+
+    <Optional>
+      <Id>33</Id>
+      <Name>PureStreamConnect</Name>
+      <Type>Alpha</Type>
+      <Size>1</Size>
+      <Description>Y = Yes; N = No. Default N (No)</Description>
+    </Optional>
+
+    <Optional>
+      <Id>34</Id>
+      <Name>MinRate</Name>
+      <Type>Numeric</Type>
+      <Size>2</Size>
+      <Description>Minimum rate for CXD PureStream Customer Reference Rate Range. Specified in percent as integer. Default 1 (1%)</Description>
+    </Optional>
+
+    <Optional>
+      <Id>35</Id>
+      <Name>MaxRate</Name>
+      <Type>Numeric</Type>
+      <Size>2</Size>
+      <Description>Required maximum rate for CXD PureStream Custom Reference Rate Range orders. Specified in percent as integer. Should be between 1% and 500%.</Description>
+    </Optional>
+
+    <Optional>
+      <Id>36</Id>
+      <Name>CumRate</Name>
+      <Type>Numeric</Type>
+      <Size>2</Size>
+      <Description>The current cumulative streaming rate the order is achieving. Includes multiple streams, if applicable.</Description>
+    </Optional>
+
+    <Optional>
+      <Id>37</Id>
+      <Name>UserRefIdx</Name>
+      <Type>Numeric</Type>
+      <Size>1</Size>
+      <Description>User Reference Index - identifies the channel within the given port</Description>
+    </Optional>
+
+    <Optional>
+      <Id>38</Id>
+      <Name>ExecuteMatch</Name>
+      <Type>Alpha</Type>
+      <Size>1</Size>
+      <Description>Y = Yes; N = No. Indicates that the trade was matched and suppressed due to no self-trade. Default N (No)</Description>
+    </Optional>
+
+    <Optional>
+      <Id>39</Id>
+      <Name>RoutingStrategy</Name>
+      <Type>Alpha</Type>
+      <Size>15</Size>
+      <Description>Routing Strategy provided by Nasdaq Canada</Description>
+    </Optional>
+
+    <Optional>
+      <Id>40</Id>
+      <Name>SecondaryOrderID</Name>
+      <Type>Numeric</Type>
+      <Size>8</Size>
+      <Description>When present, Nasdaq Canada order number as reported in the market data feed.</Description>
+    </Optional>
+
+    <Optional>
+      <Id>41</Id>
+      <Name>WashTrade</Name>
+      <Type>Alpha</Type>
+      <Size>1</Size>
+      <Description>Y = Yes; N = No. Default N (No)</Description>
+    </Optional>
+
+    <Optional>
+      <Id>42</Id>
+      <Name>BrokerPref</Name>
+      <Type>Alpha</Type>
+      <Size>1</Size>
+      <Description>Y = Yes; N = No. Default N (No)</Description>
+    </Optional>
+
+    <Optional>
+      <Id>43</Id>
+      <Name>HandlInst</Name>
+      <Type>Alpha</Type>
+      <Size>1</Size>
+      <Description>f = DAO; 1 = OPR Reprice; 5 = OPR Cancel. Default 1</Description>
+    </Optional>
+
+    <Optional>
+      <Id>44</Id>
+      <Name>RepriceReason</Name>
+      <Type>Numeric</Type>
+      <Size>1</Size>
+      <Description>Populated with a reason code if the order is repriced</Description>
+    </Optional>
+
+    <Optional>
+      <Id>45</Id>
+      <Name>NBBOSetter</Name>
+      <Type>Alpha</Type>
+      <Size>1</Size>
+      <Description>Y = Order is NBBO Setter</Description>
+    </Optional>
+
+  </Optionals>
+
+  <Enums>
+
+    <!-- Side -->
+    <Enum>
+      <Name>Side</Name>
+      <Values>
+        <Value>
+          <Data>'1'</Data>
+          <Name>Buy</Name>
+          <Description>Buy</Description>
+        </Value>
+        <Value>
+          <Data>'2'</Data>
+          <Name>Sell</Name>
+          <Description>Sell</Description>
+        </Value>
+        <Value>
+          <Data>'5'</Data>
+          <Name>Sell Short</Name>
+          <Description>Sell Short</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Time In Force -->
+    <Enum>
+      <Name>Time In Force</Name>
+      <Values>
+        <Value>
+          <Data>'0'</Data>
+          <Name>Day</Name>
+          <Description>Day</Description>
+        </Value>
+        <Value>
+          <Data>'3'</Data>
+          <Name>Immediate or Cancel</Name>
+          <Description>Immediate or Cancel. As much of the order as possible must be executed immediately. Any part of the order that is not executed immediately gets canceled.</Description>
+        </Value>
+        <Value>
+          <Data>'6'</Data>
+          <Name>Good Till Date</Name>
+          <Description>Good Till Date (GTD). Date must be today's trading date. This field must be used in conjunction with ExpireTime.</Description>
+        </Value>
+        <Value>
+          <Data>'8'</Data>
+          <Name>Stream Or Kill</Name>
+          <Description>Stream Or Kill (SOK). Order is paired in a stream immediately or is cancelled. (CXD PureStream only)</Description>
+        </Value>
+        <Value>
+          <Data>'P'</Data>
+          <Name>Post Only Order</Name>
+          <Description>Post-Only Order</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- ExDestination -->
+    <Enum>
+      <Name>ExDestination</Name>
+      <Values>
+        <Value>
+          <Data>'C'</Data>
+          <Name>CXC</Name>
+          <Description>CXC</Description>
+        </Value>
+        <Value>
+          <Data>'2'</Data>
+          <Name>CX2</Name>
+          <Description>CX2</Description>
+        </Value>
+        <Value>
+          <Data>'D'</Data>
+          <Name>CXD</Name>
+          <Description>CXD</Description>
+        </Value>
+        <Value>
+          <Data>'S'</Data>
+          <Name>Smart Order Router</Name>
+          <Description>Smart Order Router (requires RoutingStrategy)</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- UMIRAccountType -->
+    <Enum>
+      <Name>UMIRAccountType</Name>
+      <Values>
+        <Value>
+          <Data>'CL'</Data>
+          <Name>Client</Name>
+          <Description>Client</Description>
+        </Value>
+        <Value>
+          <Data>'NC'</Data>
+          <Name>Non-Client</Name>
+          <Description>Non-Client</Description>
+        </Value>
+        <Value>
+          <Data>'ST'</Data>
+          <Name>Specialist</Name>
+          <Description>Specialist</Description>
+        </Value>
+        <Value>
+          <Data>'IN'</Data>
+          <Name>Inventory</Name>
+          <Description>Inventory</Description>
+        </Value>
+        <Value>
+          <Data>'OF'</Data>
+          <Name>Options firm account</Name>
+          <Description>Options firm account</Description>
+        </Value>
+        <Value>
+          <Data>'OT'</Data>
+          <Name>Options market maker</Name>
+          <Description>Options market maker</Description>
+        </Value>
+        <Value>
+          <Data>'BU'</Data>
+          <Name>Bundled</Name>
+          <Description>Bundled</Description>
+        </Value>
+        <Value>
+          <Data>'MC'</Data>
+          <Name>Multiple clients</Name>
+          <Description>Multiple clients</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Order State -->
+    <Enum>
+      <Name>Order State</Name>
+      <Values>
+        <Value>
+          <Data>'L'</Data>
+          <Name>Order Live</Name>
+          <Description>Order Live</Description>
+        </Value>
+        <Value>
+          <Data>'D'</Data>
+          <Name>Order Dead</Name>
+          <Description>Order Dead</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Event Code -->
+    <Enum>
+      <Name>Event Code</Name>
+      <Values>
+        <Value>
+          <Data>'S'</Data>
+          <Name>Start of Day</Name>
+          <Description>Start of Day, indicating that the exchange is open and is ready to accept orders</Description>
+        </Value>
+        <Value>
+          <Data>'E'</Data>
+          <Name>End of Day</Name>
+          <Description>End of Day, indicating that the exchange is closed and will no longer accept new orders. Note that it is still possible to receive breaks and cancels after this event.</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Cancel Reason -->
+    <Enum>
+      <Name>Cancel Reason</Name>
+      <Values>
+        <Value>
+          <Data>'0'</Data>
+          <Name>Default value</Name>
+          <Description>Default value</Description>
+        </Value>
+        <Value>
+          <Data>'#ADM'</Data>
+          <Name>Admin cancel</Name>
+          <Description>ADMIN CANCEL</Description>
+        </Value>
+        <Value>
+          <Data>'#IOC'</Data>
+          <Name>Cancelled #IOC</Name>
+          <Description>CANCELLED</Description>
+        </Value>
+        <Value>
+          <Data>'#STP'</Data>
+          <Name>Cancelled #STP</Name>
+          <Description>CANCELLED</Description>
+        </Value>
+        <Value>
+          <Data>'#TME'</Data>
+          <Name>Cancelled #TME</Name>
+          <Description>CANCELLED</Description>
+        </Value>
+        <Value>
+          <Data>'#DNR'</Data>
+          <Name>Cancelled to prevent lock/cross</Name>
+          <Description>Cancelled to prevent lock/cross</Description>
+        </Value>
+        <Value>
+          <Data>'#MKT'</Data>
+          <Name>Market Closed #MKT</Name>
+          <Description>Market Closed</Description>
+        </Value>
+        <Value>
+          <Data>'#DST'</Data>
+          <Name>Destination Matcher Closed</Name>
+          <Description>Destination Matcher Closed</Description>
+        </Value>
+        <Value>
+          <Data>'#PGF'</Data>
+          <Name>Pending GEF</Name>
+          <Description>Pending GEF</Description>
+        </Value>
+        <Value>
+          <Data>'#GEF'</Data>
+          <Name>Gef</Name>
+          <Description>GEF</Description>
+        </Value>
+        <Value>
+          <Data>'OTHR'</Data>
+          <Name>Cancelled OTHR</Name>
+          <Description>CANCELLED</Description>
+        </Value>
+        <Value>
+          <Data>'#COD'</Data>
+          <Name>Cancelled on Disconnect</Name>
+          <Description>Cancelled on Disconnect</Description>
+        </Value>
+        <Value>
+          <Data>'USER'</Data>
+          <Name>Cancelled USER</Name>
+          <Description>CANCELLED</Description>
+        </Value>
+        <Value>
+          <Data>'TLTC'</Data>
+          <Name>Too Late To Cancel</Name>
+          <Description>Too Late To Cancel</Description>
+        </Value>
+        <Value>
+          <Data>'RISK'</Data>
+          <Name>Risk</Name>
+          <Description>RISK</Description>
+        </Value>
+        <Value>
+          <Data>'EMPT'</Data>
+          <Name>Cancelled due to Market Place Threshold</Name>
+          <Description>Cancelled due to Market Place Threshold</Description>
+        </Value>
+        <Value>
+          <Data>'EREP'</Data>
+          <Name>Exceeded Reprice Threshold</Name>
+          <Description>Exceeded Reprice Threshold</Description>
+        </Value>
+        <Value>
+          <Data>'rADM'</Data>
+          <Name>SOR:AdminAction</Name>
+          <Description>SOR:AdminAction</Description>
+        </Value>
+        <Value>
+          <Data>'rDNA'</Data>
+          <Name>SOR:DestNotAvailable</Name>
+          <Description>SOR:DestNotAvailable</Description>
+        </Value>
+        <Value>
+          <Data>'rDQM'</Data>
+          <Name>SOR:DestQuantityMismatch</Name>
+          <Description>SOR:DestQuantityMismatch</Description>
+        </Value>
+        <Value>
+          <Data>'rDRJ'</Data>
+          <Name>SOR:DestReject</Name>
+          <Description>SOR:DestReject</Description>
+        </Value>
+        <Value>
+          <Data>'rMPA'</Data>
+          <Name>SOR:MaxPostAttempts</Name>
+          <Description>SOR:MaxPostAttempts</Description>
+        </Value>
+        <Value>
+          <Data>'rOAD'</Data>
+          <Name>SOR:OrderAlreadyDead</Name>
+          <Description>SOR:OrderAlreadyDead</Description>
+        </Value>
+        <Value>
+          <Data>'rOOS'</Data>
+          <Name>SOR:OutOfSync</Name>
+          <Description>SOR:OutOfSync</Description>
+        </Value>
+        <Value>
+          <Data>'rTLR'</Data>
+          <Name>SOR:TooLateToReplace</Name>
+          <Description>SOR:TooLateToReplace</Description>
+        </Value>
+        <Value>
+          <Data>'ODDD'</Data>
+          <Name>No oddlot dealer</Name>
+          <Description>NO ODDLOT DEALER</Description>
+        </Value>
+        <Value>
+          <Data>'OSTP'</Data>
+          <Name>Cancelled OSTP</Name>
+          <Description>CANCELLED</Description>
+        </Value>
+        <Value>
+          <Data>'SYNO'</Data>
+          <Name>Symbol not open for trading SYNO</Name>
+          <Description>SYMBOL NOT OPEN FOR TRADING</Description>
+        </Value>
+        <Value>
+          <Data>'LCMK'</Data>
+          <Name>Market locked or crossed</Name>
+          <Description>MARKET LOCKED OR CROSSED</Description>
+        </Value>
+        <Value>
+          <Data>'LMTP'</Data>
+          <Name>Invalid order price</Name>
+          <Description>INVALID ORDER PRICE</Description>
+        </Value>
+        <Value>
+          <Data>'#MLO'</Data>
+          <Name>M-ELO Order No Longer Valid</Name>
+          <Description>M-ELO Order No Longer Valid</Description>
+        </Value>
+        <Value>
+          <Data>'#BLS'</Data>
+          <Name>Cancelled #BLS</Name>
+          <Description>CANCELLED</Description>
+        </Value>
+        <Value>
+          <Data>'OLPQ'</Data>
+          <Name>OLP order qty does not meet the required minimum</Name>
+          <Description>OLP order qty does not meet the required minimum</Description>
+        </Value>
+        <Value>
+          <Data>'CNTG'</Data>
+          <Name>In Contingency mode</Name>
+          <Description>In Contingency mode</Description>
+        </Value>
+        <Value>
+          <Data>'CDEX'</Data>
+          <Name>Cancelled CDEX</Name>
+          <Description>CANCELLED</Description>
+        </Value>
+        <Value>
+          <Data>'FUDN'</Data>
+          <Name>Cancelled FUDN</Name>
+          <Description>CANCELLED</Description>
+        </Value>
+        <Value>
+          <Data>'RSTD'</Data>
+          <Name>Order Restated</Name>
+          <Description>Order Restated</Description>
+        </Value>
+        <Value>
+          <Data>'#TIF'</Data>
+          <Name>Cancelled by time restriction</Name>
+          <Description>Cancelled by time restriction</Description>
+        </Value>
+        <Value>
+          <Data>'MCLO'</Data>
+          <Name>Market Closed MCLO</Name>
+          <Description>Market Closed</Description>
+        </Value>
+        <Value>
+          <Data>'HLTS'</Data>
+          <Name>Symbol not open for trading HLTS</Name>
+          <Description>SYMBOL NOT OPEN FOR TRADING</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Reject Reason -->
+    <Enum>
+      <Name>Reject Reason</Name>
+      <Values>
+        <Value>
+          <Data>'none'</Data>
+          <Name>Rejected none</Name>
+          <Description>REJECTED</Description>
+        </Value>
+        <Value>
+          <Data>'SYMB'</Data>
+          <Name>Unknown symbol</Name>
+          <Description>UNKNOWN SYMBOL</Description>
+        </Value>
+        <Value>
+          <Data>'SYMD'</Data>
+          <Name>Symbol not allowed to trade on destination</Name>
+          <Description>SYMBOL NOT ALLOWED TO TRADE ON DESTINATION</Description>
+        </Value>
+        <Value>
+          <Data>'HLTD'</Data>
+          <Name>Symbol halted on destination</Name>
+          <Description>SYMBOL HALTED ON DESTINATION</Description>
+        </Value>
+        <Value>
+          <Data>'TLTC'</Data>
+          <Name>Too late to cancel</Name>
+          <Description>TOO LATE TO CANCEL</Description>
+        </Value>
+        <Value>
+          <Data>'TLTR'</Data>
+          <Name>Too late to replace</Name>
+          <Description>TOO LATE TO REPLACE</Description>
+        </Value>
+        <Value>
+          <Data>'ADMC'</Data>
+          <Name>Admin canceled</Name>
+          <Description>ADMIN CANCELED</Description>
+        </Value>
+        <Value>
+          <Data>'ADRJ'</Data>
+          <Name>Admin rejected</Name>
+          <Description>ADMIN REJECTED</Description>
+        </Value>
+        <Value>
+          <Data>'HLTS'</Data>
+          <Name>Symbol halted</Name>
+          <Description>SYMBOL HALTED</Description>
+        </Value>
+        <Value>
+          <Data>'VMIN'</Data>
+          <Name>Visible min qty</Name>
+          <Description>VISIBLE MIN QTY</Description>
+        </Value>
+        <Value>
+          <Data>'BIOC'</Data>
+          <Name>Non-ioc bypass</Name>
+          <Description>NON-IOC BYPASS</Description>
+        </Value>
+        <Value>
+          <Data>'PDUP'</Data>
+          <Name>Possdupe set</Name>
+          <Description>POSSDUPE SET</Description>
+        </Value>
+        <Value>
+          <Data>'MRTE'</Data>
+          <Name>Missing or invalid exdestination specified</Name>
+          <Description>MISSING OR INVALID EXDESTINATION SPECIFIED</Description>
+        </Value>
+        <Value>
+          <Data>'USRB'</Data>
+          <Name>Missing/unknown tag umiruserid</Name>
+          <Description>MISSING/UNKNOWN TAG UMIRUSERID</Description>
+        </Value>
+        <Value>
+          <Data>'CRED'</Data>
+          <Name>Terminal has no credit</Name>
+          <Description>TERMINAL HAS NO CREDIT</Description>
+        </Value>
+        <Value>
+          <Data>'SMEB'</Data>
+          <Name>Short marker exempt not supported for value</Name>
+          <Description>SHORT MARKER EXEMPT NOT SUPPORTED FOR VALUE</Description>
+        </Value>
+        <Value>
+          <Data>'LMTP'</Data>
+          <Name>Invalid order price</Name>
+          <Description>INVALID ORDER PRICE</Description>
+        </Value>
+        <Value>
+          <Data>'MCLO'</Data>
+          <Name>Market not open</Name>
+          <Description>MARKET NOT OPEN</Description>
+        </Value>
+        <Value>
+          <Data>'ODDB'</Data>
+          <Name>Invalid ordqty, must be a multiple of standard trading unit</Name>
+          <Description>INVALID ORDQTY, MUST BE A MULTIPLE OF STANDARD TRADING UNIT</Description>
+        </Value>
+        <Value>
+          <Data>'ODDD'</Data>
+          <Name>Invalid ordqty, must be a multiple of standard trading unit [no oddlot dealer]</Name>
+          <Description>INVALID ORDQTY, MUST BE A MULTIPLE OF STANDARD TRADING UNIT [NO ODDLOT DEALER]</Description>
+        </Value>
+        <Value>
+          <Data>'ODDI'</Data>
+          <Name>Invalid ordqty, must be a multiple of standard trading unit [tif not ioc or day]</Name>
+          <Description>INVALID ORDQTY, MUST BE A MULTIPLE OF STANDARD TRADING UNIT [TIF NOT IOC OR DAY]</Description>
+        </Value>
+        <Value>
+          <Data>'ODDP'</Data>
+          <Name>Invalid ordqty, must be a multiple of standard trading unit [no prim peg]</Name>
+          <Description>INVALID ORDQTY, MUST BE A MULTIPLE OF STANDARD TRADING UNIT [NO PRIM PEG]</Description>
+        </Value>
+        <Value>
+          <Data>'ODDM'</Data>
+          <Name>Invalid ordqty, must be a multiple of standard trading unit [minqty specified]</Name>
+          <Description>INVALID ORDQTY, MUST BE A MULTIPLE OF STANDARD TRADING UNIT [MINQTY SPECIFIED]</Description>
+        </Value>
+        <Value>
+          <Data>'ODDR'</Data>
+          <Name>Invalid ordqty, cannot replace oddlot to round/mixed lot or vice versa</Name>
+          <Description>INVALID ORDQTY, CANNOT REPLACE ODDLOT TO ROUND/MIXED LOT OR VICE VERSA</Description>
+        </Value>
+        <Value>
+          <Data>'OSTP'</Data>
+          <Name>Rejected OSTP</Name>
+          <Description>REJECTED</Description>
+        </Value>
+        <Value>
+          <Data>'NORD'</Data>
+          <Name>Order not found</Name>
+          <Description>ORDER NOT FOUND</Description>
+        </Value>
+        <Value>
+          <Data>'PENR'</Data>
+          <Name>Pending replace</Name>
+          <Description>PENDING REPLACE</Description>
+        </Value>
+        <Value>
+          <Data>'PENC'</Data>
+          <Name>Order pending cancel</Name>
+          <Description>ORDER PENDING CANCEL</Description>
+        </Value>
+        <Value>
+          <Data>'SYMM'</Data>
+          <Name>Symbol mismatch</Name>
+          <Description>SYMBOL MISMATCH</Description>
+        </Value>
+        <Value>
+          <Data>'USRM'</Data>
+          <Name>Umir user id mismatch</Name>
+          <Description>UMIR USER ID MISMATCH</Description>
+        </Value>
+        <Value>
+          <Data>'SIDM'</Data>
+          <Name>Side mismatch</Name>
+          <Description>SIDE MISMATCH</Description>
+        </Value>
+        <Value>
+          <Data>'DESM'</Data>
+          <Name>Destination mismatch</Name>
+          <Description>DESTINATION MISMATCH</Description>
+        </Value>
+        <Value>
+          <Data>'ISOM'</Data>
+          <Name>Cannot convert to iso order</Name>
+          <Description>CANNOT CONVERT TO ISO ORDER</Description>
+        </Value>
+        <Value>
+          <Data>'INVT'</Data>
+          <Name>Invalid tag</Name>
+          <Description>INVALID TAG</Description>
+        </Value>
+        <Value>
+          <Data>'GTDE'</Data>
+          <Name>Expiry required for good till date(gtd) order</Name>
+          <Description>EXPIRY REQUIRED FOR GOOD TILL DATE(GTD) ORDER</Description>
+        </Value>
+        <Value>
+          <Data>'EMPT'</Data>
+          <Name>Order exceeded mktplace threshold</Name>
+          <Description>ORDER EXCEEDED MKTPLACE THRESHOLD</Description>
+        </Value>
+        <Value>
+          <Data>'BDRK'</Data>
+          <Name>Bypass orders not valid on dark pool</Name>
+          <Description>BYPASS ORDERS NOT VALID ON DARK POOL</Description>
+        </Value>
+        <Value>
+          <Data>'DCDT'</Data>
+          <Name>User not permissioned on destination</Name>
+          <Description>USER NOT PERMISSIONED ON DESTINATION</Description>
+        </Value>
+        <Value>
+          <Data>'MPIB'</Data>
+          <Name>Mpi orders only for cxd</Name>
+          <Description>MPI ORDERS ONLY FOR CXD</Description>
+        </Value>
+        <Value>
+          <Data>'ACSO'</Data>
+          <Name>At close orders only for sor orders</Name>
+          <Description>AT CLOSE ORDERS ONLY FOR SOR ORDERS</Description>
+        </Value>
+        <Value>
+          <Data>'INVM'</Data>
+          <Name>Displayed quantity must be of standard trading unit(stu)</Name>
+          <Description>DISPLAYED QUANTITY MUST BE OF STANDARD TRADING UNIT(STU)</Description>
+        </Value>
+        <Value>
+          <Data>'INVD'</Data>
+          <Name>Display range must be of standard trading unit(stu)</Name>
+          <Description>DISPLAY RANGE MUST BE OF STANDARD TRADING UNIT(STU)</Description>
+        </Value>
+        <Value>
+          <Data>'MINB'</Data>
+          <Name>Minqty must be of standard trading unit(stu)</Name>
+          <Description>MINQTY MUST BE OF STANDARD TRADING UNIT(STU)</Description>
+        </Value>
+        <Value>
+          <Data>'OFFB'</Data>
+          <Name>Invalid pegoffset for peg type</Name>
+          <Description>INVALID PEGOFFSET FOR PEG TYPE</Description>
+        </Value>
+        <Value>
+          <Data>'STRM'</Data>
+          <Name>Rejected STRM</Name>
+          <Description>REJECTED</Description>
+        </Value>
+        <Value>
+          <Data>'CAPD'</Data>
+          <Name>Order failed caplimit - no default limit found</Name>
+          <Description>ORDER FAILED CAPLIMIT - NO DEFAULT LIMIT FOUND</Description>
+        </Value>
+        <Value>
+          <Data>'CAPS'</Data>
+          <Name>Order exceed share limits</Name>
+          <Description>ORDER EXCEED SHARE LIMITS</Description>
+        </Value>
+        <Value>
+          <Data>'CAPN'</Data>
+          <Name>Order exceed notional limits</Name>
+          <Description>ORDER EXCEED NOTIONAL LIMITS</Description>
+        </Value>
+        <Value>
+          <Data>'CLOP'</Data>
+          <Name>Pegged orders unavailable after hours</Name>
+          <Description>PEGGED ORDERS UNAVAILABLE AFTER HOURS</Description>
+        </Value>
+        <Value>
+          <Data>'MIST'</Data>
+          <Name>Missing required tags</Name>
+          <Description>MISSING REQUIRED TAGS</Description>
+        </Value>
+        <Value>
+          <Data>'QTYB'</Data>
+          <Name>Orderqty must be greater than 0</Name>
+          <Description>ORDERQTY MUST BE GREATER THAN 0</Description>
+        </Value>
+        <Value>
+          <Data>'NMKT'</Data>
+          <Name>No market</Name>
+          <Description>NO MARKET</Description>
+        </Value>
+        <Value>
+          <Data>'LCMK'</Data>
+          <Name>Market locked or crossed</Name>
+          <Description>MARKET LOCKED OR CROSSED</Description>
+        </Value>
+        <Value>
+          <Data>'CUMQ'</Data>
+          <Name>New order quantity less than cumqty</Name>
+          <Description>NEW ORDER QUANTITY LESS THAN CUMQTY</Description>
+        </Value>
+        <Value>
+          <Data>'OTHR'</Data>
+          <Name>Rejected OTHR</Name>
+          <Description>REJECTED</Description>
+        </Value>
+        <Value>
+          <Data>'RIOC'</Data>
+          <Name>No replace on ioc order</Name>
+          <Description>NO REPLACE ON IOC ORDER</Description>
+        </Value>
+        <Value>
+          <Data>'GWRJ'</Data>
+          <Name>Gateway reject</Name>
+          <Description>GATEWAY REJECT</Description>
+        </Value>
+        <Value>
+          <Data>'DNMQ'</Data>
+          <Name>Cxd not accepting min qty orders</Name>
+          <Description>CXD NOT ACCEPTING MIN QTY ORDERS</Description>
+        </Value>
+        <Value>
+          <Data>'dSDN'</Data>
+          <Name>Destination system down</Name>
+          <Description>DESTINATION SYSTEM DOWN</Description>
+        </Value>
+        <Value>
+          <Data>'dNAO'</Data>
+          <Name>Destination not accepting orders</Name>
+          <Description>DESTINATION NOT ACCEPTING ORDERS</Description>
+        </Value>
+        <Value>
+          <Data>'dNPO'</Data>
+          <Name>Destination does not support post only</Name>
+          <Description>DESTINATION DOES NOT SUPPORT POST ONLY</Description>
+        </Value>
+        <Value>
+          <Data>'dSTP'</Data>
+          <Name>Destination does not support stp feature specified</Name>
+          <Description>DESTINATION DOES NOT SUPPORT STP FEATURE SPECIFIED</Description>
+        </Value>
+        <Value>
+          <Data>'dPEG'</Data>
+          <Name>Destination does not support peg type</Name>
+          <Description>DESTINATION DOES NOT SUPPORT PEG TYPE</Description>
+        </Value>
+        <Value>
+          <Data>'dFOK'</Data>
+          <Name>Destination does not support fok</Name>
+          <Description>DESTINATION DOES NOT SUPPORT FOK</Description>
+        </Value>
+        <Value>
+          <Data>'dHID'</Data>
+          <Name>Destination does not support hidden orders</Name>
+          <Description>DESTINATION DOES NOT SUPPORT HIDDEN ORDERS</Description>
+        </Value>
+        <Value>
+          <Data>'dMQY'</Data>
+          <Name>Destination does not support minqty</Name>
+          <Description>DESTINATION DOES NOT SUPPORT MINQTY</Description>
+        </Value>
+        <Value>
+          <Data>'dAON'</Data>
+          <Name>Destination does not support aon</Name>
+          <Description>DESTINATION DOES NOT SUPPORT AON</Description>
+        </Value>
+        <Value>
+          <Data>'dCLO'</Data>
+          <Name>Destination does not support closing orders</Name>
+          <Description>DESTINATION DOES NOT SUPPORT CLOSING ORDERS</Description>
+        </Value>
+        <Value>
+          <Data>'dIOC'</Data>
+          <Name>Destination does not support ioc time in force</Name>
+          <Description>DESTINATION DOES NOT SUPPORT IOC TIME IN FORCE</Description>
+        </Value>
+        <Value>
+          <Data>'dBYP'</Data>
+          <Name>Destination does not support bypass flag</Name>
+          <Description>DESTINATION DOES NOT SUPPORT BYPASS FLAG</Description>
+        </Value>
+        <Value>
+          <Data>'dRUO'</Data>
+          <Name>Destination replace for unack order</Name>
+          <Description>DESTINATION REPLACE FOR UNACK ORDER</Description>
+        </Value>
+        <Value>
+          <Data>'dTYP'</Data>
+          <Name>Destination does not support order type</Name>
+          <Description>DESTINATION DOES NOT SUPPORT ORDER TYPE</Description>
+        </Value>
+        <Value>
+          <Data>'dMET'</Data>
+          <Name>Destination does not support maq at the touch orders</Name>
+          <Description>DESTINATION DOES NOT SUPPORT MAQ AT THE TOUCH ORDERS</Description>
+        </Value>
+        <Value>
+          <Data>'dMQT'</Data>
+          <Name>Destination does not support mq at the touch orders</Name>
+          <Description>DESTINATION DOES NOT SUPPORT MQ AT THE TOUCH ORDERS</Description>
+        </Value>
+        <Value>
+          <Data>'dSPI'</Data>
+          <Name>Destination does not support seek price improvement</Name>
+          <Description>DESTINATION DOES NOT SUPPORT SEEK PRICE IMPROVEMENT</Description>
+        </Value>
+        <Value>
+          <Data>'dOLP'</Data>
+          <Name>Destination does not support odd lot book orders</Name>
+          <Description>DESTINATION DOES NOT SUPPORT ODD LOT BOOK ORDERS</Description>
+        </Value>
+        <Value>
+          <Data>'sTIF'</Data>
+          <Name>Invalid tif for spi order. tif must be ioc</Name>
+          <Description>INVALID TIF FOR SPI ORDER. TIF MUST BE IOC</Description>
+        </Value>
+        <Value>
+          <Data>'aTIF'</Data>
+          <Name>Invalid tif for maq at the touch. tif must be ioc</Name>
+          <Description>INVALID TIF FOR MAQ AT THE TOUCH. TIF MUST BE IOC</Description>
+        </Value>
+        <Value>
+          <Data>'qTIF'</Data>
+          <Name>Invalid tif for mq at the touch. tif must be ioc</Name>
+          <Description>INVALID TIF FOR MQ AT THE TOUCH. TIF MUST BE IOC</Description>
+        </Value>
+        <Value>
+          <Data>'AONQ'</Data>
+          <Name>Aon not allowed for maq at the touch or mq at the touch</Name>
+          <Description>AON NOT ALLOWED FOR MAQ AT THE TOUCH OR MQ AT THE TOUCH</Description>
+        </Value>
+        <Value>
+          <Data>'PEGQ'</Data>
+          <Name>Peg not alllowed for maq at the touch or mq at the touch</Name>
+          <Description>PEG NOT ALLLOWED FOR MAQ AT THE TOUCH OR MQ AT THE TOUCH</Description>
+        </Value>
+        <Value>
+          <Data>'MQYB'</Data>
+          <Name>Invalid minqty. must be a multiple of standard trading unit for maq at the touch or mq at the touch</Name>
+          <Description>INVALID MINQTY. MUST BE A MULTIPLE OF STANDARD TRADING UNIT FOR MAQ AT THE TOUCH OR MQ AT THE TOUCH</Description>
+        </Value>
+        <Value>
+          <Data>'SPIP'</Data>
+          <Name>Pegging not allowed with seekpriceimprovement</Name>
+          <Description>PEGGING NOT ALLOWED WITH SEEKPRICEIMPROVEMENT</Description>
+        </Value>
+        <Value>
+          <Data>'SPII'</Data>
+          <Name>Cso not allowed with seekpriceimprovement</Name>
+          <Description>CSO NOT ALLOWED WITH SEEKPRICEIMPROVEMENT</Description>
+        </Value>
+        <Value>
+          <Data>'SPIM'</Data>
+          <Name>Minpriceimprovement not allowed with seekpriceimprovement</Name>
+          <Description>MINPRICEIMPROVEMENT NOT ALLOWED WITH SEEKPRICEIMPROVEMENT</Description>
+        </Value>
+        <Value>
+          <Data>'NSTP'</Data>
+          <Name>Stop order not supported</Name>
+          <Description>STOP ORDER NOT SUPPORTED</Description>
+        </Value>
+        <Value>
+          <Data>'CRTE'</Data>
+          <Name>Chix route - market not found</Name>
+          <Description>CHIX ROUTE - MARKET NOT FOUND</Description>
+        </Value>
+        <Value>
+          <Data>'BOPG'</Data>
+          <Name>Chix route - opg orders not valid after stock open</Name>
+          <Description>CHIX ROUTE - OPG ORDERS NOT VALID AFTER STOCK OPEN</Description>
+        </Value>
+        <Value>
+          <Data>'NGTC'</Data>
+          <Name>Chix route - gtc orders not supported</Name>
+          <Description>CHIX ROUTE - GTC ORDERS NOT SUPPORTED</Description>
+        </Value>
+        <Value>
+          <Data>'CMCL'</Data>
+          <Name>Chix route - mkt order not supported after close</Name>
+          <Description>CHIX ROUTE - MKT ORDER NOT SUPPORTED AFTER CLOSE</Description>
+        </Value>
+        <Value>
+          <Data>'rXBO'</Data>
+          <Name>Sor crossed best bid ask</Name>
+          <Description>SOR CROSSED BEST BID ASK</Description>
+        </Value>
+        <Value>
+          <Data>'rIQT'</Data>
+          <Name>Sor insufficient quantity</Name>
+          <Description>SOR INSUFFICIENT QUANTITY</Description>
+        </Value>
+        <Value>
+          <Data>'rIBO'</Data>
+          <Name>Sor invalid best bid ask</Name>
+          <Description>SOR INVALID BEST BID ASK</Description>
+        </Value>
+        <Value>
+          <Data>'rIBB'</Data>
+          <Name>Rejected rIBB</Name>
+          <Description>REJECTED</Description>
+        </Value>
+        <Value>
+          <Data>'rIBA'</Data>
+          <Name>Sor invalid best ask</Name>
+          <Description>SOR INVALID BEST ASK</Description>
+        </Value>
+        <Value>
+          <Data>'rPNR'</Data>
+          <Name>SOR Protected Venue Not Routable</Name>
+          <Description>SOR Protected Venue Not Routable</Description>
+        </Value>
+        <Value>
+          <Data>'rUKS'</Data>
+          <Name>Unknown strategy for router</Name>
+          <Description>UNKNOWN STRATEGY FOR ROUTER</Description>
+        </Value>
+        <Value>
+          <Data>'AONI'</Data>
+          <Name>Aon cannot be combined with ioc or fok</Name>
+          <Description>AON CANNOT BE COMBINED WITH IOC OR FOK</Description>
+        </Value>
+        <Value>
+          <Data>'GEFD'</Data>
+          <Name>Invalid dest for member gef vol change</Name>
+          <Description>INVALID DEST FOR MEMBER GEF VOL CHANGE</Description>
+        </Value>
+        <Value>
+          <Data>'GEFS'</Data>
+          <Name>Invalid side for member gef vol change</Name>
+          <Description>INVALID SIDE FOR MEMBER GEF VOL CHANGE</Description>
+        </Value>
+        <Value>
+          <Data>'GEFU'</Data>
+          <Name>Invalid umir user for member gef vol change</Name>
+          <Description>INVALID UMIR USER FOR MEMBER GEF VOL CHANGE</Description>
+        </Value>
+        <Value>
+          <Data>'GEFQ'</Data>
+          <Name>Invalid volume for member gef vol change</Name>
+          <Description>INVALID VOLUME FOR MEMBER GEF VOL CHANGE</Description>
+        </Value>
+        <Value>
+          <Data>'MLNA'</Data>
+          <Name>Not accepting m-elo orders</Name>
+          <Description>NOT ACCEPTING M-ELO ORDERS</Description>
+        </Value>
+        <Value>
+          <Data>'MLTI'</Data>
+          <Name>Invalid tif for m-elo order</Name>
+          <Description>INVALID TIF FOR M-ELO ORDER</Description>
+        </Value>
+        <Value>
+          <Data>'MLBY'</Data>
+          <Name>Bypass not allowed for m-elo orders</Name>
+          <Description>BYPASS NOT ALLOWED FOR M-ELO ORDERS</Description>
+        </Value>
+        <Value>
+          <Data>'MLRE'</Data>
+          <Name>Cannot change m-elo to non-m-elo or vice versa</Name>
+          <Description>CANNOT CHANGE M-ELO TO NON-M-ELO OR VICE VERSA</Description>
+        </Value>
+        <Value>
+          <Data>'MLDA'</Data>
+          <Name>Dao not allowed for m-elo orders</Name>
+          <Description>DAO NOT ALLOWED FOR M-ELO ORDERS</Description>
+        </Value>
+        <Value>
+          <Data>'MLOP'</Data>
+          <Name>Opr cancel not allowed for m-elo orders</Name>
+          <Description>OPR CANCEL NOT ALLOWED FOR M-ELO ORDERS</Description>
+        </Value>
+        <Value>
+          <Data>'MLOQ'</Data>
+          <Name>Invalid qty for m-elo order</Name>
+          <Description>INVALID QTY FOR M-ELO ORDER</Description>
+        </Value>
+        <Value>
+          <Data>'IVSD'</Data>
+          <Name>Invalid side</Name>
+          <Description>INVALID SIDE</Description>
+        </Value>
+        <Value>
+          <Data>'IVTF'</Data>
+          <Name>Invalid tif</Name>
+          <Description>INVALID TIF</Description>
+        </Value>
+        <Value>
+          <Data>'IVOT'</Data>
+          <Name>Invalid ordertype</Name>
+          <Description>INVALID ORDERTYPE</Description>
+        </Value>
+        <Value>
+          <Data>'NOJT'</Data>
+          <Name>Jitney not allowed</Name>
+          <Description>JITNEY NOT ALLOWED</Description>
+        </Value>
+        <Value>
+          <Data>'OLPN'</Data>
+          <Name>Destination not accepting odd lot book orders</Name>
+          <Description>DESTINATION NOT ACCEPTING ODD LOT BOOK ORDERS</Description>
+        </Value>
+        <Value>
+          <Data>'OLPQ'</Data>
+          <Name>Olp order qty does not meet the required minimum</Name>
+          <Description>OLP ORDER QTY DOES NOT MEET THE REQUIRED MINIMUM</Description>
+        </Value>
+        <Value>
+          <Data>'OLPR'</Data>
+          <Name>Cannot change olp to non-olp or vice versa</Name>
+          <Description>CANNOT CHANGE OLP TO NON-OLP OR VICE VERSA</Description>
+        </Value>
+        <Value>
+          <Data>'OLPL'</Data>
+          <Name>Olp order limit exceeded</Name>
+          <Description>OLP ORDER LIMIT EXCEEDED</Description>
+        </Value>
+        <Value>
+          <Data>'PSNA'</Data>
+          <Name>Destination not accepting purestream orders</Name>
+          <Description>DESTINATION NOT ACCEPTING PURESTREAM ORDERS</Description>
+        </Value>
+        <Value>
+          <Data>'PSST'</Data>
+          <Name>Invalid target strategy</Name>
+          <Description>INVALID TARGET STRATEGY</Description>
+        </Value>
+        <Value>
+          <Data>'PSRT'</Data>
+          <Name>Invalid minrate or maxrate</Name>
+          <Description>INVALID MINRATE OR MAXRATE</Description>
+        </Value>
+        <Value>
+          <Data>'PSQT'</Data>
+          <Name>Qty does not meet boardlot or notional requirement</Name>
+          <Description>QTY DOES NOT MEET BOARDLOT OR NOTIONAL REQUIREMENT</Description>
+        </Value>
+        <Value>
+          <Data>'PSNV'</Data>
+          <Name>Nominal value under requirement</Name>
+          <Description>NOMINAL VALUE UNDER REQUIREMENT</Description>
+        </Value>
+        <Value>
+          <Data>'PSTF'</Data>
+          <Name>Invalid tif for purestream</Name>
+          <Description>INVALID TIF FOR PURESTREAM</Description>
+        </Value>
+        <Value>
+          <Data>'PSPG'</Data>
+          <Name>Pegging not allowed for purestream</Name>
+          <Description>PEGGING NOT ALLOWED FOR PURESTREAM</Description>
+        </Value>
+        <Value>
+          <Data>'PSSP'</Data>
+          <Name>Seek price improvement not allowed for purestream</Name>
+          <Description>SEEK PRICE IMPROVEMENT NOT ALLOWED FOR PURESTREAM</Description>
+        </Value>
+        <Value>
+          <Data>'PMQY'</Data>
+          <Name>Minqty/all-or-none not allowed for the specified purestream strategy</Name>
+          <Description>MINQTY/ALL-OR-NONE NOT ALLOWED FOR THE SPECIFIED PURESTREAM STRATEGY</Description>
+        </Value>
+        <Value>
+          <Data>'PSRE'</Data>
+          <Name>Cannot change purestream order to non-purestream order or vice versa</Name>
+          <Description>CANNOT CHANGE PURESTREAM ORDER TO NON-PURESTREAM ORDER OR VICE VERSA</Description>
+        </Value>
+        <Value>
+          <Data>'PSVI'</Data>
+          <Name>Stream requirement violated for the stock. purestream orders not allowed for rest of day</Name>
+          <Description>STREAM REQUIREMENT VIOLATED FOR THE STOCK. PURESTREAM ORDERS NOT ALLOWED FOR REST OF DAY</Description>
+        </Value>
+        <Value>
+          <Data>'PSML'</Data>
+          <Name>Order cannot be both m-elo and purestream</Name>
+          <Description>ORDER CANNOT BE BOTH M-ELO AND PURESTREAM</Description>
+        </Value>
+        <Value>
+          <Data>'CDVI'</Data>
+          <Name>Firm-up requirement violated for the stock. conditionals not allowed for rest of day</Name>
+          <Description>FIRM-UP REQUIREMENT VIOLATED FOR THE STOCK. CONDITIONALS NOT ALLOWED FOR REST OF DAY</Description>
+        </Value>
+        <Value>
+          <Data>'CDFU'</Data>
+          <Name>Order is not expecting a firm-up response</Name>
+          <Description>ORDER IS NOT EXPECTING A FIRM-UP RESPONSE</Description>
+        </Value>
+        <Value>
+          <Data>'CDTP'</Data>
+          <Name>Invalid conditional type</Name>
+          <Description>INVALID CONDITIONAL TYPE</Description>
+        </Value>
+        <Value>
+          <Data>'CDOR'</Data>
+          <Name>Underlying order does not qualify as a conditional order</Name>
+          <Description>UNDERLYING ORDER DOES NOT QUALIFY AS A CONDITIONAL ORDER</Description>
+        </Value>
+        <Value>
+          <Data>'CDTF'</Data>
+          <Name>Invalid tif for conditional order</Name>
+          <Description>INVALID TIF FOR CONDITIONAL ORDER</Description>
+        </Value>
+        <Value>
+          <Data>'CDRE'</Data>
+          <Name>Cannot change conditional order to firm order and vice versa</Name>
+          <Description>CANNOT CHANGE CONDITIONAL ORDER TO FIRM ORDER AND VICE VERSA</Description>
+        </Value>
+        <Value>
+          <Data>'CNTG'</Data>
+          <Name>System in contingency mode. orders are not being accepted</Name>
+          <Description>SYSTEM IN CONTINGENCY MODE. ORDERS ARE NOT BEING ACCEPTED</Description>
+        </Value>
+        <Value>
+          <Data>'IVEX'</Data>
+          <Name>Invalid expiry time</Name>
+          <Description>INVALID EXPIRY TIME</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Restate Reason -->
+    <Enum>
+      <Name>Restate Reason</Name>
+      <Values>
+        <Value>
+          <Data>'O'</Data>
+          <Name>Stream On</Name>
+          <Description>Stream On</Description>
+        </Value>
+        <Value>
+          <Data>'X'</Data>
+          <Name>Stream Off</Name>
+          <Description>Stream Off</Description>
+        </Value>
+        <Value>
+          <Data>'R'</Data>
+          <Name>Conditional order firm-up request</Name>
+          <Description>Conditional order firm-up request</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Liquidity Flag -->
+    <Enum>
+      <Name>Liquidity Flag</Name>
+      <Values>
+        <Value>
+          <Data>'A'</Data>
+          <Name>Order added liquidity</Name>
+          <Description>Order added liquidity</Description>
+        </Value>
+        <Value>
+          <Data>'R'</Data>
+          <Name>Order removed liquidity</Name>
+          <Description>Order removed liquidity</Description>
+        </Value>
+        <Value>
+          <Data>'a'</Data>
+          <Name>Order added hidden liquidity</Name>
+          <Description>Order added hidden liquidity</Description>
+        </Value>
+        <Value>
+          <Data>'r'</Data>
+          <Name>Order removed hidden liquidity</Name>
+          <Description>Order removed hidden liquidity</Description>
+        </Value>
+        <Value>
+          <Data>'d'</Data>
+          <Name>Order added hidden liquidity at-the-touch</Name>
+          <Description>Order added hidden liquidity at-the-touch</Description>
+        </Value>
+        <Value>
+          <Data>'D'</Data>
+          <Name>Order removed hidden liquidity at-the-touch</Name>
+          <Description>Order removed hidden liquidity at-the-touch</Description>
+        </Value>
+        <Value>
+          <Data>'g'</Data>
+          <Name>Order added GEF liquidity</Name>
+          <Description>Order added GEF liquidity</Description>
+        </Value>
+        <Value>
+          <Data>'G'</Data>
+          <Name>Order removed GEF liquidity</Name>
+          <Description>Order removed GEF liquidity</Description>
+        </Value>
+        <Value>
+          <Data>'C'</Data>
+          <Name>Market On Close</Name>
+          <Description>Market On Close</Description>
+        </Value>
+        <Value>
+          <Data>'S'</Data>
+          <Name>Displayed liquidity-adding order improves the NBBO</Name>
+          <Description>Displayed, liquidity-adding order improves the NBBO</Description>
+        </Value>
+        <Value>
+          <Data>'O'</Data>
+          <Name>Opening/Closing Auction</Name>
+          <Description>Opening/Closing Auction</Description>
+        </Value>
+        <Value>
+          <Data>'E'</Data>
+          <Name>Last Sale Trading Session</Name>
+          <Description>Last Sale Trading Session (TSX/TSXV)</Description>
+        </Value>
+        <Value>
+          <Data>'L'</Data>
+          <Name>M-ELO</Name>
+          <Description>M-ELO</Description>
+        </Value>
+        <Value>
+          <Data>'P'</Data>
+          <Name>CXD PureStream rate-based execution</Name>
+          <Description>CXD PureStream rate-based execution</Description>
+        </Value>
+        <Value>
+          <Data>'M'</Data>
+          <Name>CXD PureStream LS mid-point block removed liquidity</Name>
+          <Description>CXD PureStream LS mid-point block removed liquidity</Description>
+        </Value>
+        <Value>
+          <Data>'F'</Data>
+          <Name>XFT</Name>
+          <Description>XFT</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- ExecBroker -->
+    <Enum>
+      <Name>ExecBroker</Name>
+      <Values>
+        <Value>
+          <Data>' '</Data>
+          <Name>Unspecified</Name>
+          <Description>Unspecified</Description>
+        </Value>
+        <Value>
+          <Data>'A'</Data>
+          <Name>CHIX</Name>
+          <Description>CHIX</Description>
+        </Value>
+        <Value>
+          <Data>'B'</Data>
+          <Name>CX2</Name>
+          <Description>CX2</Description>
+        </Value>
+        <Value>
+          <Data>'C'</Data>
+          <Name>CXD</Name>
+          <Description>CXD</Description>
+        </Value>
+        <Value>
+          <Data>'D'</Data>
+          <Name>TSX</Name>
+          <Description>TSX</Description>
+        </Value>
+        <Value>
+          <Data>'E'</Data>
+          <Name>PURE</Name>
+          <Description>PURE</Description>
+        </Value>
+        <Value>
+          <Data>'F'</Data>
+          <Name>ALPH</Name>
+          <Description>ALPH</Description>
+        </Value>
+        <Value>
+          <Data>'G'</Data>
+          <Name>MATCH</Name>
+          <Description>MATCH</Description>
+        </Value>
+        <Value>
+          <Data>'H'</Data>
+          <Name>OMGA</Name>
+          <Description>OMGA</Description>
+        </Value>
+        <Value>
+          <Data>'I'</Data>
+          <Name>LYNX</Name>
+          <Description>LYNX</Description>
+        </Value>
+        <Value>
+          <Data>'J'</Data>
+          <Name>AEQN</Name>
+          <Description>AEQN</Description>
+        </Value>
+        <Value>
+          <Data>'K'</Data>
+          <Name>AEQL</Name>
+          <Description>AEQL</Description>
+        </Value>
+        <Value>
+          <Data>'L'</Data>
+          <Name>CSE2</Name>
+          <Description>CSE2</Description>
+        </Value>
+        <Value>
+          <Data>'M'</Data>
+          <Name>ALPX</Name>
+          <Description>ALPX</Description>
+        </Value>
+        <Value>
+          <Data>'N'</Data>
+          <Name>ALPD</Name>
+          <Description>ALPD</Description>
+        </Value>
+        <Value>
+          <Data>'O'</Data>
+          <Name>ICX</Name>
+          <Description>ICX</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- PegType -->
+    <Enum>
+      <Name>PegType</Name>
+      <Values>
+        <Value>
+          <Data>'M'</Data>
+          <Name>Midpoint Peg</Name>
+          <Description>Midpoint Peg</Description>
+        </Value>
+        <Value>
+          <Data>'R'</Data>
+          <Name>Primary Peg</Name>
+          <Description>Primary Peg</Description>
+        </Value>
+        <Value>
+          <Data>'x'</Data>
+          <Name>Minimum Price Improvement</Name>
+          <Description>Minimum Price Improvement</Description>
+        </Value>
+        <Value>
+          <Data>'S'</Data>
+          <Name>Seek Price Improvement</Name>
+          <Description>Seek Price Improvement</Description>
+        </Value>
+        <Value>
+          <Data>'L'</Data>
+          <Name>M-ELO</Name>
+          <Description>M-ELO (CXC Only)</Description>
+        </Value>
+        <Value>
+          <Data>'o'</Data>
+          <Name>Odd Lot Liquidity Providing</Name>
+          <Description>Odd Lot Liquidity Providing (OLP) (CXD Only)</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- MinQtyType -->
+    <Enum>
+      <Name>MinQtyType</Name>
+      <Values>
+        <Value>
+          <Data>'N'</Data>
+          <Name>MAQ</Name>
+          <Description>MAQ (Minimum Acceptable Quantity), MinQty must be met on every partial execution</Description>
+        </Value>
+        <Value>
+          <Data>'m'</Data>
+          <Name>MAQ at touch</Name>
+          <Description>MAQ at touch (CXD only)</Description>
+        </Value>
+        <Value>
+          <Data>'t'</Data>
+          <Name>MQ at touch</Name>
+          <Description>MQ at touch (CXD only)</Description>
+        </Value>
+        <Value>
+          <Data>'z'</Data>
+          <Name>Minimum Quantity</Name>
+          <Description>Minimum Quantity (MQ), MinQty may be met in aggregate</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- TargetStrategy -->
+    <Enum>
+      <Name>TargetStrategy</Name>
+      <Values>
+        <Value>
+          <Data>1000</Data>
+          <Name>Liquidity Rate 5-15%</Name>
+          <Description>Liquidity Rate 5-15%</Description>
+        </Value>
+        <Value>
+          <Data>1001</Data>
+          <Name>Liquidity Rate 5-30%</Name>
+          <Description>Liquidity Rate 5-30%</Description>
+        </Value>
+        <Value>
+          <Data>1002</Data>
+          <Name>Mach Two 10-200%</Name>
+          <Description>Mach Two 10 - 200%</Description>
+        </Value>
+        <Value>
+          <Data>1003</Data>
+          <Name>Custom Liquidity Rate</Name>
+          <Description>Custom Liquidity Rate</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- OrderOrigination -->
+    <Enum>
+      <Name>OrderOrigination</Name>
+      <Values>
+        <Value>
+          <Data>'5'</Data>
+          <Name>Direct access customer</Name>
+          <Description>Order received from direct access customer (DEA)</Description>
+        </Value>
+        <Value>
+          <Data>'6'</Data>
+          <Name>Foreign dealer equivalent</Name>
+          <Description>Order received from foreign dealer equivalent (FDE)</Description>
+        </Value>
+        <Value>
+          <Data>'7'</Data>
+          <Name>Execution-only service</Name>
+          <Description>Order received from an execution-only service (OEO)</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- RoutingArrangementIndicator -->
+    <Enum>
+      <Name>RoutingArrangementIndicator</Name>
+      <Values>
+        <Value>
+          <Data>'0'</Data>
+          <Name>No routing arrangement in place</Name>
+          <Description>No routing arrangement in place</Description>
+        </Value>
+        <Value>
+          <Data>'1'</Data>
+          <Name>Routing arrangement in place</Name>
+          <Description>Routing arrangement in place</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- BasketTrade -->
+    <Enum>
+      <Name>BasketTrade</Name>
+      <Values>
+        <Value>
+          <Data>'N'</Data>
+          <Name>No</Name>
+          <Description>No</Description>
+        </Value>
+        <Value>
+          <Data>'Y'</Data>
+          <Name>Yes</Name>
+          <Description>Yes</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- ProgramTrade -->
+    <Enum>
+      <Name>ProgramTrade</Name>
+      <Values>
+        <Value>
+          <Data>'N'</Data>
+          <Name>No</Name>
+          <Description>No</Description>
+        </Value>
+        <Value>
+          <Data>'Y'</Data>
+          <Name>Yes</Name>
+          <Description>Yes</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- PrincipalTrade -->
+    <Enum>
+      <Name>PrincipalTrade</Name>
+      <Values>
+        <Value>
+          <Data>'N'</Data>
+          <Name>No</Name>
+          <Description>No</Description>
+        </Value>
+        <Value>
+          <Data>'Y'</Data>
+          <Name>Yes</Name>
+          <Description>Yes</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- GEFEligible -->
+    <Enum>
+      <Name>GEFEligible</Name>
+      <Values>
+        <Value>
+          <Data>'N'</Data>
+          <Name>No</Name>
+          <Description>No</Description>
+        </Value>
+        <Value>
+          <Data>'Y'</Data>
+          <Name>Yes</Name>
+          <Description>Yes</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Anonymous -->
+    <Enum>
+      <Name>Anonymous</Name>
+      <Values>
+        <Value>
+          <Data>'N'</Data>
+          <Name>No</Name>
+          <Description>No</Description>
+        </Value>
+        <Value>
+          <Data>'Y'</Data>
+          <Name>Yes</Name>
+          <Description>Yes</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- UMIRRegulationID -->
+    <Enum>
+      <Name>UMIRRegulationID</Name>
+      <Values>
+        <Value>
+          <Data>'IA'</Data>
+          <Name>Insider Account</Name>
+          <Description>Insider Account</Description>
+        </Value>
+        <Value>
+          <Data>'SS'</Data>
+          <Name>Significant Shareholder</Name>
+          <Description>Significant Shareholder</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Bypass -->
+    <Enum>
+      <Name>Bypass</Name>
+      <Values>
+        <Value>
+          <Data>'N'</Data>
+          <Name>No</Name>
+          <Description>No</Description>
+        </Value>
+        <Value>
+          <Data>'Y'</Data>
+          <Name>Yes</Name>
+          <Description>Yes</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- TSXNCIB -->
+    <Enum>
+      <Name>TSXNCIB</Name>
+      <Values>
+        <Value>
+          <Data>'N'</Data>
+          <Name>No</Name>
+          <Description>No</Description>
+        </Value>
+        <Value>
+          <Data>'Y'</Data>
+          <Name>Yes</Name>
+          <Description>Yes</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- NoTradeFeat -->
+    <Enum>
+      <Name>NoTradeFeat</Name>
+      <Values>
+        <Value>
+          <Data>'N'</Data>
+          <Name>Cancel Newest</Name>
+          <Description>Cancel Newest</Description>
+        </Value>
+        <Value>
+          <Data>'O'</Data>
+          <Name>Cancel Oldest</Name>
+          <Description>Cancel Oldest</Description>
+        </Value>
+        <Value>
+          <Data>'D'</Data>
+          <Name>Decrement and Cancel</Name>
+          <Description>Decrement and Cancel</Description>
+        </Value>
+        <Value>
+          <Data>'E'</Data>
+          <Name>Execute Trade</Name>
+          <Description>Execute Trade</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- ShortMarkingExempt -->
+    <Enum>
+      <Name>ShortMarkingExempt</Name>
+      <Values>
+        <Value>
+          <Data>'0'</Data>
+          <Name>SME</Name>
+          <Description>SME</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- ConditionalOrder -->
+    <Enum>
+      <Name>ConditionalOrder</Name>
+      <Values>
+        <Value>
+          <Data>'C'</Data>
+          <Name>Conditional Order</Name>
+          <Description>Conditional Order (CXD only)</Description>
+        </Value>
+        <Value>
+          <Data>'X'</Data>
+          <Name>Extended Firm-up Time conditional order</Name>
+          <Description>eXtended Firm-up Time (XFT) conditional order (CXD only)</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- AllowConditional -->
+    <Enum>
+      <Name>AllowConditional</Name>
+      <Values>
+        <Value>
+          <Data>'N'</Data>
+          <Name>No</Name>
+          <Description>No</Description>
+        </Value>
+        <Value>
+          <Data>'Y'</Data>
+          <Name>Yes</Name>
+          <Description>Yes</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- CXDConnect -->
+    <Enum>
+      <Name>CXDConnect</Name>
+      <Values>
+        <Value>
+          <Data>'N'</Data>
+          <Name>No</Name>
+          <Description>No</Description>
+        </Value>
+        <Value>
+          <Data>'Y'</Data>
+          <Name>Yes</Name>
+          <Description>Yes</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- PureStreamConnect -->
+    <Enum>
+      <Name>PureStreamConnect</Name>
+      <Values>
+        <Value>
+          <Data>'N'</Data>
+          <Name>No</Name>
+          <Description>No</Description>
+        </Value>
+        <Value>
+          <Data>'Y'</Data>
+          <Name>Yes</Name>
+          <Description>Yes</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- ExecuteMatch -->
+    <Enum>
+      <Name>ExecuteMatch</Name>
+      <Values>
+        <Value>
+          <Data>'N'</Data>
+          <Name>No</Name>
+          <Description>No</Description>
+        </Value>
+        <Value>
+          <Data>'Y'</Data>
+          <Name>Yes</Name>
+          <Description>Yes</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- WashTrade -->
+    <Enum>
+      <Name>WashTrade</Name>
+      <Values>
+        <Value>
+          <Data>'N'</Data>
+          <Name>No</Name>
+          <Description>No</Description>
+        </Value>
+        <Value>
+          <Data>'Y'</Data>
+          <Name>Yes</Name>
+          <Description>Yes</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- BrokerPref -->
+    <Enum>
+      <Name>BrokerPref</Name>
+      <Values>
+        <Value>
+          <Data>'N'</Data>
+          <Name>No</Name>
+          <Description>No</Description>
+        </Value>
+        <Value>
+          <Data>'Y'</Data>
+          <Name>Yes</Name>
+          <Description>Yes</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- HandlInst -->
+    <Enum>
+      <Name>HandlInst</Name>
+      <Values>
+        <Value>
+          <Data>'f'</Data>
+          <Name>DAO</Name>
+          <Description>DAO</Description>
+        </Value>
+        <Value>
+          <Data>'1'</Data>
+          <Name>OPR Reprice</Name>
+          <Description>OPR Reprice</Description>
+        </Value>
+        <Value>
+          <Data>'5'</Data>
+          <Name>OPR Cancel</Name>
+          <Description>OPR Cancel</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- RepriceReason -->
+    <Enum>
+      <Name>RepriceReason</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Repriced to prevent trade</Name>
+          <Description>Repriced to prevent trade</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Repriced to prevent lock</Name>
+          <Description>Repriced to prevent lock</Description>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Repriced to prevent cross</Name>
+          <Description>Repriced to prevent cross</Description>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>Repriced for Marketplace Thresholds</Name>
+          <Description>Repriced for Marketplace Thresholds</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- NBBOSetter -->
+    <Enum>
+      <Name>NBBOSetter</Name>
+      <Values>
+        <Value>
+          <Data>'Y'</Data>
+          <Name>NBBO Setter</Name>
+          <Description>Order is NBBO Setter</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+  </Enums>
+
+</OmiOuchNasdaq50Pdf>

@@ -1,0 +1,3306 @@
+<OmiFixPdf>
+
+  <!--
+  Nasdaq CXC Limited FIX 4.2 Application Notes, Version 1.65 (October 7, 2025), English edition.
+
+  Venue: Nasdaq Canada (Nasdaq CXC Limited, formerly Chi-X Canada). One FIX 4.2 interface serves
+  the three books CXC, CX2 and CXD; the destination book, or a Smart Order Router strategy, is chosen
+  per order with TargetSubID (57) or ExDestination (100) (CHIX, CX2, CXD or an SOR strategy value
+  provided by Nasdaq Canada Operations). The Market Participant Command defaults to CX2.
+
+  Headers: the PDF prints one header table per direction, transcribed as Header Client (section 4.1,
+  message header format to Nasdaq Canada) and Header Exchange (section 4.2, format to Client); every
+  message is selected into the Client and Exchange trees by its Origin. The header rows are printed
+  in tag order; BeginString, BodyLength and MsgType are placed first as FIX requires. TargetSubid (57)
+  is printed in the New Order Single and Cross tables rather than in the inbound header table; as a
+  standard header field it is transcribed once, in the Client header, with the routing description.
+  OrigSendingTime (122) is not transcribed: the PDF states Nasdaq Canada ignores it in all messages.
+
+  Session messages: section 4 names Logon, Logout, Heartbeat, Test Request, Resend Request, Sequence
+  Reset and Reject but, per its documentation methodology, reprints no body fields for them. They are
+  transcribed with their standard FIX 4.2 body fields (Logon carries only EncryptMethod and
+  HeartBtInt) and Origin Client,Exchange.
+
+  Application messages: the Cross table (section 5.3, no MsgType printed) is a New Order Single with
+  Side (54) = 8 (Cross) or 9 (Cross Short). It is carried inside New Order Single (D): rows printed in
+  both tables are common, and Side selects a Cross / Cross Short case (rows only in the Cross table)
+  or the default Order case (rows only in the New Order Single table), keeping each table's Required
+  flags. The four Execution Report tables (New Order Single Response, also used as the Replace
+  Response; Order Cancel Acknowledgment; Restatement; Trade Report) are merged into one Execution
+  Report (8): ExecType cannot select them apart (4 = Cancelled is printed in both the Order Cancel
+  Acknowledgment and, since 1.65, the Trade Report). A merged row is Required only when all four
+  tables print it as Y; its description names the tables that print it and where it is required.
+  The MsgType (35) rows printed inside the Execution Report, Cancel Reject and Market Participant
+  tables are header fields and are carried as MsgType values instead. ContraBroker (375) and
+  NoContraBrokers (382) of the Trade Report form the NoContraBrokers group.
+
+  Typing: no data types are printed. Standard tags carry the FIX 4.2 data dictionary type (int as
+  Int, char as Char, MultipleValueString, Qty, Price, PriceOffset, Currency, Exchange, LocalMktDate,
+  UTCTimestamp, Boolean). Names are as printed, so SecurityIDSource (22), SettlType (63) and
+  SettlDate (64) keep their FIX 4.4 spelling (FIX 4.2 IDSource, SettlmntTyp, FutSettDate). Tags
+  FIX 4.2 does not define are typed from the later FIX version that does: TargetStrategy (847),
+  OrderOrigination (1724) and RoutingArrangementIndicator (2883) as Int. Venue tags are typed from
+  their documented values: Y/N markers as Boolean, single character codes as Char, numeric codes
+  (RepriceReason, MinRate, MaxRate, Buy/SellOrderOrigination, Buy/SellRoutingArrangementIndicator)
+  as Int, quantities (DisplayRange, GEFCommitVolume, FacilitationQty) as Qty, CumRate as Float and
+  the rest as String. Sizes are the printed maximum lengths (15, 32, 20 and 52 characters, 3 digit
+  broker numbers, 2 character NoTradeFeat, 6 character NoTradeKey, 5 digit basket number).
+
+  PDF ambiguities kept as printed: HandlInst (21) lists 1 = OPR Reprice, 5 = OPR Cancel and
+  6 = OPR Reprice (the Cross table lists 1 = Automated execution order, private, no Broker
+  intervention); the Order Cancel/Replace Request prints OrderQty (38) as OrdQty (transcribed as
+  OrderQty so the tag keeps one name); the Req column is blank for PureStreamConnect (23017) in the
+  New Order Single Response and for CXDConnect (23015) in the Order Cancel Acknowledgment
+  (transcribed N); TargetStrategy 1004 is still listed in the Trade Report although revision 1.64
+  removed it; the New Order Single Response table omits MaxFloor (111) although revision 1.46 says
+  it was added. NoTradeFeat (7713) values are the eight documented two character combinations of
+  the first character (N, O, D, E) and second character (M or B). TradeLiquidityIndicator M is
+  described differently in the Order Cancel Acknowledgment and the Trade Report; both are kept.
+
+  Not transcribed: Appendix A (example order flow matrices) and Appendix B (peg order definitions)
+  carry no message layouts; the unsupported FIX messages listed in section 5.2.2.7.
+  -->
+
+  <!-- Message header format to Nasdaq Canada (section 4.1); TargetSubID (57) added from the order tables -->
+  <Header Name="Client">
+    <Fields>
+      <Field>
+        <Tag>8</Tag>
+        <Name>BeginString</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+        <Description>FIX.4.2. Must be the first field in the message.</Description>
+      </Field>
+      <Field>
+        <Tag>9</Tag>
+        <Name>BodyLength</Name>
+        <Required>Y</Required>
+        <Type>Int</Type>
+        <Fixed>Y</Fixed>
+        <Description>Must be the second field in the message.</Description>
+      </Field>
+      <Field>
+        <Tag>35</Tag>
+        <Name>MsgType</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+        <Description>Must be the third field in the message.</Description>
+      </Field>
+      <Field>
+        <Tag>34</Tag>
+        <Name>MsgSeqNum</Name>
+        <Required>Y</Required>
+        <Type>Int</Type>
+        <Description>See standard FIX explanation. The sequence number, on the initial logon for each trading day, must be set to 1.</Description>
+      </Field>
+      <Field>
+        <Tag>43</Tag>
+        <Name>PossDupFlag</Name>
+        <Required>N</Required>
+        <Type>Boolean</Type>
+        <Description>Always required for retransmissions, whether prompted by the sending system or as the result of a resend request.</Description>
+      </Field>
+      <Field>
+        <Tag>49</Tag>
+        <Name>SenderCompID</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Size>15</Size>
+        <Description>The value used must be recognized and agreed to by Nasdaq Canada. Case sensitive, maximum of 15 characters.</Description>
+      </Field>
+      <Field>
+        <Tag>50</Tag>
+        <Name>SenderSubID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Description>This can be used to indicate a specific Nasdaq Canada account or client. Nasdaq Canada ignores this tag.</Description>
+      </Field>
+      <Field>
+        <Tag>52</Tag>
+        <Name>SendingTime</Name>
+        <Required>Y</Required>
+        <Type>UTCTimestamp</Type>
+        <Description>Indicates the time the message was sent by the client.</Description>
+      </Field>
+      <Field>
+        <Tag>56</Tag>
+        <Name>TargetCompID</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Description>Identifies Nasdaq Canada as the receiving firm.</Description>
+      </Field>
+      <Field>
+        <Tag>57</Tag>
+        <Name>TargetSubID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Description>Printed as TargetSubid in the New Order Single and Cross tables (not in the header table). Indicates how the order should be routed: CHIX, CX2, CXD, or a Smart Order Router (SOR) strategy value provided by Nasdaq Canada Operations following certification. A valid value is required in either TargetSubID (57) or ExDestination (100).</Description>
+      </Field>
+      <Field>
+        <Tag>97</Tag>
+        <Name>PossResend</Name>
+        <Required>N</Required>
+        <Type>Boolean</Type>
+        <Description>Required when message may be duplicate of another message sent under a different sequence number.</Description>
+      </Field>
+    </Fields>
+  </Header>
+
+  <!-- Message header format to Client (section 4.2) -->
+  <Header Name="Exchange">
+    <Fields>
+      <Field>
+        <Tag>8</Tag>
+        <Name>BeginString</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+        <Description>FIX.4.2. Will be the first field in the message.</Description>
+      </Field>
+      <Field>
+        <Tag>9</Tag>
+        <Name>BodyLength</Name>
+        <Required>Y</Required>
+        <Type>Int</Type>
+        <Fixed>Y</Fixed>
+        <Description>Will be the second field in the message.</Description>
+      </Field>
+      <Field>
+        <Tag>35</Tag>
+        <Name>MsgType</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+        <Description>Will be the third field in the message.</Description>
+      </Field>
+      <Field>
+        <Tag>34</Tag>
+        <Name>MsgSeqNum</Name>
+        <Required>Y</Required>
+        <Type>Int</Type>
+        <Description>See standard FIX explanation.</Description>
+      </Field>
+      <Field>
+        <Tag>43</Tag>
+        <Name>PossDupFlag</Name>
+        <Required>N</Required>
+        <Type>Boolean</Type>
+        <Description>Always required for retransmissions, whether prompted by the sending system or as the result of a resend request.</Description>
+      </Field>
+      <Field>
+        <Tag>49</Tag>
+        <Name>SenderCompID</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Size>15</Size>
+        <Description>The value originally supplied to Nasdaq Canada in the TargetCompID field in the logon message from the Client.</Description>
+      </Field>
+      <Field>
+        <Tag>52</Tag>
+        <Name>SendingTime</Name>
+        <Required>Y</Required>
+        <Type>UTCTimestamp</Type>
+        <Description>Indicates the time the message was sent by Nasdaq Canada.</Description>
+      </Field>
+      <Field>
+        <Tag>56</Tag>
+        <Name>TargetCompID</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Description>The value originally supplied to Nasdaq Canada in the SenderCompID field in the logon message from the Client.</Description>
+      </Field>
+      <Field>
+        <Tag>57</Tag>
+        <Name>TargetSubID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Description>The value originally supplied to Nasdaq Canada in the SenderSubID field in related application messages from the Client, if specified.</Description>
+      </Field>
+      <Field>
+        <Tag>97</Tag>
+        <Name>PossResend</Name>
+        <Required>N</Required>
+        <Type>Boolean</Type>
+        <Description>Required when message may be duplicate of another message sent under a different sequence number.</Description>
+      </Field>
+    </Fields>
+  </Header>
+
+  <!-- Message trailer format (section 4.3) -->
+  <Trailer>
+    <Fields>
+      <Field>
+        <Tag>10</Tag>
+        <Name>CheckSum</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+        <Description>Always unencrypted, always last field in message.</Description>
+      </Field>
+    </Fields>
+  </Trailer>
+
+  <Messages>
+
+    <!-- Heartbeat (0) standard FIX 4.2 session message, section 4 -->
+    <Message>
+      <Name>Heartbeat</Name>
+      <MsgType>0</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Description>Nasdaq Canada sends a message at least once in the heartbeat interval and must receive one from the client at least once in the heartbeat interval defined in the logon.</Description>
+      <Fields>
+        <Field>
+          <Tag>112</Tag>
+          <Name>TestReqID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Required when the heartbeat is the result of a Test Request message. Standard FIX 4.2 field; not reprinted in the application notes.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Test Request (1) standard FIX 4.2 session message, section 4 -->
+    <Message>
+      <Name>Test Request</Name>
+      <MsgType>1</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Description>Handled by Nasdaq Canada as a session level message.</Description>
+      <Fields>
+        <Field>
+          <Tag>112</Tag>
+          <Name>TestReqID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Standard FIX 4.2 field; not reprinted in the application notes.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Resend Request (2) standard FIX 4.2 session message, section 4 -->
+    <Message>
+      <Name>Resend Request</Name>
+      <MsgType>2</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Description>Nasdaq Canada transmits any unsent execution reports on receipt of a Resend Request from the client for the missing sequence numbers.</Description>
+      <Fields>
+        <Field>
+          <Tag>7</Tag>
+          <Name>BeginSeqNo</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Standard FIX 4.2 field; not reprinted in the application notes.</Description>
+        </Field>
+        <Field>
+          <Tag>16</Tag>
+          <Name>EndSeqNo</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Standard FIX 4.2 field; not reprinted in the application notes.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Reject (3) standard FIX 4.2 session message, section 4 -->
+    <Message>
+      <Name>Reject</Name>
+      <MsgType>3</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Description>Sent by Nasdaq Canada with the sequence number of the rejected message and an explanation of the error in the text field whenever possible. A message received with a sequence number less than expected and without PossDupFlag is discarded and rejected.</Description>
+      <Fields>
+        <Field>
+          <Tag>45</Tag>
+          <Name>RefSeqNum</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>MsgSeqNum of rejected message. Reject messages sent by Nasdaq Canada include the sequence number of the rejected message. Standard FIX 4.2 field; not reprinted in the application notes.</Description>
+        </Field>
+        <Field>
+          <Tag>371</Tag>
+          <Name>RefTagID</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Standard FIX 4.2 field; not reprinted in the application notes.</Description>
+        </Field>
+        <Field>
+          <Tag>372</Tag>
+          <Name>RefMsgType</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Standard FIX 4.2 field; not reprinted in the application notes.</Description>
+        </Field>
+        <Field>
+          <Tag>373</Tag>
+          <Name>SessionRejectReason</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Standard FIX 4.2 field; not reprinted in the application notes.</Description>
+        </Field>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Explanation of the nature of the error, whenever possible.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Sequence Reset (4) standard FIX 4.2 session message, section 4 -->
+    <Message>
+      <Name>Sequence Reset</Name>
+      <MsgType>4</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Description>Handled by Nasdaq Canada as a session level message.</Description>
+      <Fields>
+        <Field>
+          <Tag>123</Tag>
+          <Name>GapFillFlag</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>Standard FIX 4.2 field; not reprinted in the application notes.</Description>
+        </Field>
+        <Field>
+          <Tag>36</Tag>
+          <Name>NewSeqNo</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Standard FIX 4.2 field; not reprinted in the application notes.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Logout (5) standard FIX 4.2 session message, section 4 -->
+    <Message>
+      <Name>Logout</Name>
+      <MsgType>5</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Description>Nasdaq Canada logs out client sessions before the start of the nightly maintenance window. The negative response to a Logon request is a Logout.</Description>
+      <Fields>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Standard FIX 4.2 field; not reprinted in the application notes.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Logon (A) standard FIX 4.2 session message, section 4 -->
+    <Message>
+      <Name>Logon</Name>
+      <MsgType>A</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Description>First message expected from the client. Nasdaq Canada validates the SenderCompID, performs recovery and replies with a Logon; no messages should be sent until the reply is received.</Description>
+      <Fields>
+        <Field>
+          <Tag>98</Tag>
+          <Name>EncryptMethod</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Nasdaq Canada does not support encryption of FIX messages. Standard FIX 4.2 field; not reprinted in the application notes.</Description>
+        </Field>
+        <Field>
+          <Tag>108</Tag>
+          <Name>HeartBtInt</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Heartbeat interval; must be greater than zero. Standard FIX 4.2 field; not reprinted in the application notes.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- New Order Single (D) section 5.2.1.1, with the Cross table of section 5.3 as the Side 8 and 9 cases -->
+    <Message>
+      <Name>New Order Single</Name>
+      <MsgType>D</MsgType>
+      <Category>app</Category>
+      <Origin>Client</Origin>
+      <Description>New order. A Cross order is a New Order Single with Side (54) = 8 (Cross) or 9 (Cross Short); rows printed in both the New Order Single and the Cross tables are common, the rows printed only in the Cross table are the Cross and Cross Short cases and the rows printed only in the New Order Single table are the Order (default) case.</Description>
+      <Fields>
+        <Field>
+          <Tag>11</Tag>
+          <Name>ClOrdID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Size>32</Size>
+          <Description>New Order Single: Must be unique for each order throughout the trading day, across all stocks and sides from the same FIX Session ID. A FIX server will not necessarily verify the uniqueness of ClOrdID. Maximum of 32 characters. Cross: Must be unique for each order throughout the trading day, across all stocks and sides from the same FIX Session ID.</Description>
+        </Field>
+        <Field>
+          <Tag>18</Tag>
+          <Name>ExecInst</Name>
+          <Required>N</Required>
+          <Type>MultipleValueString</Type>
+          <Description>New Order Single: Values supported by Nasdaq Canada (some values may be combined and each must be separated by a space). Any other value will be ignored. DAO orders to CXD will be accepted, but DAO will be ignored. Cross: f = DAO.</Description>
+        </Field>
+        <Field>
+          <Tag>21</Tag>
+          <Name>HandlInst</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>New Order Single: Instructions for order handling on Nasdaq Canada's trading system. All other values will be modified to 1. Tag 18=f will override any value in tag 21 and the order treated as DAO. Cross: Instructions for order handling on Nasdaq Canada's trading system. Value supported for Crosses: 1 = Automated execution order, private, no Broker intervention. All other values will be modified to 1.</Description>
+        </Field>
+        <Field>
+          <Tag>38</Tag>
+          <Name>OrderQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>Quantity of order.</Description>
+        </Field>
+        <Field>
+          <Tag>40</Tag>
+          <Name>OrdType</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>New Order Single: Order type. Any other values will cause the order to be rejected. Cross: Value supported by Nasdaq Canada for Crosses: 2 = Limit.</Description>
+        </Field>
+        <Field>
+          <Tag>44</Tag>
+          <Name>Price</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>New Order Single: Required for limit orders. If included in a Market order, the order will be rejected. Cross: Required for limit orders.</Description>
+        </Field>
+        <Field>
+          <Tag>54</Tag>
+          <Name>Side</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>New Order Single: Side of order. Any other values will cause the order to be rejected. Cross: Values supported by Nasdaq Canada for Crosses: 8 = Cross, 9 = Cross Short.</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Local/exchange symbol only.</Description>
+        </Field>
+        <Field>
+          <Tag>59</Tag>
+          <Name>TimeInForce</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>New Order Single: Absence of this field indicates a day order. Day orders are in effect until the client cancels the order, or until the Nasdaq Canada trading system is shut down for nightly maintenance. Any other values will cause the order to be rejected. Cross: Absence of this field indicates a day order. Value supported for Crosses: 0 = Day.</Description>
+        </Field>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>Y</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Time this order request was initiated by client.</Description>
+        </Field>
+        <Field>
+          <Tag>100</Tag>
+          <Name>ExDestination</Name>
+          <Required>N</Required>
+          <Type>Exchange</Type>
+          <Description>Indicates how the order should be routed: CHIX, CX2, CXD, or a Smart Order Router (SOR) strategy value provided by Nasdaq Canada Operations following certification. A valid value is required in either TargetSubID (57) or ExDestination (100).</Description>
+        </Field>
+        <Field>
+          <Tag>6751</Tag>
+          <Name>UMIRUserID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Required for Canadian regulatory reporting, the trading system's user ID for the trader.</Description>
+        </Field>
+        <Field>
+          <Tag>6754</Tag>
+          <Name>BasketTrade</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Size>5</Size>
+          <Description>Identification for order as part of a basket trade: N = No (Default), or 1*5Digit = Basket Number.</Description>
+        </Field>
+        <Field>
+          <Tag>6755</Tag>
+          <Name>ProgramTrade</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>An order that is part of a basket trade comprised of Index securities to offset a futures or options position.</Description>
+        </Field>
+        <Field>
+          <Tag>6761</Tag>
+          <Name>Anonymous</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>New Order Single: Whether the TSX Broker Number should be hidden on the order book and execution. Cross: Whether the execution should hide the TSX Broker Number.</Description>
+        </Field>
+        <Field>
+          <Tag>6791</Tag>
+          <Name>Bypass</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>New Order Single: Order marker that indicates the order should only trade with displayed volumes, i.e. ignore any hidden quantities. These orders are treated as IOC. Y or N; default is N. (Not supported on CXD) Cross: Regulatory marker indicating order is placed in conjunction with bypass orders. Y or N; default is N.</Description>
+        </Field>
+        <Field>
+          <Tag>7729</Tag>
+          <Name>ShortMarkingExempt</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>New Order Single: Identifies an order as Short Marking Exempt (SME). Not valid on short sell orders. Cross: Identifies an order as Short Marking Exempt (SME). Not valid on short sell orders. Value of 2 or 3 not valid on cross short orders.</Description>
+        </Field>
+        <Field>
+          <Tag>7737</Tag>
+          <Name>POComment</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Size>32</Size>
+          <Description>A free-form, pass-through tag provided for use by Participants. Maximum of 32 characters.</Description>
+        </Field>
+        <Branch>
+          <Name>Cross</Name>
+          <Dependency>Side</Dependency>
+          <Value>8</Value>
+          <Fields>
+            <Field>
+              <Tag>63</Tag>
+              <Name>SettlType</Name>
+              <Required>N</Required>
+              <Type>Char</Type>
+              <Description>Settlement terms of the order.</Description>
+            </Field>
+            <Field>
+              <Tag>64</Tag>
+              <Name>SettlDate</Name>
+              <Required>N</Required>
+              <Type>LocalMktDate</Type>
+              <Description>Specific date of trade settlement in YYYYMMDD format. Required if the value of SettlType (63) is 6.</Description>
+            </Field>
+            <Field>
+              <Tag>6767</Tag>
+              <Name>CHIXBuyAccountType</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>Required for Canadian regulatory reporting. If unspecified, Default (CL) is applied. Buy side of the Cross.</Description>
+            </Field>
+            <Field>
+              <Tag>6768</Tag>
+              <Name>CHIXSellAccountType</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>Required for Canadian regulatory reporting. If unspecified, Default (CL) is applied. Sell side of the Cross.</Description>
+            </Field>
+            <Field>
+              <Tag>6769</Tag>
+              <Name>CHIXBuyAccountID</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Identifies the trading account on the Buy side of the Cross.</Description>
+            </Field>
+            <Field>
+              <Tag>6770</Tag>
+              <Name>CHIXSellAccountID</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Identifies the trading account on the Sell side of the Cross.</Description>
+            </Field>
+            <Field>
+              <Tag>6771</Tag>
+              <Name>CHIXBuyRegulationID</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Identification marker for UMIR-specific designations to orders and trades. Buy side of the Cross.</Description>
+            </Field>
+            <Field>
+              <Tag>6772</Tag>
+              <Name>CHIXSellRegulationID</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Identification marker for UMIR-specific designations to orders and trades. Sell side of the Cross.</Description>
+            </Field>
+            <Field>
+              <Tag>6773</Tag>
+              <Name>CrossType</Name>
+              <Required>N</Required>
+              <Type>Char</Type>
+              <Description>Refers to Specialty Cross types.</Description>
+            </Field>
+            <Field>
+              <Tag>6781</Tag>
+              <Name>CHIXBuyJitney</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>To mark the buy side of the cross as being executed on behalf of another broker: BrokerNumber.</Description>
+            </Field>
+            <Field>
+              <Tag>6782</Tag>
+              <Name>CHIXSellJitney</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>To mark the sell side of the cross as being executed on behalf of another broker: BrokerNumber.</Description>
+            </Field>
+            <Field>
+              <Tag>20050</Tag>
+              <Name>FacilitationQty</Name>
+              <Required>N</Required>
+              <Type>Qty</Type>
+              <Description>Maximum quantity of shares to facilitate a sweep and cross order when not facilitating with the client side of the cross. FacilitationQty must be less than OrderQty.</Description>
+            </Field>
+            <Field>
+              <Tag>20051</Tag>
+              <Name>FacilitationSide</Name>
+              <Required>N</Required>
+              <Type>Char</Type>
+              <Description>Identifies side of market to use FacilitationQty.</Description>
+            </Field>
+            <Field>
+              <Tag>20201</Tag>
+              <Name>BuyCustomerAccount</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Size>20</Size>
+              <Description>Account number for clients not eligible to obtain an LEI for the Buy side of the Cross. 20 Alphanumeric.</Description>
+            </Field>
+            <Field>
+              <Tag>20202</Tag>
+              <Name>SellCustomerAccount</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Size>20</Size>
+              <Description>Account number for clients not eligible to obtain an LEI for the Sell side of the Cross. 20 Alphanumeric.</Description>
+            </Field>
+            <Field>
+              <Tag>20203</Tag>
+              <Name>BuyAlgorithmID</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Size>20</Size>
+              <Description>Unique identifier for the end-client for the Buy side of the Cross (orders automatically generated on a predetermined basis). 20 Alphanumeric.</Description>
+            </Field>
+            <Field>
+              <Tag>20204</Tag>
+              <Name>SellAlgorithmID</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Size>20</Size>
+              <Description>Unique identifier for the end-client for the Sell side of the Cross (orders automatically generated on a predetermined basis). 20 Alphanumeric.</Description>
+            </Field>
+            <Field>
+              <Tag>20205</Tag>
+              <Name>BuyCustomerLEI</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Size>52</Size>
+              <Description>LEI for clients eligible to obtain an LEI including LEI of the foreign dealer equivalent for the Buy side of the Cross (Encryption Required). 52 Alphanumeric.</Description>
+            </Field>
+            <Field>
+              <Tag>20206</Tag>
+              <Name>SellCustomerLEI</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Size>52</Size>
+              <Description>LEI for clients eligible to obtain an LEI including LEI of the foreign dealer equivalent for the Sell side of the Cross (Encryption Required). 52 Alphanumeric.</Description>
+            </Field>
+            <Field>
+              <Tag>20207</Tag>
+              <Name>BuyBrokerLEI</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Size>20</Size>
+              <Description>Non-PO IIROC Dealer Member for the Buy side of the Cross (Correspondent Broker). 20 Alphanumeric.</Description>
+            </Field>
+            <Field>
+              <Tag>20208</Tag>
+              <Name>SellBrokerLEI</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Size>20</Size>
+              <Description>Non-PO IIROC Dealer Member for the Sell side of the Cross (Correspondent Broker). 20 Alphanumeric.</Description>
+            </Field>
+            <Field>
+              <Tag>20209</Tag>
+              <Name>BuyOrderOrigination</Name>
+              <Required>N</Required>
+              <Type>Int</Type>
+              <Description>Broker / Dealer needs to report for the Buy side of the Cross, as specified by the customer.</Description>
+            </Field>
+            <Field>
+              <Tag>20210</Tag>
+              <Name>SellOrderOrigination</Name>
+              <Required>N</Required>
+              <Type>Int</Type>
+              <Description>Broker / Dealer needs to report for the Sell side of the Cross, as specified by the customer.</Description>
+            </Field>
+            <Field>
+              <Tag>20211</Tag>
+              <Name>BuyRoutingArrangementIndicator</Name>
+              <Required>N</Required>
+              <Type>Int</Type>
+              <Description>Routing arrangement indicator for the Buy side of the Cross.</Description>
+            </Field>
+            <Field>
+              <Tag>20212</Tag>
+              <Name>SellRoutingArrangementIndicator</Name>
+              <Required>N</Required>
+              <Type>Int</Type>
+              <Description>Routing arrangement indicator for the Sell side of the Cross.</Description>
+            </Field>
+          </Fields>
+        </Branch>
+        <Branch>
+          <Name>Cross Short</Name>
+          <Dependency>Side</Dependency>
+          <Value>9</Value>
+          <Fields>
+            <Field>
+              <Tag>63</Tag>
+              <Name>SettlType</Name>
+              <Required>N</Required>
+              <Type>Char</Type>
+              <Description>Settlement terms of the order.</Description>
+            </Field>
+            <Field>
+              <Tag>64</Tag>
+              <Name>SettlDate</Name>
+              <Required>N</Required>
+              <Type>LocalMktDate</Type>
+              <Description>Specific date of trade settlement in YYYYMMDD format. Required if the value of SettlType (63) is 6.</Description>
+            </Field>
+            <Field>
+              <Tag>6767</Tag>
+              <Name>CHIXBuyAccountType</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>Required for Canadian regulatory reporting. If unspecified, Default (CL) is applied. Buy side of the Cross.</Description>
+            </Field>
+            <Field>
+              <Tag>6768</Tag>
+              <Name>CHIXSellAccountType</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>Required for Canadian regulatory reporting. If unspecified, Default (CL) is applied. Sell side of the Cross.</Description>
+            </Field>
+            <Field>
+              <Tag>6769</Tag>
+              <Name>CHIXBuyAccountID</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Identifies the trading account on the Buy side of the Cross.</Description>
+            </Field>
+            <Field>
+              <Tag>6770</Tag>
+              <Name>CHIXSellAccountID</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Identifies the trading account on the Sell side of the Cross.</Description>
+            </Field>
+            <Field>
+              <Tag>6771</Tag>
+              <Name>CHIXBuyRegulationID</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Identification marker for UMIR-specific designations to orders and trades. Buy side of the Cross.</Description>
+            </Field>
+            <Field>
+              <Tag>6772</Tag>
+              <Name>CHIXSellRegulationID</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Identification marker for UMIR-specific designations to orders and trades. Sell side of the Cross.</Description>
+            </Field>
+            <Field>
+              <Tag>6773</Tag>
+              <Name>CrossType</Name>
+              <Required>N</Required>
+              <Type>Char</Type>
+              <Description>Refers to Specialty Cross types.</Description>
+            </Field>
+            <Field>
+              <Tag>6781</Tag>
+              <Name>CHIXBuyJitney</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>To mark the buy side of the cross as being executed on behalf of another broker: BrokerNumber.</Description>
+            </Field>
+            <Field>
+              <Tag>6782</Tag>
+              <Name>CHIXSellJitney</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>To mark the sell side of the cross as being executed on behalf of another broker: BrokerNumber.</Description>
+            </Field>
+            <Field>
+              <Tag>20050</Tag>
+              <Name>FacilitationQty</Name>
+              <Required>N</Required>
+              <Type>Qty</Type>
+              <Description>Maximum quantity of shares to facilitate a sweep and cross order when not facilitating with the client side of the cross. FacilitationQty must be less than OrderQty.</Description>
+            </Field>
+            <Field>
+              <Tag>20051</Tag>
+              <Name>FacilitationSide</Name>
+              <Required>N</Required>
+              <Type>Char</Type>
+              <Description>Identifies side of market to use FacilitationQty.</Description>
+            </Field>
+            <Field>
+              <Tag>20201</Tag>
+              <Name>BuyCustomerAccount</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Size>20</Size>
+              <Description>Account number for clients not eligible to obtain an LEI for the Buy side of the Cross. 20 Alphanumeric.</Description>
+            </Field>
+            <Field>
+              <Tag>20202</Tag>
+              <Name>SellCustomerAccount</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Size>20</Size>
+              <Description>Account number for clients not eligible to obtain an LEI for the Sell side of the Cross. 20 Alphanumeric.</Description>
+            </Field>
+            <Field>
+              <Tag>20203</Tag>
+              <Name>BuyAlgorithmID</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Size>20</Size>
+              <Description>Unique identifier for the end-client for the Buy side of the Cross (orders automatically generated on a predetermined basis). 20 Alphanumeric.</Description>
+            </Field>
+            <Field>
+              <Tag>20204</Tag>
+              <Name>SellAlgorithmID</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Size>20</Size>
+              <Description>Unique identifier for the end-client for the Sell side of the Cross (orders automatically generated on a predetermined basis). 20 Alphanumeric.</Description>
+            </Field>
+            <Field>
+              <Tag>20205</Tag>
+              <Name>BuyCustomerLEI</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Size>52</Size>
+              <Description>LEI for clients eligible to obtain an LEI including LEI of the foreign dealer equivalent for the Buy side of the Cross (Encryption Required). 52 Alphanumeric.</Description>
+            </Field>
+            <Field>
+              <Tag>20206</Tag>
+              <Name>SellCustomerLEI</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Size>52</Size>
+              <Description>LEI for clients eligible to obtain an LEI including LEI of the foreign dealer equivalent for the Sell side of the Cross (Encryption Required). 52 Alphanumeric.</Description>
+            </Field>
+            <Field>
+              <Tag>20207</Tag>
+              <Name>BuyBrokerLEI</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Size>20</Size>
+              <Description>Non-PO IIROC Dealer Member for the Buy side of the Cross (Correspondent Broker). 20 Alphanumeric.</Description>
+            </Field>
+            <Field>
+              <Tag>20208</Tag>
+              <Name>SellBrokerLEI</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Size>20</Size>
+              <Description>Non-PO IIROC Dealer Member for the Sell side of the Cross (Correspondent Broker). 20 Alphanumeric.</Description>
+            </Field>
+            <Field>
+              <Tag>20209</Tag>
+              <Name>BuyOrderOrigination</Name>
+              <Required>N</Required>
+              <Type>Int</Type>
+              <Description>Broker / Dealer needs to report for the Buy side of the Cross, as specified by the customer.</Description>
+            </Field>
+            <Field>
+              <Tag>20210</Tag>
+              <Name>SellOrderOrigination</Name>
+              <Required>N</Required>
+              <Type>Int</Type>
+              <Description>Broker / Dealer needs to report for the Sell side of the Cross, as specified by the customer.</Description>
+            </Field>
+            <Field>
+              <Tag>20211</Tag>
+              <Name>BuyRoutingArrangementIndicator</Name>
+              <Required>N</Required>
+              <Type>Int</Type>
+              <Description>Routing arrangement indicator for the Buy side of the Cross.</Description>
+            </Field>
+            <Field>
+              <Tag>20212</Tag>
+              <Name>SellRoutingArrangementIndicator</Name>
+              <Required>N</Required>
+              <Type>Int</Type>
+              <Description>Routing arrangement indicator for the Sell side of the Cross.</Description>
+            </Field>
+          </Fields>
+        </Branch>
+        <Branch>
+          <Name>Order</Name>
+          <Dependency>Side</Dependency>
+          <Fields>
+            <Field>
+              <Tag>1</Tag>
+              <Name>Account</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Size>15</Size>
+              <Description>Identifies the trading account. Maximum of 15 characters.</Description>
+            </Field>
+            <Field>
+              <Tag>110</Tag>
+              <Name>MinQty</Name>
+              <Required>N</Required>
+              <Type>Qty</Type>
+              <Description>Minimum Quantity (MQ): minimum quantity of each fill event allowing for aggregation of contra orders. Minimum Acceptable Quantity (MAQ): minimum quantity of each execution report; orders will not interact with smaller sized contra orders (default, use tag 18 to select MQ).</Description>
+            </Field>
+            <Field>
+              <Tag>111</Tag>
+              <Name>MaxFloor</Name>
+              <Required>N</Required>
+              <Type>Qty</Type>
+              <Description>Reserve size order. Must be equal to or multiple of STU (Standard Trading Unit). Hidden Order: a value of 0 hides the order. Any other value supplied by the client will cause the order to be rejected. (Not supported on CXD)</Description>
+            </Field>
+            <Field>
+              <Tag>126</Tag>
+              <Name>ExpireTime</Name>
+              <Required>N</Required>
+              <Type>UTCTimestamp</Type>
+              <Description>Time/Date of order expiration in GMT. Only valid when TimeInForce (59) = 6 (Good Till Date). Date must be today's Trading Date. Incorrect data results in a rejected order.</Description>
+            </Field>
+            <Field>
+              <Tag>211</Tag>
+              <Name>PegDifference</Name>
+              <Required>N</Required>
+              <Type>PriceOffset</Type>
+              <Description>Amount in dollars in $0.01 increments added to the price of the peg. Positive values are more aggressive, negative values more passive.</Description>
+            </Field>
+            <Field>
+              <Tag>847</Tag>
+              <Name>TargetStrategy</Name>
+              <Required>N</Required>
+              <Type>Int</Type>
+              <Description>Required for CXD PureStream orders.</Description>
+            </Field>
+            <Field>
+              <Tag>1724</Tag>
+              <Name>OrderOrigination</Name>
+              <Required>N</Required>
+              <Type>Int</Type>
+              <Description>Broker / Dealer needs to report, as specified by the customer.</Description>
+            </Field>
+            <Field>
+              <Tag>2883</Tag>
+              <Name>RoutingArrangementIndicator</Name>
+              <Required>N</Required>
+              <Type>Int</Type>
+              <Description>Routing arrangement indicator.</Description>
+            </Field>
+            <Field>
+              <Tag>6750</Tag>
+              <Name>UMIRAccountType</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>Required for Canadian regulatory reporting. If unspecified, Default (CL) is applied.</Description>
+            </Field>
+            <Field>
+              <Tag>6757</Tag>
+              <Name>Jitney</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Size>3</Size>
+              <Description>To mark an order as being executed on behalf of another broker: TSX Broker Number, 3 digit numeric.</Description>
+            </Field>
+            <Field>
+              <Tag>6759</Tag>
+              <Name>GEFEligible</Name>
+              <Required>N</Required>
+              <Type>Boolean</Type>
+              <Description>Indicator to identify if an order is eligible for the Guaranteed Execution Facility (GEF).</Description>
+            </Field>
+            <Field>
+              <Tag>6763</Tag>
+              <Name>UMIRRegulationID</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Identification marker for UMIR-specific designations to orders and trades.</Description>
+            </Field>
+            <Field>
+              <Tag>6792</Tag>
+              <Name>TSXNCIB</Name>
+              <Required>N</Required>
+              <Type>Boolean</Type>
+              <Description>Identifies Normal-Course Issuer Bid (NCIB) orders. No default.</Description>
+            </Field>
+            <Field>
+              <Tag>7713</Tag>
+              <Name>NoTradeFeat</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Size>2</Size>
+              <Description>Defines the behaviour of self-trade prevention when using NoTradeKey. 2 characters (not space separated): 1st character N = Cancel newest order (Default), O = Cancel oldest order, D = Decrement and Cancel, E = Execute trade (trade suppressed on public market data feed; ExecuteMatch (7733) is returned on the trade report); 2nd character M or B = Self-trade prevention at broker level (Default). The NoTradeFeat of the incoming order will take precedence.</Description>
+            </Field>
+            <Field>
+              <Tag>7714</Tag>
+              <Name>NoTradeKey</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Size>6</Size>
+              <Description>This participant-generated key prevents the order from trading against orders with the same key value. 6*AlphaNumeric, no default.</Description>
+            </Field>
+            <Field>
+              <Tag>7731</Tag>
+              <Name>SeekPriceImprovement</Name>
+              <Required>N</Required>
+              <Type>Char</Type>
+              <Description>Trade with price improving hidden orders (order must be immediate or cancel).</Description>
+            </Field>
+            <Field>
+              <Tag>8020</Tag>
+              <Name>DisplayRange</Name>
+              <Required>N</Required>
+              <Type>Qty</Type>
+              <Description>Quantity assigned to max floor orders indicating the range in which the displayed quantity will randomly increase or decrease. (Not supported on CXD)</Description>
+            </Field>
+            <Field>
+              <Tag>8025</Tag>
+              <Name>CustomerAccount</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Size>20</Size>
+              <Description>Account number for clients not eligible to obtain an LEI. 20 Alphanumeric.</Description>
+            </Field>
+            <Field>
+              <Tag>8026</Tag>
+              <Name>AlgorithmID</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Size>20</Size>
+              <Description>Unique identifier for the end-client (orders automatically generated on a predetermined basis). 20 Alphanumeric.</Description>
+            </Field>
+            <Field>
+              <Tag>8027</Tag>
+              <Name>CustomerLEI</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Size>52</Size>
+              <Description>LEI for clients eligible to obtain an LEI including LEI of the foreign dealer equivalent (Encryption Required). 52 Alphanumeric.</Description>
+            </Field>
+            <Field>
+              <Tag>8028</Tag>
+              <Name>BrokerLEI</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Size>20</Size>
+              <Description>Non-PO IIROC Dealer Member (Correspondent Broker). 20 Alphanumeric.</Description>
+            </Field>
+            <Field>
+              <Tag>23012</Tag>
+              <Name>ConditionalOrder</Name>
+              <Required>N</Required>
+              <Type>Char</Type>
+              <Description>CXD orders only.</Description>
+            </Field>
+            <Field>
+              <Tag>23013</Tag>
+              <Name>AllowConditional</Name>
+              <Required>N</Required>
+              <Type>Boolean</Type>
+              <Description>CXD PureStream SOK orders only.</Description>
+            </Field>
+            <Field>
+              <Tag>23014</Tag>
+              <Name>FirmUpID</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>The FirmUpID received in Conditional match.</Description>
+            </Field>
+            <Field>
+              <Tag>23015</Tag>
+              <Name>CXDConnect</Name>
+              <Required>N</Required>
+              <Type>Boolean</Type>
+              <Description>CXD orders only.</Description>
+            </Field>
+            <Field>
+              <Tag>23017</Tag>
+              <Name>PureStreamConnect</Name>
+              <Required>N</Required>
+              <Type>Boolean</Type>
+              <Description>CXD Conditional orders only.</Description>
+            </Field>
+            <Field>
+              <Tag>27005</Tag>
+              <Name>MinRate</Name>
+              <Required>N</Required>
+              <Type>Int</Type>
+              <Range>1 to 32767</Range>
+              <Description>Minimum rate for CXD PureStream Custom Reference Rate Range (847=1003) and LS (847=1004) orders. Specified in percent as integer (e.g. 5% should be sent as 27005=5). Default 1% if not specified (Min 1%, Max 32,767%). Must be less than or equal to MaxRate (27006).</Description>
+            </Field>
+            <Field>
+              <Tag>27006</Tag>
+              <Name>MaxRate</Name>
+              <Required>N</Required>
+              <Type>Int</Type>
+              <Range>1 to 500</Range>
+              <Description>Required maximum rate for CXD PureStream Custom Reference Rate Range (847=1003) orders. Specified in percent as integer (e.g. 5% should be sent as 27005=5) (Min 1%, Max 500%). Must be greater than or equal to MinRate (27005).</Description>
+            </Field>
+          </Fields>
+        </Branch>
+      </Fields>
+    </Message>
+
+    <!-- Order Cancel Request (F) section 5.2.1.2 -->
+    <Message>
+      <Name>Order Cancel Request</Name>
+      <MsgType>F</MsgType>
+      <Category>app</Category>
+      <Origin>Client</Origin>
+      <Description>Nasdaq Canada processes a Cancel Request quantity as the full remaining quantity; partial cancels are not supported.</Description>
+      <Fields>
+        <Field>
+          <Tag>11</Tag>
+          <Name>ClOrdID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Size>32</Size>
+          <Description>Unique ID of cancel request assigned by the client. Maximum of 32 characters.</Description>
+        </Field>
+        <Field>
+          <Tag>38</Tag>
+          <Name>OrderQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>Required by the FIX protocol, ignored by Nasdaq Canada. All cancel requests are for full remaining quantity.</Description>
+        </Field>
+        <Field>
+          <Tag>41</Tag>
+          <Name>OrigClOrdID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Size>32</Size>
+          <Description>Unique ID of original order to be cancelled as assigned by client. Maximum of 32 characters.</Description>
+        </Field>
+        <Field>
+          <Tag>54</Tag>
+          <Name>Side</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+        </Field>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>Y</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Time this order request was initiated by client.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Order Cancel/Replace Request (G) section 5.2.1.3 -->
+    <Message>
+      <Name>Order Cancel Replace Request</Name>
+      <MsgType>G</MsgType>
+      <Category>app</Category>
+      <Origin>Client</Origin>
+      <Description>Handled as per the FIX protocol. Requests that cannot be processed are rejected using the Cancel Reject message carrying the ClOrdID of the replacement order.</Description>
+      <Fields>
+        <Field>
+          <Tag>11</Tag>
+          <Name>ClOrdID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Size>32</Size>
+          <Description>Unique ID of replacement order as assigned by the client. Maximum of 32 characters.</Description>
+        </Field>
+        <Field>
+          <Tag>18</Tag>
+          <Name>ExecInst</Name>
+          <Required>N</Required>
+          <Type>MultipleValueString</Type>
+          <Description>For a replacement order, this field must be populated anew (i.e. original order values will not be brought forward to replacement order unless redefined within this message).</Description>
+        </Field>
+        <Field>
+          <Tag>21</Tag>
+          <Name>HandlInst</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+        </Field>
+        <Field>
+          <Tag>38</Tag>
+          <Name>OrderQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>Printed as OrdQty. The quantity in the Cancel/Replace message is the total order quantity, as defined by the FIX protocol and total order quantity semantics.</Description>
+        </Field>
+        <Field>
+          <Tag>40</Tag>
+          <Name>OrdType</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>New Order Type for the request. Values supported: 1 = Market, 2 = Limit, P = Pegged (requires ExecInst of M, R, P or x).</Description>
+        </Field>
+        <Field>
+          <Tag>41</Tag>
+          <Name>OrigClOrdID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Size>32</Size>
+          <Description>Unique ID of order to be replaced as assigned by client. Maximum of 32 characters.</Description>
+        </Field>
+        <Field>
+          <Tag>44</Tag>
+          <Name>Price</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Required for Limit orders.</Description>
+        </Field>
+        <Field>
+          <Tag>54</Tag>
+          <Name>Side</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+        </Field>
+        <Field>
+          <Tag>59</Tag>
+          <Name>TimeInForce</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>Absence indicates a Day order.</Description>
+        </Field>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>Y</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Time this order request was initiated by client.</Description>
+        </Field>
+        <Field>
+          <Tag>110</Tag>
+          <Name>MinQty</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>See New Order Single section.</Description>
+        </Field>
+        <Field>
+          <Tag>111</Tag>
+          <Name>MaxFloor</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>See New Order Single section.</Description>
+        </Field>
+        <Field>
+          <Tag>126</Tag>
+          <Name>ExpireTime</Name>
+          <Required>N</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>If the client attempts to revise the expiration time to a time prior than the current time, the Cancel/Replace Request will be rejected.</Description>
+        </Field>
+        <Field>
+          <Tag>847</Tag>
+          <Name>TargetStrategy</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>See New Order Single section.</Description>
+        </Field>
+        <Field>
+          <Tag>1724</Tag>
+          <Name>OrderOrigination</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Broker / Dealer needs to report, as specified by the customer.</Description>
+        </Field>
+        <Field>
+          <Tag>2883</Tag>
+          <Name>RoutingArrangementIndicator</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Routing arrangement indicator.</Description>
+        </Field>
+        <Field>
+          <Tag>6763</Tag>
+          <Name>UMIRRegulationID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Identification marker for UMIR-specific designations to orders and trades.</Description>
+        </Field>
+        <Field>
+          <Tag>6761</Tag>
+          <Name>Anonymous</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>Whether the TSX Broker Number should be hidden on the order book and execution.</Description>
+        </Field>
+        <Field>
+          <Tag>8020</Tag>
+          <Name>DisplayRange</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Quantity assigned to max floor orders indicating the range in which the displayed quantity will randomly increase or decrease. (Not supported on CXD)</Description>
+        </Field>
+        <Field>
+          <Tag>8025</Tag>
+          <Name>CustomerAccount</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Size>20</Size>
+          <Description>Account number for clients not eligible to obtain an LEI. 20 Alphanumeric.</Description>
+        </Field>
+        <Field>
+          <Tag>8026</Tag>
+          <Name>AlgorithmID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Size>20</Size>
+          <Description>Unique identifier for the end-client (orders automatically generated on a predetermined basis). 20 Alphanumeric.</Description>
+        </Field>
+        <Field>
+          <Tag>8027</Tag>
+          <Name>CustomerLEI</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Size>52</Size>
+          <Description>LEI for clients eligible to obtain an LEI including LEI of the foreign dealer equivalent (Encryption Required). 52 Alphanumeric.</Description>
+        </Field>
+        <Field>
+          <Tag>8028</Tag>
+          <Name>BrokerLEI</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Size>20</Size>
+          <Description>Non-PO IIROC Dealer Member (Correspondent Broker). 20 Alphanumeric.</Description>
+        </Field>
+        <Field>
+          <Tag>23012</Tag>
+          <Name>ConditionalOrder</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>See New Order Single section.</Description>
+        </Field>
+        <Field>
+          <Tag>23013</Tag>
+          <Name>AllowConditional</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>See New Order Single section.</Description>
+        </Field>
+        <Field>
+          <Tag>23015</Tag>
+          <Name>CXDConnect</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>See New Order Single section.</Description>
+        </Field>
+        <Field>
+          <Tag>23017</Tag>
+          <Name>PureStreamConnect</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>See New Order Single section.</Description>
+        </Field>
+        <Field>
+          <Tag>27005</Tag>
+          <Name>MinRate</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Range>1 to 32767</Range>
+          <Description>See New Order Single section.</Description>
+        </Field>
+        <Field>
+          <Tag>27006</Tag>
+          <Name>MaxRate</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Range>1 to 500</Range>
+          <Description>See New Order Single section.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Market Participant Command (MC) section 5.4.1 -->
+    <Message>
+      <Name>Market Participant Command</Name>
+      <MsgType>MC</MsgType>
+      <Category>app</Category>
+      <Origin>Client</Origin>
+      <Description>Sent by GEF Members to set the Guaranteed Execution Facility commitment for a designated security.</Description>
+      <Fields>
+        <Field>
+          <Tag>54</Tag>
+          <Name>Side</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Values supported by Nasdaq Canada: 1 = Buy, 2 = Sell.</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Local/exchange symbol.</Description>
+        </Field>
+        <Field>
+          <Tag>100</Tag>
+          <Name>ExDestination</Name>
+          <Required>N</Required>
+          <Type>Exchange</Type>
+          <Description>CX2 (Default).</Description>
+        </Field>
+        <Field>
+          <Tag>6751</Tag>
+          <Name>UMIRUserID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Required for Canadian regulatory reporting, the trading system's user ID for the trader.</Description>
+        </Field>
+        <Field>
+          <Tag>6789</Tag>
+          <Name>PartCommandID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Size>32</Size>
+          <Description>Unique identifier assigned by the GEF Member to the message. Maximum of 32 characters.</Description>
+        </Field>
+        <Field>
+          <Tag>6799</Tag>
+          <Name>GEFCommitVolume</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>The size (shares) of the GEF Member's commitment for auto-executions. Must be at least the GMV for the Designated Security.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Execution Report (8) sections 5.2.2.1 New Order Single Response, 5.2.2.2 Order Cancel Acknowledgment, 5.2.2.4 Replace Response, 5.2.2.5 Restatement and 5.2.2.6 Trade Report -->
+    <Message>
+      <Name>Execution Report</Name>
+      <MsgType>8</MsgType>
+      <Category>app</Category>
+      <Origin>Exchange</Origin>
+      <Description>One Execution Report carrying the union of the New Order Single Response (also used as the Replace Response), Order Cancel Acknowledgment, Restatement and Trade Report tables. A row is Required only when all four tables print it as Y; each description names the tables that print the row when it is not in all four.</Description>
+      <Fields>
+        <Field>
+          <Tag>1</Tag>
+          <Name>Account</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Size>15</Size>
+          <Description>New Order Single Response, Trade Report: Identifies the trading account. Maximum of 15 characters. Printed in New Order Single Response, Trade Report only.</Description>
+        </Field>
+        <Field>
+          <Tag>6</Tag>
+          <Name>AvgPx</Name>
+          <Required>Y</Required>
+          <Type>Price</Type>
+          <Description>New Order Single Response, Restatement: The average price of all shares traded. Defaulted to 0 for order acknowledgements. Order Cancel Acknowledgment: The average price of all shares traded. Trade Report: Average price of shares traded.</Description>
+        </Field>
+        <Field>
+          <Tag>11</Tag>
+          <Name>ClOrdID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Size>32</Size>
+          <Description>New Order Single Response, Restatement: Nasdaq Canada will always populate this field with the value assigned by client in the New Order Single message. Order Cancel Acknowledgment: Nasdaq Canada will always populate this field with the value assigned by client in the Order Cancel Request message. Trade Report: Nasdaq Canada will always populate this field with the original value assigned by client in the New Order Single message. Required (Y) in New Order Single Response.</Description>
+        </Field>
+        <Field>
+          <Tag>14</Tag>
+          <Name>CumQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>New Order Single Response, Restatement: The total shares traded against the original order quantity. Defaulted to 0 for order acknowledgements. Order Cancel Acknowledgment: The total shares traded against the original order quantity. Trade Report: Total shares traded against the original order quantity.</Description>
+        </Field>
+        <Field>
+          <Tag>15</Tag>
+          <Name>Currency</Name>
+          <Required>N</Required>
+          <Type>Currency</Type>
+          <Description>New Order Single Response, Order Cancel Acknowledgment, Restatement: Currency associated with symbol in Symbol (55) field. Trade Report: Currency in which the security is traded.</Description>
+        </Field>
+        <Field>
+          <Tag>17</Tag>
+          <Name>ExecID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>New Order Single Response, Order Cancel Acknowledgment, Restatement: A unique identifier of execution message as assigned by Nasdaq Canada. Trade Report: A unique identifier of execution message as assigned by NASDAQ. It is the client's responsibility to detect and appropriately process possible duplicate ExecIDs, regardless of whether the PossResend flag has been set on the message or not.</Description>
+        </Field>
+        <Field>
+          <Tag>18</Tag>
+          <Name>ExecInst</Name>
+          <Required>N</Required>
+          <Type>MultipleValueString</Type>
+          <Description>New Order Single Response, Order Cancel Acknowledgment, Trade Report: Values supported by Nasdaq Canada (some values may be combined and each must be separated by a space). Any other value will be ignored. DAO orders to CXD will be accepted, but DAO will be ignored. Printed in New Order Single Response, Order Cancel Acknowledgment, Trade Report only.</Description>
+        </Field>
+        <Field>
+          <Tag>19</Tag>
+          <Name>ExecRefID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Trade Report: Used in a trade correct or cancel message (i.e. ExecTransType = 1 or 2) to refer to the previous Execution Report to which the current message applies. Printed in Trade Report only.</Description>
+        </Field>
+        <Field>
+          <Tag>20</Tag>
+          <Name>ExecTransType</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>New Order Single Response, Order Cancel Acknowledgment: 0 = New. Restatement: 1 = Cancelled, 3 = Status. Trade Report: 0 = New to indicate a trade report, 1 = Cancel to indicate a trade cancel, 2 = Correct to indicate a trade revision.</Description>
+        </Field>
+        <Field>
+          <Tag>21</Tag>
+          <Name>HandlInst</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>New Order Single Response, Order Cancel Acknowledgment, Restatement: Values supported by Nasdaq Canada: 1, 5, 6. Required (Y) in New Order Single Response, Order Cancel Acknowledgment, Restatement. Printed in New Order Single Response, Order Cancel Acknowledgment, Restatement only.</Description>
+        </Field>
+        <Field>
+          <Tag>22</Tag>
+          <Name>SecurityIDSource</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Identifies class or source of the SecurityID (48) value. (Drop copy only)</Description>
+        </Field>
+        <Field>
+          <Tag>31</Tag>
+          <Name>LastPx</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>New Order Single Response: Defaulted to 0 for order acknowledgements. Order Cancel Acknowledgment: Defaulted to 0 for order cancel acknowledgements. Price at which the match would have occurred if not prevented when cancelled/replaced due to no-self trade. Trade Report: Price of shares bought or sold on this fill. Required (Y) in New Order Single Response, Order Cancel Acknowledgment, Trade Report. Printed in New Order Single Response, Order Cancel Acknowledgment, Trade Report only.</Description>
+        </Field>
+        <Field>
+          <Tag>32</Tag>
+          <Name>LastShares</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>New Order Single Response: Defaulted to 0 for order acknowledgements. Order Cancel Acknowledgment: Defaulted to 0 for order cancel acknowledgements. The quantity of shares that would have matched if not prevented when cancelled/replaced due to no-self trade. Trade Report: Quantity of shares bought or sold on this fill. Required (Y) in New Order Single Response, Order Cancel Acknowledgment, Trade Report. Printed in New Order Single Response, Order Cancel Acknowledgment, Trade Report only.</Description>
+        </Field>
+        <Field>
+          <Tag>37</Tag>
+          <Name>OrderID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Nasdaq Canada order reference number.</Description>
+        </Field>
+        <Field>
+          <Tag>38</Tag>
+          <Name>OrderQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>Quantity of original order.</Description>
+        </Field>
+        <Field>
+          <Tag>39</Tag>
+          <Name>OrdStatus</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>New Order Single Response: 0 = New, 5 = Replaced, 8 = Rejected. Order Cancel Acknowledgment: 4 = Cancelled. Restatement: 4 = Cancelled, O = Stream On, X = Stream Off. Trade Report: 1 = Partially filled, 2 = Filled, 4 = Cancelled.</Description>
+        </Field>
+        <Field>
+          <Tag>40</Tag>
+          <Name>OrdType</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>Values supported by Nasdaq Canada: 1, 2, 5, B, P.</Description>
+        </Field>
+        <Field>
+          <Tag>41</Tag>
+          <Name>OrigClOrdID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Size>32</Size>
+          <Description>Order Cancel Acknowledgment: Unique ID of original order to be cancelled as assigned by client. Required (Y) in Order Cancel Acknowledgment. Printed in Order Cancel Acknowledgment only.</Description>
+        </Field>
+        <Field>
+          <Tag>44</Tag>
+          <Name>Price</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>New Order Single Response, Restatement, Trade Report: Limit Price. Required for limit orders only. Order Cancel Acknowledgment: Limit Price.</Description>
+        </Field>
+        <Field>
+          <Tag>48</Tag>
+          <Name>SecurityID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Security identifier value of SecurityIDSource (22) type. (Drop copy only)</Description>
+        </Field>
+        <Field>
+          <Tag>54</Tag>
+          <Name>Side</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>New Order Single Response, Order Cancel Acknowledgment, Restatement: Values supported by Nasdaq Canada: 1 = Buy, 2 = Sell, 5 = Sell short. Trade Report: Values supported by Nasdaq Canada: 1 = Buy, 2 = Sell, 5 = Sell Short.</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>New Order Single Response, Order Cancel Acknowledgment, Restatement: Local/exchange symbol. Trade Report: Returns the Local/exchange symbol of the security traded.</Description>
+        </Field>
+        <Field>
+          <Tag>59</Tag>
+          <Name>TimeInForce</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>Will be returned if supplied in original New Order Single message.</Description>
+        </Field>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>N</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Trade Report: Time and date of execution (expressed as GMT). Printed in Trade Report only.</Description>
+        </Field>
+        <Field>
+          <Tag>63</Tag>
+          <Name>SettlType</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>New Order Single Response, Trade Report: Settlement terms of the order. Printed in New Order Single Response, Trade Report only.</Description>
+        </Field>
+        <Field>
+          <Tag>64</Tag>
+          <Name>SettlDate</Name>
+          <Required>N</Required>
+          <Type>LocalMktDate</Type>
+          <Description>New Order Single Response: Specific date of trade settlement in YYYYMMDD format. Returned if the value of SettlType (63) is 6. Trade Report: Specific date of trade settlement in YYYYMMDD format. Required if the value of SettlType (63) is 6. Printed in New Order Single Response, Trade Report only.</Description>
+        </Field>
+        <Field>
+          <Tag>75</Tag>
+          <Name>TradeDate</Name>
+          <Required>N</Required>
+          <Type>LocalMktDate</Type>
+          <Description>Trade Report: Date of trade in YYYYMMDD format. Printed in Trade Report only.</Description>
+        </Field>
+        <Field>
+          <Tag>76</Tag>
+          <Name>ExecBroker</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>New Order Single Response, Restatement, Trade Report: Execution broker. Printed in New Order Single Response, Restatement, Trade Report only.</Description>
+        </Field>
+        <Field>
+          <Tag>103</Tag>
+          <Name>OrdRejReason</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>New Order Single Response: Used with OrdStatus = 8 (Rejected) if reason is definable. Printed in New Order Single Response only.</Description>
+        </Field>
+        <Field>
+          <Tag>150</Tag>
+          <Name>ExecType</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>New Order Single Response: 0 = New, 5 = Replaced, 8 = Rejected. Order Cancel Acknowledgment: 4 = Cancelled. Restatement: D = Restated. Trade Report: 1 = Partially filled, 2 = Filled, 4 = Cancelled.</Description>
+        </Field>
+        <Field>
+          <Tag>151</Tag>
+          <Name>LeavesQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>Amount of shares open for further execution.</Description>
+        </Field>
+        <Field>
+          <Tag>198</Tag>
+          <Name>SecondaryOrderID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>New Order Single Response: When present, NASDAQ order number as reported in the market data feed (CHIXMD) otherwise use tag 37. Trade Report: When present, Nasdaq Canada order number as reported in the market data feed (CHIXMD) otherwise use tag 37. Printed in New Order Single Response, Trade Report only.</Description>
+        </Field>
+        <Field>
+          <Tag>207</Tag>
+          <Name>SecurityExchange</Name>
+          <Required>N</Required>
+          <Type>Exchange</Type>
+          <Description>Trade Report: Listing market of security. Required (Y) in Trade Report. Printed in Trade Report only.</Description>
+        </Field>
+        <Group>
+          <Name>NoContraBrokers</Name>
+          <Required>N</Required>
+        </Group>
+        <Field>
+          <Tag>847</Tag>
+          <Name>TargetStrategy</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>New Order Single Response, Restatement, Trade Report: Required for CXD PureStream orders. Printed in New Order Single Response, Restatement, Trade Report only.</Description>
+        </Field>
+        <Field>
+          <Tag>1724</Tag>
+          <Name>OrderOrigination</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>New Order Single Response, Restatement, Trade Report: Broker / Dealer needs to report, as specified by the customer. Printed in New Order Single Response, Restatement, Trade Report only.</Description>
+        </Field>
+        <Field>
+          <Tag>2883</Tag>
+          <Name>RoutingArrangementIndicator</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>New Order Single Response, Restatement, Trade Report: Routing arrangement indicator. Printed in New Order Single Response, Restatement, Trade Report only.</Description>
+        </Field>
+        <Field>
+          <Tag>6750</Tag>
+          <Name>UMIRAccountType</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>New Order Single Response, Restatement, Trade Report: Required for Canadian regulatory reporting. If unspecified, Default (CL) is applied. Required (Y) in New Order Single Response, Restatement, Trade Report. Printed in New Order Single Response, Restatement, Trade Report only.</Description>
+        </Field>
+        <Field>
+          <Tag>6751</Tag>
+          <Name>UMIRUserID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Required for Canadian regulatory reporting, the trading system's user ID for the trader.</Description>
+        </Field>
+        <Field>
+          <Tag>6757</Tag>
+          <Name>Jitney</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Size>3</Size>
+          <Description>New Order Single Response, Restatement, Trade Report: To mark an order as being executed on behalf of another broker: TSX Broker Number, 3 digit numeric. Printed in New Order Single Response, Restatement, Trade Report only.</Description>
+        </Field>
+        <Field>
+          <Tag>6759</Tag>
+          <Name>GEFEligible</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>New Order Single Response: Indicator to identify if an order is eligible for the Guaranteed Execution Facility (GEF). Printed in New Order Single Response only.</Description>
+        </Field>
+        <Field>
+          <Tag>6761</Tag>
+          <Name>Anonymous</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>Whether the TSX Broker Number should be hidden on the order book and execution.</Description>
+        </Field>
+        <Field>
+          <Tag>6763</Tag>
+          <Name>UMIRRegulationID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Identification marker for UMIR-specific designations to orders and trades.</Description>
+        </Field>
+        <Field>
+          <Tag>6774</Tag>
+          <Name>BrokerNumber</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Size>3</Size>
+          <Description>TSX Broker Number, 3 digit numeric. (Drop copy only)</Description>
+        </Field>
+        <Field>
+          <Tag>6776</Tag>
+          <Name>PrincipalTrade</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>Trade Report: A principal transaction between a dealer and a dealer's customer's account. Printed in Trade Report only.</Description>
+        </Field>
+        <Field>
+          <Tag>6777</Tag>
+          <Name>WashTrade</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>Trade Report: A trade that has occurred between proprietary accounts of the same member firm. Printed in Trade Report only.</Description>
+        </Field>
+        <Field>
+          <Tag>6791</Tag>
+          <Name>Bypass</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>New Order Single Response, Order Cancel Acknowledgment, Trade Report: Will be returned if supplied in original New Order Single message. Printed in New Order Single Response, Order Cancel Acknowledgment, Trade Report only.</Description>
+        </Field>
+        <Field>
+          <Tag>6792</Tag>
+          <Name>TSXNCIB</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>New Order Single Response, Order Cancel Acknowledgment, Trade Report: Will be returned if supplied in original New Order Single message. Printed in New Order Single Response, Order Cancel Acknowledgment, Trade Report only.</Description>
+        </Field>
+        <Field>
+          <Tag>7729</Tag>
+          <Name>ShortMarkingExempt</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>Will be returned if supplied in original New Order Single message.</Description>
+        </Field>
+        <Field>
+          <Tag>7731</Tag>
+          <Name>SeekPriceImprovement</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>New Order Single Response, Order Cancel Acknowledgment, Trade Report: Trade with price improving hidden orders. Printed in New Order Single Response, Order Cancel Acknowledgment, Trade Report only.</Description>
+        </Field>
+        <Field>
+          <Tag>7733</Tag>
+          <Name>ExecuteMatch</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>Trade Report: Trade matched and suppressed due to no self-trade. Printed in Trade Report only.</Description>
+        </Field>
+        <Field>
+          <Tag>7737</Tag>
+          <Name>POComment</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Size>32</Size>
+          <Description>A free-form, pass-through tag provided for use by Participants. Maximum of 32 characters.</Description>
+        </Field>
+        <Field>
+          <Tag>8025</Tag>
+          <Name>CustomerAccount</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Size>20</Size>
+          <Description>New Order Single Response, Restatement, Trade Report: Account number for clients not eligible to obtain an LEI. 20 Alphanumeric. Printed in New Order Single Response, Restatement, Trade Report only.</Description>
+        </Field>
+        <Field>
+          <Tag>8026</Tag>
+          <Name>AlgorithmID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Size>20</Size>
+          <Description>New Order Single Response, Restatement, Trade Report: Unique identifier for the end-client (orders automatically generated on a predetermined basis). 20 Alphanumeric. Printed in New Order Single Response, Restatement, Trade Report only.</Description>
+        </Field>
+        <Field>
+          <Tag>8027</Tag>
+          <Name>CustomerLEI</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Size>52</Size>
+          <Description>New Order Single Response, Restatement, Trade Report: LEI for clients eligible to obtain an LEI including LEI of the foreign dealer equivalent (Encryption Required). 52 Alphanumeric. Printed in New Order Single Response, Restatement, Trade Report only.</Description>
+        </Field>
+        <Field>
+          <Tag>8028</Tag>
+          <Name>BrokerLEI</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Size>20</Size>
+          <Description>New Order Single Response, Restatement, Trade Report: Non-PO IIROC Dealer Member (Correspondent Broker). 20 Alphanumeric. Printed in New Order Single Response, Restatement, Trade Report only.</Description>
+        </Field>
+        <Field>
+          <Tag>8114</Tag>
+          <Name>RepriceReason</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>New Order Single Response: Populated with a reason code if the order is repriced. Printed in New Order Single Response only.</Description>
+        </Field>
+        <Field>
+          <Tag>8115</Tag>
+          <Name>NBBOSetter</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>New Order Single Response: The Order is an NBBO Setter. Printed in New Order Single Response only.</Description>
+        </Field>
+        <Field>
+          <Tag>8116</Tag>
+          <Name>BrokerPref</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>Trade Report: Trade matched due to broker preferencing. Printed in Trade Report only.</Description>
+        </Field>
+        <Field>
+          <Tag>9688</Tag>
+          <Name>OrigSendercompID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>SenderCompID of the original order entry session. (Drop copy only)</Description>
+        </Field>
+        <Field>
+          <Tag>9882</Tag>
+          <Name>TradeLiquidityIndicator</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>Order Cancel Acknowledgment: Liquidity indicator if the match would have occurred if not prevented when cancelled/replaced due to no-self trade. Trade Report: Liquidity indicator. Printed in Order Cancel Acknowledgment, Trade Report only.</Description>
+        </Field>
+        <Field>
+          <Tag>23012</Tag>
+          <Name>ConditionalOrder</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>New Order Single Response, Order Cancel Acknowledgment: CXD only. Restatement: R = Conditional order firm-up request. CXD PureStream only. Printed in New Order Single Response, Order Cancel Acknowledgment, Restatement only.</Description>
+        </Field>
+        <Field>
+          <Tag>23013</Tag>
+          <Name>AllowConditional</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>CXD PureStream SOK orders only.</Description>
+        </Field>
+        <Field>
+          <Tag>23014</Tag>
+          <Name>FirmUpID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>New Order Single Response, Order Cancel Acknowledgment: The FirmUpID received in a Conditional match. Restatement: Unique firm up ID for a Conditional match. Printed in New Order Single Response, Order Cancel Acknowledgment, Restatement only.</Description>
+        </Field>
+        <Field>
+          <Tag>23015</Tag>
+          <Name>CXDConnect</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>New Order Single Response, Restatement: CXD orders only. Order Cancel Acknowledgment: CXD orders only. (Req column blank in the PDF) Printed in New Order Single Response, Order Cancel Acknowledgment, Restatement only.</Description>
+        </Field>
+        <Field>
+          <Tag>23017</Tag>
+          <Name>PureStreamConnect</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>New Order Single Response: CXD Conditional orders only. (Req column blank in the PDF) Order Cancel Acknowledgment, Restatement: CXD Conditional orders only. Printed in New Order Single Response, Order Cancel Acknowledgment, Restatement only.</Description>
+        </Field>
+        <Field>
+          <Tag>27005</Tag>
+          <Name>MinRate</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Range>1 to 32767</Range>
+          <Description>Minimum rate for CXD PureStream Custom Reference Rate Range (847=1003) and LS (847=1004) orders. Specified in percent as integer (e.g. 5% should be sent as 27005=5). Default 1% if not specified (Min 1%, Max 32,767%). Must be less than or equal to MaxRate (27006).</Description>
+        </Field>
+        <Field>
+          <Tag>27006</Tag>
+          <Name>MaxRate</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Range>1 to 500</Range>
+          <Description>Required maximum rate for CXD PureStream Custom Reference Rate Range (847=1003) orders. Specified in percent as integer (e.g. 5% should be sent as 27005=5) (Min 1%, Max 500%). Must be greater than or equal to MinRate (27005).</Description>
+        </Field>
+        <Field>
+          <Tag>27014</Tag>
+          <Name>CumRate</Name>
+          <Required>N</Required>
+          <Type>Float</Type>
+          <Description>Restatement: The current cumulative streaming rate the order is achieving (includes multiple streams, if applicable). CXD PureStream Stream On messages only. Trade Report: The current cumulative streaming rate the order is achieving (includes multiple streams, if applicable). CXD PureStream only. Printed in Restatement, Trade Report only.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Order Cancel Reject (9) section 5.2.2.3 -->
+    <Message>
+      <Name>Order Cancel Reject</Name>
+      <MsgType>9</MsgType>
+      <Category>app</Category>
+      <Origin>Exchange</Origin>
+      <Description>Order Cancel and Cancel/Replace Reject, sent in response to an order cancel or cancel/replace request that is rejected.</Description>
+      <Fields>
+        <Field>
+          <Tag>11</Tag>
+          <Name>ClOrdID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Size>32</Size>
+          <Description>Nasdaq Canada will always populate this field with the value assigned by client in the Order Cancel or Cancel/Replace message. If the Cancel/Replace request is rejected, this is the ClOrdID of the replacement order.</Description>
+        </Field>
+        <Field>
+          <Tag>37</Tag>
+          <Name>OrderID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Nasdaq Canada order reference number.</Description>
+        </Field>
+        <Field>
+          <Tag>39</Tag>
+          <Name>OrdStatus</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>OrdStatus value after this cancel reject is applied.</Description>
+        </Field>
+        <Field>
+          <Tag>41</Tag>
+          <Name>OrigClOrdID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Size>32</Size>
+          <Description>Nasdaq Canada will always populate this field with the value assigned by client in the most recently accepted New Order Single or Order Cancel/Replace message.</Description>
+        </Field>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>The reason for the cancel reject.</Description>
+        </Field>
+        <Field>
+          <Tag>66</Tag>
+          <Name>ListID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Required for rejects against orders which were submitted as part of a list.</Description>
+        </Field>
+        <Field>
+          <Tag>434</Tag>
+          <Name>CxlRejResponseTo</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Type of request to which this is a response.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Market Participant Command Response (MR) section 5.4.2 -->
+    <Message>
+      <Name>Market Participant Command Response</Name>
+      <MsgType>MR</MsgType>
+      <Category>app</Category>
+      <Origin>Exchange</Origin>
+      <Description>Response to a Market Participant Command request.</Description>
+      <Fields>
+        <Field>
+          <Tag>54</Tag>
+          <Name>Side</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Values supported by Nasdaq Canada: 1 = Buy, 2 = Sell.</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Local/exchange symbol.</Description>
+        </Field>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>The reason for the Market Participant Command reject.</Description>
+        </Field>
+        <Field>
+          <Tag>150</Tag>
+          <Name>ExecType</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>0 = New, 8 = Rejected. If the Market Participant Command message is rejected, the GEF Member's commitment remains at the value set prior to the Market Participant Command message.</Description>
+        </Field>
+        <Field>
+          <Tag>6751</Tag>
+          <Name>UMIRUserID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Required for Canadian regulatory reporting, the trading system's user ID for the trader.</Description>
+        </Field>
+        <Field>
+          <Tag>6789</Tag>
+          <Name>PartCommandID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Size>32</Size>
+          <Description>Unique identifier assigned by the GEF Member to the message.</Description>
+        </Field>
+        <Field>
+          <Tag>6799</Tag>
+          <Name>GEFCommitVolume</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>The size (shares) of the GEF Member's commitment for auto-executions.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+  </Messages>
+
+  <Groups>
+
+    <!-- NoContraBrokers (382) Trade Report: number of brokers on the opposite side of a trade, always set to 1; not populated if the contra order is anonymous -->
+    <Group>
+      <Name>NoContraBrokers</Name>
+      <AnchorTag>382</AnchorTag>
+      <Fields>
+        <Field>
+          <Tag>375</Tag>
+          <Name>ContraBroker</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>TSX Broker Number on the opposite side of trade. Will not be populated if contra order is anonymous.</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+  </Groups>
+
+  <Values>
+
+    <!-- BeginString (8) -->
+    <Value>
+      <Type>BeginString</Type>
+      <Enum>FIX.4.2</Enum>
+      <Kind>Static</Kind>
+      <Description>FIX.4.2</Description>
+    </Value>
+
+    <!-- MsgType (35) -->
+    <Value>
+      <Type>MsgType</Type>
+      <Enum>0</Enum>
+      <Description>Heartbeat</Description>
+    </Value>
+    <Value>
+      <Type>MsgType</Type>
+      <Enum>1</Enum>
+      <Description>Test Request</Description>
+    </Value>
+    <Value>
+      <Type>MsgType</Type>
+      <Enum>2</Enum>
+      <Description>Resend Request</Description>
+    </Value>
+    <Value>
+      <Type>MsgType</Type>
+      <Enum>3</Enum>
+      <Description>Reject</Description>
+    </Value>
+    <Value>
+      <Type>MsgType</Type>
+      <Enum>4</Enum>
+      <Description>Sequence Reset</Description>
+    </Value>
+    <Value>
+      <Type>MsgType</Type>
+      <Enum>5</Enum>
+      <Description>Logout</Description>
+    </Value>
+    <Value>
+      <Type>MsgType</Type>
+      <Enum>8</Enum>
+      <Description>Execution Report</Description>
+    </Value>
+    <Value>
+      <Type>MsgType</Type>
+      <Enum>9</Enum>
+      <Description>Order Cancel Reject</Description>
+    </Value>
+    <Value>
+      <Type>MsgType</Type>
+      <Enum>A</Enum>
+      <Description>Logon</Description>
+    </Value>
+    <Value>
+      <Type>MsgType</Type>
+      <Enum>D</Enum>
+      <Description>New Order Single</Description>
+    </Value>
+    <Value>
+      <Type>MsgType</Type>
+      <Enum>F</Enum>
+      <Description>Order Cancel Request</Description>
+    </Value>
+    <Value>
+      <Type>MsgType</Type>
+      <Enum>G</Enum>
+      <Description>Order Cancel/Replace Request</Description>
+    </Value>
+    <Value>
+      <Type>MsgType</Type>
+      <Enum>MC</Enum>
+      <Description>Market Participant Command</Description>
+    </Value>
+    <Value>
+      <Type>MsgType</Type>
+      <Enum>MR</Enum>
+      <Description>Market Participant Command Response</Description>
+    </Value>
+
+    <!-- ExecInst (18) -->
+    <Value>
+      <Type>ExecInst</Type>
+      <Enum>G</Enum>
+      <Description>All or None (AON)</Description>
+    </Value>
+    <Value>
+      <Type>ExecInst</Type>
+      <Enum>P</Enum>
+      <Description>Market Peg</Description>
+    </Value>
+    <Value>
+      <Type>ExecInst</Type>
+      <Enum>M</Enum>
+      <Description>Mid-price Peg</Description>
+    </Value>
+    <Value>
+      <Type>ExecInst</Type>
+      <Enum>L</Enum>
+      <Description>M-ELO (CXC only)</Description>
+    </Value>
+    <Value>
+      <Type>ExecInst</Type>
+      <Enum>R</Enum>
+      <Description>Primary Peg</Description>
+    </Value>
+    <Value>
+      <Type>ExecInst</Type>
+      <Enum>f</Enum>
+      <Description>DAO (Not supported on CXD)</Description>
+    </Value>
+    <Value>
+      <Type>ExecInst</Type>
+      <Enum>m</Enum>
+      <Description>Minimum Acceptable Quantity - At the Touch (CXD only) (requires tag 110 and TimeInForce (59) = 3)</Description>
+    </Value>
+    <Value>
+      <Type>ExecInst</Type>
+      <Enum>t</Enum>
+      <Description>Minimum Quantity - At the Touch (CXD only) (requires tag 110 and TimeInForce (59) = 3)</Description>
+    </Value>
+    <Value>
+      <Type>ExecInst</Type>
+      <Enum>x</Enum>
+      <Description>Minimum Price Improvement</Description>
+    </Value>
+    <Value>
+      <Type>ExecInst</Type>
+      <Enum>z</Enum>
+      <Description>Minimum Quantity (MQ) (tag 110 required)</Description>
+    </Value>
+    <Value>
+      <Type>ExecInst</Type>
+      <Enum>o</Enum>
+      <Description>Odd Lot Liquidity Providing (OLP) (CXD Only)</Description>
+    </Value>
+
+    <!-- HandlInst (21) -->
+    <Value>
+      <Type>HandlInst</Type>
+      <Enum>1</Enum>
+      <Description>OPR Reprice (as printed for orders and execution reports); on Cross orders: Automated execution order, private, no Broker intervention</Description>
+    </Value>
+    <Value>
+      <Type>HandlInst</Type>
+      <Enum>5</Enum>
+      <Description>OPR Cancel</Description>
+    </Value>
+    <Value>
+      <Type>HandlInst</Type>
+      <Enum>6</Enum>
+      <Description>OPR Reprice</Description>
+    </Value>
+
+    <!-- OrdType (40) -->
+    <Value>
+      <Type>OrdType</Type>
+      <Enum>1</Enum>
+      <Description>Market</Description>
+    </Value>
+    <Value>
+      <Type>OrdType</Type>
+      <Enum>2</Enum>
+      <Description>Limit</Description>
+    </Value>
+    <Value>
+      <Type>OrdType</Type>
+      <Enum>5</Enum>
+      <Description>Market On Close (requires TimeInForce (59) = 0)</Description>
+    </Value>
+    <Value>
+      <Type>OrdType</Type>
+      <Enum>B</Enum>
+      <Description>Limit On Close (SOR only)</Description>
+    </Value>
+    <Value>
+      <Type>OrdType</Type>
+      <Enum>P</Enum>
+      <Description>Pegged (requires ExecInst of M, R, P or x)</Description>
+    </Value>
+
+    <!-- Side (54) -->
+    <Value>
+      <Type>Side</Type>
+      <Enum>1</Enum>
+      <Description>Buy</Description>
+    </Value>
+    <Value>
+      <Type>Side</Type>
+      <Enum>2</Enum>
+      <Description>Sell</Description>
+    </Value>
+    <Value>
+      <Type>Side</Type>
+      <Enum>5</Enum>
+      <Description>Sell short</Description>
+    </Value>
+    <Value>
+      <Type>Side</Type>
+      <Enum>8</Enum>
+      <Description>Cross</Description>
+    </Value>
+    <Value>
+      <Type>Side</Type>
+      <Enum>9</Enum>
+      <Description>Cross Short</Description>
+    </Value>
+
+    <!-- TimeInForce (59) -->
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>0</Enum>
+      <Description>Day (Default)</Description>
+    </Value>
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>1</Enum>
+      <Description>Good Till Cancel (GTC) - Treated as a Day Order and will expire at end of the day</Description>
+    </Value>
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>2</Enum>
+      <Description>At the Opening (OPG) - Treated as a Day Order and will expire at end of the day</Description>
+    </Value>
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>3</Enum>
+      <Description>Immediate or Cancel - As much of the order as possible must be executed immediately; any part not executed immediately gets canceled</Description>
+    </Value>
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>4</Enum>
+      <Description>Fill Or Kill (FOK) - Fill the order in its entirety or cancel it immediately</Description>
+    </Value>
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>6</Enum>
+      <Description>Good Till Date (GTD) - Date must be today's trading date; used in conjunction with ExpireTime (126)</Description>
+    </Value>
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>7</Enum>
+      <Description>At The Close - Requires OrdType (40) = 1 for MOC or OrdType (40) = 2 for LOC; cannot be combined with OrdType (40) = 5 or B. LOC orders are routed to the TSX when using the Nasdaq Canada SOR</Description>
+    </Value>
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>8</Enum>
+      <Description>Stream Or Kill (SOK) - Order is paired in a stream immediately or is cancelled (CXD PureStream only)</Description>
+    </Value>
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>P</Enum>
+      <Description>Post-Only Order</Description>
+    </Value>
+
+    <!-- ExDestination (100) -->
+    <Value>
+      <Type>ExDestination</Type>
+      <Enum>CHIX</Enum>
+      <Description>Route to CHIX</Description>
+    </Value>
+    <Value>
+      <Type>ExDestination</Type>
+      <Enum>CX2</Enum>
+      <Description>Route to CX2 (Default for Market Participant Command)</Description>
+    </Value>
+    <Value>
+      <Type>ExDestination</Type>
+      <Enum>CXD</Enum>
+      <Description>Route to CXD</Description>
+    </Value>
+
+    <!-- TargetStrategy (847) -->
+    <Value>
+      <Type>TargetStrategy</Type>
+      <Enum>1000</Enum>
+      <Description>Reference Rate Range of 5-15%</Description>
+    </Value>
+    <Value>
+      <Type>TargetStrategy</Type>
+      <Enum>1001</Enum>
+      <Description>Reference Rate Range of 5-30%</Description>
+    </Value>
+    <Value>
+      <Type>TargetStrategy</Type>
+      <Enum>1002</Enum>
+      <Description>Mach2 Reference Rate Range of 10-200%</Description>
+    </Value>
+    <Value>
+      <Type>TargetStrategy</Type>
+      <Enum>1003</Enum>
+      <Description>Custom Reference Rate Range of X-Y%</Description>
+    </Value>
+    <Value>
+      <Type>TargetStrategy</Type>
+      <Enum>1004</Enum>
+      <Description>Liquidity Seeking (LS) Unrestrained Reference Rate Range (listed in the Trade Report table only)</Description>
+    </Value>
+
+    <!-- OrderOrigination (1724) -->
+    <Value>
+      <Type>OrderOrigination</Type>
+      <Enum>5</Enum>
+      <Description>Order received from a direct access customer (DEA)</Description>
+    </Value>
+    <Value>
+      <Type>OrderOrigination</Type>
+      <Enum>6</Enum>
+      <Description>Order received from a foreign dealer equivalent (FDE)</Description>
+    </Value>
+    <Value>
+      <Type>OrderOrigination</Type>
+      <Enum>7</Enum>
+      <Description>Order received from an execution-only service (OEO)</Description>
+    </Value>
+
+    <!-- BuyOrderOrigination (20209) -->
+    <Value>
+      <Type>BuyOrderOrigination</Type>
+      <Enum>5</Enum>
+      <Description>Order received from a direct access customer (DEA)</Description>
+    </Value>
+    <Value>
+      <Type>BuyOrderOrigination</Type>
+      <Enum>6</Enum>
+      <Description>Order received from a foreign dealer equivalent (FDE)</Description>
+    </Value>
+    <Value>
+      <Type>BuyOrderOrigination</Type>
+      <Enum>7</Enum>
+      <Description>Order received from an execution-only service (OEO)</Description>
+    </Value>
+
+    <!-- SellOrderOrigination (20210) -->
+    <Value>
+      <Type>SellOrderOrigination</Type>
+      <Enum>5</Enum>
+      <Description>Order received from a direct access customer (DEA)</Description>
+    </Value>
+    <Value>
+      <Type>SellOrderOrigination</Type>
+      <Enum>6</Enum>
+      <Description>Order received from a foreign dealer equivalent (FDE)</Description>
+    </Value>
+    <Value>
+      <Type>SellOrderOrigination</Type>
+      <Enum>7</Enum>
+      <Description>Order received from an execution-only service (OEO)</Description>
+    </Value>
+
+    <!-- RoutingArrangementIndicator (2883) -->
+    <Value>
+      <Type>RoutingArrangementIndicator</Type>
+      <Enum>0</Enum>
+      <Description>No routing arrangement in place</Description>
+    </Value>
+    <Value>
+      <Type>RoutingArrangementIndicator</Type>
+      <Enum>1</Enum>
+      <Description>Routing arrangement in place</Description>
+    </Value>
+
+    <!-- BuyRoutingArrangementIndicator (20211) -->
+    <Value>
+      <Type>BuyRoutingArrangementIndicator</Type>
+      <Enum>0</Enum>
+      <Description>No routing arrangement in place</Description>
+    </Value>
+    <Value>
+      <Type>BuyRoutingArrangementIndicator</Type>
+      <Enum>1</Enum>
+      <Description>Routing arrangement in place</Description>
+    </Value>
+
+    <!-- SellRoutingArrangementIndicator (20212) -->
+    <Value>
+      <Type>SellRoutingArrangementIndicator</Type>
+      <Enum>0</Enum>
+      <Description>No routing arrangement in place</Description>
+    </Value>
+    <Value>
+      <Type>SellRoutingArrangementIndicator</Type>
+      <Enum>1</Enum>
+      <Description>Routing arrangement in place</Description>
+    </Value>
+
+    <!-- UMIRAccountType (6750) -->
+    <Value>
+      <Type>UMIRAccountType</Type>
+      <Enum>CL</Enum>
+      <Description>Client (Default)</Description>
+    </Value>
+    <Value>
+      <Type>UMIRAccountType</Type>
+      <Enum>NC</Enum>
+      <Description>Non-Client</Description>
+    </Value>
+    <Value>
+      <Type>UMIRAccountType</Type>
+      <Enum>ST</Enum>
+      <Description>Specialist</Description>
+    </Value>
+    <Value>
+      <Type>UMIRAccountType</Type>
+      <Enum>IN</Enum>
+      <Description>Inventory</Description>
+    </Value>
+    <Value>
+      <Type>UMIRAccountType</Type>
+      <Enum>OF</Enum>
+      <Description>Options firm account</Description>
+    </Value>
+    <Value>
+      <Type>UMIRAccountType</Type>
+      <Enum>OT</Enum>
+      <Description>Options market maker</Description>
+    </Value>
+    <Value>
+      <Type>UMIRAccountType</Type>
+      <Enum>BU</Enum>
+      <Description>Bundled</Description>
+    </Value>
+    <Value>
+      <Type>UMIRAccountType</Type>
+      <Enum>MC</Enum>
+      <Description>Multiple Clients</Description>
+    </Value>
+
+    <!-- CHIXBuyAccountType (6767) -->
+    <Value>
+      <Type>CHIXBuyAccountType</Type>
+      <Enum>CL</Enum>
+      <Description>Client (Default)</Description>
+    </Value>
+    <Value>
+      <Type>CHIXBuyAccountType</Type>
+      <Enum>NC</Enum>
+      <Description>Non-Client</Description>
+    </Value>
+    <Value>
+      <Type>CHIXBuyAccountType</Type>
+      <Enum>ST</Enum>
+      <Description>Specialist</Description>
+    </Value>
+    <Value>
+      <Type>CHIXBuyAccountType</Type>
+      <Enum>IN</Enum>
+      <Description>Inventory</Description>
+    </Value>
+    <Value>
+      <Type>CHIXBuyAccountType</Type>
+      <Enum>OF</Enum>
+      <Description>Options firm account</Description>
+    </Value>
+    <Value>
+      <Type>CHIXBuyAccountType</Type>
+      <Enum>OT</Enum>
+      <Description>Options market maker</Description>
+    </Value>
+    <Value>
+      <Type>CHIXBuyAccountType</Type>
+      <Enum>BU</Enum>
+      <Description>Bundled</Description>
+    </Value>
+    <Value>
+      <Type>CHIXBuyAccountType</Type>
+      <Enum>MC</Enum>
+      <Description>Multiple Clients</Description>
+    </Value>
+
+    <!-- CHIXSellAccountType (6768) -->
+    <Value>
+      <Type>CHIXSellAccountType</Type>
+      <Enum>CL</Enum>
+      <Description>Client (Default)</Description>
+    </Value>
+    <Value>
+      <Type>CHIXSellAccountType</Type>
+      <Enum>NC</Enum>
+      <Description>Non-Client</Description>
+    </Value>
+    <Value>
+      <Type>CHIXSellAccountType</Type>
+      <Enum>ST</Enum>
+      <Description>Specialist</Description>
+    </Value>
+    <Value>
+      <Type>CHIXSellAccountType</Type>
+      <Enum>IN</Enum>
+      <Description>Inventory</Description>
+    </Value>
+    <Value>
+      <Type>CHIXSellAccountType</Type>
+      <Enum>OF</Enum>
+      <Description>Options firm account</Description>
+    </Value>
+    <Value>
+      <Type>CHIXSellAccountType</Type>
+      <Enum>OT</Enum>
+      <Description>Options market maker</Description>
+    </Value>
+    <Value>
+      <Type>CHIXSellAccountType</Type>
+      <Enum>BU</Enum>
+      <Description>Bundled</Description>
+    </Value>
+    <Value>
+      <Type>CHIXSellAccountType</Type>
+      <Enum>MC</Enum>
+      <Description>Multiple Clients</Description>
+    </Value>
+
+    <!-- UMIRRegulationID (6763) -->
+    <Value>
+      <Type>UMIRRegulationID</Type>
+      <Enum>IA</Enum>
+      <Description>Insider Account</Description>
+    </Value>
+    <Value>
+      <Type>UMIRRegulationID</Type>
+      <Enum>NA</Enum>
+      <Description>Not Applicable</Description>
+    </Value>
+    <Value>
+      <Type>UMIRRegulationID</Type>
+      <Enum>SS</Enum>
+      <Description>Significant Shareholder</Description>
+    </Value>
+
+    <!-- CHIXBuyRegulationID (6771) -->
+    <Value>
+      <Type>CHIXBuyRegulationID</Type>
+      <Enum>IA</Enum>
+      <Description>Insider Account</Description>
+    </Value>
+    <Value>
+      <Type>CHIXBuyRegulationID</Type>
+      <Enum>NA</Enum>
+      <Description>Not Applicable</Description>
+    </Value>
+    <Value>
+      <Type>CHIXBuyRegulationID</Type>
+      <Enum>SS</Enum>
+      <Description>Significant Shareholder</Description>
+    </Value>
+
+    <!-- CHIXSellRegulationID (6772) -->
+    <Value>
+      <Type>CHIXSellRegulationID</Type>
+      <Enum>IA</Enum>
+      <Description>Insider Account</Description>
+    </Value>
+    <Value>
+      <Type>CHIXSellRegulationID</Type>
+      <Enum>NA</Enum>
+      <Description>Not Applicable</Description>
+    </Value>
+    <Value>
+      <Type>CHIXSellRegulationID</Type>
+      <Enum>SS</Enum>
+      <Description>Significant Shareholder</Description>
+    </Value>
+
+    <!-- BasketTrade (6754) -->
+    <Value>
+      <Type>BasketTrade</Type>
+      <Enum>N</Enum>
+      <Description>No (Default); otherwise a 1 to 5 digit Basket Number</Description>
+    </Value>
+
+    <!-- ProgramTrade (6755) -->
+    <Value>
+      <Type>ProgramTrade</Type>
+      <Enum>Y</Enum>
+      <Description>Yes</Description>
+    </Value>
+    <Value>
+      <Type>ProgramTrade</Type>
+      <Enum>N</Enum>
+      <Description>No (Default)</Description>
+    </Value>
+
+    <!-- Anonymous (6761) -->
+    <Value>
+      <Type>Anonymous</Type>
+      <Enum>Y</Enum>
+      <Description>Yes</Description>
+    </Value>
+    <Value>
+      <Type>Anonymous</Type>
+      <Enum>N</Enum>
+      <Description>No (Default)</Description>
+    </Value>
+
+    <!-- Bypass (6791) -->
+    <Value>
+      <Type>Bypass</Type>
+      <Enum>Y</Enum>
+      <Description>Yes</Description>
+    </Value>
+    <Value>
+      <Type>Bypass</Type>
+      <Enum>N</Enum>
+      <Description>No (Default)</Description>
+    </Value>
+
+    <!-- TSXNCIB (6792) -->
+    <Value>
+      <Type>TSXNCIB</Type>
+      <Enum>Y</Enum>
+      <Description>Yes</Description>
+    </Value>
+    <Value>
+      <Type>TSXNCIB</Type>
+      <Enum>N</Enum>
+      <Description>No (No default)</Description>
+    </Value>
+
+    <!-- GEFEligible (6759) -->
+    <Value>
+      <Type>GEFEligible</Type>
+      <Enum>Y</Enum>
+      <Description>Order is GEF eligible</Description>
+    </Value>
+
+    <!-- NoTradeFeat (7713) -->
+    <Value>
+      <Type>NoTradeFeat</Type>
+      <Enum>NM</Enum>
+      <Description>Cancel newest order (the active order is cancelled) (Default); self-trade prevention at broker level</Description>
+    </Value>
+    <Value>
+      <Type>NoTradeFeat</Type>
+      <Enum>NB</Enum>
+      <Description>Cancel newest order (the active order is cancelled) (Default); self-trade prevention at broker level</Description>
+    </Value>
+    <Value>
+      <Type>NoTradeFeat</Type>
+      <Enum>OM</Enum>
+      <Description>Cancel oldest order (the resting order is cancelled and the new order is allowed to book); self-trade prevention at broker level</Description>
+    </Value>
+    <Value>
+      <Type>NoTradeFeat</Type>
+      <Enum>OB</Enum>
+      <Description>Cancel oldest order (the resting order is cancelled and the new order is allowed to book); self-trade prevention at broker level</Description>
+    </Value>
+    <Value>
+      <Type>NoTradeFeat</Type>
+      <Enum>DM</Enum>
+      <Description>Decrement and Cancel (the quantity of the larger order is reduced, and the smaller order(s) are cancelled); self-trade prevention at broker level</Description>
+    </Value>
+    <Value>
+      <Type>NoTradeFeat</Type>
+      <Enum>DB</Enum>
+      <Description>Decrement and Cancel (the quantity of the larger order is reduced, and the smaller order(s) are cancelled); self-trade prevention at broker level</Description>
+    </Value>
+    <Value>
+      <Type>NoTradeFeat</Type>
+      <Enum>EM</Enum>
+      <Description>Execute trade (trade is suppressed on public market data feed; ExecuteMatch (7733) is returned on the trade report); self-trade prevention at broker level</Description>
+    </Value>
+    <Value>
+      <Type>NoTradeFeat</Type>
+      <Enum>EB</Enum>
+      <Description>Execute trade (trade is suppressed on public market data feed; ExecuteMatch (7733) is returned on the trade report); self-trade prevention at broker level</Description>
+    </Value>
+
+    <!-- ShortMarkingExempt (7729) -->
+    <Value>
+      <Type>ShortMarkingExempt</Type>
+      <Enum>0</Enum>
+      <Description>SME (single orders)</Description>
+    </Value>
+    <Value>
+      <Type>ShortMarkingExempt</Type>
+      <Enum>1</Enum>
+      <Description>Buy SME (Cross orders)</Description>
+    </Value>
+    <Value>
+      <Type>ShortMarkingExempt</Type>
+      <Enum>2</Enum>
+      <Description>Sell SME (Cross orders)</Description>
+    </Value>
+    <Value>
+      <Type>ShortMarkingExempt</Type>
+      <Enum>3</Enum>
+      <Description>Both buy and sell SME (Cross orders)</Description>
+    </Value>
+
+    <!-- SeekPriceImprovement (7731) -->
+    <Value>
+      <Type>SeekPriceImprovement</Type>
+      <Enum>1</Enum>
+      <Description>Trade with price improving hidden orders (order must be immediate or cancel)</Description>
+    </Value>
+
+    <!-- ExecTransType (20) -->
+    <Value>
+      <Type>ExecTransType</Type>
+      <Enum>0</Enum>
+      <Description>New</Description>
+    </Value>
+    <Value>
+      <Type>ExecTransType</Type>
+      <Enum>1</Enum>
+      <Description>Cancel (printed as Cancelled on the Restatement)</Description>
+    </Value>
+    <Value>
+      <Type>ExecTransType</Type>
+      <Enum>2</Enum>
+      <Description>Correct</Description>
+    </Value>
+    <Value>
+      <Type>ExecTransType</Type>
+      <Enum>3</Enum>
+      <Description>Status</Description>
+    </Value>
+
+    <!-- SecurityIDSource (22) -->
+    <Value>
+      <Type>SecurityIDSource</Type>
+      <Enum>1</Enum>
+      <Description>CUSIP</Description>
+    </Value>
+
+    <!-- OrdStatus (39) -->
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>0</Enum>
+      <Description>New</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>1</Enum>
+      <Description>Partially filled</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>2</Enum>
+      <Description>Filled</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>4</Enum>
+      <Description>Cancelled</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>5</Enum>
+      <Description>Replaced</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>8</Enum>
+      <Description>Rejected</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>O</Enum>
+      <Description>Stream On</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>X</Enum>
+      <Description>Stream Off</Description>
+    </Value>
+
+    <!-- ExecType (150) -->
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>0</Enum>
+      <Description>New</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>1</Enum>
+      <Description>Partially filled</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>2</Enum>
+      <Description>Filled</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>4</Enum>
+      <Description>Cancelled</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>5</Enum>
+      <Description>Replaced</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>8</Enum>
+      <Description>Rejected</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>D</Enum>
+      <Description>Restated</Description>
+    </Value>
+
+    <!-- SettlType (63) -->
+    <Value>
+      <Type>SettlType</Type>
+      <Enum>1</Enum>
+      <Description>Cash (T+0)</Description>
+    </Value>
+    <Value>
+      <Type>SettlType</Type>
+      <Enum>6</Enum>
+      <Description>Future (used in combination with SettlDate (64))</Description>
+    </Value>
+
+    <!-- ExecBroker (76) -->
+    <Value>
+      <Type>ExecBroker</Type>
+      <Enum>CHIX</Enum>
+      <Description>CHIX</Description>
+    </Value>
+    <Value>
+      <Type>ExecBroker</Type>
+      <Enum>CX2</Enum>
+      <Description>CX2</Description>
+    </Value>
+    <Value>
+      <Type>ExecBroker</Type>
+      <Enum>CXD</Enum>
+      <Description>CXD</Description>
+    </Value>
+    <Value>
+      <Type>ExecBroker</Type>
+      <Enum>TSX</Enum>
+      <Description>TSX</Description>
+    </Value>
+    <Value>
+      <Type>ExecBroker</Type>
+      <Enum>PURE</Enum>
+      <Description>PURE</Description>
+    </Value>
+    <Value>
+      <Type>ExecBroker</Type>
+      <Enum>ALPH</Enum>
+      <Description>ALPH</Description>
+    </Value>
+    <Value>
+      <Type>ExecBroker</Type>
+      <Enum>MATCH</Enum>
+      <Description>MATCH</Description>
+    </Value>
+    <Value>
+      <Type>ExecBroker</Type>
+      <Enum>OMGA</Enum>
+      <Description>OMGA</Description>
+    </Value>
+    <Value>
+      <Type>ExecBroker</Type>
+      <Enum>LYNX</Enum>
+      <Description>LYNX</Description>
+    </Value>
+    <Value>
+      <Type>ExecBroker</Type>
+      <Enum>AEQN</Enum>
+      <Description>AEQN</Description>
+    </Value>
+    <Value>
+      <Type>ExecBroker</Type>
+      <Enum>AEQL</Enum>
+      <Description>AEQL</Description>
+    </Value>
+    <Value>
+      <Type>ExecBroker</Type>
+      <Enum>CSE2</Enum>
+      <Description>CSE2</Description>
+    </Value>
+    <Value>
+      <Type>ExecBroker</Type>
+      <Enum>ALPX</Enum>
+      <Description>ALPX</Description>
+    </Value>
+    <Value>
+      <Type>ExecBroker</Type>
+      <Enum>ALPD</Enum>
+      <Description>ALPD</Description>
+    </Value>
+
+    <!-- RepriceReason (8114) -->
+    <Value>
+      <Type>RepriceReason</Type>
+      <Enum>1</Enum>
+      <Description>Repriced to prevent trade</Description>
+    </Value>
+    <Value>
+      <Type>RepriceReason</Type>
+      <Enum>2</Enum>
+      <Description>Repriced to prevent lock</Description>
+    </Value>
+    <Value>
+      <Type>RepriceReason</Type>
+      <Enum>3</Enum>
+      <Description>Repriced to prevent cross</Description>
+    </Value>
+    <Value>
+      <Type>RepriceReason</Type>
+      <Enum>4</Enum>
+      <Description>Repriced for Marketplace Thresholds</Description>
+    </Value>
+
+    <!-- NBBOSetter (8115) -->
+    <Value>
+      <Type>NBBOSetter</Type>
+      <Enum>Y</Enum>
+      <Description>Order is NBBO Setter</Description>
+    </Value>
+
+    <!-- TradeLiquidityIndicator (9882) -->
+    <Value>
+      <Type>TradeLiquidityIndicator</Type>
+      <Enum>A</Enum>
+      <Description>Order added liquidity</Description>
+    </Value>
+    <Value>
+      <Type>TradeLiquidityIndicator</Type>
+      <Enum>R</Enum>
+      <Description>Order removed liquidity</Description>
+    </Value>
+    <Value>
+      <Type>TradeLiquidityIndicator</Type>
+      <Enum>a</Enum>
+      <Description>Order added hidden liquidity</Description>
+    </Value>
+    <Value>
+      <Type>TradeLiquidityIndicator</Type>
+      <Enum>r</Enum>
+      <Description>Order removed hidden liquidity</Description>
+    </Value>
+    <Value>
+      <Type>TradeLiquidityIndicator</Type>
+      <Enum>d</Enum>
+      <Description>Order added hidden liquidity at-the-touch</Description>
+    </Value>
+    <Value>
+      <Type>TradeLiquidityIndicator</Type>
+      <Enum>D</Enum>
+      <Description>Order removed hidden liquidity at-the-touch</Description>
+    </Value>
+    <Value>
+      <Type>TradeLiquidityIndicator</Type>
+      <Enum>g</Enum>
+      <Description>Order added GEF liquidity</Description>
+    </Value>
+    <Value>
+      <Type>TradeLiquidityIndicator</Type>
+      <Enum>G</Enum>
+      <Description>Order removed GEF liquidity</Description>
+    </Value>
+    <Value>
+      <Type>TradeLiquidityIndicator</Type>
+      <Enum>C</Enum>
+      <Description>Market On Close</Description>
+    </Value>
+    <Value>
+      <Type>TradeLiquidityIndicator</Type>
+      <Enum>S</Enum>
+      <Description>Displayed, liquidity-adding order improves the NBBO</Description>
+    </Value>
+    <Value>
+      <Type>TradeLiquidityIndicator</Type>
+      <Enum>O</Enum>
+      <Description>Opening/Closing Auction</Description>
+    </Value>
+    <Value>
+      <Type>TradeLiquidityIndicator</Type>
+      <Enum>E</Enum>
+      <Description>Last Sale Trading Session (TSX/TSXV)</Description>
+    </Value>
+    <Value>
+      <Type>TradeLiquidityIndicator</Type>
+      <Enum>L</Enum>
+      <Description>M-ELO</Description>
+    </Value>
+    <Value>
+      <Type>TradeLiquidityIndicator</Type>
+      <Enum>P</Enum>
+      <Description>CXD PureStream rate-based execution</Description>
+    </Value>
+    <Value>
+      <Type>TradeLiquidityIndicator</Type>
+      <Enum>M</Enum>
+      <Description>CXD Conditional mid-point block (Order Cancel Acknowledgment: CXD PureStream LS mid-point block removed liquidity)</Description>
+    </Value>
+    <Value>
+      <Type>TradeLiquidityIndicator</Type>
+      <Enum>X</Enum>
+      <Description>Intentional Cross Trade</Description>
+    </Value>
+    <Value>
+      <Type>TradeLiquidityIndicator</Type>
+      <Enum>F</Enum>
+      <Description>XFT</Description>
+    </Value>
+
+    <!-- SecurityExchange (207) -->
+    <Value>
+      <Type>SecurityExchange</Type>
+      <Enum>XTSE</Enum>
+      <Description>TSX</Description>
+    </Value>
+    <Value>
+      <Type>SecurityExchange</Type>
+      <Enum>XTSX</Enum>
+      <Description>TSX Venture</Description>
+    </Value>
+    <Value>
+      <Type>SecurityExchange</Type>
+      <Enum>XCNQ</Enum>
+      <Description>CSE</Description>
+    </Value>
+    <Value>
+      <Type>SecurityExchange</Type>
+      <Enum>NEOE</Enum>
+      <Description>Neo</Description>
+    </Value>
+
+    <!-- PrincipalTrade (6776) -->
+    <Value>
+      <Type>PrincipalTrade</Type>
+      <Enum>Y</Enum>
+      <Description>Yes</Description>
+    </Value>
+
+    <!-- WashTrade (6777) -->
+    <Value>
+      <Type>WashTrade</Type>
+      <Enum>Y</Enum>
+      <Description>Yes</Description>
+    </Value>
+
+    <!-- ExecuteMatch (7733) -->
+    <Value>
+      <Type>ExecuteMatch</Type>
+      <Enum>Y</Enum>
+      <Description>Yes</Description>
+    </Value>
+
+    <!-- BrokerPref (8116) -->
+    <Value>
+      <Type>BrokerPref</Type>
+      <Enum>Y</Enum>
+      <Description>Yes</Description>
+    </Value>
+
+    <!-- CxlRejResponseTo (434) -->
+    <Value>
+      <Type>CxlRejResponseTo</Type>
+      <Enum>1</Enum>
+      <Description>Order Cancel Request</Description>
+    </Value>
+    <Value>
+      <Type>CxlRejResponseTo</Type>
+      <Enum>2</Enum>
+      <Description>Order Cancel/Replace Request</Description>
+    </Value>
+
+    <!-- CrossType (6773) -->
+    <Value>
+      <Type>CrossType</Type>
+      <Enum>I</Enum>
+      <Description>Internal</Description>
+    </Value>
+    <Value>
+      <Type>CrossType</Type>
+      <Enum>C</Enum>
+      <Description>Contingent</Description>
+    </Value>
+    <Value>
+      <Type>CrossType</Type>
+      <Enum>B</Enum>
+      <Description>Basis</Description>
+    </Value>
+    <Value>
+      <Type>CrossType</Type>
+      <Enum>V</Enum>
+      <Description>VWAP</Description>
+    </Value>
+    <Value>
+      <Type>CrossType</Type>
+      <Enum>D</Enum>
+      <Description>Derivative Related</Description>
+    </Value>
+    <Value>
+      <Type>CrossType</Type>
+      <Enum>N</Enum>
+      <Description>Net Asset Value (NAV)</Description>
+    </Value>
+
+    <!-- FacilitationSide (20051) -->
+    <Value>
+      <Type>FacilitationSide</Type>
+      <Enum>1</Enum>
+      <Description>Buy</Description>
+    </Value>
+    <Value>
+      <Type>FacilitationSide</Type>
+      <Enum>2</Enum>
+      <Description>Sell</Description>
+    </Value>
+
+    <!-- ConditionalOrder (23012) -->
+    <Value>
+      <Type>ConditionalOrder</Type>
+      <Enum>C</Enum>
+      <Description>Conditional order</Description>
+    </Value>
+    <Value>
+      <Type>ConditionalOrder</Type>
+      <Enum>F</Enum>
+      <Description>Conditional order firm-up indicator</Description>
+    </Value>
+    <Value>
+      <Type>ConditionalOrder</Type>
+      <Enum>X</Enum>
+      <Description>eXtended Firm-up Time (XFT) order</Description>
+    </Value>
+    <Value>
+      <Type>ConditionalOrder</Type>
+      <Enum>R</Enum>
+      <Description>Conditional order firm-up request (Restatement, CXD PureStream only)</Description>
+    </Value>
+
+    <!-- AllowConditional (23013) -->
+    <Value>
+      <Type>AllowConditional</Type>
+      <Enum>Y</Enum>
+      <Description>Yes</Description>
+    </Value>
+    <Value>
+      <Type>AllowConditional</Type>
+      <Enum>N</Enum>
+      <Description>No (Default)</Description>
+    </Value>
+
+    <!-- CXDConnect (23015) -->
+    <Value>
+      <Type>CXDConnect</Type>
+      <Enum>Y</Enum>
+      <Description>Yes</Description>
+    </Value>
+    <Value>
+      <Type>CXDConnect</Type>
+      <Enum>N</Enum>
+      <Description>No (Default)</Description>
+    </Value>
+
+    <!-- PureStreamConnect (23017) -->
+    <Value>
+      <Type>PureStreamConnect</Type>
+      <Enum>Y</Enum>
+      <Description>Yes</Description>
+    </Value>
+    <Value>
+      <Type>PureStreamConnect</Type>
+      <Enum>N</Enum>
+      <Description>No (Default)</Description>
+    </Value>
+
+  </Values>
+
+</OmiFixPdf>

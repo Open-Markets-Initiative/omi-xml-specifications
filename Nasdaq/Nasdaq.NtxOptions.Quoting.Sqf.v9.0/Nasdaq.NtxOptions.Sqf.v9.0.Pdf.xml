@@ -1,0 +1,4259 @@
+<OmiItchNasdaqPdf>
+
+  <!--
+  Nasdaq Texas Options (NTX) copy of the all-markets Nasdaq options Specialized Quote Interface (SQF) 9.0 transcription
+  (Common/Options/Nasdaq.Options.Sqf.v9.0.Pdf.xml in its original form), leaving out what the document scopes to
+  other markets:
+    - Auction Type X (Flex): "available only for simple and complex Flex instruments on ISE"
+    - extended trading hours (MRX): Event Code R, P and D, Closing Type E
+  -->
+
+  <!--
+  Nasdaq Specialized Quote Interface (SQF), Version 9.0, North American Trading Services.
+
+  Transcribed from the extended trading hours edition Options_ETH_SQF.pdf (September 22, 2026), a
+  superset of the regular edition Options_SQF.pdf (August 2026) with identical offsets and lengths:
+  the ETH edition adds System Event Codes R, P and D and Closing Type E and clarifies that MessageID
+  is Binary in all messages. Covers Phlx, NOM, ISE, GEMX, MRX and NTX.
+
+  Every SQF message starts with a 2 character Message Type (Type/Subtype), carried by the SQF
+  SoupBinTCP 4.10 header (Sqf.SoupBin.Tcp.v4.1.Source.xml). Client requests are unsequenced data
+  packets; server messages are sequenced or unsequenced data packets as listed in section 8.2 and
+  the per message notes.
+
+  Types: Integer is unsigned big-endian binary; Price is a signed 4 byte integer with an implied
+  scale of 4; Price6 is a signed 8 byte integer with an implied scale of 6, transcribed as Integer 8
+  and made signed with scale -6 by the reference edits; MessageID and QuoteID are 8 byte Binary
+  (any combination of bits), carried as unsigned integers; Alpha/Alphanumeric are left-justified,
+  space padded. The Regular/Detailed reply variants of each quote block (QA/Qa, QM/Qm, QD/Qd) share
+  a layout and are declared once per message type.
+  -->
+
+  <Messages>
+
+    <!-- Notification Subscription Request (AB) section 5.1.1 -->
+    <Message>
+      <Name>Notification Subscription Request Message</Name>
+      <Dependency>Unsequenced Message Type</Dependency>
+      <Branch>Unsequenced Message</Branch>
+      <Code>AB</Code>
+      <Category>Application</Category>
+      <Description>Modifies the set of optional notification types delivered on the current session.</Description>
+      <Fields>
+        <Field>
+          <Name>Badge</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Participant identifier</Description>
+        </Field>
+        <Field>
+          <Name>MessageID</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Message ID. Binary data type: any combination of bits.</Description>
+        </Field>
+        <Field>
+          <Name>Subscription</Name>
+          <Type>Alphanumeric</Type>
+          <Size>24</Size>
+          <Description>A list of notification types to be included in the current session, 0 or more types padded with spaces on the right: U=Underlying Permission Notification, M=Opening Spread Multiplier Notification, F=MM Parameter Definition Notification, f=ActiveQP/Self-Replenishment Parameter Definition Notification, R=Rapid-Fire Configuration Notification (to be deprecated), H=Simple Instrument Trading Action, h=Complex Instrument Trading Action, A=Auction Notification, Z=Underlying and Instrument Purge Notifications (NU/ND), E=Market Reentry Notification, Q=Simple Quote Execution Notification, q=Complex Quote Execution Notification, e=Complex Quote Leg Execution Notification, O=Simple MSAR Notification, o=Complex MSAR Notification, L=Complex MSAR Leg Notification, I=Order Exposure Notification (Auction Notification for Order Exposure only)</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Notification Subscription Reply (Ab) section 5.1.2 -->
+    <Message>
+      <Name>Notification Subscription Reply Message</Name>
+      <Dependency>Server Unsequenced Message Type</Dependency>
+      <Branch>Server Unsequenced Message</Branch>
+      <Code>Ab</Code>
+      <Category>Application</Category>
+      <Description>Reply to a Notification Subscription Request. Unsequenced.</Description>
+      <Fields>
+        <Field>
+          <Name>Badge</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Exchange assigned badge/suffix combination</Description>
+        </Field>
+        <Field>
+          <Name>MessageID</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Message ID. Binary data type: any combination of bits.</Description>
+        </Field>
+        <Field>
+          <Name>Status Code</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>See Status Code Appendix</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Add Complex Instrument Request (AC) section 5.2.1 -->
+    <Message>
+      <Name>Add Complex Instrument Request Message</Name>
+      <Dependency>Unsequenced Message Type</Dependency>
+      <Branch>Unsequenced Message</Branch>
+      <Code>AC</Code>
+      <Category>Application</Category>
+      <Description>Defines a new complex instrument. A valid request results in an Add Complex Instrument Reply with Status Code space and a Complex Instrument Directory message.</Description>
+      <Fields>
+        <Field>
+          <Name>Badge</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Participant identifier</Description>
+        </Field>
+        <Field>
+          <Name>MessageID</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Message ID. Binary data type: any combination of bits.</Description>
+        </Field>
+        <Field>
+          <Name>Underlying Symbol</Name>
+          <Type>Alphanumeric</Type>
+          <Size>13</Size>
+          <Description>Denotes the unique underlying stock symbol for the option symbol. Normally matches the stock symbol.</Description>
+        </Field>
+        <Field>
+          <Name>Number Of Legs</Name>
+          <Type>Integer</Type>
+          <Size>1</Size>
+          <Description>Number of legs in the combo.</Description>
+        </Field>
+        <Field>
+          <Name>Complex Legs</Name>
+          <Type>group</Type>
+          <Description>Leg Definitions, Repeated Number Of Legs times</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Add Complex Instrument Reply (Ac) section 5.2.2 -->
+    <Message>
+      <Name>Add Complex Instrument Reply Message</Name>
+      <Dependency>Server Unsequenced Message Type</Dependency>
+      <Branch>Server Unsequenced Message</Branch>
+      <Code>Ac</Code>
+      <Category>Application</Category>
+      <Description>Response to the Add Complex Instrument Request (AC) indicating the validity of the request. Unsequenced.</Description>
+      <Fields>
+        <Field>
+          <Name>Badge</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Exchange assigned badge/suffix combination</Description>
+        </Field>
+        <Field>
+          <Name>MessageID</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Message ID. Binary data type: any combination of bits.</Description>
+        </Field>
+        <Field>
+          <Name>Status Code</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>See Status Code Appendix</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- MM Parameter Definition Request (AE) section 5.3.1 -->
+    <Message>
+      <Name>MM Parameter Definition Request Message</Name>
+      <Dependency>Unsequenced Message Type</Dependency>
+      <Branch>Unsequenced Message</Branch>
+      <Code>AE</Code>
+      <Category>Application</Category>
+      <Description>Sets the Rapid Fire/Curtailment parameters (CumQty, Percentage, Delta, Vega and Interval) per underlying and instrument type. Rejected if the badge is configured for ActiveQP.</Description>
+      <Fields>
+        <Field>
+          <Name>Badge</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Exchange assigned badge/suffix combination</Description>
+        </Field>
+        <Field>
+          <Name>MessageID</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Message ID. Binary data type: any combination of bits.</Description>
+        </Field>
+        <Field>
+          <Name>Instrument Type</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>S=Simple Instruments, C=Complex Instruments</Description>
+        </Field>
+        <Field>
+          <Name>Underlying</Name>
+          <Type>Alphanumeric</Type>
+          <Size>13</Size>
+          <Description>Underlying Stock Symbol</Description>
+        </Field>
+        <Field>
+          <Name>Interval</Name>
+          <Type>Integer</Type>
+          <Size>2</Size>
+          <Description>Time interval (in milliseconds) 100 &lt;= n &lt;= 30,000</Description>
+        </Field>
+        <Field>
+          <Name>Percentage</Name>
+          <Type>Integer</Type>
+          <Size>2</Size>
+          <Description>Displayed size percentage 1 &lt;= n &lt;= MAX INT</Description>
+        </Field>
+        <Field>
+          <Name>CumQty</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Total execution volume that will trigger a rapid fire within the interval 1 &lt;= n &lt;= MAX_INT</Description>
+        </Field>
+        <Field>
+          <Name>Delta</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>1 &lt;= n &lt;= MAX_INT</Description>
+        </Field>
+        <Field>
+          <Name>Vega</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>1 &lt;= n &lt;= MAX_INT</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>Alpha</Type>
+          <Size>32</Size>
+          <Description>Reserved for future enhancements</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- MM Parameter Definition Reply (Ae) section 5.3.2 -->
+    <Message>
+      <Name>MM Parameter Definition Reply Message</Name>
+      <Dependency>Server Unsequenced Message Type</Dependency>
+      <Branch>Server Unsequenced Message</Branch>
+      <Code>Ae</Code>
+      <Category>Application</Category>
+      <Description>Response to the MM Parameter Definition Request (AE) indicating the validity of the request. Unsequenced.</Description>
+      <Fields>
+        <Field>
+          <Name>Badge</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Exchange assigned badge/suffix combination</Description>
+        </Field>
+        <Field>
+          <Name>MessageID</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Message ID. Binary data type: any combination of bits.</Description>
+        </Field>
+        <Field>
+          <Name>Status Code</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>See Status Code Appendix</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- ActiveQP Self Replenishment Set Limit (AG) section 5.3.3 -->
+    <Message>
+      <Name>ActiveQP Self Replenishment Set Limit Message</Name>
+      <Dependency>Unsequenced Message Type</Dependency>
+      <Branch>Unsequenced Message</Branch>
+      <Code>AG</Code>
+      <Category>Application</Category>
+      <Description>ActiveQP/Self-Replenishment Set Limit Message: sets the contract limit for self-replenishment purge.</Description>
+      <Fields>
+        <Field>
+          <Name>Badge</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Exchange assigned badge/suffix combination</Description>
+        </Field>
+        <Field>
+          <Name>MessageID</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Firm Defined message identifier. Binary data type: any combination of bits.</Description>
+        </Field>
+        <Field>
+          <Name>Underlying Symbol</Name>
+          <Type>Alphanumeric</Type>
+          <Size>13</Size>
+          <Description>Denotes the unique underlying being replenished</Description>
+        </Field>
+        <Field>
+          <Name>Set Value</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Absolute value of new contract limit for self-replenishment purge</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- ActiveQP Self Replenishment Set Limit Reply (Ag) section 5.3.4 -->
+    <Message>
+      <Name>ActiveQP Self Replenishment Set Limit Reply Message</Name>
+      <Dependency>Server Unsequenced Message Type</Dependency>
+      <Branch>Server Unsequenced Message</Branch>
+      <Code>Ag</Code>
+      <Category>Application</Category>
+      <Description>Acknowledgement message for Set Limit Message. Unsequenced.</Description>
+      <Fields>
+        <Field>
+          <Name>Badge</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Exchange assigned badge/suffix combination</Description>
+        </Field>
+        <Field>
+          <Name>MessageID</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Firm Defined message identifier. Binary data type: any combination of bits.</Description>
+        </Field>
+        <Field>
+          <Name>Underlying Symbol</Name>
+          <Type>Alphanumeric</Type>
+          <Size>13</Size>
+          <Description>Denotes the unique underlying being replenished</Description>
+        </Field>
+        <Field>
+          <Name>Set Value</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Absolute value of new contract limit for self-replenishment purge</Description>
+        </Field>
+        <Field>
+          <Name>Status Code</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>See Status Code Appendix. The document types this field Integer; the Status Code Appendix values are characters</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Rapid Fire Config Request (AF) section 5.4.2 -->
+    <Message>
+      <Name>Rapid Fire Config Request Message</Name>
+      <Dependency>Unsequenced Message Type</Dependency>
+      <Branch>Unsequenced Message</Branch>
+      <Code>AF</Code>
+      <Category>Application</Category>
+      <Description>Rapid Fire/Curtailment Config Request. Supported on Phlx, NOM and NTX; replaced by the MM Parameter Definition messages.</Description>
+      <Fields>
+        <Field>
+          <Name>Badge</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Exchange assigned badge/suffix combination</Description>
+        </Field>
+        <Field>
+          <Name>Underlying Symbol</Name>
+          <Type>Alphanumeric</Type>
+          <Size>13</Size>
+          <Description>Underlying Stock Symbol</Description>
+        </Field>
+        <Field>
+          <Name>Percentage</Name>
+          <Type>Integer</Type>
+          <Size>2</Size>
+          <Description>Displayed size percentage 1 &lt;= n &lt;= MAX INT</Description>
+        </Field>
+        <Field>
+          <Name>Interval</Name>
+          <Type>Integer</Type>
+          <Size>2</Size>
+          <Description>Time interval (in milliseconds) 100 &lt;= n &lt;= 30,000</Description>
+        </Field>
+        <Field>
+          <Name>CumQty</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Total execution volume that will trigger a rapid fire within the interval 1 &lt;= n &lt;= MAX_INT</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Rapid Fire Config Reply (AA) section 5.4.3 -->
+    <Message>
+      <Name>Rapid Fire Config Reply Message</Name>
+      <Dependency>Server Unsequenced Message Type</Dependency>
+      <Branch>Server Unsequenced Message</Branch>
+      <Code>AA</Code>
+      <Category>Application</Category>
+      <Description>Rapid-Fire Config Reply Message. Unsequenced.</Description>
+      <Fields>
+        <Field>
+          <Name>Badge</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Exchange assigned badge/suffix combination</Description>
+        </Field>
+        <Field>
+          <Name>Status Code</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>See Status Code Appendix</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Simple Quote Block Short Form (QA) section 5.5.1 -->
+    <Message>
+      <Name>Simple Quote Block Short Form Message</Name>
+      <Dependency>Unsequenced Message Type</Dependency>
+      <Branch>Unsequenced Message</Branch>
+      <Code>QA</Code>
+      <Category>Application</Category>
+      <Description>Simple Quote Block (short form) including SentTimestamp, results in a regular Quote Block Reply (QS). Up to 200 quotes for simple instruments; the MessageID identifies the whole block.</Description>
+      <Fields>
+        <Field>
+          <Name>Badge</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Exchange assigned badge/suffix combination</Description>
+        </Field>
+        <Field>
+          <Name>MessageID</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Firm defined quote message identifier reported on clearing executions. Binary data type: any combination of bits.</Description>
+        </Field>
+        <Field>
+          <Name>SentTimestamp</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>UNIX epoch time in nanoseconds. Time the message is sent to the Exchange; passed to CAT</Description>
+        </Field>
+        <Field>
+          <Name>Quote Count</Name>
+          <Type>Integer</Type>
+          <Size>2</Size>
+          <Description>Number of quotes in the message (1 to 200)</Description>
+        </Field>
+        <Field>
+          <Name>Simple Quotes</Name>
+          <Type>group</Type>
+          <Description>1 to 200 quotes</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Simple Quote Block Short Form Detailed (Qa) section 5.5.1 -->
+    <Message>
+      <Name>Simple Quote Block Short Form Detailed Message</Name>
+      <Dependency>Unsequenced Message Type</Dependency>
+      <Branch>Unsequenced Message</Branch>
+      <Code>Qa</Code>
+      <Category>Application</Category>
+      <Description>Simple Quote Block (short form) including SentTimestamp, results in a Detailed Quote Block Reply (Qs).</Description>
+      <Fields>
+        <Field>
+          <Name>Badge</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Exchange assigned badge/suffix combination</Description>
+        </Field>
+        <Field>
+          <Name>MessageID</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Firm defined quote message identifier reported on clearing executions. Binary data type: any combination of bits.</Description>
+        </Field>
+        <Field>
+          <Name>SentTimestamp</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>UNIX epoch time in nanoseconds. Time the message is sent to the Exchange; passed to CAT</Description>
+        </Field>
+        <Field>
+          <Name>Quote Count</Name>
+          <Type>Integer</Type>
+          <Size>2</Size>
+          <Description>Number of quotes in the message (1 to 200)</Description>
+        </Field>
+        <Field>
+          <Name>Simple Quotes</Name>
+          <Type>group</Type>
+          <Description>1 to 200 quotes</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Simple Quote Block Long Form (QM) section 5.5.2 -->
+    <Message>
+      <Name>Simple Quote Block Long Form Message</Name>
+      <Dependency>Unsequenced Message Type</Dependency>
+      <Branch>Unsequenced Message</Branch>
+      <Code>QM</Code>
+      <Category>Application</Category>
+      <Description>Simple Quote Block (long form) including SentTimestamp, results in a regular Quote Block Reply (QS). Adds a per quote QuoteID.</Description>
+      <Fields>
+        <Field>
+          <Name>Badge</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Exchange assigned badge/suffix combination</Description>
+        </Field>
+        <Field>
+          <Name>MessageID</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Firm defined message identifier. Binary data type: any combination of bits.</Description>
+        </Field>
+        <Field>
+          <Name>SentTimestamp</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>UNIX epoch time in nanoseconds. Time the message is sent to the Exchange; passed to CAT</Description>
+        </Field>
+        <Field>
+          <Name>Quote Count</Name>
+          <Type>Integer</Type>
+          <Size>2</Size>
+          <Description>Number of quotes in the message (1 to 200)</Description>
+        </Field>
+        <Field>
+          <Name>Simple Quotes Long Form</Name>
+          <Type>group</Type>
+          <Description>1 to 200 quotes</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Simple Quote Block Long Form Detailed (Qm) section 5.5.2 -->
+    <Message>
+      <Name>Simple Quote Block Long Form Detailed Message</Name>
+      <Dependency>Unsequenced Message Type</Dependency>
+      <Branch>Unsequenced Message</Branch>
+      <Code>Qm</Code>
+      <Category>Application</Category>
+      <Description>Simple Quote Block (long form) including SentTimestamp, results in a Detailed Quote Block Reply (Qs).</Description>
+      <Fields>
+        <Field>
+          <Name>Badge</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Exchange assigned badge/suffix combination</Description>
+        </Field>
+        <Field>
+          <Name>MessageID</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Firm defined message identifier. Binary data type: any combination of bits.</Description>
+        </Field>
+        <Field>
+          <Name>SentTimestamp</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>UNIX epoch time in nanoseconds. Time the message is sent to the Exchange; passed to CAT</Description>
+        </Field>
+        <Field>
+          <Name>Quote Count</Name>
+          <Type>Integer</Type>
+          <Size>2</Size>
+          <Description>Number of quotes in the message (1 to 200)</Description>
+        </Field>
+        <Field>
+          <Name>Simple Quotes Long Form</Name>
+          <Type>group</Type>
+          <Description>1 to 200 quotes</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Complex Quote Block (QD) section 5.5.3 -->
+    <Message>
+      <Name>Complex Quote Block Message</Name>
+      <Dependency>Unsequenced Message Type</Dependency>
+      <Branch>Unsequenced Message</Branch>
+      <Code>QD</Code>
+      <Category>Application</Category>
+      <Description>Complex Quote Block including SentTimestamp, results in a regular Quote Block Reply (QS). Bid/Ask prices for complex instruments can be zero or negative.</Description>
+      <Fields>
+        <Field>
+          <Name>Badge</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Exchange assigned badge/suffix combination</Description>
+        </Field>
+        <Field>
+          <Name>MessageID</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Firm defined message identifier. Binary data type: any combination of bits.</Description>
+        </Field>
+        <Field>
+          <Name>SentTimestamp</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>UNIX epoch time in nanoseconds. Time the message is sent to the Exchange; passed to CAT</Description>
+        </Field>
+        <Field>
+          <Name>Quote Count</Name>
+          <Type>Integer</Type>
+          <Size>2</Size>
+          <Description>Number of quotes in the message (1 to 200)</Description>
+        </Field>
+        <Field>
+          <Name>Complex Quotes</Name>
+          <Type>group</Type>
+          <Description>1 to 200 quotes</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Complex Quote Block Detailed (Qd) section 5.5.3 -->
+    <Message>
+      <Name>Complex Quote Block Detailed Message</Name>
+      <Dependency>Unsequenced Message Type</Dependency>
+      <Branch>Unsequenced Message</Branch>
+      <Code>Qd</Code>
+      <Category>Application</Category>
+      <Description>Complex Quote Block including SentTimestamp, results in a Detailed Quote Block Reply (Qs).</Description>
+      <Fields>
+        <Field>
+          <Name>Badge</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Exchange assigned badge/suffix combination</Description>
+        </Field>
+        <Field>
+          <Name>MessageID</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Firm defined message identifier. Binary data type: any combination of bits.</Description>
+        </Field>
+        <Field>
+          <Name>SentTimestamp</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>UNIX epoch time in nanoseconds. Time the message is sent to the Exchange; passed to CAT</Description>
+        </Field>
+        <Field>
+          <Name>Quote Count</Name>
+          <Type>Integer</Type>
+          <Size>2</Size>
+          <Description>Number of quotes in the message (1 to 200)</Description>
+        </Field>
+        <Field>
+          <Name>Complex Quotes</Name>
+          <Type>group</Type>
+          <Description>1 to 200 quotes</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Quote Block Reply (QS) section 5.5.4 -->
+    <Message>
+      <Name>Quote Block Reply Message</Name>
+      <Dependency>Server Unsequenced Message Type</Dependency>
+      <Branch>Server Unsequenced Message</Branch>
+      <Code>QS</Code>
+      <Category>Application</Category>
+      <Description>Quote Block Reply Message including SentTimestamp. Response to QA, QM and QD. Unsequenced.</Description>
+      <Fields>
+        <Field>
+          <Name>Badge</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Exchange assigned badge/suffix combination</Description>
+        </Field>
+        <Field>
+          <Name>MessageID</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Firm defined message identifier. Binary data type: any combination of bits.</Description>
+        </Field>
+        <Field>
+          <Name>SentTimestamp</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>UNIX epoch time in nanoseconds. Time the message is sent to the Exchange; passed to CAT</Description>
+        </Field>
+        <Field>
+          <Name>Block Status Code</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>See Status Code Appendix</Description>
+        </Field>
+        <Field>
+          <Name>Quote Count</Name>
+          <Type>Integer</Type>
+          <Size>2</Size>
+          <Description>The number of quotes in the submitted quote block</Description>
+        </Field>
+        <Field>
+          <Name>Valid Quote Count</Name>
+          <Type>Integer</Type>
+          <Size>2</Size>
+          <Description>The number of valid quotes in the submitted quote block. A valid quote is a quote or purge (0 x 0 quote) that has a Quote Status Code of space</Description>
+        </Field>
+        <Field>
+          <Name>Quote Responses</Name>
+          <Type>group</Type>
+          <Description>1-200 quote responses</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Detailed Quote Block Reply (Qs) section 5.5.5 -->
+    <Message>
+      <Name>Detailed Quote Block Reply Message</Name>
+      <Dependency>Server Unsequenced Message Type</Dependency>
+      <Branch>Server Unsequenced Message</Branch>
+      <Code>Qs</Code>
+      <Category>Application</Category>
+      <Description>Detailed Quote Reply Message including SentTimestamp. Response to Qa, Qm and Qd; adds individual Bid/Ask sequence numbers. Unsequenced.</Description>
+      <Fields>
+        <Field>
+          <Name>Badge</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Exchange assigned badge/suffix combination</Description>
+        </Field>
+        <Field>
+          <Name>MessageID</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Firm defined message identifier. Binary data type: any combination of bits.</Description>
+        </Field>
+        <Field>
+          <Name>SentTimestamp</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>UNIX epoch time in nanoseconds. Time the message is sent to the Exchange; passed to CAT</Description>
+        </Field>
+        <Field>
+          <Name>Block Status Code</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>See Status Code Appendix</Description>
+        </Field>
+        <Field>
+          <Name>Quote Count</Name>
+          <Type>Integer</Type>
+          <Size>2</Size>
+          <Description>The number of quotes in the submitted quote block</Description>
+        </Field>
+        <Field>
+          <Name>Valid Quote Count</Name>
+          <Type>Integer</Type>
+          <Size>2</Size>
+          <Description>The number of valid quotes in the submitted quote block. A valid quote is a quote or purge (0 x 0 quote) that has a Quote Status Code of space</Description>
+        </Field>
+        <Field>
+          <Name>Detailed Quote Responses</Name>
+          <Type>group</Type>
+          <Description>1-200 quote responses</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Underlying Purge Request (Pu) section 5.6.1 -->
+    <Message>
+      <Name>Underlying Purge Request Message</Name>
+      <Dependency>Unsequenced Message Type</Dependency>
+      <Branch>Unsequenced Message</Branch>
+      <Code>Pu</Code>
+      <Category>Application</Category>
+      <Description>Underlying Purge Message including SentTimestamp: pulls all quotes for all options contracts of the specified underlying and inhibits new quotes until reentry.</Description>
+      <Fields>
+        <Field>
+          <Name>Badge</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Exchange assigned badge/suffix combination</Description>
+        </Field>
+        <Field>
+          <Name>MessageID</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Firm defined message identifier. Binary data type: any combination of bits.</Description>
+        </Field>
+        <Field>
+          <Name>SentTimestamp</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>UNIX epoch time in nanoseconds. Time the message is sent to the Exchange; passed to CAT</Description>
+        </Field>
+        <Field>
+          <Name>Underlying Symbol</Name>
+          <Type>Alphanumeric</Type>
+          <Size>13</Size>
+          <Description>Denotes the unique underlying stock symbol. If the field is * (blank padded on the right), then all underlyings for this badge will be purged.</Description>
+        </Field>
+        <Field>
+          <Name>Instrument Type</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>Type of instruments to be purged: O=Simple Instrument (default), C=Complex Instrument. Optional: SQF treats a message that is 1 byte short as a request to purge Simple Instruments</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Underlying Purge Reply (Pr) section 5.6.2 -->
+    <Message>
+      <Name>Underlying Purge Reply Message</Name>
+      <Dependency>Server Unsequenced Message Type</Dependency>
+      <Branch>Server Unsequenced Message</Branch>
+      <Code>Pr</Code>
+      <Category>Application</Category>
+      <Description>Underlying Purge Reply Message including SentTimestamp. Unsequenced.</Description>
+      <Fields>
+        <Field>
+          <Name>Badge</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Exchange assigned badge/suffix combination</Description>
+        </Field>
+        <Field>
+          <Name>MessageID</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Firm defined message identifier. Binary data type: any combination of bits.</Description>
+        </Field>
+        <Field>
+          <Name>SentTimestamp</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>UNIX epoch time in nanoseconds. Time the message is sent to the Exchange; passed to CAT</Description>
+        </Field>
+        <Field>
+          <Name>Status Code</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>See Status Code Appendix</Description>
+        </Field>
+        <Field>
+          <Name>Sequence</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Relative sequence of the underlying purge processed by the matching engine. Quotes/purges with higher sequence number occur after quotes/purges with lower sequence number</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Market Reentry Request (RU) section 5.6.3 -->
+    <Message>
+      <Name>Market Reentry Request Message</Name>
+      <Dependency>Unsequenced Message Type</Dependency>
+      <Branch>Unsequenced Message</Branch>
+      <Code>RU</Code>
+      <Category>Application</Category>
+      <Description>Market Reentry Message: resets risk protection previously triggered by a Rapid Fire/Curtailment event or a user Purge request.</Description>
+      <Fields>
+        <Field>
+          <Name>Badge</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Exchange assigned badge/suffix combination</Description>
+        </Field>
+        <Field>
+          <Name>MessageID</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Firm defined message identifier. Binary data type: any combination of bits.</Description>
+        </Field>
+        <Field>
+          <Name>Underlying Symbol</Name>
+          <Type>Alphanumeric</Type>
+          <Size>13</Size>
+          <Description>Denotes the unique underlying stock symbol. If the field is * (blank padded on the right), then all underlyings for this badge will be reset for reentry.</Description>
+        </Field>
+        <Field>
+          <Name>Instrument Type</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>Type of instruments to be Reentered: O=Simple Instrument (default), C=Complex Instrument. Optional: SQF treats a message that is 1 byte short as a request to reenter Simple Instruments</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Market Reentry Reply (RR) section 5.6.4 -->
+    <Message>
+      <Name>Market Reentry Reply Message</Name>
+      <Dependency>Server Unsequenced Message Type</Dependency>
+      <Branch>Server Unsequenced Message</Branch>
+      <Code>RR</Code>
+      <Category>Application</Category>
+      <Description>Market Reentry Reply Message. Unsequenced.</Description>
+      <Fields>
+        <Field>
+          <Name>Badge</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Exchange assigned badge/suffix combination</Description>
+        </Field>
+        <Field>
+          <Name>MessageID</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Firm defined message identifier. Binary data type: any combination of bits.</Description>
+        </Field>
+        <Field>
+          <Name>Status Code</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>See Status Code Appendix</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>Alpha</Type>
+          <Size>8</Size>
+          <Description>Unused</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- ActiveQP Self Replenishment Request Reentry (RG) section 5.6.5 -->
+    <Message>
+      <Name>ActiveQP Self Replenishment Request Reentry Message</Name>
+      <Dependency>Unsequenced Message Type</Dependency>
+      <Branch>Unsequenced Message</Branch>
+      <Code>RG</Code>
+      <Category>Application</Category>
+      <Description>ActiveQP/Self-Replenishment Request/Reentry Message: partial replenishment (removes a number of contracts from the Active QP counter) or full replenishment/reentry (value 0).</Description>
+      <Fields>
+        <Field>
+          <Name>Badge</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Exchange assigned badge/suffix combination</Description>
+        </Field>
+        <Field>
+          <Name>MessageID</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Firm Defined message identifier. Binary data type: any combination of bits.</Description>
+        </Field>
+        <Field>
+          <Name>Underlying Symbol</Name>
+          <Type>Alphanumeric</Type>
+          <Size>13</Size>
+          <Description>Denotes the unique underlying being replenished</Description>
+        </Field>
+        <Field>
+          <Name>Replenishment Value</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Number of contracts for replenishment or 0 for full replenishment. Full replenishment is required after underlying purge</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- ActiveQP Self Replenishment Request Reentry Reply (Rg) section 5.6.6 -->
+    <Message>
+      <Name>ActiveQP Self Replenishment Request Reentry Reply Message</Name>
+      <Dependency>Server Unsequenced Message Type</Dependency>
+      <Branch>Server Unsequenced Message</Branch>
+      <Code>Rg</Code>
+      <Category>Application</Category>
+      <Description>Acknowledgement for the ActiveQP Request/Reentry Message. Unsequenced.</Description>
+      <Fields>
+        <Field>
+          <Name>Badge</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Exchange assigned badge/suffix combination</Description>
+        </Field>
+        <Field>
+          <Name>MessageID</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Firm Defined message identifier. Binary data type: any combination of bits.</Description>
+        </Field>
+        <Field>
+          <Name>Underlying Symbol</Name>
+          <Type>Alphanumeric</Type>
+          <Size>13</Size>
+          <Description>Denotes the unique underlying being replenished</Description>
+        </Field>
+        <Field>
+          <Name>Status Code</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>See Status Code Appendix. The document types this field Integer; the Status Code Appendix values are characters</Description>
+        </Field>
+        <Field>
+          <Name>Requested Replenishment Value</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Echo requested replenishment value</Description>
+        </Field>
+        <Field>
+          <Name>Active Counter Value</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Risk counter value after processing replenishment request.</Description>
+        </Field>
+        <Field>
+          <Name>Set Contract Limit</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Current Set Contract limit for triggering purge</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Simple MSAR Request (SB) section 5.7.1 -->
+    <Message>
+      <Name>Simple MSAR Request Message</Name>
+      <Dependency>Unsequenced Message Type</Dependency>
+      <Branch>Unsequenced Message</Branch>
+      <Code>SB</Code>
+      <Category>Application</Category>
+      <Description>SQF Market Sweep and Auction Response (MSAR) request for a simple instrument. A size of zero cancels a prior auction response for the same instrument/price/side.</Description>
+      <Fields>
+        <Field>
+          <Name>Badge</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Exchange assigned badge/suffix combination</Description>
+        </Field>
+        <Field>
+          <Name>MessageID</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Firm defined message identifier. Binary data type: any combination of bits.</Description>
+        </Field>
+        <Field>
+          <Name>Instrument ID</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Simple Instrument ID</Description>
+        </Field>
+        <Field>
+          <Name>MSAR Type</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>A=Auction Response, M=SQF Market Sweep</Description>
+        </Field>
+        <Field>
+          <Name>Auction ID</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>The exchange assigned Auction ID as provided in the Auction Notification message if applicable.</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Price</Type>
+          <Size>4</Size>
+          <Description>Price at which to sweep</Description>
+        </Field>
+        <Field>
+          <Name>Side</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>B=Buy side sweep, S=Sell side sweep</Description>
+        </Field>
+        <Field>
+          <Name>Contracts</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Volume of contracts to sweep</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- MSAR Accept (SA) section 5.7.2 -->
+    <Message>
+      <Name>MSAR Accept Message</Name>
+      <Dependency>Sequenced Message Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>SA</Code>
+      <Category>Application</Category>
+      <Description>The MSAR Request was accepted by the matching engine. Sequenced.</Description>
+      <Fields>
+        <Field>
+          <Name>Badge</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Exchange assigned badge/suffix combination</Description>
+        </Field>
+        <Field>
+          <Name>MessageID</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Firm defined message identifier. Binary data type: any combination of bits.</Description>
+        </Field>
+        <Field>
+          <Name>Instrument ID</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Simple Instrument ID</Description>
+        </Field>
+        <Field>
+          <Name>MSAR Type</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>A=Auction Response, M=SQF Market Sweep</Description>
+        </Field>
+        <Field>
+          <Name>Auction ID</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>The exchange assigned Auction ID as provided in the Auction Notification message</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Price</Type>
+          <Size>4</Size>
+          <Description>Price at which to sweep</Description>
+        </Field>
+        <Field>
+          <Name>Side</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>B=Buy side sweep (you are selling), S=Sell side sweep (you are buying)</Description>
+        </Field>
+        <Field>
+          <Name>Contracts</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Volume to sweep</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- MSAR Reject (SR) section 5.7.3 -->
+    <Message>
+      <Name>MSAR Reject Message</Name>
+      <Dependency>Sequenced Message Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>SR</Code>
+      <Category>Application</Category>
+      <Description>The MSAR Request is invalid and therefore rejected. Sequenced.</Description>
+      <Fields>
+        <Field>
+          <Name>Badge</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Exchange assigned badge/suffix combination</Description>
+        </Field>
+        <Field>
+          <Name>MessageID</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Firm defined message identifier. Binary data type: any combination of bits.</Description>
+        </Field>
+        <Field>
+          <Name>Status Code</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>See Status Code Appendix</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Complex MSAR Request (SX) section 5.7.4 -->
+    <Message>
+      <Name>Complex MSAR Request Message</Name>
+      <Dependency>Unsequenced Message Type</Dependency>
+      <Branch>Unsequenced Message</Branch>
+      <Code>SX</Code>
+      <Category>Application</Category>
+      <Description>MSAR request for a complex instrument. Price cannot be negative; the Debit/Credit indicator gives the sign.</Description>
+      <Fields>
+        <Field>
+          <Name>Badge</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Exchange assigned badge/suffix combination</Description>
+        </Field>
+        <Field>
+          <Name>MessageID</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Firm defined message identifier. Binary data type: any combination of bits.</Description>
+        </Field>
+        <Field>
+          <Name>Instrument ID</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Complex Instrument ID</Description>
+        </Field>
+        <Field>
+          <Name>MSAR Type</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>A=Auction Response, M=SQF Market Sweep</Description>
+        </Field>
+        <Field>
+          <Name>Auction ID</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>The exchange assigned Auction ID as provided in the Complex Auction Notification message if applicable.</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Price</Type>
+          <Size>4</Size>
+          <Description>Price at which to sweep</Description>
+        </Field>
+        <Field>
+          <Name>Side</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>B=Buy book side, T=Buy book side (short), X=Buy book side (short exempt), S=Sell book side, Y=Sell book side (short), Z=Sell book side (short exempt)</Description>
+        </Field>
+        <Field>
+          <Name>Debit Credit</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Indicates whether the specified sweep price is debit or credit: D=Sweep Price is Debit, C=Sweep Price is Credit, space=Sweep Price is 0.0</Description>
+        </Field>
+        <Field>
+          <Name>Contracts</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Volume to sweep</Description>
+        </Field>
+        <Field>
+          <Name>Price Protection</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>L=Local Market, N=National Market</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>Alpha</Type>
+          <Size>4</Size>
+          <Description>Reserved for future enhancements</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Complex MSAR Accept (SY) section 5.7.5 -->
+    <Message>
+      <Name>Complex MSAR Accept Message</Name>
+      <Dependency>Sequenced Message Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>SY</Code>
+      <Category>Application</Category>
+      <Description>The Complex MSAR Request was accepted by the matching engine. Sequenced.</Description>
+      <Fields>
+        <Field>
+          <Name>Badge</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Exchange assigned badge/suffix combination</Description>
+        </Field>
+        <Field>
+          <Name>MessageID</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Firm defined message identifier. Binary data type: any combination of bits.</Description>
+        </Field>
+        <Field>
+          <Name>Instrument ID</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Complex Instrument ID</Description>
+        </Field>
+        <Field>
+          <Name>MSAR Type</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>A=Auction Response, M=SQF Market Sweep</Description>
+        </Field>
+        <Field>
+          <Name>Auction ID</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>The exchange assigned Auction ID as provided in the Auction Notification message</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Price</Type>
+          <Size>4</Size>
+          <Description>Price at which to sweep</Description>
+        </Field>
+        <Field>
+          <Name>Side</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>B=Buy side sweep, T=Buy book side (short), X=Buy book side (short exempt), S=Sell side sweep, Y=Sell book side (short), Z=Sell book side (short exempt)</Description>
+        </Field>
+        <Field>
+          <Name>Contracts</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Volume to sweep</Description>
+        </Field>
+        <Field>
+          <Name>Price Protection</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>L=Local Market, N=National Market</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>Alpha</Type>
+          <Size>4</Size>
+          <Description>Reserved for future enhancements</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Complex MSAR Reject (SN) section 5.7.6 -->
+    <Message>
+      <Name>Complex MSAR Reject Message</Name>
+      <Dependency>Sequenced Message Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>SN</Code>
+      <Category>Application</Category>
+      <Description>The Complex MSAR Request is invalid and therefore rejected. Sequenced.</Description>
+      <Fields>
+        <Field>
+          <Name>Badge</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Exchange assigned badge/suffix combination</Description>
+        </Field>
+        <Field>
+          <Name>MessageID</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Firm defined message identifier. Binary data type: any combination of bits.</Description>
+        </Field>
+        <Field>
+          <Name>Status Code</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>See Status Code Appendix</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Underlying Permission Notification (AP) section 6.1.1 -->
+    <Message>
+      <Name>Underlying Permission Notification Message</Name>
+      <Dependency>Sequenced Message Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>AP</Code>
+      <Category>Application</Category>
+      <Description>Sent once per badge/underlying pair, typically right after the instrument directory messages, and intra-day when permissions change. Sequenced.</Description>
+      <Fields>
+        <Field>
+          <Name>Seconds</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Seconds portion of the timestamp: whole seconds after midnight, US Eastern Time (0 to 86399)</Description>
+        </Field>
+        <Field>
+          <Name>Nanoseconds</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Nanoseconds portion of the timestamp (0 to 999999999)</Description>
+        </Field>
+        <Field>
+          <Name>Badge</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Exchange assigned badge/suffix combination</Description>
+        </Field>
+        <Field>
+          <Name>Underlying</Name>
+          <Type>Alphanumeric</Type>
+          <Size>13</Size>
+          <Description>Underlying Stock Symbol</Description>
+        </Field>
+        <Field>
+          <Name>Permitted</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>Y=Permitted, N=Not Permitted</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- MM Parameter Definition Notification (AJ) section 6.1.2 -->
+    <Message>
+      <Name>MM Parameter Definition Notification Message</Name>
+      <Dependency>Sequenced Message Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>AJ</Code>
+      <Category>Application</Category>
+      <Description>Optionally delivered participant per-underlying/instrument type configuration settings. Sequenced.</Description>
+      <Fields>
+        <Field>
+          <Name>Seconds</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Seconds portion of the timestamp: whole seconds after midnight, US Eastern Time (0 to 86399)</Description>
+        </Field>
+        <Field>
+          <Name>Nanoseconds</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Nanoseconds portion of the timestamp (0 to 999999999)</Description>
+        </Field>
+        <Field>
+          <Name>Badge</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Exchange assigned badge/suffix combination</Description>
+        </Field>
+        <Field>
+          <Name>Instrument Type</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>S=Simple Instruments, C=Complex Instruments</Description>
+        </Field>
+        <Field>
+          <Name>Underlying</Name>
+          <Type>Alphanumeric</Type>
+          <Size>13</Size>
+          <Description>Underlying Stock Symbol</Description>
+        </Field>
+        <Field>
+          <Name>Interval</Name>
+          <Type>Integer</Type>
+          <Size>2</Size>
+          <Description>Time interval (in milliseconds) 100 &lt;= n &lt;= 30,000</Description>
+        </Field>
+        <Field>
+          <Name>Percentage</Name>
+          <Type>Integer</Type>
+          <Size>2</Size>
+          <Description>Displayed size percentage 1 &lt;= n &lt;= MAX INT</Description>
+        </Field>
+        <Field>
+          <Name>CumQty</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Total execution volume that will trigger a rapid fire within the interval 1 &lt;= n &lt;= MAX_INT</Description>
+        </Field>
+        <Field>
+          <Name>Delta</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>1 &lt;= n &lt;= MAX_INT</Description>
+        </Field>
+        <Field>
+          <Name>Vega</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>1 &lt;= n &lt;= MAX_INT</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>Alpha</Type>
+          <Size>32</Size>
+          <Description>Reserved for future enhancements</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Rapid Fire Config Notification (Af) section 6.1.3 -->
+    <Message>
+      <Name>Rapid Fire Config Notification Message</Name>
+      <Dependency>Sequenced Message Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>Af</Code>
+      <Category>Application</Category>
+      <Description>Rapid Fire/Curtailment Config Notification, Phlx, NOM and NTX only (replaced by MM Parameter Definition Notification for ISE, GEMX and MRX). Sequenced.</Description>
+      <Fields>
+        <Field>
+          <Name>Seconds</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Seconds portion of the timestamp: whole seconds after midnight, US Eastern Time (0 to 86399)</Description>
+        </Field>
+        <Field>
+          <Name>Nanoseconds</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Nanoseconds portion of the timestamp (0 to 999999999)</Description>
+        </Field>
+        <Field>
+          <Name>Badge</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Exchange assigned badge/suffix combination</Description>
+        </Field>
+        <Field>
+          <Name>Underlying</Name>
+          <Type>Alphanumeric</Type>
+          <Size>13</Size>
+          <Description>Underlying Stock Symbol</Description>
+        </Field>
+        <Field>
+          <Name>Percentage</Name>
+          <Type>Integer</Type>
+          <Size>2</Size>
+          <Description>Displayed size percentage (e.g. 100)</Description>
+        </Field>
+        <Field>
+          <Name>Interval</Name>
+          <Type>Integer</Type>
+          <Size>2</Size>
+          <Description>Time interval (in milliseconds)</Description>
+        </Field>
+        <Field>
+          <Name>Volume</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Total execution volume that will trigger a rapid fire interval within the interval</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- ActiveQP Self Replenishment Parameter Definition Notification (AK) section 6.1.4 -->
+    <Message>
+      <Name>ActiveQP Self Replenishment Parameter Definition Notification Message</Name>
+      <Dependency>Sequenced Message Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>AK</Code>
+      <Category>Application</Category>
+      <Description>Optionally delivered contract limit on the badges configured for ActiveQP. Sequenced.</Description>
+      <Fields>
+        <Field>
+          <Name>Seconds</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Seconds portion of the timestamp: whole seconds after midnight, US Eastern Time (0 to 86399)</Description>
+        </Field>
+        <Field>
+          <Name>Nanoseconds</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Nanoseconds portion of the timestamp (0 to 999999999)</Description>
+        </Field>
+        <Field>
+          <Name>Badge</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Exchange assigned badge/suffix combination</Description>
+        </Field>
+        <Field>
+          <Name>Underlying</Name>
+          <Type>Alphanumeric</Type>
+          <Size>13</Size>
+          <Description>Underlying Stock Symbol</Description>
+        </Field>
+        <Field>
+          <Name>Set Contract Limit</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Current Set Contract Limit</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>Alpha</Type>
+          <Size>32</Size>
+          <Description>Reserved for future enhancements</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- System Event (AS) section 6.2 -->
+    <Message>
+      <Name>System Event Message</Name>
+      <Dependency>Sequenced Message Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>AS</Code>
+      <Category>Application</Category>
+      <Description>Signals a market or data feed handler event. Sequenced.</Description>
+      <Fields>
+        <Field>
+          <Name>Seconds</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Seconds portion of the timestamp: whole seconds after midnight, US Eastern Time (0 to 86399)</Description>
+        </Field>
+        <Field>
+          <Name>Nanoseconds</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Nanoseconds portion of the timestamp (0 to 999999999)</Description>
+        </Field>
+        <Field>
+          <Name>Event Code</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>See System Event Codes</Description>
+        </Field>
+        <Field>
+          <Name>Version</Name>
+          <Type>Integer</Type>
+          <Size>1</Size>
+          <Description>Version of the SQF Quote Interface. Currently set to 9</Description>
+        </Field>
+        <Field>
+          <Name>Sub-version</Name>
+          <Type>Integer</Type>
+          <Size>1</Size>
+          <Description>Sub-version of the SQF Quote Interface. Currently set to 0</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Simple Instrument Directory (AD) section 6.3.1 -->
+    <Message>
+      <Name>Simple Instrument Directory Message</Name>
+      <Dependency>Sequenced Message Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>AD</Code>
+      <Category>Application</Category>
+      <Description>Disseminated at the start of each trading day for all symbols trading on the system, and intra-day when attributes change. Sequenced.</Description>
+      <Fields>
+        <Field>
+          <Name>Seconds</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Seconds portion of the timestamp: whole seconds after midnight, US Eastern Time (0 to 86399)</Description>
+        </Field>
+        <Field>
+          <Name>Nanoseconds</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Nanoseconds portion of the timestamp (0 to 999999999)</Description>
+        </Field>
+        <Field>
+          <Name>Instrument ID</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Unique Instrument ID</Description>
+        </Field>
+        <Field>
+          <Name>Security Symbol</Name>
+          <Type>Alphanumeric</Type>
+          <Size>8</Size>
+          <Description>Industry assigned security symbol for the option contract</Description>
+        </Field>
+        <Field>
+          <Name>Expiration</Name>
+          <Type>Integer</Type>
+          <Size>2</Size>
+          <Description>Expiration Field: year (bits 0-6, 0-99), month (bits 7-10) and day (bits 11-15) encoded into a 2 byte integer; bit 15 is the least significant bit</Description>
+        </Field>
+        <Field>
+          <Name>Strike Price</Name>
+          <Type>Price</Type>
+          <Size>4</Size>
+          <Description>Denotes the explicit strike price of the option.</Description>
+        </Field>
+        <Field>
+          <Name>Option Type</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>C=Call, P=Put</Description>
+        </Field>
+        <Field>
+          <Name>Underlying Symbol</Name>
+          <Type>Alphanumeric</Type>
+          <Size>13</Size>
+          <Description>Denotes the unique underlying stock symbol for the option symbol. Normally matches the stock symbol.</Description>
+        </Field>
+        <Field>
+          <Name>Closing Type</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>N=Normal Hours, L=Late Hours, W=WCO Early Closing 12:00 Noon, E=Extended Close (extended trading hours edition)</Description>
+        </Field>
+        <Field>
+          <Name>Tradable</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>Y=Option is tradable, N=Option is not tradable</Description>
+        </Field>
+        <Field>
+          <Name>MPV</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>See MPV</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>Alpha</Type>
+          <Size>16</Size>
+          <Description>Reserved for future use</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Complex Instrument Directory (AR) section 6.3.2 -->
+    <Message>
+      <Name>Complex Instrument Directory Message</Name>
+      <Dependency>Sequenced Message Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>AR</Code>
+      <Category>Application</Category>
+      <Description>Sent when a new complex strategy is created for the first time. Sequenced.</Description>
+      <Fields>
+        <Field>
+          <Name>Seconds</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Seconds portion of the timestamp: whole seconds after midnight, US Eastern Time (0 to 86399)</Description>
+        </Field>
+        <Field>
+          <Name>Nanoseconds</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Nanoseconds portion of the timestamp (0 to 999999999)</Description>
+        </Field>
+        <Field>
+          <Name>Instrument ID</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Complex Instrument ID</Description>
+        </Field>
+        <Field>
+          <Name>Underlying Symbol</Name>
+          <Type>Alphanumeric</Type>
+          <Size>13</Size>
+          <Description>Denotes the unique underlying stock symbol for the option symbol. Normally matches the stock symbol.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>Integer</Type>
+          <Size>1</Size>
+          <Description>Reserved field with value zero</Description>
+        </Field>
+        <Field>
+          <Name>Number Of Legs</Name>
+          <Type>Integer</Type>
+          <Size>1</Size>
+          <Description>Number of legs in the combo.</Description>
+        </Field>
+        <Field>
+          <Name>Complex Legs</Name>
+          <Type>group</Type>
+          <Description>Leg Definitions, Repeated Number Of Legs times</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Simple Instrument Trading Action (AH) section 6.4.1 -->
+    <Message>
+      <Name>Simple Instrument Trading Action Message</Name>
+      <Dependency>Sequenced Message Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>AH</Code>
+      <Category>Application</Category>
+      <Description>Relays changes in trading status for a simple instrument. Sequenced.</Description>
+      <Fields>
+        <Field>
+          <Name>Seconds</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Seconds portion of the timestamp: whole seconds after midnight, US Eastern Time (0 to 86399)</Description>
+        </Field>
+        <Field>
+          <Name>Nanoseconds</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Nanoseconds portion of the timestamp (0 to 999999999)</Description>
+        </Field>
+        <Field>
+          <Name>Instrument ID</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Simple Instrument ID</Description>
+        </Field>
+        <Field>
+          <Name>Trading State</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>H=Halt in effect, T=Trading Resumed</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Complex Instrument Trading Action (AI) section 6.4.2 -->
+    <Message>
+      <Name>Complex Instrument Trading Action Message</Name>
+      <Dependency>Sequenced Message Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>AI</Code>
+      <Category>Application</Category>
+      <Description>Relays changes in trading status for a complex strategy. Sequenced.</Description>
+      <Fields>
+        <Field>
+          <Name>Seconds</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Seconds portion of the timestamp: whole seconds after midnight, US Eastern Time (0 to 86399)</Description>
+        </Field>
+        <Field>
+          <Name>Nanoseconds</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Nanoseconds portion of the timestamp (0 to 999999999)</Description>
+        </Field>
+        <Field>
+          <Name>Instrument ID</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Complex Instrument ID</Description>
+        </Field>
+        <Field>
+          <Name>Trading State</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>H=Halt in effect, T=Trading Resumed</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Auction Notification (NA) section 6.5 -->
+    <Message>
+      <Name>Auction Notification Message</Name>
+      <Dependency>Server Unsequenced Message Type</Dependency>
+      <Branch>Server Unsequenced Message</Branch>
+      <Code>NA</Code>
+      <Category>Application</Category>
+      <Description>Announces start, update or end of an Auction (Block, Exposure, Flash, Facilitation, Solicitation, PIM) for simple, complex and stock combo instruments. An end of auction notification has all fields after Auction ID zeroed and blanked out. Unsequenced.</Description>
+      <Fields>
+        <Field>
+          <Name>Seconds</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Seconds portion of the timestamp: whole seconds after midnight, US Eastern Time (0 to 86399)</Description>
+        </Field>
+        <Field>
+          <Name>Nanoseconds</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Nanoseconds portion of the timestamp (0 to 999999999)</Description>
+        </Field>
+        <Field>
+          <Name>Instrument Type</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>S=Simple Instrument, C=Complex Instrument</Description>
+        </Field>
+        <Field>
+          <Name>Instrument ID</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Instrument ID (simple or complex)</Description>
+        </Field>
+        <Field>
+          <Name>Auction ID</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Auction ID</Description>
+        </Field>
+        <Field>
+          <Name>Order Type</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>L=Limit, M=Market, N=Not Disclosed</Description>
+        </Field>
+        <Field>
+          <Name>Side</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>Indicates the side of the auction: B=Buy side, S=Sell side, *=Not Disclosed</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Price</Type>
+          <Size>4</Size>
+          <Description>Auction Price. Can be 0 or negative for complex instruments. Set to 0 unless OrderType=L</Description>
+        </Field>
+        <Field>
+          <Name>Matched Volume</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>For Opening Auction indicates matched volume at the specified price; for all other auction types set to 0</Description>
+        </Field>
+        <Field>
+          <Name>Volume</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>For Opening Auction the total number of contracts better than Price (includes Orders that cannot be filled); for all other auction types the quantity being auctioned</Description>
+        </Field>
+        <Field>
+          <Name>Exec Flag</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>0=None, 1=AON</Description>
+        </Field>
+        <Field>
+          <Name>Order Capacity</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>Capacity Indicator. Not displayed for NOM and NTX Options</Description>
+        </Field>
+        <Field>
+          <Name>FirmID</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Spaces when auction not flagged Attributable</Description>
+        </Field>
+        <Field>
+          <Name>OCCAccount</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Account number used for clearing give up. 0 when auction not flagged Attributable</Description>
+        </Field>
+        <Field>
+          <Name>CMTA</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>0 when auction not flagged Attributable</Description>
+        </Field>
+        <Field>
+          <Name>Auction Event</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>S=Start, U=Auction Update, E=End of Auction</Description>
+        </Field>
+        <Field>
+          <Name>Auction Type</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>Auction Type Field</Description>
+        </Field>
+        <Field>
+          <Name>Auction Duration</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Duration of the auction</Description>
+        </Field>
+        <Field>
+          <Name>Best Response Price</Name>
+          <Type>Price</Type>
+          <Size>4</Size>
+          <Description>Best response price; 0 if not disclosed</Description>
+        </Field>
+        <Field>
+          <Name>Best Response Size</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Aggregated quantity at best response price; 0 if not disclosed</Description>
+        </Field>
+        <Field>
+          <Name>(Reserved)</Name>
+          <Type>Integer</Type>
+          <Size>9</Size>
+          <Description>Reserved for future use</Description>
+        </Field>
+        <Field>
+          <Name>Number of Flex DAC Legs</Name>
+          <Type>Integer</Type>
+          <Size>1</Size>
+          <Description>To be used in future to support Delta-Adjusted at Close functionality on Flex.</Description>
+        </Field>
+        <Field>
+          <Name>Flex Dac Legs</Name>
+          <Type>group</Type>
+          <Description>Leg Definitions, Repeated Number Of Legs times</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Instrument Purge Notification (ND) section 6.6.2 -->
+    <Message>
+      <Name>Instrument Purge Notification Message</Name>
+      <Dependency>Server Unsequenced Message Type</Dependency>
+      <Branch>Server Unsequenced Message</Branch>
+      <Code>ND</Code>
+      <Category>Application</Category>
+      <Description>Informs the firm that its quotes for a given simple or complex instrument have been purged. Unsequenced.</Description>
+      <Fields>
+        <Field>
+          <Name>Seconds</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Seconds portion of the timestamp: whole seconds after midnight, US Eastern Time (0 to 86399)</Description>
+        </Field>
+        <Field>
+          <Name>Nanoseconds</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Nanoseconds portion of the timestamp (0 to 999999999)</Description>
+        </Field>
+        <Field>
+          <Name>Badge</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Exchange assigned badge/suffix combination</Description>
+        </Field>
+        <Field>
+          <Name>MessageID</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Firm specified message identifier. This field is filled with blanks for system initiated purges. Binary data type: any combination of bits.</Description>
+        </Field>
+        <Field>
+          <Name>Instrument ID</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Simple or Complex Instrument ID</Description>
+        </Field>
+        <Field>
+          <Name>Purge Reason</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>S=System initiated, Q=Anti-Internalize</Description>
+        </Field>
+        <Field>
+          <Name>Sequence</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Relative sequence of the purge processed by the matching engine. Quotes/purges with higher sequence number occur after quotes/purges with lower sequence number</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>Alpha</Type>
+          <Size>16</Size>
+          <Description>Reserved for future use</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Underlying Purge Notification (NU) section 6.6.3 -->
+    <Message>
+      <Name>Underlying Purge Notification Message</Name>
+      <Dependency>Server Unsequenced Message Type</Dependency>
+      <Branch>Server Unsequenced Message</Branch>
+      <Code>NU</Code>
+      <Category>Application</Category>
+      <Description>Informs the firm that all the quotes for instruments associated with the given underlying have been purged (user request, Rapid Fire/ActiveQP risk protection or Kill-Switch). Unsequenced.</Description>
+      <Fields>
+        <Field>
+          <Name>Seconds</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Seconds portion of the timestamp: whole seconds after midnight, US Eastern Time (0 to 86399)</Description>
+        </Field>
+        <Field>
+          <Name>Nanoseconds</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Nanoseconds portion of the timestamp (0 to 999999999)</Description>
+        </Field>
+        <Field>
+          <Name>Badge</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Exchange assigned badge/suffix combination</Description>
+        </Field>
+        <Field>
+          <Name>Underlying</Name>
+          <Type>Alphanumeric</Type>
+          <Size>13</Size>
+          <Description>Denotes the unique underlying stock symbol.</Description>
+        </Field>
+        <Field>
+          <Name>Purge Reason</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>U=User requested (Simple), S=System initiated (Simple), K=Auto Killswitch initiated (All Instruments), M=Manual Killswitch initiated (All Instruments), P=Purge On Disconnect (All instruments), u=User requested (Complex), s=System initiated (Complex)</Description>
+        </Field>
+        <Field>
+          <Name>MessageID</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Firm defined message identifier. This field is filled with blanks for system initiated purges. Binary data type: any combination of bits.</Description>
+        </Field>
+        <Field>
+          <Name>Sequence</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Relative sequence of the underlying purge processed by the matching engine. Quotes/purges with higher sequence number occur after quotes/purges with lower sequence number. Zero if the request was invalid</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Market Reentry Notification (NR) section 6.7 -->
+    <Message>
+      <Name>Market Reentry Notification Message</Name>
+      <Dependency>Server Unsequenced Message Type</Dependency>
+      <Branch>Server Unsequenced Message</Branch>
+      <Code>NR</Code>
+      <Category>Application</Category>
+      <Description>Informs that risk protection triggered by rapid fire/purge has been reset for the specified scope. Unsequenced.</Description>
+      <Fields>
+        <Field>
+          <Name>Seconds</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Seconds portion of the timestamp: whole seconds after midnight, US Eastern Time (0 to 86399)</Description>
+        </Field>
+        <Field>
+          <Name>Nanoseconds</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Nanoseconds portion of the timestamp (0 to 999999999)</Description>
+        </Field>
+        <Field>
+          <Name>Badge</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Exchange assigned badge/suffix combination</Description>
+        </Field>
+        <Field>
+          <Name>Underlying Symbol</Name>
+          <Type>Alphanumeric</Type>
+          <Size>13</Size>
+          <Description>Denotes the unique underlying stock symbol.</Description>
+        </Field>
+        <Field>
+          <Name>Reentry Scope</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>N=User requested (Simple Instruments), n=User requested (Complex Instruments), K=Post-Killswitch (All Instruments)</Description>
+        </Field>
+        <Field>
+          <Name>MessageID</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Firm defined message identifier. Binary data type: any combination of bits.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>Alpha</Type>
+          <Size>8</Size>
+          <Description>Reserved, unused</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Simple Quote Execution Notification (NE) section 6.8.1 -->
+    <Message>
+      <Name>Simple Quote Execution Notification Message</Name>
+      <Dependency>Sequenced Message Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>NE</Code>
+      <Category>Application</Category>
+      <Description>Informs the firm that its quote for a given simple instrument has been executed. Only sent if subscribed. Sequenced.</Description>
+      <Fields>
+        <Field>
+          <Name>Seconds</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Seconds portion of the timestamp: whole seconds after midnight, US Eastern Time (0 to 86399)</Description>
+        </Field>
+        <Field>
+          <Name>Nanoseconds</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Nanoseconds portion of the timestamp (0 to 999999999)</Description>
+        </Field>
+        <Field>
+          <Name>Badge</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Exchange assigned badge/suffix combination</Description>
+        </Field>
+        <Field>
+          <Name>Instrument ID</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Simple Instrument ID</Description>
+        </Field>
+        <Field>
+          <Name>MessageID</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>MessageID (Simple Quote Block short form) or QuoteID (Simple Quote Block long form). Binary data type: any combination of bits.</Description>
+        </Field>
+        <Field>
+          <Name>Auction ID</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Auction ID (if quote participated in an auction)</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Price</Type>
+          <Size>4</Size>
+          <Description>Execution Price</Description>
+        </Field>
+        <Field>
+          <Name>Side</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>B=Bought, S=Sold</Description>
+        </Field>
+        <Field>
+          <Name>Contracts</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Volume Traded</Description>
+        </Field>
+        <Field>
+          <Name>Liquidity Indicator</Name>
+          <Type>Integer</Type>
+          <Size>1</Size>
+          <Description>Liquidity Indicator</Description>
+        </Field>
+        <Field>
+          <Name>Cross Id</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Identifies the execution. Can be matched with the Cross Id in the Clearing Trade Interface (CTI) messages</Description>
+        </Field>
+        <Field>
+          <Name>Match Id</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Identifies the component of an execution</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Complex Quote Execution Notification (NV) section 6.8.2 -->
+    <Message>
+      <Name>Complex Quote Execution Notification Message</Name>
+      <Dependency>Sequenced Message Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>NV</Code>
+      <Category>Application</Category>
+      <Description>Informs the participant that its quote for a given complex instrument has been executed. Sequenced.</Description>
+      <Fields>
+        <Field>
+          <Name>Seconds</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Seconds portion of the timestamp: whole seconds after midnight, US Eastern Time (0 to 86399)</Description>
+        </Field>
+        <Field>
+          <Name>Nanoseconds</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Nanoseconds portion of the timestamp (0 to 999999999)</Description>
+        </Field>
+        <Field>
+          <Name>Badge</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Exchange assigned badge/suffix combination</Description>
+        </Field>
+        <Field>
+          <Name>MessageID</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>QuoteID from Complex Quote Block. Binary data type: any combination of bits.</Description>
+        </Field>
+        <Field>
+          <Name>Instrument ID</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Complex Instrument ID</Description>
+        </Field>
+        <Field>
+          <Name>Auction ID</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Auction ID (if quote participated in an auction)</Description>
+        </Field>
+        <Field>
+          <Name>Price6</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Execution Price (6.6 format)</Description>
+        </Field>
+        <Field>
+          <Name>Side</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>B=Bought, S=Sold</Description>
+        </Field>
+        <Field>
+          <Name>Contracts</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Volume Traded</Description>
+        </Field>
+        <Field>
+          <Name>Liquidity Indicator</Name>
+          <Type>Integer</Type>
+          <Size>1</Size>
+          <Description>Liquidity Indicator</Description>
+        </Field>
+        <Field>
+          <Name>Cross Id</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Identifies the execution. Can be matched with the Cross Id in the Clearing Trade Interface (CTI) messages</Description>
+        </Field>
+        <Field>
+          <Name>Match Id</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Identifies the component of an execution</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Complex Quote Leg Execution Notification (NW) section 6.8.3 -->
+    <Message>
+      <Name>Complex Quote Leg Execution Notification Message</Name>
+      <Dependency>Sequenced Message Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>NW</Code>
+      <Category>Application</Category>
+      <Description>Leg level execution of a quote in a complex instrument. Sequenced.</Description>
+      <Fields>
+        <Field>
+          <Name>Seconds</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Seconds portion of the timestamp: whole seconds after midnight, US Eastern Time (0 to 86399)</Description>
+        </Field>
+        <Field>
+          <Name>Nanoseconds</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Nanoseconds portion of the timestamp (0 to 999999999)</Description>
+        </Field>
+        <Field>
+          <Name>Badge</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Exchange assigned badge/suffix combination</Description>
+        </Field>
+        <Field>
+          <Name>MessageID</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>QuoteID from Complex Quote Block. Binary data type: any combination of bits.</Description>
+        </Field>
+        <Field>
+          <Name>Instrument ID</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Complex Instrument ID</Description>
+        </Field>
+        <Field>
+          <Name>Leg Instrument ID</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Leg Instrument ID, 0 (zero) for stock leg</Description>
+        </Field>
+        <Field>
+          <Name>LegId</Name>
+          <Type>Integer</Type>
+          <Size>1</Size>
+          <Description>Leg reference of the strategy involved in the execution: the index of the leg, starting at zero, in the Complex Instrument Directory message</Description>
+        </Field>
+        <Field>
+          <Name>Auction ID</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Auction ID (if quote participated in an auction)</Description>
+        </Field>
+        <Field>
+          <Name>Price6</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Execution Price (6.6 format)</Description>
+        </Field>
+        <Field>
+          <Name>Side</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>B=Bought, S=Sold</Description>
+        </Field>
+        <Field>
+          <Name>Contracts</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Volume Traded</Description>
+        </Field>
+        <Field>
+          <Name>Liquidity Indicator</Name>
+          <Type>Integer</Type>
+          <Size>1</Size>
+          <Description>Liquidity Indicator</Description>
+        </Field>
+        <Field>
+          <Name>Cross Id</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Identifies the execution. Can be matched with the Cross Id in the Clearing Trade Interface (CTI) messages</Description>
+        </Field>
+        <Field>
+          <Name>Match Id</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Identifies the component of an execution</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Simple MSAR Notification (NS) section 6.9.1 -->
+    <Message>
+      <Name>Simple MSAR Notification Message</Name>
+      <Dependency>Sequenced Message Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>NS</Code>
+      <Category>Application</Category>
+      <Description>Execution Notification Message: the MSAR Request for a given simple instrument has been executed or cancelled. The Side field reflects the side being swept. Sequenced.</Description>
+      <Fields>
+        <Field>
+          <Name>Seconds</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Seconds portion of the timestamp: whole seconds after midnight, US Eastern Time (0 to 86399)</Description>
+        </Field>
+        <Field>
+          <Name>Nanoseconds</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Nanoseconds portion of the timestamp (0 to 999999999)</Description>
+        </Field>
+        <Field>
+          <Name>Badge</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Exchange assigned badge/suffix combination</Description>
+        </Field>
+        <Field>
+          <Name>Instrument ID</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Simple Instrument ID</Description>
+        </Field>
+        <Field>
+          <Name>Notification Type</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>E=Executed, C=Cancelled</Description>
+        </Field>
+        <Field>
+          <Name>MessageID</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>MessageID from the MSAR request. Binary data type: any combination of bits.</Description>
+        </Field>
+        <Field>
+          <Name>Auction ID</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Auction ID</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Price</Type>
+          <Size>4</Size>
+          <Description>Execution Price. 0 for Notification Type=C.</Description>
+        </Field>
+        <Field>
+          <Name>Side</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>B=Buy side sweep, S=Sell side sweep</Description>
+        </Field>
+        <Field>
+          <Name>Contracts</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Volume of Contracts Traded or number of cancelled contracts for a sweep that is out.</Description>
+        </Field>
+        <Field>
+          <Name>Liquidity Indicator</Name>
+          <Type>Integer</Type>
+          <Size>1</Size>
+          <Description>Liquidity Indicator</Description>
+        </Field>
+        <Field>
+          <Name>Cross Id</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Identifies the execution. Can be matched with the Cross Id in the CTI messages. Zero for outed MSARs.</Description>
+        </Field>
+        <Field>
+          <Name>Match Id</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Identifies the component of an execution. Zero for outed MSARs</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Complex MSAR Leg Notification (NL) section 6.9.2 -->
+    <Message>
+      <Name>Complex MSAR Leg Notification Message</Name>
+      <Dependency>Sequenced Message Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>NL</Code>
+      <Category>Application</Category>
+      <Description>Leg-level information on the execution/out of an MSAR for a complex instrument. Precedes the corresponding Complex MSAR Notification. Sequenced.</Description>
+      <Fields>
+        <Field>
+          <Name>Seconds</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Seconds portion of the timestamp: whole seconds after midnight, US Eastern Time (0 to 86399)</Description>
+        </Field>
+        <Field>
+          <Name>Nanoseconds</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Nanoseconds portion of the timestamp (0 to 999999999)</Description>
+        </Field>
+        <Field>
+          <Name>Badge</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Exchange assigned badge/suffix combination</Description>
+        </Field>
+        <Field>
+          <Name>Instrument ID</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Complex Instrument ID</Description>
+        </Field>
+        <Field>
+          <Name>LegId</Name>
+          <Type>Integer</Type>
+          <Size>1</Size>
+          <Description>Leg reference of the strategy involved in the Complex MSAR execution: the index of the leg, starting at zero, in the Complex Instrument Directory message</Description>
+        </Field>
+        <Field>
+          <Name>Leg Instrument ID</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Leg Instrument ID. Zero (0) for Stock Leg.</Description>
+        </Field>
+        <Field>
+          <Name>Notification Type</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>E=Execution, C=Cancelled</Description>
+        </Field>
+        <Field>
+          <Name>MessageID</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>MessageID from the Complex MSAR request. Binary data type: any combination of bits.</Description>
+        </Field>
+        <Field>
+          <Name>Auction ID</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Auction ID</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Price</Type>
+          <Size>4</Size>
+          <Description>Leg Execution Price. 0 for Notification Type=C. Carries default precision of 6.4; Price6 field contains full precision.</Description>
+        </Field>
+        <Field>
+          <Name>Side</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>B=Buy side sweep (Strategy), S=Sell side sweep (Strategy)</Description>
+        </Field>
+        <Field>
+          <Name>Leg Side</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>B=Buy side sweep (Leg), S=Sell side sweep (Leg)</Description>
+        </Field>
+        <Field>
+          <Name>Contracts</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Leg volume of Contracts traded or number of cancelled contracts for a sweep that is out</Description>
+        </Field>
+        <Field>
+          <Name>Liquidity Indicator</Name>
+          <Type>Integer</Type>
+          <Size>1</Size>
+          <Description>Liquidity Indicator</Description>
+        </Field>
+        <Field>
+          <Name>Cross Id</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Identifies the execution. Can be matched with the Cross Id in the CTI message. Zero for outed MSARs.</Description>
+        </Field>
+        <Field>
+          <Name>Match Id</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Identifies the component of the execution. Zero for outed MSARs.</Description>
+        </Field>
+        <Field>
+          <Name>Price6</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Same as Price field above, but with full 6.6 precision</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Complex MSAR Notification (NX) section 6.9.3 -->
+    <Message>
+      <Name>Complex MSAR Notification Message</Name>
+      <Dependency>Sequenced Message Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>NX</Code>
+      <Category>Application</Category>
+      <Description>Complex MSAR Execution Notification: the Complex MSAR Request has been executed or cancelled. Sequenced.</Description>
+      <Fields>
+        <Field>
+          <Name>Seconds</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Seconds portion of the timestamp: whole seconds after midnight, US Eastern Time (0 to 86399)</Description>
+        </Field>
+        <Field>
+          <Name>Nanoseconds</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Nanoseconds portion of the timestamp (0 to 999999999)</Description>
+        </Field>
+        <Field>
+          <Name>Badge</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Exchange assigned badge/suffix combination</Description>
+        </Field>
+        <Field>
+          <Name>Instrument ID</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Complex Instrument ID</Description>
+        </Field>
+        <Field>
+          <Name>Notification Type</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>E=Execution, C=Cancelled</Description>
+        </Field>
+        <Field>
+          <Name>MessageID</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>MessageID from Complex MSAR request. Binary data type: any combination of bits.</Description>
+        </Field>
+        <Field>
+          <Name>Auction ID</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Auction ID</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Price</Type>
+          <Size>4</Size>
+          <Description>Execution Price. 0 for Notification Type=C. Carries default precision of 6.4; Price6 field contains full precision.</Description>
+        </Field>
+        <Field>
+          <Name>Side</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>B=Buy side sweep, S=Sell side sweep</Description>
+        </Field>
+        <Field>
+          <Name>Contracts</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Volume of Contracts Traded or number of cancelled contracts for a MSAR that is out.</Description>
+        </Field>
+        <Field>
+          <Name>Liquidity Indicator</Name>
+          <Type>Integer</Type>
+          <Size>1</Size>
+          <Description>Liquidity Indicator</Description>
+        </Field>
+        <Field>
+          <Name>Cross Id</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Identifies the execution. Can be matched with the Cross Id in the CTI messages. Zero for outed MSARs</Description>
+        </Field>
+        <Field>
+          <Name>Match Id</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Identifies the component of an execution. Zero for outed MSARs</Description>
+        </Field>
+        <Field>
+          <Name>Price6</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Same as Price field above, but with full 6.6 precision</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Opening Rotation Quote Spread Multiplier Notification (AM) section 6.10 -->
+    <Message>
+      <Name>Opening Rotation Quote Spread Multiplier Notification Message</Name>
+      <Dependency>Sequenced Message Type</Dependency>
+      <Branch>Sequenced Message</Branch>
+      <Code>AM</Code>
+      <Category>Application</Category>
+      <Description>Quote Spread Multiplier Message: sent once per underlying permitted on the port and whenever the effective multiplier changes intraday. Sequenced.</Description>
+      <Fields>
+        <Field>
+          <Name>Seconds</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Seconds portion of the timestamp: whole seconds after midnight, US Eastern Time (0 to 86399)</Description>
+        </Field>
+        <Field>
+          <Name>Nanoseconds</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Nanoseconds portion of the timestamp (0 to 999999999)</Description>
+        </Field>
+        <Field>
+          <Name>Underlying Symbol</Name>
+          <Type>Alphanumeric</Type>
+          <Size>13</Size>
+          <Description>Underlying Stock Symbol</Description>
+        </Field>
+        <Field>
+          <Name>Multiplier</Name>
+          <Type>Integer</Type>
+          <Size>1</Size>
+          <Description>Spread Multiplier</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+  </Messages>
+
+  <Groups>
+
+    <Group>
+      <Name>Complex Legs</Name>
+      <Dependency>Number Of Legs</Dependency>
+      <Description>Leg Definitions, Repeated Number Of Legs times</Description>
+      <Fields>
+        <Field>
+          <Name>Leg Instrument ID</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Simple Instrument ID. Zero (0) for Stock Leg.</Description>
+        </Field>
+        <Field>
+          <Name>Leg Side</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>B=Leg is on Buy side, S=Leg is on Sell side</Description>
+        </Field>
+        <Field>
+          <Name>Leg Ratio</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Strategy Leg Ratio</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+    <Group>
+      <Name>Simple Quotes</Name>
+      <Dependency>Quote Count</Dependency>
+      <Description>Quotes of a Simple Quote Block (short form)</Description>
+      <Fields>
+        <Field>
+          <Name>Instrument ID</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Simple Instrument ID</Description>
+        </Field>
+        <Field>
+          <Name>Bid Price</Name>
+          <Type>Price</Type>
+          <Size>4</Size>
+          <Description>Bid price</Description>
+        </Field>
+        <Field>
+          <Name>Bid Size</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Bid size</Description>
+        </Field>
+        <Field>
+          <Name>Ask Price</Name>
+          <Type>Price</Type>
+          <Size>4</Size>
+          <Description>Ask price</Description>
+        </Field>
+        <Field>
+          <Name>Ask Size</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Ask size</Description>
+        </Field>
+        <Field>
+          <Name>Reentry Indicator</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>N=Normal, R=Re-entry</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+    <Group>
+      <Name>Simple Quotes Long Form</Name>
+      <Dependency>Quote Count</Dependency>
+      <Description>Quotes of a Simple Quote Block (long form)</Description>
+      <Fields>
+        <Field>
+          <Name>QuoteID</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Firm defined quote identifier reported on clearing executions. Overrides the message identifier on clearing executions. Binary data type.</Description>
+        </Field>
+        <Field>
+          <Name>Instrument ID</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Simple Instrument ID</Description>
+        </Field>
+        <Field>
+          <Name>Bid Price</Name>
+          <Type>Price</Type>
+          <Size>4</Size>
+          <Description>Bid price</Description>
+        </Field>
+        <Field>
+          <Name>Bid Size</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Bid size</Description>
+        </Field>
+        <Field>
+          <Name>Ask Price</Name>
+          <Type>Price</Type>
+          <Size>4</Size>
+          <Description>Ask price</Description>
+        </Field>
+        <Field>
+          <Name>Ask Size</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Ask size</Description>
+        </Field>
+        <Field>
+          <Name>Reentry Indicator</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>N=Normal, R=Re-entry</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+    <Group>
+      <Name>Complex Quotes</Name>
+      <Dependency>Quote Count</Dependency>
+      <Description>Quotes of a Complex Quote Block</Description>
+      <Fields>
+        <Field>
+          <Name>QuoteID</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Firm defined quote identifier reported on clearing executions. Overrides the message identifier on clearing executions. Binary data type.</Description>
+        </Field>
+        <Field>
+          <Name>Instrument ID</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Complex Instrument ID</Description>
+        </Field>
+        <Field>
+          <Name>Bid Price</Name>
+          <Type>Price</Type>
+          <Size>4</Size>
+          <Description>Bid price</Description>
+        </Field>
+        <Field>
+          <Name>Bid Size</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Bid size</Description>
+        </Field>
+        <Field>
+          <Name>Ask Price</Name>
+          <Type>Price</Type>
+          <Size>4</Size>
+          <Description>Ask price</Description>
+        </Field>
+        <Field>
+          <Name>Ask Size</Name>
+          <Type>Integer</Type>
+          <Size>4</Size>
+          <Description>Ask size</Description>
+        </Field>
+        <Field>
+          <Name>Reentry Indicator</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>N=Normal, R=Re-entry</Description>
+        </Field>
+        <Field>
+          <Name>StockLegShortSale</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>N=Not Applicable, H=Sell Short, E=Sell Short Exempt. If this is a quote for a stock combo StockLegShortSale may be set to H or E. In all other cases value N should be used</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>Alpha</Type>
+          <Size>4</Size>
+          <Description>Reserved for future use</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+    <Group>
+      <Name>Quote Responses</Name>
+      <Dependency>Quote Count</Dependency>
+      <Description>1-200 quote responses of a Quote Block Reply, one per quote of the submitted block</Description>
+      <Fields>
+        <Field>
+          <Name>Quote Status Code</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>See Status Code Appendix</Description>
+        </Field>
+        <Field>
+          <Name>Sequence</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Relative sequence of the valid quote processed by the matching engine. Zero if the request was invalid. Unique for each underlying across all ports.</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+    <Group>
+      <Name>Detailed Quote Responses</Name>
+      <Dependency>Quote Count</Dependency>
+      <Description>1-200 quote responses of a Detailed Quote Block Reply, one per quote of the submitted block</Description>
+      <Fields>
+        <Field>
+          <Name>Quote Status Code</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>See Status Code Appendix</Description>
+        </Field>
+        <Field>
+          <Name>Sequence</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Relative sequence of the valid quote processed by the matching engine. Zero if the request was invalid. Unique for each underlying across all ports.</Description>
+        </Field>
+        <Field>
+          <Name>Bid Sequence</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Day-unique order reference number assigned by NASDAQ to the Bid side of the quote</Description>
+        </Field>
+        <Field>
+          <Name>Ask Sequence</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Day-unique order reference number assigned by NASDAQ to the Sell side of the quote</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+    <Group>
+      <Name>Flex Dac Legs</Name>
+      <Dependency>Number of Flex DAC Legs</Dependency>
+      <Description>Auction Notification leg definitions, to be used in future to support Delta-Adjusted at Close functionality on Flex</Description>
+      <Fields>
+        <Field>
+          <Name>(Reserved)</Name>
+          <Type>Integer</Type>
+          <Size>8</Size>
+          <Description>Reserved for future use</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+  </Groups>
+
+  <Enums>
+
+    <Enum>
+      <Name>Status Code</Name>
+      <Values>
+        <Value>
+          <Data>" "</Data>
+          <Name>Valid Request</Name>
+          <Description>Valid Request</Description>
+        </Value>
+        <Value>
+          <Data>A</Data>
+          <Name>Invalid Badge</Name>
+          <Description>Invalid Badge</Description>
+        </Value>
+        <Value>
+          <Data>B</Data>
+          <Name>Invalid Instrument Underlying</Name>
+          <Description>Invalid Instrument/Underlying</Description>
+        </Value>
+        <Value>
+          <Data>C</Data>
+          <Name>Not Permitted</Name>
+          <Description>Not Permitted</Description>
+        </Value>
+        <Value>
+          <Data>D</Data>
+          <Name>Invalid Side</Name>
+          <Description>Invalid Side</Description>
+        </Value>
+        <Value>
+          <Data>E</Data>
+          <Name>Invalid Size</Name>
+          <Description>Invalid Size</Description>
+        </Value>
+        <Value>
+          <Data>F</Data>
+          <Name>Invalid Price</Name>
+          <Description>Invalid Price</Description>
+        </Value>
+        <Value>
+          <Data>G</Data>
+          <Name>Invalid Spread</Name>
+          <Description>Invalid Spread</Description>
+        </Value>
+        <Value>
+          <Data>H</Data>
+          <Name>Invalid Indicator Attribute</Name>
+          <Description>Invalid Indicator/Attribute</Description>
+        </Value>
+        <Value>
+          <Data>I</Data>
+          <Name>Reentry Required</Name>
+          <Description>Reentry Required</Description>
+        </Value>
+        <Value>
+          <Data>J</Data>
+          <Name>Opening Rotation in Progress</Name>
+          <Description>Opening Rotation in Progress</Description>
+        </Value>
+        <Value>
+          <Data>K</Data>
+          <Name>Kill Switch Reentry Required</Name>
+          <Description>Kill-Switch Reentry Required</Description>
+        </Value>
+        <Value>
+          <Data>L</Data>
+          <Name>Full Replenishment Required</Name>
+          <Description>Full Replenishment Required</Description>
+        </Value>
+        <Value>
+          <Data>M</Data>
+          <Name>Active Counter Exceeded</Name>
+          <Description>Active Counter Exceeded</Description>
+        </Value>
+        <Value>
+          <Data>N</Data>
+          <Name>Too Late To Act</Name>
+          <Description>Too Late To Act</Description>
+        </Value>
+        <Value>
+          <Data>P</Data>
+          <Name>Not in Free Trading</Name>
+          <Description>Not in Free Trading</Description>
+        </Value>
+        <Value>
+          <Data>Q</Data>
+          <Name>Invalid Auction Information</Name>
+          <Description>Invalid Auction Information</Description>
+        </Value>
+        <Value>
+          <Data>R</Data>
+          <Name>Market Closed</Name>
+          <Description>Market Closed</Description>
+        </Value>
+        <Value>
+          <Data>S</Data>
+          <Name>Post Only Reprice</Name>
+          <Description>Post-Only Reprice</Description>
+        </Value>
+        <Value>
+          <Data>T</Data>
+          <Name>Request Pending</Name>
+          <Description>Request Pending</Description>
+        </Value>
+        <Value>
+          <Data>Y</Data>
+          <Name>Invalid Format Bad Block</Name>
+          <Description>Invalid Format/Bad Block</Description>
+        </Value>
+        <Value>
+          <Data>Z</Data>
+          <Name>System Error</Name>
+          <Description>System Error</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>Block Status Code</Name>
+      <Values>
+        <Value>
+          <Data>" "</Data>
+          <Name>Valid Request</Name>
+          <Description>Valid Request</Description>
+        </Value>
+        <Value>
+          <Data>A</Data>
+          <Name>Invalid Badge</Name>
+          <Description>Invalid Badge</Description>
+        </Value>
+        <Value>
+          <Data>B</Data>
+          <Name>Invalid Instrument Underlying</Name>
+          <Description>Invalid Instrument/Underlying</Description>
+        </Value>
+        <Value>
+          <Data>C</Data>
+          <Name>Not Permitted</Name>
+          <Description>Not Permitted</Description>
+        </Value>
+        <Value>
+          <Data>D</Data>
+          <Name>Invalid Side</Name>
+          <Description>Invalid Side</Description>
+        </Value>
+        <Value>
+          <Data>E</Data>
+          <Name>Invalid Size</Name>
+          <Description>Invalid Size</Description>
+        </Value>
+        <Value>
+          <Data>F</Data>
+          <Name>Invalid Price</Name>
+          <Description>Invalid Price</Description>
+        </Value>
+        <Value>
+          <Data>G</Data>
+          <Name>Invalid Spread</Name>
+          <Description>Invalid Spread</Description>
+        </Value>
+        <Value>
+          <Data>H</Data>
+          <Name>Invalid Indicator Attribute</Name>
+          <Description>Invalid Indicator/Attribute</Description>
+        </Value>
+        <Value>
+          <Data>I</Data>
+          <Name>Reentry Required</Name>
+          <Description>Reentry Required</Description>
+        </Value>
+        <Value>
+          <Data>J</Data>
+          <Name>Opening Rotation in Progress</Name>
+          <Description>Opening Rotation in Progress</Description>
+        </Value>
+        <Value>
+          <Data>K</Data>
+          <Name>Kill Switch Reentry Required</Name>
+          <Description>Kill-Switch Reentry Required</Description>
+        </Value>
+        <Value>
+          <Data>L</Data>
+          <Name>Full Replenishment Required</Name>
+          <Description>Full Replenishment Required</Description>
+        </Value>
+        <Value>
+          <Data>M</Data>
+          <Name>Active Counter Exceeded</Name>
+          <Description>Active Counter Exceeded</Description>
+        </Value>
+        <Value>
+          <Data>N</Data>
+          <Name>Too Late To Act</Name>
+          <Description>Too Late To Act</Description>
+        </Value>
+        <Value>
+          <Data>P</Data>
+          <Name>Not in Free Trading</Name>
+          <Description>Not in Free Trading</Description>
+        </Value>
+        <Value>
+          <Data>Q</Data>
+          <Name>Invalid Auction Information</Name>
+          <Description>Invalid Auction Information</Description>
+        </Value>
+        <Value>
+          <Data>R</Data>
+          <Name>Market Closed</Name>
+          <Description>Market Closed</Description>
+        </Value>
+        <Value>
+          <Data>S</Data>
+          <Name>Post Only Reprice</Name>
+          <Description>Post-Only Reprice</Description>
+        </Value>
+        <Value>
+          <Data>T</Data>
+          <Name>Request Pending</Name>
+          <Description>Request Pending</Description>
+        </Value>
+        <Value>
+          <Data>Y</Data>
+          <Name>Invalid Format Bad Block</Name>
+          <Description>Invalid Format/Bad Block</Description>
+        </Value>
+        <Value>
+          <Data>Z</Data>
+          <Name>System Error</Name>
+          <Description>System Error</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>Quote Status Code</Name>
+      <Values>
+        <Value>
+          <Data>" "</Data>
+          <Name>Valid Request</Name>
+          <Description>Valid Request</Description>
+        </Value>
+        <Value>
+          <Data>A</Data>
+          <Name>Invalid Badge</Name>
+          <Description>Invalid Badge</Description>
+        </Value>
+        <Value>
+          <Data>B</Data>
+          <Name>Invalid Instrument Underlying</Name>
+          <Description>Invalid Instrument/Underlying</Description>
+        </Value>
+        <Value>
+          <Data>C</Data>
+          <Name>Not Permitted</Name>
+          <Description>Not Permitted</Description>
+        </Value>
+        <Value>
+          <Data>D</Data>
+          <Name>Invalid Side</Name>
+          <Description>Invalid Side</Description>
+        </Value>
+        <Value>
+          <Data>E</Data>
+          <Name>Invalid Size</Name>
+          <Description>Invalid Size</Description>
+        </Value>
+        <Value>
+          <Data>F</Data>
+          <Name>Invalid Price</Name>
+          <Description>Invalid Price</Description>
+        </Value>
+        <Value>
+          <Data>G</Data>
+          <Name>Invalid Spread</Name>
+          <Description>Invalid Spread</Description>
+        </Value>
+        <Value>
+          <Data>H</Data>
+          <Name>Invalid Indicator Attribute</Name>
+          <Description>Invalid Indicator/Attribute</Description>
+        </Value>
+        <Value>
+          <Data>I</Data>
+          <Name>Reentry Required</Name>
+          <Description>Reentry Required</Description>
+        </Value>
+        <Value>
+          <Data>J</Data>
+          <Name>Opening Rotation in Progress</Name>
+          <Description>Opening Rotation in Progress</Description>
+        </Value>
+        <Value>
+          <Data>K</Data>
+          <Name>Kill Switch Reentry Required</Name>
+          <Description>Kill-Switch Reentry Required</Description>
+        </Value>
+        <Value>
+          <Data>L</Data>
+          <Name>Full Replenishment Required</Name>
+          <Description>Full Replenishment Required</Description>
+        </Value>
+        <Value>
+          <Data>M</Data>
+          <Name>Active Counter Exceeded</Name>
+          <Description>Active Counter Exceeded</Description>
+        </Value>
+        <Value>
+          <Data>N</Data>
+          <Name>Too Late To Act</Name>
+          <Description>Too Late To Act</Description>
+        </Value>
+        <Value>
+          <Data>P</Data>
+          <Name>Not in Free Trading</Name>
+          <Description>Not in Free Trading</Description>
+        </Value>
+        <Value>
+          <Data>Q</Data>
+          <Name>Invalid Auction Information</Name>
+          <Description>Invalid Auction Information</Description>
+        </Value>
+        <Value>
+          <Data>R</Data>
+          <Name>Market Closed</Name>
+          <Description>Market Closed</Description>
+        </Value>
+        <Value>
+          <Data>S</Data>
+          <Name>Post Only Reprice</Name>
+          <Description>Post-Only Reprice</Description>
+        </Value>
+        <Value>
+          <Data>T</Data>
+          <Name>Request Pending</Name>
+          <Description>Request Pending</Description>
+        </Value>
+        <Value>
+          <Data>Y</Data>
+          <Name>Invalid Format Bad Block</Name>
+          <Description>Invalid Format/Bad Block</Description>
+        </Value>
+        <Value>
+          <Data>Z</Data>
+          <Name>System Error</Name>
+          <Description>System Error</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>Instrument Type</Name>
+      <Values>
+        <Value>
+          <Data>S</Data>
+          <Name>Simple Instruments</Name>
+          <Description>Simple Instruments</Description>
+        </Value>
+        <Value>
+          <Data>C</Data>
+          <Name>Complex Instruments</Name>
+          <Description>Complex Instruments</Description>
+        </Value>
+        <Value>
+          <Data>O</Data>
+          <Name>Simple Instrument</Name>
+          <Description>Simple Instrument (Underlying Purge and Market Reentry requests)</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>Side</Name>
+      <Values>
+        <Value>
+          <Data>B</Data>
+          <Name>Buy</Name>
+          <Description>Buy side (Bought on quote executions)</Description>
+        </Value>
+        <Value>
+          <Data>S</Data>
+          <Name>Sell</Name>
+          <Description>Sell side (Sold on quote executions)</Description>
+        </Value>
+        <Value>
+          <Data>*</Data>
+          <Name>Not Disclosed</Name>
+          <Description>Not Disclosed (Auction Notification)</Description>
+        </Value>
+        <Value>
+          <Data>T</Data>
+          <Name>Buy Short</Name>
+          <Description>Buy book side (short)</Description>
+        </Value>
+        <Value>
+          <Data>X</Data>
+          <Name>Buy Short Exempt</Name>
+          <Description>Buy book side (short exempt)</Description>
+        </Value>
+        <Value>
+          <Data>Y</Data>
+          <Name>Sell Short</Name>
+          <Description>Sell book side (short)</Description>
+        </Value>
+        <Value>
+          <Data>Z</Data>
+          <Name>Sell Short Exempt</Name>
+          <Description>Sell book side (short exempt)</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>Leg Side</Name>
+      <Values>
+        <Value>
+          <Data>B</Data>
+          <Name>Buy</Name>
+          <Description>Buy</Description>
+        </Value>
+        <Value>
+          <Data>S</Data>
+          <Name>Sell</Name>
+          <Description>Sell</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>Reentry Indicator</Name>
+      <Values>
+        <Value>
+          <Data>N</Data>
+          <Name>Normal</Name>
+          <Description>Normal (Not Applicable on complex quotes)</Description>
+        </Value>
+        <Value>
+          <Data>R</Data>
+          <Name>Reentry</Name>
+          <Description>Re-entry</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>StockLegShortSale</Name>
+      <Values>
+        <Value>
+          <Data>N</Data>
+          <Name>Not Applicable</Name>
+          <Description>Not Applicable</Description>
+        </Value>
+        <Value>
+          <Data>H</Data>
+          <Name>Sell Short</Name>
+          <Description>Sell Short</Description>
+        </Value>
+        <Value>
+          <Data>E</Data>
+          <Name>Sell Short Exempt</Name>
+          <Description>Sell Short Exempt</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>MSAR Type</Name>
+      <Values>
+        <Value>
+          <Data>A</Data>
+          <Name>Auction Response</Name>
+          <Description>Auction Response</Description>
+        </Value>
+        <Value>
+          <Data>M</Data>
+          <Name>Market Sweep</Name>
+          <Description>SQF Market Sweep</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>Debit Credit</Name>
+      <Values>
+        <Value>
+          <Data>D</Data>
+          <Name>Debit</Name>
+          <Description>Sweep Price is Debit</Description>
+        </Value>
+        <Value>
+          <Data>C</Data>
+          <Name>Credit</Name>
+          <Description>Sweep Price is Credit</Description>
+        </Value>
+        <Value>
+          <Data>" "</Data>
+          <Name>Zero</Name>
+          <Description>Sweep Price is 0.0</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>Price Protection</Name>
+      <Values>
+        <Value>
+          <Data>L</Data>
+          <Name>Local</Name>
+          <Description>Local Market</Description>
+        </Value>
+        <Value>
+          <Data>N</Data>
+          <Name>National</Name>
+          <Description>National Market</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>Permitted</Name>
+      <Values>
+        <Value>
+          <Data>Y</Data>
+          <Name>Permitted</Name>
+          <Description>Permitted</Description>
+        </Value>
+        <Value>
+          <Data>N</Data>
+          <Name>Not Permitted</Name>
+          <Description>Not Permitted</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>Event Code</Name>
+      <Values>
+        <Value>
+          <Data>O</Data>
+          <Name>Start of Messages</Name>
+          <Description>Start of Messages. This is always the first message sent in any trading day.</Description>
+        </Value>
+        <Value>
+          <Data>S</Data>
+          <Name>Start of System Hours</Name>
+          <Description>Start of System Hours. The system is up and ready to start accepting orders.</Description>
+        </Value>
+        <Value>
+          <Data>B</Data>
+          <Name>Start of Quote</Name>
+          <Description>Start of Quote. Quotes sent to the system will now be added to the book and considered for execution when trading starts on this option.</Description>
+        </Value>
+        <Value>
+          <Data>Q</Data>
+          <Name>Start of Opening Process</Name>
+          <Description>Start of Opening Process.</Description>
+        </Value>
+        <Value>
+          <Data>W</Data>
+          <Name>End of Wco Early Closing</Name>
+          <Description>End of WCO Early closing. No new orders or changes to existing Orders on last trading date of WCO options.</Description>
+        </Value>
+        <Value>
+          <Data>N</Data>
+          <Name>End of Normal Hours Processing</Name>
+          <Description>End of Normal Hours Processing.</Description>
+        </Value>
+        <Value>
+          <Data>L</Data>
+          <Name>End of Late Hours Processing</Name>
+          <Description>End of Late Hours Processing.</Description>
+        </Value>
+        <Value>
+          <Data>E</Data>
+          <Name>End of System Hours</Name>
+          <Description>End of System Hours. The system is now closed.</Description>
+        </Value>
+        <Value>
+          <Data>C</Data>
+          <Name>End of Messages</Name>
+          <Description>End of Messages. This is always the last message sent in any trading day.</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>Option Type</Name>
+      <Values>
+        <Value>
+          <Data>C</Data>
+          <Name>Call</Name>
+          <Description>Call</Description>
+        </Value>
+        <Value>
+          <Data>P</Data>
+          <Name>Put</Name>
+          <Description>Put</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>Closing Type</Name>
+      <Values>
+        <Value>
+          <Data>N</Data>
+          <Name>Normal Hours</Name>
+          <Description>Normal Hours</Description>
+        </Value>
+        <Value>
+          <Data>L</Data>
+          <Name>Late Hours</Name>
+          <Description>Late Hours</Description>
+        </Value>
+        <Value>
+          <Data>W</Data>
+          <Name>Wco Early Closing</Name>
+          <Description>WCO Early Closing 12:00 Noon</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>Tradable</Name>
+      <Values>
+        <Value>
+          <Data>Y</Data>
+          <Name>Tradable</Name>
+          <Description>Option is tradable</Description>
+        </Value>
+        <Value>
+          <Data>N</Data>
+          <Name>Not Tradable</Name>
+          <Description>Option is not tradable</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>MPV</Name>
+      <Values>
+        <Value>
+          <Data>E</Data>
+          <Name>Penny Everywhere</Name>
+          <Description>All prices are in penny increments</Description>
+        </Value>
+        <Value>
+          <Data>S</Data>
+          <Name>Scaled</Name>
+          <Description>Prices below $3.00 are in increments of $0.05, prices above $3.00 in increments of $0.10</Description>
+        </Value>
+        <Value>
+          <Data>P</Data>
+          <Name>Penny Pilot</Name>
+          <Description>Prices below $3.00 are in increments of $0.01, prices above $3.00 in increments of $0.05</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>Trading State</Name>
+      <Values>
+        <Value>
+          <Data>H</Data>
+          <Name>Halt in Effect</Name>
+          <Description>Halt in Effect</Description>
+        </Value>
+        <Value>
+          <Data>T</Data>
+          <Name>Trading Resumed</Name>
+          <Description>Trading Resumed</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>Order Type</Name>
+      <Values>
+        <Value>
+          <Data>L</Data>
+          <Name>Limit</Name>
+          <Description>Limit</Description>
+        </Value>
+        <Value>
+          <Data>M</Data>
+          <Name>Market</Name>
+          <Description>Market</Description>
+        </Value>
+        <Value>
+          <Data>N</Data>
+          <Name>Not Disclosed</Name>
+          <Description>Not Disclosed</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>Exec Flag</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>None</Name>
+          <Description>None</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Aon</Name>
+          <Description>AON</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>Order Capacity</Name>
+      <Values>
+        <Value>
+          <Data>C</Data>
+          <Name>Customer</Name>
+          <Description>Customer</Description>
+        </Value>
+        <Value>
+          <Data>F</Data>
+          <Name>Firm</Name>
+          <Description>Firm</Description>
+        </Value>
+        <Value>
+          <Data>M</Data>
+          <Name>Market Maker</Name>
+          <Description>Market Maker</Description>
+        </Value>
+        <Value>
+          <Data>O</Data>
+          <Name>Other Exchange Registered Market Maker</Name>
+          <Description>Other-Exchange Registered Market Maker (FARMM/AWAYMM)</Description>
+        </Value>
+        <Value>
+          <Data>P</Data>
+          <Name>Professional Customer</Name>
+          <Description>Professional Customer</Description>
+        </Value>
+        <Value>
+          <Data>B</Data>
+          <Name>Broker Dealer Customer</Name>
+          <Description>Broker/Dealer - Customer</Description>
+        </Value>
+        <Value>
+          <Data>J</Data>
+          <Name>Joint Back Office</Name>
+          <Description>Joint BackOffice (JBO)</Description>
+        </Value>
+        <Value>
+          <Data>" "</Data>
+          <Name>Not Applicable</Name>
+          <Description>N/A</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>Auction Event</Name>
+      <Values>
+        <Value>
+          <Data>S</Data>
+          <Name>Start</Name>
+          <Description>Start</Description>
+        </Value>
+        <Value>
+          <Data>U</Data>
+          <Name>Auction Update</Name>
+          <Description>Auction Update</Description>
+        </Value>
+        <Value>
+          <Data>E</Data>
+          <Name>End of Auction</Name>
+          <Description>End of Auction</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>Auction Type</Name>
+      <Values>
+        <Value>
+          <Data>B</Data>
+          <Name>Block Order Auction</Name>
+          <Description>Block Order Auction</Description>
+        </Value>
+        <Value>
+          <Data>C</Data>
+          <Name>Combo Exposure Auction</Name>
+          <Description>Combo Exposure Auction (aka COLA)</Description>
+        </Value>
+        <Value>
+          <Data>I</Data>
+          <Name>Order Exposure</Name>
+          <Description>Order Exposure</Description>
+        </Value>
+        <Value>
+          <Data>O</Data>
+          <Name>Opening Auction</Name>
+          <Description>Opening Auction</Description>
+        </Value>
+        <Value>
+          <Data>P</Data>
+          <Name>Pim Auction</Name>
+          <Description>PIM Auction (PIXL)</Description>
+        </Value>
+        <Value>
+          <Data>H</Data>
+          <Name>Facilitation Auction</Name>
+          <Description>Facilitation Auction</Description>
+        </Value>
+        <Value>
+          <Data>S</Data>
+          <Name>Solicitation Auction</Name>
+          <Description>Solicitation Auction</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>Purge Reason</Name>
+      <Values>
+        <Value>
+          <Data>U</Data>
+          <Name>User Requested Simple</Name>
+          <Description>User requested (Simple)</Description>
+        </Value>
+        <Value>
+          <Data>S</Data>
+          <Name>System Initiated</Name>
+          <Description>System initiated (Simple)</Description>
+        </Value>
+        <Value>
+          <Data>K</Data>
+          <Name>Auto Killswitch</Name>
+          <Description>Auto Killswitch initiated (All Instruments)</Description>
+        </Value>
+        <Value>
+          <Data>M</Data>
+          <Name>Manual Killswitch</Name>
+          <Description>Manual Killswitch initiated (All Instruments)</Description>
+        </Value>
+        <Value>
+          <Data>P</Data>
+          <Name>Purge on Disconnect</Name>
+          <Description>Purge On Disconnect (All instruments)</Description>
+        </Value>
+        <Value>
+          <Data>u</Data>
+          <Name>User Requested Complex</Name>
+          <Description>User requested (Complex)</Description>
+        </Value>
+        <Value>
+          <Data>s</Data>
+          <Name>System Initiated Complex</Name>
+          <Description>System initiated (Complex)</Description>
+        </Value>
+        <Value>
+          <Data>Q</Data>
+          <Name>Anti Internalize</Name>
+          <Description>Anti-Internalize (Instrument Purge Notification)</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>Reentry Scope</Name>
+      <Values>
+        <Value>
+          <Data>N</Data>
+          <Name>User Requested Simple</Name>
+          <Description>User requested (Simple Instruments)</Description>
+        </Value>
+        <Value>
+          <Data>n</Data>
+          <Name>User Requested Complex</Name>
+          <Description>User requested (Complex Instruments)</Description>
+        </Value>
+        <Value>
+          <Data>K</Data>
+          <Name>Post Killswitch</Name>
+          <Description>Post-Killswitch (All Instruments)</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>Notification Type</Name>
+      <Values>
+        <Value>
+          <Data>E</Data>
+          <Name>Executed</Name>
+          <Description>Executed</Description>
+        </Value>
+        <Value>
+          <Data>C</Data>
+          <Name>Cancelled</Name>
+          <Description>Cancelled</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <Enum>
+      <Name>Liquidity Indicator</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>None</Name>
+          <Description>None</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Maker</Name>
+          <Description>Maker</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Taker</Name>
+          <Description>Taker</Description>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>Response</Name>
+          <Description>Response</Description>
+        </Value>
+        <Value>
+          <Data>5</Data>
+          <Name>Hidden</Name>
+          <Description>Hidden</Description>
+        </Value>
+        <Value>
+          <Data>6</Data>
+          <Name>Opening Rotation</Name>
+          <Description>Opening Rotation</Description>
+        </Value>
+        <Value>
+          <Data>7</Data>
+          <Name>Cross</Name>
+          <Description>Cross</Description>
+        </Value>
+        <Value>
+          <Data>8</Data>
+          <Name>Flashed Order</Name>
+          <Description>Flashed Order</Description>
+        </Value>
+        <Value>
+          <Data>9</Data>
+          <Name>Flash Response</Name>
+          <Description>Flash Response</Description>
+        </Value>
+        <Value>
+          <Data>10</Data>
+          <Name>Routed Out</Name>
+          <Description>Routed Out</Description>
+        </Value>
+        <Value>
+          <Data>11</Data>
+          <Name>Trade Report</Name>
+          <Description>Trade Report</Description>
+        </Value>
+        <Value>
+          <Data>12</Data>
+          <Name>Combo Maker Against Combo</Name>
+          <Description>Combo Maker Against Combo</Description>
+        </Value>
+        <Value>
+          <Data>13</Data>
+          <Name>Combo Taker Against Combo</Name>
+          <Description>Combo Taker Against Combo</Description>
+        </Value>
+        <Value>
+          <Data>14</Data>
+          <Name>Combo Response Against Combo</Name>
+          <Description>Combo Response Against Combo</Description>
+        </Value>
+        <Value>
+          <Data>15</Data>
+          <Name>Combo Hidden Against Combo</Name>
+          <Description>Combo Hidden Against Combo</Description>
+        </Value>
+        <Value>
+          <Data>16</Data>
+          <Name>Combo Opening Rotation</Name>
+          <Description>Combo Opening Rotation</Description>
+        </Value>
+        <Value>
+          <Data>17</Data>
+          <Name>Combo Cross</Name>
+          <Description>Combo Cross</Description>
+        </Value>
+        <Value>
+          <Data>18</Data>
+          <Name>Combo Taker Against Regular</Name>
+          <Description>Combo Taker Against Regular</Description>
+        </Value>
+        <Value>
+          <Data>19</Data>
+          <Name>Regular Maker Against Combo</Name>
+          <Description>Regular Maker Against Combo</Description>
+        </Value>
+        <Value>
+          <Data>20</Data>
+          <Name>Combo Taker Against IO</Name>
+          <Description>Combo Taker Against IO</Description>
+        </Value>
+        <Value>
+          <Data>21</Data>
+          <Name>Regular (incl. PIM) Taker Against IO</Name>
+          <Description>Regular (incl. PIM) Taker Against IO</Description>
+        </Value>
+        <Value>
+          <Data>22</Data>
+          <Name>IO Maker Against Combo</Name>
+          <Description>IO Maker Against Combo</Description>
+        </Value>
+        <Value>
+          <Data>23</Data>
+          <Name>IO Maker Against Regular</Name>
+          <Description>IO Maker Against Regular</Description>
+        </Value>
+        <Value>
+          <Data>24</Data>
+          <Name>Regular Maker Against IO Participant</Name>
+          <Description>Regular Maker Against IO Participant</Description>
+        </Value>
+        <Value>
+          <Data>25</Data>
+          <Name>IO Participant Taker Against Regular</Name>
+          <Description>IO Participant Taker Against Regular</Description>
+        </Value>
+        <Value>
+          <Data>26</Data>
+          <Name>Broken Price Improvement</Name>
+          <Description>Broken Price Improvement</Description>
+        </Value>
+        <Value>
+          <Data>27</Data>
+          <Name>Broken Facilitation</Name>
+          <Description>Broken Facilitation</Description>
+        </Value>
+        <Value>
+          <Data>28</Data>
+          <Name>Broken Solicitation</Name>
+          <Description>Broken Solicitation</Description>
+        </Value>
+        <Value>
+          <Data>29</Data>
+          <Name>Combo Broken Price Improvement</Name>
+          <Description>Combo Broken Price Improvement</Description>
+        </Value>
+        <Value>
+          <Data>30</Data>
+          <Name>Combo Broken Facilitation</Name>
+          <Description>Combo Broken Facilitation</Description>
+        </Value>
+        <Value>
+          <Data>31</Data>
+          <Name>Combo Broken Solicitation</Name>
+          <Description>Combo Broken Solicitation</Description>
+        </Value>
+        <Value>
+          <Data>32</Data>
+          <Name>Block</Name>
+          <Description>Block</Description>
+        </Value>
+        <Value>
+          <Data>33</Data>
+          <Name>Block Response</Name>
+          <Description>Block Response</Description>
+        </Value>
+        <Value>
+          <Data>34</Data>
+          <Name>Directed Response</Name>
+          <Description>Directed Response</Description>
+        </Value>
+        <Value>
+          <Data>35</Data>
+          <Name>Facilitation</Name>
+          <Description>Facilitation</Description>
+        </Value>
+        <Value>
+          <Data>36</Data>
+          <Name>Facilitation Response</Name>
+          <Description>Facilitation Response</Description>
+        </Value>
+        <Value>
+          <Data>37</Data>
+          <Name>Price Improvement</Name>
+          <Description>Price Improvement</Description>
+        </Value>
+        <Value>
+          <Data>38</Data>
+          <Name>Price improvement Response</Name>
+          <Description>Price improvement Response</Description>
+        </Value>
+        <Value>
+          <Data>39</Data>
+          <Name>Solicitation</Name>
+          <Description>Solicitation</Description>
+        </Value>
+        <Value>
+          <Data>40</Data>
+          <Name>Solicitation Response</Name>
+          <Description>Solicitation Response</Description>
+        </Value>
+        <Value>
+          <Data>41</Data>
+          <Name>Qualified Contingent Cross</Name>
+          <Description>Qualified Contingent Cross</Description>
+        </Value>
+        <Value>
+          <Data>42</Data>
+          <Name>Customer to Customer</Name>
+          <Description>Customer to Customer</Description>
+        </Value>
+        <Value>
+          <Data>43</Data>
+          <Name>Combo Facilitation</Name>
+          <Description>Combo Facilitation</Description>
+        </Value>
+        <Value>
+          <Data>44</Data>
+          <Name>Combo Facilitation Response</Name>
+          <Description>Combo Facilitation Response</Description>
+        </Value>
+        <Value>
+          <Data>45</Data>
+          <Name>Combo Price Improvement</Name>
+          <Description>Combo Price Improvement</Description>
+        </Value>
+        <Value>
+          <Data>46</Data>
+          <Name>Combo Price Improvement Response</Name>
+          <Description>Combo Price Improvement Response</Description>
+        </Value>
+        <Value>
+          <Data>47</Data>
+          <Name>Combo Solicitation</Name>
+          <Description>Combo Solicitation</Description>
+        </Value>
+        <Value>
+          <Data>48</Data>
+          <Name>Combo Solicitation Response</Name>
+          <Description>Combo Solicitation Response</Description>
+        </Value>
+        <Value>
+          <Data>49</Data>
+          <Name>Combo Qualified Contingent Cross</Name>
+          <Description>Combo Qualified Contingent Cross</Description>
+        </Value>
+        <Value>
+          <Data>50</Data>
+          <Name>Combo Customer to Customer</Name>
+          <Description>Combo Customer to Customer</Description>
+        </Value>
+        <Value>
+          <Data>51</Data>
+          <Name>Sweep Routed Out</Name>
+          <Description>Sweep Routed Out</Description>
+        </Value>
+        <Value>
+          <Data>52</Data>
+          <Name>Sweep Trade Report</Name>
+          <Description>Sweep Trade Report</Description>
+        </Value>
+        <Value>
+          <Data>53</Data>
+          <Name>Combo Taker Against Regular - Thru NBBO</Name>
+          <Description>Combo Taker Against Regular - Thru NBBO</Description>
+        </Value>
+        <Value>
+          <Data>54</Data>
+          <Name>Combo Taker Against IO - Thru NBBO</Name>
+          <Description>Combo Taker Against IO - Thru NBBO</Description>
+        </Value>
+        <Value>
+          <Data>55</Data>
+          <Name>Simple Exposure Order - Upon Receipt</Name>
+          <Description>Simple Exposure Order - Upon Receipt</Description>
+        </Value>
+        <Value>
+          <Data>56</Data>
+          <Name>Simple Exposure Order - Subsequent</Name>
+          <Description>Simple Exposure Order - Subsequent</Description>
+        </Value>
+        <Value>
+          <Data>57</Data>
+          <Name>Simple Exposure Order - Responder</Name>
+          <Description>Simple Exposure Order - Responder</Description>
+        </Value>
+        <Value>
+          <Data>58</Data>
+          <Name>Flex Auction</Name>
+          <Description>Flex Auction</Description>
+        </Value>
+        <Value>
+          <Data>59</Data>
+          <Name>Flex Auction Responder</Name>
+          <Description>Flex Auction Responder</Description>
+        </Value>
+        <Value>
+          <Data>60</Data>
+          <Name>Flex Price Improvement</Name>
+          <Description>Flex Price Improvement</Description>
+        </Value>
+        <Value>
+          <Data>61</Data>
+          <Name>Flex Price Improvement Responder</Name>
+          <Description>Flex Price Improvement Responder</Description>
+        </Value>
+        <Value>
+          <Data>62</Data>
+          <Name>Flex Broken Price Improvement</Name>
+          <Description>Flex Broken Price Improvement</Description>
+        </Value>
+        <Value>
+          <Data>63</Data>
+          <Name>Flex Solicitation</Name>
+          <Description>Flex Solicitation</Description>
+        </Value>
+        <Value>
+          <Data>64</Data>
+          <Name>Flex Solicitation Responder</Name>
+          <Description>Flex Solicitation Responder</Description>
+        </Value>
+        <Value>
+          <Data>65</Data>
+          <Name>Flex Broken Solicitation</Name>
+          <Description>Flex Broken Solicitation</Description>
+        </Value>
+        <Value>
+          <Data>66</Data>
+          <Name>Combo Flex Auction</Name>
+          <Description>Combo Flex Auction</Description>
+        </Value>
+        <Value>
+          <Data>67</Data>
+          <Name>Combo Flex Auction Responder</Name>
+          <Description>Combo Flex Auction Responder</Description>
+        </Value>
+        <Value>
+          <Data>68</Data>
+          <Name>Combo Flex Price Improvement</Name>
+          <Description>Combo Flex Price Improvement</Description>
+        </Value>
+        <Value>
+          <Data>69</Data>
+          <Name>Combo Flex Price Improvement Responder</Name>
+          <Description>Combo Flex Price Improvement Responder</Description>
+        </Value>
+        <Value>
+          <Data>70</Data>
+          <Name>Combo Flex Broken Price Improvement</Name>
+          <Description>Combo Flex Broken Price Improvement</Description>
+        </Value>
+        <Value>
+          <Data>71</Data>
+          <Name>Combo Flex Solicitation</Name>
+          <Description>Combo Flex Solicitation</Description>
+        </Value>
+        <Value>
+          <Data>72</Data>
+          <Name>Combo Flex Solicitation Responder</Name>
+          <Description>Combo Flex Solicitation Responder</Description>
+        </Value>
+        <Value>
+          <Data>73</Data>
+          <Name>Combo Flex Broken Solicitation</Name>
+          <Description>Combo Flex Broken Solicitation</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+  </Enums>
+
+</OmiItchNasdaqPdf>
