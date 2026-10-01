@@ -1,29 +1,6 @@
 <OmiNativeStreamlinedPdf>
 
-  <!--
-    The Native Recovery Channel message set (MIT203 section 6).
-
-    Session administration is shared with the Real Time Channel. Missed Message
-    Request, Missed Message Request Ack and Missed Message Report exist only
-    here. The remaining messages are the server initiated application messages
-    replayed from the Order Cache; section 6.2 excludes Order Cancel Reject and
-    Business Reject, which the cache does not retain.
-
-    The client initiated application messages are absent: section 6.1 gives
-    heartbeats and Missed Message Requests as what a client sends once connected
-    to this channel. The document does not state that order entry is rejected
-    here, so that exclusion is a reading of 6.1 rather than a quoted rule.
-  -->
-
-  <!--
-    MIT203 declares Side, Passive Only Order and App ID as Int8 in some messages
-    and UInt8 in others (Side is Int8 in sections 8.4.3 and 8.4.6, UInt8 elsewhere;
-    App ID is Int8 in 8.3.5, UInt8 in 8.3.9, 8.4.6 and 8.4.8). None of the fields
-    carries a negative value, so the split reads as a documentation slip. They are
-    normalized to UInt8 here: the loader disambiguates same named fields of
-    differing type by appending it, which otherwise splits each field into two
-    names and leaves its enum unable to bind.
-  -->
+  <!-- Lseg Millennium Native Trading Gateway Recovery Channel MIT203 v21.2 -->
 
   <Messages>
 
@@ -129,6 +106,7 @@
       <Origin>Firm</Origin>
       <Description>Allows the client to subscribe to missed messages through the Recovery Channel.</Description>
       <Fields>
+        <!-- Changed: UInt8; section 8.3.5 declares Int8 -->
         <Field>
           <Name>App ID</Name>
           <Type>UInt8</Type>
@@ -242,6 +220,7 @@
     </Message>
 
     <!-- Execution Report Message -->
+    <!-- Omitted: client initiated application messages, which section 6.1 does not list for this channel -->
     <Message>
       <Name>Execution Report Message</Name>
       <Branch>payload</Branch>
@@ -353,6 +332,7 @@
           <Size>1</Size>
           <Description>The instruction for permissioning to trade against mid-priced pegged orders.</Description>
         </Field>
+        <!-- Changed: UInt8; section 8.4.6 declares Int8 -->
         <Field>
           <Name>Side</Name>
           <Type>UInt8</Type>
@@ -934,9 +914,6 @@
           <Size>12</Size>
           <Description>Only populated for Named models.</Description>
         </Field>
-        <!-- MIT203 section 8.4.12.2 describes this field as the Bid Side; section
-             8.4.13 defines Offer ID as the offer side of the quote. Transcribed as
-             published - to be confirmed with the exchange. -->
         <Field>
           <Name>Offer ID</Name>
           <Type>String</Type>

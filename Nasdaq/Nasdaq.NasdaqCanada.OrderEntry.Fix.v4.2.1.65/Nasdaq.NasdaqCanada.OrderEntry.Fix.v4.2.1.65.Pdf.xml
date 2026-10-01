@@ -1,69 +1,10 @@
 <OmiFixPdf>
 
-  <!--
-  Nasdaq CXC Limited FIX 4.2 Application Notes, Version 1.65 (October 7, 2025), English edition.
+  <!-- Nasdaq Canada Order Entry Fix v4.2.1.65 (FIX 4.2, Application Notes version 1.65) -->
 
-  Venue: Nasdaq Canada (Nasdaq CXC Limited, formerly Chi-X Canada). One FIX 4.2 interface serves
-  the three books CXC, CX2 and CXD; the destination book, or a Smart Order Router strategy, is chosen
-  per order with TargetSubID (57) or ExDestination (100) (CHIX, CX2, CXD or an SOR strategy value
-  provided by Nasdaq Canada Operations). The Market Participant Command defaults to CX2.
-
-  Headers: the PDF prints one header table per direction, transcribed as Header Client (section 4.1,
-  message header format to Nasdaq Canada) and Header Exchange (section 4.2, format to Client); every
-  message is selected into the Client and Exchange trees by its Origin. The header rows are printed
-  in tag order; BeginString, BodyLength and MsgType are placed first as FIX requires. TargetSubid (57)
-  is printed in the New Order Single and Cross tables rather than in the inbound header table; as a
-  standard header field it is transcribed once, in the Client header, with the routing description.
-  OrigSendingTime (122) is not transcribed: the PDF states Nasdaq Canada ignores it in all messages.
-
-  Session messages: section 4 names Logon, Logout, Heartbeat, Test Request, Resend Request, Sequence
-  Reset and Reject but, per its documentation methodology, reprints no body fields for them. They are
-  transcribed with their standard FIX 4.2 body fields (Logon carries only EncryptMethod and
-  HeartBtInt) and Origin Client,Exchange.
-
-  Application messages: the Cross table (section 5.3, no MsgType printed) is a New Order Single with
-  Side (54) = 8 (Cross) or 9 (Cross Short). It is carried inside New Order Single (D): rows printed in
-  both tables are common, and Side selects a Cross / Cross Short case (rows only in the Cross table)
-  or the default Order case (rows only in the New Order Single table), keeping each table's Required
-  flags. The four Execution Report tables (New Order Single Response, also used as the Replace
-  Response; Order Cancel Acknowledgment; Restatement; Trade Report) are merged into one Execution
-  Report (8): ExecType cannot select them apart (4 = Cancelled is printed in both the Order Cancel
-  Acknowledgment and, since 1.65, the Trade Report). A merged row is Required only when all four
-  tables print it as Y; its description names the tables that print it and where it is required.
-  The MsgType (35) rows printed inside the Execution Report, Cancel Reject and Market Participant
-  tables are header fields and are carried as MsgType values instead. ContraBroker (375) and
-  NoContraBrokers (382) of the Trade Report form the NoContraBrokers group.
-
-  Typing: no data types are printed. Standard tags carry the FIX 4.2 data dictionary type (int as
-  Int, char as Char, MultipleValueString, Qty, Price, PriceOffset, Currency, Exchange, LocalMktDate,
-  UTCTimestamp, Boolean). Names are as printed, so SecurityIDSource (22), SettlType (63) and
-  SettlDate (64) keep their FIX 4.4 spelling (FIX 4.2 IDSource, SettlmntTyp, FutSettDate). Tags
-  FIX 4.2 does not define are typed from the later FIX version that does: TargetStrategy (847),
-  OrderOrigination (1724) and RoutingArrangementIndicator (2883) as Int. Venue tags are typed from
-  their documented values: Y/N markers as Boolean, single character codes as Char, numeric codes
-  (RepriceReason, MinRate, MaxRate, Buy/SellOrderOrigination, Buy/SellRoutingArrangementIndicator)
-  as Int, quantities (DisplayRange, GEFCommitVolume, FacilitationQty) as Qty, CumRate as Float and
-  the rest as String. Sizes are the printed maximum lengths (15, 32, 20 and 52 characters, 3 digit
-  broker numbers, 2 character NoTradeFeat, 6 character NoTradeKey, 5 digit basket number).
-
-  PDF ambiguities kept as printed: HandlInst (21) lists 1 = OPR Reprice, 5 = OPR Cancel and
-  6 = OPR Reprice (the Cross table lists 1 = Automated execution order, private, no Broker
-  intervention); the Order Cancel/Replace Request prints OrderQty (38) as OrdQty (transcribed as
-  OrderQty so the tag keeps one name); the Req column is blank for PureStreamConnect (23017) in the
-  New Order Single Response and for CXDConnect (23015) in the Order Cancel Acknowledgment
-  (transcribed N); TargetStrategy 1004 is still listed in the Trade Report although revision 1.64
-  removed it; the New Order Single Response table omits MaxFloor (111) although revision 1.46 says
-  it was added. NoTradeFeat (7713) values are the eight documented two character combinations of
-  the first character (N, O, D, E) and second character (M or B). TradeLiquidityIndicator M is
-  described differently in the Order Cancel Acknowledgment and the Trade Report; both are kept.
-
-  Not transcribed: Appendix A (example order flow matrices) and Appendix B (peg order definitions)
-  carry no message layouts; the unsupported FIX messages listed in section 5.2.2.7.
-  -->
-
-  <!-- Message header format to Nasdaq Canada (section 4.1); TargetSubID (57) added from the order tables -->
   <Header Name="Client">
     <Fields>
+      <!-- Changed: BeginString, BodyLength and MsgType placed first as FIX requires; the PDF prints the header in tag order -->
       <Field>
         <Tag>8</Tag>
         <Name>BeginString</Name>
@@ -131,6 +72,7 @@
         <Type>String</Type>
         <Description>Identifies Nasdaq Canada as the receiving firm.</Description>
       </Field>
+      <!-- Added: printed in the New Order Single and Cross tables, not the header table; a standard header field, transcribed once here -->
       <Field>
         <Tag>57</Tag>
         <Name>TargetSubID</Name>
@@ -145,12 +87,14 @@
         <Type>Boolean</Type>
         <Description>Required when message may be duplicate of another message sent under a different sequence number.</Description>
       </Field>
+      <!-- Omitted: OrigSendingTime (122), which Nasdaq Canada ignores in all messages -->
     </Fields>
   </Header>
 
   <!-- Message header format to Client (section 4.2) -->
   <Header Name="Exchange">
     <Fields>
+      <!-- Changed: BeginString, BodyLength and MsgType placed first as FIX requires; the PDF prints the header in tag order -->
       <Field>
         <Tag>8</Tag>
         <Name>BeginString</Name>
@@ -245,6 +189,7 @@
   <Messages>
 
     <!-- Heartbeat (0) standard FIX 4.2 session message, section 4 -->
+    <!-- Added: the session messages (Heartbeat to Logon) carry their standard FIX 4.2 body fields; the PDF reprints none -->
     <Message>
       <Name>Heartbeat</Name>
       <MsgType>0</MsgType>
@@ -420,6 +365,7 @@
     </Message>
 
     <!-- New Order Single (D) section 5.2.1.1, with the Cross table of section 5.3 as the Side 8 and 9 cases -->
+    <!-- Changed: carries the Cross table (section 5.3) as its Side 8 / 9 cases, each table keeping its Required flags -->
     <Message>
       <Name>New Order Single</Name>
       <MsgType>D</MsgType>
@@ -1233,6 +1179,7 @@
           <Required>Y</Required>
           <Type>Char</Type>
         </Field>
+        <!-- Changed: printed OrdQty; named OrderQty so the tag keeps one name -->
         <Field>
           <Tag>38</Tag>
           <Name>OrderQty</Name>
@@ -1485,6 +1432,7 @@
     </Message>
 
     <!-- Execution Report (8) sections 5.2.2.1 New Order Single Response, 5.2.2.2 Order Cancel Acknowledgment, 5.2.2.4 Replace Response, 5.2.2.5 Restatement and 5.2.2.6 Trade Report -->
+    <!-- Changed: merges the New Order Single Response, Order Cancel Acknowledgment, Restatement and Trade Report tables; a row is Required only when all four print Y -->
     <Message>
       <Name>Execution Report</Name>
       <MsgType>8</MsgType>
@@ -1947,6 +1895,7 @@
           <Type>String</Type>
           <Description>New Order Single Response, Order Cancel Acknowledgment: The FirmUpID received in a Conditional match. Restatement: Unique firm up ID for a Conditional match. Printed in New Order Single Response, Order Cancel Acknowledgment, Restatement only.</Description>
         </Field>
+        <!-- Changed: the Order Cancel Acknowledgment leaves Req blank; transcribed N -->
         <Field>
           <Tag>23015</Tag>
           <Name>CXDConnect</Name>
@@ -1954,6 +1903,7 @@
           <Type>Boolean</Type>
           <Description>New Order Single Response, Restatement: CXD orders only. Order Cancel Acknowledgment: CXD orders only. (Req column blank in the PDF) Printed in New Order Single Response, Order Cancel Acknowledgment, Restatement only.</Description>
         </Field>
+        <!-- Changed: the New Order Single Response leaves Req blank; transcribed N -->
         <Field>
           <Tag>23017</Tag>
           <Name>PureStreamConnect</Name>
@@ -2115,6 +2065,7 @@
   <Groups>
 
     <!-- NoContraBrokers (382) Trade Report: number of brokers on the opposite side of a trade, always set to 1; not populated if the contra order is anonymous -->
+    <!-- Changed: ContraBroker (375) and NoContraBrokers (382) of the Trade Report form this group -->
     <Group>
       <Name>NoContraBrokers</Name>
       <AnchorTag>382</AnchorTag>
@@ -2142,6 +2093,7 @@
     </Value>
 
     <!-- MsgType (35) -->
+    <!-- Changed: the MsgType (35) rows printed in the Execution Report, Cancel Reject and Market Participant tables are carried as values here -->
     <Value>
       <Type>MsgType</Type>
       <Enum>0</Enum>
@@ -2759,6 +2711,7 @@
     </Value>
 
     <!-- NoTradeFeat (7713) -->
+    <!-- Changed: the eight combinations of the documented first (N, O, D, E) and second (M, B) characters -->
     <Value>
       <Type>NoTradeFeat</Type>
       <Enum>NM</Enum>

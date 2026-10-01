@@ -1,0 +1,1802 @@
+<OmiFixPdf>
+
+  <!-- Nasdaq Texas OUCH DROP (DROP to FIX, OUCH format) 1.00, February 2026 -->
+
+  <Header>
+    <Fields>
+      <Field>
+        <Tag>8</Tag>
+        <Name>BeginString</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+        <Description>FIX 4.0, 4.1 or 4.2</Description>
+      </Field>
+      <Field>
+        <Tag>9</Tag>
+        <Name>BodyLength</Name>
+        <Required>Y</Required>
+        <Type>Length</Type>
+        <Fixed>Y</Fixed>
+        <Description>Must be second field in message</Description>
+      </Field>
+      <Field>
+        <Tag>35</Tag>
+        <Name>MsgType</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+      </Field>
+      <Field>
+        <Tag>49</Tag>
+        <Name>SenderCompID</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Description>Nasdaq Texas system/session Identifier</Description>
+      </Field>
+      <Field>
+        <Tag>56</Tag>
+        <Name>TargetCompID</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Description>As assigned by Nasdaq Texas</Description>
+      </Field>
+      <Field>
+        <Tag>43</Tag>
+        <Name>PossDupFlag</Name>
+        <Required>N</Required>
+        <Type>Boolean</Type>
+        <Description>Always required for retransmitted messages.</Description>
+      </Field>
+      <Field>
+        <Tag>34</Tag>
+        <Name>MsgSeqNum</Name>
+        <Required>Y</Required>
+        <Type>SeqNum</Type>
+      </Field>
+      <Field>
+        <Tag>52</Tag>
+        <Name>SendingTime</Name>
+        <Required>Y</Required>
+        <Type>UTCTimestamp</Type>
+        <Description>Time of message transmission</Description>
+      </Field>
+      <Field>
+        <Tag>122</Tag>
+        <Name>OrigSendingTime</Name>
+        <Required>N</Required>
+        <Type>UTCTimestamp</Type>
+        <Description>Original time of message transmission, required on retransmissions</Description>
+      </Field>
+    </Fields>
+  </Header>
+
+  <!-- Omitted: FIX Checksum (10), printed as a row inside each message table, is the trailer field -->
+  <Trailer>
+    <Fields>
+      <Field>
+        <Tag>10</Tag>
+        <Name>CheckSum</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+        <Description>FIX Checksum</Description>
+      </Field>
+    </Fields>
+  </Trailer>
+
+  <Messages>
+
+    <!-- Heartbeat (0) -->
+    <!-- Added: the document names the logon, heartbeat and resend request; the standard FIX session messages Heartbeat to Logout are added -->
+    <Message>
+      <Name>Heartbeat</Name>
+      <MsgType>0</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Description>Once logged in, the subscriber will need to send only a heartbeat message to keep the session active. Standard FIX session message.</Description>
+      <Fields>
+        <Field>
+          <Tag>112</Tag>
+          <Name>TestReqID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Required when the heartbeat is the result of a Test Request message. Standard FIX field.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- TestRequest (1) -->
+    <Message>
+      <Name>TestRequest</Name>
+      <MsgType>1</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Description>Standard FIX session message.</Description>
+      <Fields>
+        <Field>
+          <Tag>112</Tag>
+          <Name>TestReqID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Identifier included in the Test Request message to be returned in the resulting Heartbeat. Standard FIX field.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- ResendRequest (2) -->
+    <Message>
+      <Name>ResendRequest</Name>
+      <MsgType>2</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Description>In the event that the sequence numbers are out of synch, the subscriber should send a resend request to retransmit any potentially lost data. Standard FIX session message.</Description>
+      <Fields>
+        <Field>
+          <Tag>7</Tag>
+          <Name>BeginSeqNo</Name>
+          <Required>Y</Required>
+          <Type>SeqNum</Type>
+          <Description>Message sequence number of first message in range to be resent. Standard FIX field.</Description>
+        </Field>
+        <Field>
+          <Tag>16</Tag>
+          <Name>EndSeqNo</Name>
+          <Required>Y</Required>
+          <Type>SeqNum</Type>
+          <Description>Message sequence number of last message in range to be resent; 0 for infinity. Standard FIX field.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Reject (3) -->
+    <Message>
+      <Name>Reject</Name>
+      <MsgType>3</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Description>Standard FIX session message (session level reject).</Description>
+      <Fields>
+        <Field>
+          <Tag>45</Tag>
+          <Name>RefSeqNum</Name>
+          <Required>Y</Required>
+          <Type>SeqNum</Type>
+          <Description>MsgSeqNum of rejected message. Standard FIX field.</Description>
+        </Field>
+        <Field>
+          <Tag>371</Tag>
+          <Name>RefTagID</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>The tag number of the FIX field being referenced. FIX 4.2 field.</Description>
+        </Field>
+        <Field>
+          <Tag>372</Tag>
+          <Name>RefMsgType</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>The MsgType of the FIX message being referenced. FIX 4.2 field.</Description>
+        </Field>
+        <Field>
+          <Tag>373</Tag>
+          <Name>SessionRejectReason</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Code to identify reason for a session-level Reject message. FIX 4.2 field.</Description>
+        </Field>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Message to explain reason for rejection. Standard FIX field.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- SequenceReset (4) -->
+    <Message>
+      <Name>SequenceReset</Name>
+      <MsgType>4</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Description>Standard FIX session message (Gap Fill or Reset).</Description>
+      <Fields>
+        <Field>
+          <Tag>123</Tag>
+          <Name>GapFillFlag</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>Indicates that the Sequence Reset message is replacing administrative or application messages which will not be resent. Standard FIX field.</Description>
+        </Field>
+        <Field>
+          <Tag>36</Tag>
+          <Name>NewSeqNo</Name>
+          <Required>Y</Required>
+          <Type>SeqNum</Type>
+          <Description>New sequence number. Standard FIX field.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Logout (5) -->
+    <Message>
+      <Name>Logout</Name>
+      <MsgType>5</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Description>Standard FIX session message.</Description>
+      <Fields>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Free format text. Standard FIX field.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Logon (A) -->
+    <Message>
+      <Name>Logon</Name>
+      <MsgType>A</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Description>Subscribers are required to log in to the OUCH DROP application using a standard FIX logon message. When reconnecting, in either Nasdaq Texas's primary or backup data center, the subscriber should re-login to the session using the next transmitted sequence numbers.</Description>
+      <Fields>
+        <Field>
+          <Tag>98</Tag>
+          <Name>EncryptMethod</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Not Supported</Description>
+        </Field>
+        <Field>
+          <Tag>108</Tag>
+          <Name>HeartBtInt</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Heartbeat interval in seconds.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- ExecutionReport (8) -->
+    <!-- Changed: the six Execution Report tables are merged into one message, fields printed on every table first, the rest in ExecType branches; a blank Req'd entry is transcribed N -->
+    <Message>
+      <Name>ExecutionReport</Name>
+      <MsgType>8</MsgType>
+      <Category>app</Category>
+      <Origin>Exchange</Origin>
+      <Description>The Order Acknowledgement, Order Replace, Order Cancel, Execution Report, Rejected Order and Broken Trade messages are all Execution Reports (MsgType = 8), told apart by ExecType (150): 0 = Order Acknowledgement, 5 = Order Replace, 4 = Order Cancel, 1 or 2 = Execution Report, 8 = Rejected Order, and 2 with ExecTransType (20) 1 = Broken Trade. Each OUCH DROP host can be configured to send a message anytime an order is entered, canceled, executed or broken, or any combination of these events.</Description>
+      <Fields>
+        <Field>
+          <Tag>128</Tag>
+          <Name>DeliverToCompID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Account originating the order</Description>
+        </Field>
+        <Field>
+          <Tag>57</Tag>
+          <Name>TargetSubID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>First 4 characters of the order entry port token</Description>
+        </Field>
+        <Field>
+          <Tag>50</Tag>
+          <Name>SenderSubID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Nasdaq Texas sub system/Session identifier. Req'd Y on every table but the Order Acknowledgement, which leaves it blank.</Description>
+        </Field>
+        <Field>
+          <Tag>1</Tag>
+          <Name>Account</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>May be user field, otherwise not present</Description>
+        </Field>
+        <Field>
+          <Tag>11</Tag>
+          <Name>ClOrdID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Client Order ID as specified on the order.</Description>
+        </Field>
+        <Field>
+          <Tag>17</Tag>
+          <Name>ExecID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>For fill and partial-fill execution reports. ExecID is based on the OUCH match number of the transaction. If you cross yourself on a trade the buy and sell orders will have the same ExecID. For other execution reports this is just a unique id of execution report. Uniqueness guaranteed within the session.</Description>
+        </Field>
+        <Field>
+          <Tag>20</Tag>
+          <Name>ExecTransType</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Identifies transaction type: 0 = New; 1 = Cancel on the Broken Trade. Trade breaks will be sent with an ExecTransType of 1. Nasdaq Texas does not support trade corrections.</Description>
+        </Field>
+        <Field>
+          <Tag>150</Tag>
+          <Name>ExecType</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Describes the Specific Execution Report: 0 = New (Order Acknowledgement), 1 = Partial Fill or 2 = Filled (Execution Report), 2 = Filled (Broken Trade), 4 = Canceled (Order Cancel), 5 = Replaced (Order Replace), 8 = Rejected (Rejected Order)</Description>
+        </Field>
+        <Field>
+          <Tag>39</Tag>
+          <Name>OrdStatus</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Describes the current state of a CHAIN of orders, same scope as OrderQty, CumQty, LeavesQty, and AvgPx. Each table lists the same value as ExecType (the Order Acknowledgement lists none).</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Ticker Symbol</Description>
+        </Field>
+        <Field>
+          <Tag>54</Tag>
+          <Name>Side</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Side of the trade: 1 = buy order, 2 = sell order, 5 = sell short, subscriber affirms ability to borrow securities in good deliverable form for delivery within three business days, 6 = sell short exempt, subscriber affirms ability to borrow securities in good deliverable form for delivery within three business days</Description>
+        </Field>
+        <Field>
+          <Tag>38</Tag>
+          <Name>OrderQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>Shares available</Description>
+        </Field>
+        <Field>
+          <Tag>151</Tag>
+          <Name>LeavesQty</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Remaining shares. Broken Trade: amount of shares open for further execution.</Description>
+        </Field>
+        <Field>
+          <Tag>14</Tag>
+          <Name>CumQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>Currently executed shares for chain of orders. "0" on the Order Acknowledgement and Broken Trade.</Description>
+        </Field>
+        <Field>
+          <Tag>6</Tag>
+          <Name>AvgPx</Name>
+          <Required>Y</Required>
+          <Type>Price</Type>
+          <Description>Calculated average price of all fills on this order. "0" on the Order Acknowledgement and Broken Trade.</Description>
+        </Field>
+        <Field>
+          <Tag>44</Tag>
+          <Name>Price</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>As specified in the NewOrder</Description>
+        </Field>
+        <Field>
+          <Tag>40</Tag>
+          <Name>OrdType</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>1 = Market, 2 = Limit, 3 = Cross</Description>
+        </Field>
+        <Field>
+          <Tag>76</Tag>
+          <Name>ExecBroker</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>"INET"</Description>
+        </Field>
+        <Field>
+          <Tag>18</Tag>
+          <Name>ExecInst</Name>
+          <Required>N</Required>
+          <Type>MultipleValueString</Type>
+          <Description>f = Intermarket Sweep Order (ISO), y = Trade-at Intermarket Sweep Order, B = Reactive Trade Now</Description>
+        </Field>
+        <Field>
+          <Tag>59</Tag>
+          <Name>TimeInForce</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>0 = Day, 2 = At the Opening, 3 = Immediate or Cancel, 4 = Fill or Kill, 5 = Good Till Cancel (GTC), 6 = Good Till Date, 7 = At the Close</Description>
+        </Field>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Free format text string. In case of reject will also contain Nasdaq Texas order reject code. See "Reject Reasons" table.</Description>
+        </Field>
+        <!-- Added: printed on the Execution Report, Rejected Order and Broken Trade only; the Rejected Order row says it now appears on all messages -->
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>N</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Time of execution/order creation (expressed in GMT). This field will now appear on all messages; previously this only appeared on execution or break messages.</Description>
+        </Field>
+
+        <!-- Order Acknowledgement (2.3) -->
+        <Branch>
+          <Name>OrderAcknowledgement</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>0</Value>
+          <Fields>
+            <Field>
+              <Tag>37</Tag>
+              <Name>OrderID</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>Nasdaq Texas assigned sequence Number for this order</Description>
+            </Field>
+            <Field>
+              <Tag>32</Tag>
+              <Name>LastShares</Name>
+              <Required>Y</Required>
+              <Type>Qty</Type>
+              <Description>"0"</Description>
+            </Field>
+            <Field>
+              <Tag>31</Tag>
+              <Name>LastPx</Name>
+              <Required>Y</Required>
+              <Type>Price</Type>
+              <Description>"0"</Description>
+            </Field>
+            <Field>
+              <Tag>47</Tag>
+              <Name>Rule80A</Name>
+              <Required>N</Required>
+              <Type>Char</Type>
+              <Description>Order Capacity: A = Agent, E = Registered Market Maker Trade, P = Principal</Description>
+            </Field>
+            <Field>
+              <Tag>29</Tag>
+              <Name>LastCapacity</Name>
+              <Required>N</Required>
+              <Type>Char</Type>
+              <Description>Broker Capacity In Order Execution: &lt;blank&gt;, 1 = Agency, 4 = Principal</Description>
+            </Field>
+            <Field>
+              <Tag>111</Tag>
+              <Name>MaxFloor</Name>
+              <Required>N</Required>
+              <Type>Qty</Type>
+              <Description>"0"</Description>
+            </Field>
+            <Field>
+              <Tag>20001</Tag>
+              <Name>UserRefNum</Name>
+              <Required>N</Required>
+              <Type>Int</Type>
+              <Description>UserRefNum as specified on the order</Description>
+            </Field>
+            <Field>
+              <Tag>9140</Tag>
+              <Name>DisplayInstruction</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Indicates the order display from client</Description>
+            </Field>
+            <Field>
+              <Tag>9355</Tag>
+              <Name>CrossType</Name>
+              <Required>N</Required>
+              <Type>Char</Type>
+              <Description>D = continuous market, O = opening cross (Nasdaq only), C = closing cross (Nasdaq only), H = halt/IPO (Nasdaq only), S = supplemental (Nasdaq only), R = retail (NTX only), E = extended life (Nasdaq only), A = after hours close (Nasdaq only)</Description>
+            </Field>
+            <Field>
+              <Tag>110</Tag>
+              <Name>MinQty</Name>
+              <Required>N</Required>
+              <Type>Qty</Type>
+              <Description>Specifies the minimum acceptable quantity to execute</Description>
+            </Field>
+            <Field>
+              <Tag>211</Tag>
+              <Name>PegOffset</Name>
+              <Required>N</Required>
+              <Type>PriceOffset</Type>
+              <Description>Offset amount for the pegged value.</Description>
+            </Field>
+            <Field>
+              <Tag>20009</Tag>
+              <Name>DiscretionPrice</Name>
+              <Required>N</Required>
+              <Type>Price</Type>
+              <Description>Discretion price for Discretionary Order.</Description>
+            </Field>
+            <Field>
+              <Tag>388</Tag>
+              <Name>DiscretionPriceType</Name>
+              <Required>N</Required>
+              <Type>Char</Type>
+              <Description>L = limit (default), P = market peg, M = midpoint peg, R = primary peg</Description>
+            </Field>
+            <Field>
+              <Tag>389</Tag>
+              <Name>DiscretionPegOffset</Name>
+              <Required>N</Required>
+              <Type>PriceOffset</Type>
+              <Description>Offset amount for the pegged value of the Discretionary Price.</Description>
+            </Field>
+            <Field>
+              <Tag>8020</Tag>
+              <Name>RandomReserves</Name>
+              <Required>N</Required>
+              <Type>Qty</Type>
+              <Description>Shares to do random reserve with.</Description>
+            </Field>
+            <Field>
+              <Tag>126</Tag>
+              <Name>ExpireTime</Name>
+              <Required>N</Required>
+              <Type>Int</Type>
+              <Description>Seconds to live.</Description>
+            </Field>
+            <Field>
+              <Tag>20003</Tag>
+              <Name>HandleInst</Name>
+              <Required>N</Required>
+              <Type>Char</Type>
+              <Description>I = imbalance only (CrossType O and C), O = retail order type 1 (CrossType R), T = retail order type 2 (CrossType R), Q = retail price improvement (CrossType R), B = Extended Life + Continuous (CrossType E), D = Direct Listing Capital Raise (CrossType H), R = Retail Price Improvement, Hidden Price Improvement Indicator (CrossType R)</Description>
+            </Field>
+            <Field>
+              <Tag>20107</Tag>
+              <Name>GroupID</Name>
+              <Required>N</Required>
+              <Type>Int</Type>
+              <Description>Customer Group ID - identifies specific entity within customer firm</Description>
+            </Field>
+            <Field>
+              <Tag>9883</Tag>
+              <Name>BBOWeightIndicator</Name>
+              <Required>N</Required>
+              <Type>Char</Type>
+              <Description>"0" = 0-0.2%, "1" = 0.2%-1%, "2" = 1%-2%, "3" = greater than 2%, space = unspecified (default), "S" = Sets the QBBO while joining the NBBO, "N" = Improves the NBBO upon entry</Description>
+            </Field>
+            <Field>
+              <Tag>21002</Tag>
+              <Name>LocateBroker</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Will only be populated if a single broker is designated per session in the EQRC Shares Located rule.</Description>
+            </Field>
+          </Fields>
+        </Branch>
+
+        <!-- Execution Report, Partial Fill (2.6) -->
+        <Branch>
+          <Name>PartialFill</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>1</Value>
+          <Fields>
+            <Field>
+              <Tag>37</Tag>
+              <Name>OrderID</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>Nasdaq Texas assigned sequence Number for this order</Description>
+            </Field>
+            <Field>
+              <Tag>109</Tag>
+              <Name>ClientID</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Firm Identifier for the order entry firm.</Description>
+            </Field>
+            <Field>
+              <Tag>32</Tag>
+              <Name>LastShares</Name>
+              <Required>Y</Required>
+              <Type>Qty</Type>
+              <Description>Quantity of shares bought/sold on this (last) fill.</Description>
+            </Field>
+            <Field>
+              <Tag>31</Tag>
+              <Name>LastPx</Name>
+              <Required>Y</Required>
+              <Type>Price</Type>
+              <Description>Price of this (last) fill.</Description>
+            </Field>
+            <Field>
+              <Tag>47</Tag>
+              <Name>Rule80A</Name>
+              <Required>N</Required>
+              <Type>Char</Type>
+              <Description>Order Capacity: A = Agent, E = Registered Market Maker Trade, P = Principal</Description>
+            </Field>
+            <Field>
+              <Tag>29</Tag>
+              <Name>LastCapacity</Name>
+              <Required>N</Required>
+              <Type>Char</Type>
+              <Description>Broker Capacity In Order Execution: &lt;blank&gt;, 1 = Agency, 4 = Principal</Description>
+            </Field>
+            <Field>
+              <Tag>111</Tag>
+              <Name>MaxFloor</Name>
+              <Required>N</Required>
+              <Type>Qty</Type>
+              <Description>"0"</Description>
+            </Field>
+            <Field>
+              <Tag>75</Tag>
+              <Name>TradeDate</Name>
+              <Required>N</Required>
+              <Type>LocalMktDate</Type>
+              <Description>Used when reporting other than current day trades.</Description>
+            </Field>
+            <Field>
+              <Tag>9882</Tag>
+              <Name>LiquidityFlag</Name>
+              <Required>N</Required>
+              <Type>Char</Type>
+              <Description>Will be returned within all execution reports that contain a partial or full fill. See Liquidity Flags Table for values</Description>
+            </Field>
+            <Field>
+              <Tag>30</Tag>
+              <Name>LastExchange</Name>
+              <Required>N</Required>
+              <Type>Exchange</Type>
+              <Description>Market of execution for last fill: &lt;space&gt; = not provided, Q = Nasdaq, B = Nasdaq Texas, X = Nasdaq PSX</Description>
+            </Field>
+            <Field>
+              <Tag>20001</Tag>
+              <Name>UserRefNum</Name>
+              <Required>N</Required>
+              <Type>Int</Type>
+              <Description>UserRefNum must be day-unique and strictly increasing for each OUCH account.</Description>
+            </Field>
+            <Field>
+              <Tag>9355</Tag>
+              <Name>CrossType</Name>
+              <Required>N</Required>
+              <Type>Char</Type>
+              <Description>D = continuous market, O = opening cross (Nasdaq only), C = closing cross (Nasdaq only), H = halt/IPO (Nasdaq only), S = supplemental (Nasdaq only), R = retail (NTX only), E = extended life (Nasdaq only), A = after hours close (Nasdaq only)</Description>
+            </Field>
+            <Field>
+              <Tag>110</Tag>
+              <Name>MinQty</Name>
+              <Required>N</Required>
+              <Type>Qty</Type>
+              <Description>Specifies the minimum acceptable quantity to execute</Description>
+            </Field>
+            <Field>
+              <Tag>211</Tag>
+              <Name>PegOffset</Name>
+              <Required>N</Required>
+              <Type>PriceOffset</Type>
+              <Description>Offset amount for the pegged value.</Description>
+            </Field>
+            <Field>
+              <Tag>20009</Tag>
+              <Name>DiscretionPrice</Name>
+              <Required>N</Required>
+              <Type>Price</Type>
+              <Description>Discretion price for Discretionary Order.</Description>
+            </Field>
+            <Field>
+              <Tag>388</Tag>
+              <Name>DiscretionPriceType</Name>
+              <Required>N</Required>
+              <Type>Char</Type>
+              <Description>L = limit (default), P = market peg, M = midpoint peg, R = primary peg</Description>
+            </Field>
+            <Field>
+              <Tag>389</Tag>
+              <Name>DiscretionPegOffset</Name>
+              <Required>N</Required>
+              <Type>PriceOffset</Type>
+              <Description>Offset amount for the pegged value of the Discretionary Price.</Description>
+            </Field>
+            <Field>
+              <Tag>8020</Tag>
+              <Name>RandomReserves</Name>
+              <Required>N</Required>
+              <Type>Qty</Type>
+              <Description>Shares to do random reserve with.</Description>
+            </Field>
+            <Field>
+              <Tag>126</Tag>
+              <Name>ExpireTime</Name>
+              <Required>N</Required>
+              <Type>Int</Type>
+              <Description>Seconds to live.</Description>
+            </Field>
+            <Field>
+              <Tag>20003</Tag>
+              <Name>HandleInst</Name>
+              <Required>N</Required>
+              <Type>Char</Type>
+              <Description>I = imbalance only (CrossType O and C), O = retail order type 1 (CrossType R), T = retail order type 2 (CrossType R), Q = retail price improvement (CrossType R), B = Extended Life + Continuous (CrossType E), D = Direct Listing Capital Raise (CrossType H), R = Retail Price Improvement, Hidden Price Improvement Indicator (CrossType R)</Description>
+            </Field>
+            <Field>
+              <Tag>20107</Tag>
+              <Name>GroupID</Name>
+              <Required>N</Required>
+              <Type>Int</Type>
+              <Description>Customer Group ID - identifies specific entity within customer firm</Description>
+            </Field>
+            <Field>
+              <Tag>21002</Tag>
+              <Name>LocateBroker</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Will only be populated if a single broker is designated per session in the EQRC Shares Located rule.</Description>
+            </Field>
+          </Fields>
+        </Branch>
+
+        <!-- Execution Report, Filled (2.6) and Broken Trade (2.9) -->
+        <Branch>
+          <Name>FilledOrBrokenTrade</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>2</Value>
+          <Fields>
+            <Field>
+              <Tag>37</Tag>
+              <Name>OrderID</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>Nasdaq Texas assigned sequence Number for this order</Description>
+            </Field>
+            <Field>
+              <Tag>109</Tag>
+              <Name>ClientID</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Firm Identifier for the order entry firm.</Description>
+            </Field>
+            <Field>
+              <Tag>32</Tag>
+              <Name>LastShares</Name>
+              <Required>Y</Required>
+              <Type>Qty</Type>
+              <Description>Quantity of shares bought/sold on this (last) fill. "0" on the Broken Trade.</Description>
+            </Field>
+            <Field>
+              <Tag>31</Tag>
+              <Name>LastPx</Name>
+              <Required>Y</Required>
+              <Type>Price</Type>
+              <Description>Price of this (last) fill. "0" on the Broken Trade.</Description>
+            </Field>
+            <Field>
+              <Tag>47</Tag>
+              <Name>Rule80A</Name>
+              <Required>N</Required>
+              <Type>Char</Type>
+              <Description>Order Capacity: A = Agent, E = Registered Market Maker Trade, P = Principal</Description>
+            </Field>
+            <Field>
+              <Tag>29</Tag>
+              <Name>LastCapacity</Name>
+              <Required>N</Required>
+              <Type>Char</Type>
+              <Description>Broker Capacity In Order Execution: &lt;blank&gt;, 1 = Agency, 4 = Principal</Description>
+            </Field>
+            <Field>
+              <Tag>111</Tag>
+              <Name>MaxFloor</Name>
+              <Required>N</Required>
+              <Type>Qty</Type>
+              <Description>"0"</Description>
+            </Field>
+            <Field>
+              <Tag>19</Tag>
+              <Name>ExecRefID</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Appears on Breaks only and contains the ExecID of the trade being broken.</Description>
+            </Field>
+            <Field>
+              <Tag>75</Tag>
+              <Name>TradeDate</Name>
+              <Required>N</Required>
+              <Type>LocalMktDate</Type>
+              <Description>Used when reporting other than current day trades.</Description>
+            </Field>
+            <Field>
+              <Tag>9882</Tag>
+              <Name>LiquidityFlag</Name>
+              <Required>N</Required>
+              <Type>Char</Type>
+              <Description>Will be returned within all execution reports that contain a partial or full fill. See Liquidity Flags Table for values. The Broken Trade row lists E = Erroneous Trade, C = Consensus, S = Supervisory, X = Default.</Description>
+            </Field>
+            <Field>
+              <Tag>30</Tag>
+              <Name>LastExchange</Name>
+              <Required>N</Required>
+              <Type>Exchange</Type>
+              <Description>Market of execution for last fill: &lt;space&gt; = not provided, Q = Nasdaq, B = Nasdaq Texas, X = Nasdaq PSX. Execution Report only.</Description>
+            </Field>
+            <Field>
+              <Tag>20001</Tag>
+              <Name>UserRefNum</Name>
+              <Required>N</Required>
+              <Type>Int</Type>
+              <Description>UserRefNum must be day-unique and strictly increasing for each OUCH account.</Description>
+            </Field>
+            <Field>
+              <Tag>9355</Tag>
+              <Name>CrossType</Name>
+              <Required>N</Required>
+              <Type>Char</Type>
+              <Description>D = continuous market, O = opening cross (Nasdaq only), C = closing cross (Nasdaq only), H = halt/IPO (Nasdaq only), S = supplemental (Nasdaq only), R = retail (NTX only), E = extended life (Nasdaq only), A = after hours close (Nasdaq only)</Description>
+            </Field>
+            <Field>
+              <Tag>110</Tag>
+              <Name>MinQty</Name>
+              <Required>N</Required>
+              <Type>Qty</Type>
+              <Description>Specifies the minimum acceptable quantity to execute</Description>
+            </Field>
+            <Field>
+              <Tag>211</Tag>
+              <Name>PegOffset</Name>
+              <Required>N</Required>
+              <Type>PriceOffset</Type>
+              <Description>Offset amount for the pegged value.</Description>
+            </Field>
+            <Field>
+              <Tag>20009</Tag>
+              <Name>DiscretionPrice</Name>
+              <Required>N</Required>
+              <Type>Price</Type>
+              <Description>Discretion price for Discretionary Order.</Description>
+            </Field>
+            <Field>
+              <Tag>388</Tag>
+              <Name>DiscretionPriceType</Name>
+              <Required>N</Required>
+              <Type>Char</Type>
+              <Description>L = limit (default), P = market peg, M = midpoint peg, R = primary peg</Description>
+            </Field>
+            <Field>
+              <Tag>389</Tag>
+              <Name>DiscretionPegOffset</Name>
+              <Required>N</Required>
+              <Type>PriceOffset</Type>
+              <Description>Offset amount for the pegged value of the Discretionary Price.</Description>
+            </Field>
+            <Field>
+              <Tag>8020</Tag>
+              <Name>RandomReserves</Name>
+              <Required>N</Required>
+              <Type>Qty</Type>
+              <Description>Shares to do random reserve with.</Description>
+            </Field>
+            <Field>
+              <Tag>126</Tag>
+              <Name>ExpireTime</Name>
+              <Required>N</Required>
+              <Type>Int</Type>
+              <Description>Seconds to live.</Description>
+            </Field>
+            <Field>
+              <Tag>20003</Tag>
+              <Name>HandleInst</Name>
+              <Required>N</Required>
+              <Type>Char</Type>
+              <Description>I = imbalance only (CrossType O and C), O = retail order type 1 (CrossType R), T = retail order type 2 (CrossType R), Q = retail price improvement (CrossType R), B = Extended Life + Continuous (CrossType E), D = Direct Listing Capital Raise (CrossType H), R = Retail Price Improvement, Hidden Price Improvement Indicator (CrossType R)</Description>
+            </Field>
+            <Field>
+              <Tag>20107</Tag>
+              <Name>GroupID</Name>
+              <Required>N</Required>
+              <Type>Int</Type>
+              <Description>Customer Group ID - identifies specific entity within customer firm</Description>
+            </Field>
+            <Field>
+              <Tag>21002</Tag>
+              <Name>LocateBroker</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Will only be populated if a single broker is designated per session in the EQRC Shares Located rule.</Description>
+            </Field>
+          </Fields>
+        </Branch>
+
+        <!-- Order Cancel (2.5) -->
+        <Branch>
+          <Name>OrderCancel</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>4</Value>
+          <Fields>
+            <Field>
+              <Tag>37</Tag>
+              <Name>OrderID</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>Nasdaq Texas assigned sequence Number for this order</Description>
+            </Field>
+            <Field>
+              <Tag>109</Tag>
+              <Name>ClientID</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Firm Identifier for the order entry firm.</Description>
+            </Field>
+            <Field>
+              <Tag>32</Tag>
+              <Name>LastShares</Name>
+              <Required>Y</Required>
+              <Type>Qty</Type>
+              <Description>Quantity of shares bought/sold on this (last) fill.</Description>
+            </Field>
+            <Field>
+              <Tag>31</Tag>
+              <Name>LastPx</Name>
+              <Required>Y</Required>
+              <Type>Price</Type>
+              <Description>Price of this (last) fill.</Description>
+            </Field>
+            <Field>
+              <Tag>47</Tag>
+              <Name>Rule80A</Name>
+              <Required>N</Required>
+              <Type>Char</Type>
+              <Description>Order Capacity: A = Agent, E = Registered Market Maker Trade, P = Principal</Description>
+            </Field>
+            <Field>
+              <Tag>29</Tag>
+              <Name>LastCapacity</Name>
+              <Required>N</Required>
+              <Type>Char</Type>
+              <Description>Broker Capacity In Order Execution: &lt;blank&gt;, 1 = Agency, 4 = Principal</Description>
+            </Field>
+            <Field>
+              <Tag>111</Tag>
+              <Name>MaxFloor</Name>
+              <Required>N</Required>
+              <Type>Qty</Type>
+              <Description>"0"</Description>
+            </Field>
+            <Field>
+              <Tag>20001</Tag>
+              <Name>UserRefNum</Name>
+              <Required>N</Required>
+              <Type>Int</Type>
+              <Description>UserRefNum must be day-unique and strictly increasing for each OUCH account.</Description>
+            </Field>
+            <Field>
+              <Tag>9355</Tag>
+              <Name>CrossType</Name>
+              <Required>N</Required>
+              <Type>Char</Type>
+              <Description>D = continuous market, O = opening cross (Nasdaq only), C = closing cross (Nasdaq only), H = halt/IPO (Nasdaq only), S = supplemental (Nasdaq only), R = retail (NTX only), E = extended life (Nasdaq only), A = after hours close (Nasdaq only)</Description>
+            </Field>
+            <Field>
+              <Tag>110</Tag>
+              <Name>MinQty</Name>
+              <Required>N</Required>
+              <Type>Qty</Type>
+              <Description>Specifies the minimum acceptable quantity to execute</Description>
+            </Field>
+            <Field>
+              <Tag>211</Tag>
+              <Name>PegOffset</Name>
+              <Required>N</Required>
+              <Type>PriceOffset</Type>
+              <Description>Offset amount for the pegged value.</Description>
+            </Field>
+            <Field>
+              <Tag>20009</Tag>
+              <Name>DiscretionPrice</Name>
+              <Required>N</Required>
+              <Type>Price</Type>
+              <Description>Discretion price for Discretionary Order.</Description>
+            </Field>
+            <Field>
+              <Tag>388</Tag>
+              <Name>DiscretionPriceType</Name>
+              <Required>N</Required>
+              <Type>Char</Type>
+              <Description>L = limit (default), P = market peg, M = midpoint peg, R = primary peg</Description>
+            </Field>
+            <Field>
+              <Tag>389</Tag>
+              <Name>DiscretionPegOffset</Name>
+              <Required>N</Required>
+              <Type>PriceOffset</Type>
+              <Description>Offset amount for the pegged value of the Discretionary Price.</Description>
+            </Field>
+            <Field>
+              <Tag>8020</Tag>
+              <Name>RandomReserves</Name>
+              <Required>N</Required>
+              <Type>Qty</Type>
+              <Description>Shares to do random reserve with.</Description>
+            </Field>
+            <Field>
+              <Tag>126</Tag>
+              <Name>ExpireTime</Name>
+              <Required>N</Required>
+              <Type>Int</Type>
+              <Description>Seconds to live.</Description>
+            </Field>
+            <Field>
+              <Tag>20003</Tag>
+              <Name>HandleInst</Name>
+              <Required>N</Required>
+              <Type>Char</Type>
+              <Description>I = imbalance only (CrossType O and C), O = retail order type 1 (CrossType R), T = retail order type 2 (CrossType R), Q = retail price improvement (CrossType R), B = Extended Life + Continuous (CrossType E), D = Direct Listing Capital Raise (CrossType H), R = Retail Price Improvement, Hidden Price Improvement Indicator (CrossType R)</Description>
+            </Field>
+            <Field>
+              <Tag>20107</Tag>
+              <Name>GroupID</Name>
+              <Required>N</Required>
+              <Type>Int</Type>
+              <Description>Customer Group ID - identifies specific entity within customer firm</Description>
+            </Field>
+            <Field>
+              <Tag>21002</Tag>
+              <Name>LocateBroker</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Will only be populated if a single broker is designated per session in the EQRC Shares Located rule.</Description>
+            </Field>
+          </Fields>
+        </Branch>
+
+        <!-- Order Replace (2.4) -->
+        <Branch>
+          <Name>OrderReplace</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>5</Value>
+          <Fields>
+            <Field>
+              <Tag>41</Tag>
+              <Name>OrigClOrdID</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>This is your unique id of the original order, the order to be replaced. Limited to 20 characters.</Description>
+            </Field>
+            <Field>
+              <Tag>109</Tag>
+              <Name>ClientID</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Firm Identifier for the order entry firm.</Description>
+            </Field>
+            <Field>
+              <Tag>32</Tag>
+              <Name>LastShares</Name>
+              <Required>Y</Required>
+              <Type>Qty</Type>
+              <Description>"0"</Description>
+            </Field>
+            <Field>
+              <Tag>31</Tag>
+              <Name>LastPx</Name>
+              <Required>Y</Required>
+              <Type>Price</Type>
+              <Description>"0"</Description>
+            </Field>
+            <Field>
+              <Tag>47</Tag>
+              <Name>Rule80A</Name>
+              <Required>N</Required>
+              <Type>Char</Type>
+              <Description>Order Capacity: A = Agent, E = Registered Market Maker Trade, P = Principal</Description>
+            </Field>
+            <Field>
+              <Tag>29</Tag>
+              <Name>LastCapacity</Name>
+              <Required>N</Required>
+              <Type>Char</Type>
+              <Description>Broker Capacity In Order Execution: &lt;blank&gt;, 1 = Agency, 4 = Principal</Description>
+            </Field>
+            <Field>
+              <Tag>111</Tag>
+              <Name>MaxFloor</Name>
+              <Required>N</Required>
+              <Type>Qty</Type>
+              <Description>"0"</Description>
+            </Field>
+            <Field>
+              <Tag>20007</Tag>
+              <Name>OrigUserRefNum</Name>
+              <Required>N</Required>
+              <Type>Int</Type>
+              <Description>UserRefNum sent on the Enter Order Message or last Replace Order Message</Description>
+            </Field>
+            <Field>
+              <Tag>9355</Tag>
+              <Name>CrossType</Name>
+              <Required>N</Required>
+              <Type>Char</Type>
+              <Description>D = continuous market, O = opening cross (Nasdaq only), C = closing cross (Nasdaq only), H = halt/IPO (Nasdaq only), S = supplemental (Nasdaq only), R = retail (NTX only), E = extended life (Nasdaq only), A = after hours close (Nasdaq only)</Description>
+            </Field>
+            <Field>
+              <Tag>110</Tag>
+              <Name>MinQty</Name>
+              <Required>N</Required>
+              <Type>Qty</Type>
+              <Description>Specifies the minimum acceptable quantity to execute</Description>
+            </Field>
+            <Field>
+              <Tag>211</Tag>
+              <Name>PegOffset</Name>
+              <Required>N</Required>
+              <Type>PriceOffset</Type>
+              <Description>Offset amount for the pegged value.</Description>
+            </Field>
+            <Field>
+              <Tag>20009</Tag>
+              <Name>DiscretionPrice</Name>
+              <Required>N</Required>
+              <Type>Price</Type>
+              <Description>Discretion price for Discretionary Order.</Description>
+            </Field>
+            <Field>
+              <Tag>388</Tag>
+              <Name>DiscretionPriceType</Name>
+              <Required>N</Required>
+              <Type>Char</Type>
+              <Description>L = limit (default), P = market peg, M = midpoint peg, R = primary peg</Description>
+            </Field>
+            <Field>
+              <Tag>389</Tag>
+              <Name>DiscretionPegOffset</Name>
+              <Required>N</Required>
+              <Type>PriceOffset</Type>
+              <Description>Offset amount for the pegged value of the Discretionary Price.</Description>
+            </Field>
+            <Field>
+              <Tag>8020</Tag>
+              <Name>RandomReserves</Name>
+              <Required>N</Required>
+              <Type>Qty</Type>
+              <Description>Shares to do random reserve with.</Description>
+            </Field>
+            <Field>
+              <Tag>126</Tag>
+              <Name>ExpireTime</Name>
+              <Required>N</Required>
+              <Type>Int</Type>
+              <Description>Seconds to live.</Description>
+            </Field>
+            <Field>
+              <Tag>20003</Tag>
+              <Name>HandleInst</Name>
+              <Required>N</Required>
+              <Type>Char</Type>
+              <Description>I = imbalance only (CrossType O and C), O = retail order type 1 (CrossType R), T = retail order type 2 (CrossType R), Q = retail price improvement (CrossType R), B = Extended Life + Continuous (CrossType E), D = Direct Listing Capital Raise (CrossType H), R = Retail Price Improvement, Hidden Price Improvement Indicator (CrossType R)</Description>
+            </Field>
+            <Field>
+              <Tag>20107</Tag>
+              <Name>GroupID</Name>
+              <Required>N</Required>
+              <Type>Int</Type>
+              <Description>Customer Group ID - identifies specific entity within customer firm</Description>
+            </Field>
+            <Field>
+              <Tag>20001</Tag>
+              <Name>UserRefNum</Name>
+              <Required>N</Required>
+              <Type>Int</Type>
+              <Description>UserRefNum as specified on the order</Description>
+            </Field>
+            <Field>
+              <Tag>9140</Tag>
+              <Name>DisplayInstruction</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Indicates the order display from client</Description>
+            </Field>
+            <Field>
+              <Tag>21002</Tag>
+              <Name>LocateBroker</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Will only be populated if a single broker is designated per session in the EQRC Shares Located rule.</Description>
+            </Field>
+          </Fields>
+        </Branch>
+
+        <!-- Rejected Order (2.8) -->
+        <Branch>
+          <Name>RejectedOrder</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>8</Value>
+          <Fields>
+            <Field>
+              <Tag>37</Tag>
+              <Name>OrderID</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Description>NASDAQ assigned sequence Number for this order</Description>
+            </Field>
+            <Field>
+              <Tag>99</Tag>
+              <Name>LimitPrice</Name>
+              <Required>N</Required>
+              <Type>Price</Type>
+              <Description>Limit price submitted on the order</Description>
+            </Field>
+          </Fields>
+        </Branch>
+      </Fields>
+    </Message>
+
+  </Messages>
+
+  <Values>
+
+    <!-- BeginString (8) -->
+    <Value>
+      <Type>BeginString</Type>
+      <Kind>Static</Kind>
+      <Enum>FIX.4.0</Enum>
+      <Description>FIX 4.0</Description>
+    </Value>
+    <Value>
+      <Type>BeginString</Type>
+      <Kind>Static</Kind>
+      <Enum>FIX.4.1</Enum>
+      <Description>FIX 4.1</Description>
+    </Value>
+    <Value>
+      <Type>BeginString</Type>
+      <Kind>Static</Kind>
+      <Enum>FIX.4.2</Enum>
+      <Description>FIX 4.2</Description>
+    </Value>
+
+    <!-- PossDupFlag (43) -->
+    <Value>
+      <Type>PossDupFlag</Type>
+      <Enum>N</Enum>
+      <Description>Original transmission</Description>
+    </Value>
+    <Value>
+      <Type>PossDupFlag</Type>
+      <Enum>Y</Enum>
+      <Description>Possible duplicate</Description>
+    </Value>
+
+    <!-- EncryptMethod (98) -->
+    <Value>
+      <Type>EncryptMethod</Type>
+      <Enum>0</Enum>
+      <Description>None</Description>
+    </Value>
+
+    <!-- GapFillFlag (123) -->
+    <Value>
+      <Type>GapFillFlag</Type>
+      <Enum>N</Enum>
+      <Description>Sequence Reset, ignore MsgSeqNum</Description>
+    </Value>
+    <Value>
+      <Type>GapFillFlag</Type>
+      <Enum>Y</Enum>
+      <Description>Gap Fill message, MsgSeqNum field valid</Description>
+    </Value>
+
+    <!-- SessionRejectReason (373) -->
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>0</Enum>
+      <Description>Invalid tag number</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>1</Enum>
+      <Description>Required tag missing</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>2</Enum>
+      <Description>Tag not defined for this message type</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>3</Enum>
+      <Description>Undefined Tag</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>4</Enum>
+      <Description>Tag specified without a value</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>5</Enum>
+      <Description>Value is incorrect (out of range) for this tag</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>6</Enum>
+      <Description>Incorrect data format for value</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>7</Enum>
+      <Description>Decryption problem</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>8</Enum>
+      <Description>Signature problem</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>9</Enum>
+      <Description>CompID problem</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>10</Enum>
+      <Description>SendingTime accuracy problem</Description>
+    </Value>
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>11</Enum>
+      <Description>Invalid MsgType</Description>
+    </Value>
+
+    <!-- ExecTransType (20) -->
+    <Value>
+      <Type>ExecTransType</Type>
+      <Enum>0</Enum>
+      <Description>New</Description>
+    </Value>
+    <Value>
+      <Type>ExecTransType</Type>
+      <Enum>1</Enum>
+      <Description>Cancel</Description>
+    </Value>
+
+    <!-- ExecType (150) -->
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>0</Enum>
+      <Description>New</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>1</Enum>
+      <Description>Partial Fill</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>2</Enum>
+      <Description>Filled</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>4</Enum>
+      <Description>Canceled</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>5</Enum>
+      <Description>Replaced</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>8</Enum>
+      <Description>Rejected</Description>
+    </Value>
+
+    <!-- OrdStatus (39) -->
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>0</Enum>
+      <Description>New</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>1</Enum>
+      <Description>Partial Fill</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>2</Enum>
+      <Description>Filled</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>4</Enum>
+      <Description>Canceled</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>5</Enum>
+      <Description>Replaced</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>8</Enum>
+      <Description>Rejected</Description>
+    </Value>
+
+    <!-- Side (54) -->
+    <Value>
+      <Type>Side</Type>
+      <Enum>1</Enum>
+      <Description>Buy</Description>
+    </Value>
+    <Value>
+      <Type>Side</Type>
+      <Enum>2</Enum>
+      <Description>Sell</Description>
+    </Value>
+    <Value>
+      <Type>Side</Type>
+      <Enum>5</Enum>
+      <Description>Sell Short</Description>
+    </Value>
+    <Value>
+      <Type>Side</Type>
+      <Enum>6</Enum>
+      <Description>Sell Short Exempt</Description>
+    </Value>
+
+    <!-- OrdType (40) -->
+    <Value>
+      <Type>OrdType</Type>
+      <Enum>1</Enum>
+      <Description>Market</Description>
+    </Value>
+    <Value>
+      <Type>OrdType</Type>
+      <Enum>2</Enum>
+      <Description>Limit</Description>
+    </Value>
+    <Value>
+      <Type>OrdType</Type>
+      <Enum>3</Enum>
+      <Description>Cross</Description>
+    </Value>
+
+    <!-- Rule80A (47) -->
+    <Value>
+      <Type>Rule80A</Type>
+      <Enum>A</Enum>
+      <Description>Agent</Description>
+    </Value>
+    <Value>
+      <Type>Rule80A</Type>
+      <Enum>E</Enum>
+      <Description>Registered Market Maker Trade</Description>
+    </Value>
+    <Value>
+      <Type>Rule80A</Type>
+      <Enum>P</Enum>
+      <Description>Principal</Description>
+    </Value>
+
+    <!-- LastCapacity (29) -->
+    <Value>
+      <Type>LastCapacity</Type>
+      <Enum>1</Enum>
+      <Description>Agency</Description>
+    </Value>
+    <Value>
+      <Type>LastCapacity</Type>
+      <Enum>4</Enum>
+      <Description>Principal</Description>
+    </Value>
+
+    <!-- ExecInst (18) -->
+    <Value>
+      <Type>ExecInst</Type>
+      <Enum>f</Enum>
+      <Description>Intermarket Sweep Order (ISO)</Description>
+    </Value>
+    <Value>
+      <Type>ExecInst</Type>
+      <Enum>y</Enum>
+      <Description>Trade-at Intermarket Sweep Order</Description>
+    </Value>
+    <Value>
+      <Type>ExecInst</Type>
+      <Enum>B</Enum>
+      <Description>Reactive Trade Now</Description>
+    </Value>
+
+    <!-- TimeInForce (59) -->
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>0</Enum>
+      <Description>Day</Description>
+    </Value>
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>2</Enum>
+      <Description>At the Opening</Description>
+    </Value>
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>3</Enum>
+      <Description>Immediate or Cancel</Description>
+    </Value>
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>4</Enum>
+      <Description>Fill or Kill</Description>
+    </Value>
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>5</Enum>
+      <Description>Good Till Cancel</Description>
+    </Value>
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>6</Enum>
+      <Description>Good Till Date</Description>
+    </Value>
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>7</Enum>
+      <Description>At the Close</Description>
+    </Value>
+
+    <!-- LastExchange (30) -->
+    <Value>
+      <Type>LastExchange</Type>
+      <Enum>" "</Enum>
+      <Description>Not provided</Description>
+    </Value>
+    <Value>
+      <Type>LastExchange</Type>
+      <Enum>Q</Enum>
+      <Description>Nasdaq</Description>
+    </Value>
+    <Value>
+      <Type>LastExchange</Type>
+      <Enum>B</Enum>
+      <Description>Nasdaq Texas</Description>
+    </Value>
+    <Value>
+      <Type>LastExchange</Type>
+      <Enum>X</Enum>
+      <Description>Nasdaq PSX</Description>
+    </Value>
+
+    <!-- CrossType (9355) -->
+    <Value>
+      <Type>CrossType</Type>
+      <Enum>D</Enum>
+      <Description>Continuous Market</Description>
+    </Value>
+    <Value>
+      <Type>CrossType</Type>
+      <Enum>O</Enum>
+      <Description>Opening Cross (Nasdaq only)</Description>
+    </Value>
+    <Value>
+      <Type>CrossType</Type>
+      <Enum>C</Enum>
+      <Description>Closing Cross (Nasdaq only)</Description>
+    </Value>
+    <Value>
+      <Type>CrossType</Type>
+      <Enum>H</Enum>
+      <Description>Halt/IPO (Nasdaq only)</Description>
+    </Value>
+    <Value>
+      <Type>CrossType</Type>
+      <Enum>S</Enum>
+      <Description>Supplemental (Nasdaq only)</Description>
+    </Value>
+    <Value>
+      <Type>CrossType</Type>
+      <Enum>R</Enum>
+      <Description>Retail (NTX only)</Description>
+    </Value>
+    <Value>
+      <Type>CrossType</Type>
+      <Enum>E</Enum>
+      <Description>Extended Life (Nasdaq only)</Description>
+    </Value>
+    <Value>
+      <Type>CrossType</Type>
+      <Enum>A</Enum>
+      <Description>After Hours Close (Nasdaq only)</Description>
+    </Value>
+
+    <!-- DiscretionPriceType (388) -->
+    <Value>
+      <Type>DiscretionPriceType</Type>
+      <Enum>L</Enum>
+      <Description>Limit (default)</Description>
+    </Value>
+    <Value>
+      <Type>DiscretionPriceType</Type>
+      <Enum>P</Enum>
+      <Description>Market Peg</Description>
+    </Value>
+    <Value>
+      <Type>DiscretionPriceType</Type>
+      <Enum>M</Enum>
+      <Description>Midpoint Peg</Description>
+    </Value>
+    <Value>
+      <Type>DiscretionPriceType</Type>
+      <Enum>R</Enum>
+      <Description>Primary Peg</Description>
+    </Value>
+
+    <!-- HandleInst (20003) -->
+    <Value>
+      <Type>HandleInst</Type>
+      <Enum>I</Enum>
+      <Description>Imbalance Only (CrossType O and C)</Description>
+    </Value>
+    <Value>
+      <Type>HandleInst</Type>
+      <Enum>O</Enum>
+      <Description>Retail Order Type 1 (CrossType R)</Description>
+    </Value>
+    <Value>
+      <Type>HandleInst</Type>
+      <Enum>T</Enum>
+      <Description>Retail Order Type 2 (CrossType R)</Description>
+    </Value>
+    <Value>
+      <Type>HandleInst</Type>
+      <Enum>Q</Enum>
+      <Description>Retail Price Improvement (CrossType R)</Description>
+    </Value>
+    <Value>
+      <Type>HandleInst</Type>
+      <Enum>B</Enum>
+      <Description>Extended Life + Continuous (CrossType E)</Description>
+    </Value>
+    <Value>
+      <Type>HandleInst</Type>
+      <Enum>D</Enum>
+      <Description>Direct Listing Capital Raise (CrossType H)</Description>
+    </Value>
+    <Value>
+      <Type>HandleInst</Type>
+      <Enum>R</Enum>
+      <Description>Retail Price Improvement, Hidden Price Improvement Indicator (CrossType R)</Description>
+    </Value>
+
+    <!-- BBOWeightIndicator (9883) -->
+    <Value>
+      <Type>BBOWeightIndicator</Type>
+      <Enum>0</Enum>
+      <Description>0-0.2%</Description>
+    </Value>
+    <Value>
+      <Type>BBOWeightIndicator</Type>
+      <Enum>1</Enum>
+      <Description>0.2%-1%</Description>
+    </Value>
+    <Value>
+      <Type>BBOWeightIndicator</Type>
+      <Enum>2</Enum>
+      <Description>1%-2%</Description>
+    </Value>
+    <Value>
+      <Type>BBOWeightIndicator</Type>
+      <Enum>3</Enum>
+      <Description>Greater than 2%</Description>
+    </Value>
+    <Value>
+      <Type>BBOWeightIndicator</Type>
+      <Enum>" "</Enum>
+      <Description>Unspecified (default)</Description>
+    </Value>
+    <Value>
+      <Type>BBOWeightIndicator</Type>
+      <Enum>S</Enum>
+      <Description>Sets the QBBO while joining the NBBO</Description>
+    </Value>
+    <Value>
+      <Type>BBOWeightIndicator</Type>
+      <Enum>N</Enum>
+      <Description>Improves the NBBO upon entry</Description>
+    </Value>
+
+    <!-- LiquidityFlag (9882) -->
+    <Value>
+      <Type>LiquidityFlag</Type>
+      <Enum>A</Enum>
+      <Description>Added</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityFlag</Type>
+      <Enum>R</Enum>
+      <Description>Removed</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityFlag</Type>
+      <Enum>J</Enum>
+      <Description>Non-displayed and added liquidity</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityFlag</Type>
+      <Enum>m</Enum>
+      <Description>Removed liquidity at a midpoint</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityFlag</Type>
+      <Enum>k</Enum>
+      <Description>Added liquidity via a midpoint order</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityFlag</Type>
+      <Enum>j</Enum>
+      <Description>RPI (Retail Price Improving) order provides liquidity</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityFlag</Type>
+      <Enum>r</Enum>
+      <Description>RMO Retail Order removes RPI liquidity</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityFlag</Type>
+      <Enum>t</Enum>
+      <Description>RMO Retail Order removes price improving non-displayed liquidity other than RPI liquidity</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityFlag</Type>
+      <Enum>q</Enum>
+      <Description>RMO Retail Order removes non-RPI midpoint liquidity</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityFlag</Type>
+      <Enum>7</Enum>
+      <Description>Displayed, liquidity-adding order improves the NBBO</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityFlag</Type>
+      <Enum>8</Enum>
+      <Description>Displayed, liquidity-adding order sets the NTXBBO while joining the NBBO</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityFlag</Type>
+      <Enum>p</Enum>
+      <Description>Removed price improving non-displayed liquidity</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityFlag</Type>
+      <Enum>N</Enum>
+      <Description>Passive Midpoint Execution</Description>
+    </Value>
+
+    <!-- Broken Trade values printed for Liquidity Flag -->
+    <Value>
+      <Type>LiquidityFlag</Type>
+      <Enum>E</Enum>
+      <Description>Erroneous Trade (Broken Trade)</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityFlag</Type>
+      <Enum>C</Enum>
+      <Description>Consensus (Broken Trade)</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityFlag</Type>
+      <Enum>S</Enum>
+      <Description>Supervisory (Broken Trade)</Description>
+    </Value>
+    <Value>
+      <Type>LiquidityFlag</Type>
+      <Enum>X</Enum>
+      <Description>Default (Broken Trade)</Description>
+    </Value>
+
+  </Values>
+
+</OmiFixPdf>
