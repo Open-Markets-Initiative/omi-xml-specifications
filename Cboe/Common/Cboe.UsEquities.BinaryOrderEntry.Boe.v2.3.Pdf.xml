@@ -1,4 +1,4 @@
-<OmiBoePdf>
+﻿<OmiBoePdf>
 
   <Messages>
 
@@ -116,9 +116,9 @@
           <Description>A number, n, of unit/sequence pairs to follow, one per unit. A pair for every unit will be sent, even if no messages have been sent to this port today. For unsuccessful logins, this will be 0.</Description>
         </Field>
         <Field>
-          <Name>UnitSequence</Name>
+          <Name>UnitSequences</Name>
           <Type>group</Type>
-          <Size>4</Size>
+          <Size>5</Size>
           <Description>Highest available Cboe to Member sequence number for the unit.</Description>
         </Field>
         <Field>
@@ -172,9 +172,9 @@
           <Description>A number, n, of unit/sequence pairs to follow, one per unit. A pair for every unit will be sent, even if no messages have been sent to this port today. For unsuccessful logins, this will be 0.</Description>
         </Field>
         <Field>
-          <Name>UnitSequence</Name>
+          <Name>UnitSequences</Name>
           <Type>group</Type>
-          <Size>4</Size>
+          <Size>5</Size>
           <Description>Highest available Cboe to Member sequence number for the unit.</Description>
         </Field>
       </Fields>
@@ -589,6 +589,18 @@
           <Name>PurgeOrderBitfield2</Name>
           <Type>bitfield</Type>
           <Size>1</Size>
+        </Field>
+        <Field>
+          <Name>CustomGroupIDCnt</Name>
+          <Type>Binary</Type>
+          <Size>1</Size>
+          <Description>Number of repeating CustomGroupID values included in this message. May be 0.</Description>
+        </Field>
+        <Field>
+          <Name>CustomGroupIDs</Name>
+          <Type>group</Type>
+          <Size>2</Size>
+          <Description>Repeating CustomGroupID values, CustomGroupIDCnt instances. A maximum of 10 may be included on a single Purge Orders message.</Description>
         </Field>
         <!-- Optional appendage fields, ordered byte then bit ascending. Presence is gated by the corresponding bit in PurgeOrderBitfield1..2. -->
         <Field>
@@ -3185,16 +3197,6 @@
       <Code>0x80</Code>
       <Fields>
         <Field>
-          <Name>ParamGroupLength</Name>
-          <Type>Binary</Type>
-          <Size>2</Size>
-        </Field>
-        <Field>
-          <Name>ParamGroupType</Name>
-          <Type>Binary</Type>
-          <Size>1</Size>
-        </Field>
-        <Field>
           <Name>NoUnspecifiedUnitReplay</Name>
           <Type>Binary</Type>
           <Size>1</Size>
@@ -3220,16 +3222,6 @@
       <Branch>paramgrouppayload</Branch>
       <Code>0x81</Code>
       <Fields>
-        <Field>
-          <Name>ParamGroupLength</Name>
-          <Type>Binary</Type>
-          <Size>2</Size>
-        </Field>
-        <Field>
-          <Name>ParamGroupType</Name>
-          <Type>Binary</Type>
-          <Size>1</Size>
-        </Field>
         <Field>
           <Name>MessageType</Name>
           <Type>Binary</Type>
@@ -3352,6 +3344,20 @@
       </Fields>
     </Group>
 
+    <!-- CustomGroupIDs -->
+    <Group>
+      <Name>CustomGroupIDs</Name>
+      <Description>Repeating CustomGroupID value appended after CustomGroupIDCnt in the Purge Orders message. CustomGroupIDCnt instances follow (count may be 0). Each names a custom group whose orders are to be cancelled; the filter cannot be combined with the symbol filter.</Description>
+      <Dependency>CustomGroupIDCnt</Dependency>
+      <Fields>
+        <Field>
+          <Name>CustomGroupID</Name>
+          <Type>Binary</Type>
+          <Size>2</Size>
+        </Field>
+      </Fields>
+    </Group>
+
     <!-- ParamGroup -->
     <Group>
       <Name>ParamGroup</Name>
@@ -3367,6 +3373,11 @@
           <Name>ParamGroupType</Name>
           <Type>Binary</Type>
           <Size>1</Size>
+        </Field>
+        <Field>
+          <Name>ParamGroupPayload</Name>
+          <Type>payload</Type>
+          <Description>Remaining bytes of the parameter group, ParamGroupLength - 3, read as the variant ParamGroupType selects.</Description>
         </Field>
       </Fields>
     </Group>

@@ -7,10 +7,15 @@
 | --- | --- | --- | --- | --- |
 | OdxEquities | DropCopy | Fix | 1.1 | [files](Odx.OdxEquities.DropCopy.Fix.v1.1/) |
 | OdxEquities | OrderEntry | Fix | 1.1 | [files](Odx.OdxEquities.OrderEntry.Fix.v1.1/) |
+| OdxEquities | Pts | Glimpse | 1.0 | [files](Odx.OdxEquities.Pts.Glimpse.v1.0/) |
 | OdxEquities | Pts | Glimpse | 2.0 | [files](Odx.OdxEquities.Pts.Glimpse.v2.0/) |
+| OdxEquities | Pts | Itch | 1.0 | [files](Odx.OdxEquities.Pts.Itch.v1.0/) |
 | OdxEquities | Pts | Itch | 2.2 | [files](Odx.OdxEquities.Pts.Itch.v2.2/) |
+| OdxEquities | Pts | Ouch | 1.0 | [files](Odx.OdxEquities.Pts.Ouch.v1.0/) |
 | OdxEquities | Pts | Ouch | 2.0 | [files](Odx.OdxEquities.Pts.Ouch.v2.0/) |
+| OdxSecurityToken | OrderEntry | Fix | 1.0 | [files](Odx.OdxSecurityToken.OrderEntry.Fix.v1.0/) |
 | OdxSecurityToken | OrderEntry | Fix | 1.1 | [files](Odx.OdxSecurityToken.OrderEntry.Fix.v1.1/) |
+| OdxSecurityToken | Pts | Itch | 1.0 | [files](Odx.OdxSecurityToken.Pts.Itch.v1.0/) |
 | OdxSecurityToken | Pts | Itch | 1.2 | [files](Odx.OdxSecurityToken.Pts.Itch.v1.2/) |
 
 
