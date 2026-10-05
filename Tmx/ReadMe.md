@@ -6,9 +6,12 @@
 | Division | Protocol | Encoding | Version | Specification |
 | --- | --- | --- | --- | --- |
 | Mx | SolaMulticast | Hsvf | 1.11 | [files](Tmx.Mx.SolaMulticast.Hsvf.v1.11/) |
+| Mx | SolaMulticast | Hsvf | 1.12 | [files](Tmx.Mx.SolaMulticast.Hsvf.v1.12/) |
 | Mx | SolaMulticast | Hsvf | 1.13 | [files](Tmx.Mx.SolaMulticast.Hsvf.v1.13/) |
 | Mx | SolaMulticast | Hsvf | 1.14 | [files](Tmx.Mx.SolaMulticast.Hsvf.v1.14/) |
 | Mx | SolaMulticast | Hsvf | 2.1 | [files](Tmx.Mx.SolaMulticast.Hsvf.v2.1/) |
+| Mx | SolaOrderEntry | Sail | 1.21 | [files](Tmx.Mx.SolaOrderEntry.Sail.v1.21/) |
+| Tsx | GlobalFx | Gfx | 1.0 | [files](Tmx.Tsx.GlobalFx.Gfx.v1.0/) |
 | Tsx | QuantumFeedLevel1 | Xmt | 2.6 | [files](Tmx.Tsx.QuantumFeedLevel1.Xmt.v2.6/) |
 | Tsx | QuantumFeedLevel1 | Xmt | 2.8 | [files](Tmx.Tsx.QuantumFeedLevel1.Xmt.v2.8/) |
 | Tsx | QuantumFeedLevel2 | Xmt | 2.1 | [files](Tmx.Tsx.QuantumFeedLevel2.Xmt.v2.1/) |

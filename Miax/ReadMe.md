@@ -22,9 +22,13 @@
 | MiaxOptions | OrderFeed | Mach | 2.5.b | [files](Miax.MiaxOptions.OrderFeed.Mach.v2.5.b/) |
 | MiaxOptions | TopOfMarket | Mach | 2.5 | [files](Miax.MiaxOptions.TopOfMarket.Mach.v2.5/) |
 | OnyxFutures | DepthOfMarket | Mach | 1.0.b | [files](Miax.OnyxFutures.DepthOfMarket.Mach.v1.0.b/) |
+| OnyxFutures | DepthOfMarket | Mach | 1.3.a | [files](Miax.OnyxFutures.DepthOfMarket.Mach.v1.3.a/) |
+| OnyxFutures | DepthOfMarketRetransmission | SesM | 1.3.a | [files](Miax.OnyxFutures.DepthOfMarketRetransmission.SesM.v1.3.a/) |
 | OnyxFutures | ExpressInterface | Fei | 1.0.c | [files](Miax.OnyxFutures.ExpressInterface.Fei.v1.0.c/) |
 | OnyxFutures | OrderEntry | Fix | 1.2 | [files](Miax.OnyxFutures.OrderEntry.Fix.v1.2/) |
 | OnyxFutures | TopOfMarket | Mach | 1.0.b | [files](Miax.OnyxFutures.TopOfMarket.Mach.v1.0.b/) |
+| OnyxFutures | TopOfMarket | Mach | 1.3.a | [files](Miax.OnyxFutures.TopOfMarket.Mach.v1.3.a/) |
+| OnyxFutures | TopOfMarketRetransmission | SesM | 1.3.a | [files](Miax.OnyxFutures.TopOfMarketRetransmission.SesM.v1.3.a/) |
 | PearlEquities | DepthOfMarket | Mach | 1.3.a | [files](Miax.PearlEquities.DepthOfMarket.Mach.v1.3.a/) |
 | PearlEquities | DepthOfMarket | Mach | 1.3.d | [files](Miax.PearlEquities.DepthOfMarket.Mach.v1.3.d/) |
 | PearlEquities | ExpressOrders | Meo | 2.6 | [files](Miax.PearlEquities.ExpressOrders.Meo.v2.6/) |
