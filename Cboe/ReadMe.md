@@ -41,9 +41,11 @@
 | BzxEquities | BinaryOrderEntry | Boe | 2.4.57 | [files](Cboe.BzxEquities.BinaryOrderEntry.Boe.v2.4.57/) |
 | BzxEquities | DropCopy | Fix | 2.9 | [files](Cboe.BzxEquities.DropCopy.Fix.v2.9/) |
 | BzxEquities | LastSale | AsciiPitch | 1.2.4 | [files](Cboe.BzxEquities.LastSale.AsciiPitch.v1.2.4/) |
+| BzxEquities | MulticastDepthOfBook | Pitch | 2.20.4 | [files](Cboe.BzxEquities.MulticastDepthOfBook.Pitch.v2.20.4/) |
 | BzxEquities | MulticastDepthOfBook | Pitch | 2.41.29 | [files](Cboe.BzxEquities.MulticastDepthOfBook.Pitch.v2.41.29/) |
 | BzxEquities | MulticastDepthOfBook | Pitch | 2.41.64 | [files](Cboe.BzxEquities.MulticastDepthOfBook.Pitch.v2.41.64/) |
 | BzxEquities | MulticastDepthOfBook | Pitch | 2.41.66 | [files](Cboe.BzxEquities.MulticastDepthOfBook.Pitch.v2.41.66/) |
+| BzxEquities | MulticastDepthOfBook | Spin | 2.20.4 | [files](Cboe.BzxEquities.MulticastDepthOfBook.Spin.v2.20.4/) |
 | BzxEquities | MulticastDepthOfBook | Spin | 2.41.66 | [files](Cboe.BzxEquities.MulticastDepthOfBook.Spin.v2.41.66/) |
 | BzxEquities | OrderEntry | Fix | 2.9 | [files](Cboe.BzxEquities.OrderEntry.Fix.v2.9/) |
 | BzxEquities | Purge | Fix | 2.9 | [files](Cboe.BzxEquities.Purge.Fix.v2.9/) |

@@ -86,6 +86,7 @@
       </Field>
     </Fields>
   </Header>
+
   <Header Name="Exchange">
     <Fields>
       <Field>
@@ -509,8 +510,8 @@
           <Required>Y</Required>
         </Group>
         <Group>
-          <Name>NoRelatedSym</Name>
-          <Required>N</Required>
+          <Name>NoRelatedSymMarketData</Name>
+          <Required>Y</Required>
         </Group>
         <Group>
           <Name>NoMarketSegments</Name>
@@ -654,8 +655,8 @@
           <Description>Unique identifier of the quote request.</Description>
         </Field>
         <Group>
-          <Name>NoRelatedSym</Name>
-          <Required>N</Required>
+          <Name>NoRelatedSymQuote</Name>
+          <Required>Y</Required>
         </Group>
       </Fields>
     </Message>
@@ -667,20 +668,21 @@
       <Category>app</Category>
       <Origin>Client</Origin>
       <Fields>
+        <!-- Changed: was SecurityReqID (320) N; PDF p57 lists RFQReqID (644) Y -->
         <Field>
-          <Tag>320</Tag>
-          <Name>SecurityReqID</Name>
-          <Required>N</Required>
+          <Tag>644</Tag>
+          <Name>RFQReqID</Name>
+          <Required>Y</Required>
           <Type>String</Type>
-          <Description>Unique identifier of the security request.</Description>
+          <Description>RFQ Request ID - used to identify an RFQ Request.</Description>
         </Field>
         <Group>
           <Name>NoPartyIDs</Name>
           <Required>N</Required>
         </Group>
         <Group>
-          <Name>NoRelatedSym</Name>
-          <Required>N</Required>
+          <Name>NoRelatedSymRfq</Name>
+          <Required>Y</Required>
         </Group>
       </Fields>
     </Message>
@@ -1000,82 +1002,80 @@
           <Type>String</Type>
           <Description>CFI code of the derivative security.</Description>
         </Field>
+        <!-- Changed: tags 1247-1288 had names shifted one row against the PDF and 1576/1253/1266/1286 were missing; rebuilt from PDF pp.79-81 -->
         <Field>
           <Tag>1247</Tag>
-          <Name>DerivativeSecurityType</Name>
-          <Required>N</Required>
-          <Type>String</Type>
-          <Description>Type of the derivative security.</Description>
-        </Field>
-        <Field>
-          <Tag>1279</Tag>
           <Name>DerivativeSecurityGroup</Name>
           <Required>N</Required>
           <Type>String</Type>
-          <Description>Group the derivative security belongs to.</Description>
+          <Description>The commodity code of the option series, e.g. XT.</Description>
         </Field>
         <Field>
-          <Tag>1272</Tag>
+          <Tag>1279</Tag>
           <Name>DerivativeSecurityDesc</Name>
           <Required>N</Required>
           <Type>String</Type>
-          <Description>Description of the derivative security.</Description>
+          <Description>Textual description for the instrument.</Description>
         </Field>
         <Field>
-          <Tag>1267</Tag>
-          <Name>DerivativePriceQuoteCurrency</Name>
-          <Required>N</Required>
-          <Type>Currency</Type>
-          <Description>Price quote currency of the derivative security.</Description>
-        </Field>
-        <Field>
-          <Tag>1251</Tag>
-          <Name>DerivativeMinPriceIncrement</Name>
-          <Required>N</Required>
-          <Type>float</Type>
-          <Description>Minimum price increment of the derivative security.</Description>
-        </Field>
-        <Field>
-          <Tag>1252</Tag>
-          <Name>DerivativeMaturityMonthYear</Name>
-          <Required>N</Required>
-          <Type>MonthYear</Type>
-          <Description>Expiration month and year of the derivative security.</Description>
-        </Field>
-        <Field>
-          <Tag>1253</Tag>
-          <Name>DerivativeMaturityDate</Name>
-          <Required>N</Required>
-          <Type>LocalMktDate</Type>
-          <Description>Maturity date of the derivative security.</Description>
-        </Field>
-        <Field>
-          <Tag>1266</Tag>
+          <Tag>1272</Tag>
           <Name>DerivativeSecurityExchange</Name>
           <Required>N</Required>
           <Type>Exchange</Type>
-          <Description>Exchange of the derivative security.</Description>
+          <Description>Market used to help identify a security. Valid values: XSFE = Sydney Futures Exchange NZFX = New Zealand Futures and Options Exchange.</Description>
         </Field>
         <Field>
-          <Tag>1287</Tag>
-          <Name>DerivativeEventType</Name>
+          <Tag>1576</Tag>
+          <Name>DerivativePriceQuoteCurrency</Name>
           <Required>N</Required>
-          <Type>Int</Type>
-          <Description>Type of derivative security event.</Description>
+          <Type>Currency</Type>
+          <Description>Default currency in which the price is quoted.</Description>
         </Field>
         <Field>
-          <Tag>1288</Tag>
-          <Name>DerivativeEventDate</Name>
+          <Tag>1267</Tag>
+          <Name>DerivativeMinPriceIncrement</Name>
+          <Required>N</Required>
+          <Type>float</Type>
+          <Description>Minimum price increment for the instrument.</Description>
+        </Field>
+        <Field>
+          <Tag>1251</Tag>
+          <Name>DerivativeMaturityMonthYear</Name>
+          <Required>N</Required>
+          <Type>MonthYear</Type>
+          <Description>Specifies the month and year of maturity.</Description>
+        </Field>
+        <Field>
+          <Tag>1252</Tag>
+          <Name>DerivativeMaturityDate</Name>
           <Required>N</Required>
           <Type>LocalMktDate</Type>
-          <Description>Date of the derivative security event.</Description>
+          <Description>The Last Trading Day as specified in the ASX 24 contract specifications.</Description>
+        </Field>
+        <Field>
+          <Tag>1253</Tag>
+          <Name>DerivativeMaturityTime</Name>
+          <Required>N</Required>
+          <Type>TZTimeOnly</Type>
+          <Description>Time of security's maturity on its last trading date expressed in local time with offset to UTC specified.</Description>
+        </Field>
+        <Field>
+          <Tag>1266</Tag>
+          <Name>DerivativeContractMultiplier</Name>
+          <Required>N</Required>
+          <Type>float</Type>
+          <Description>The Contract Unit of the derivative instrument as specified in the ASX 24 contract specifications, e.g. for ASX 90 Day Bank Bills (commodity code IR), this will be 1,000,000. For Options on ASX SPI Index Futures (commodity code AP), this will be 25.</Description>
         </Field>
         <Group>
-          <Name>NoMarketSegments</Name>
+          <Name>NoDerivativeEvents</Name>
           <Required>N</Required>
         </Group>
         <Group>
-          <Name>NoRelatedSym</Name>
+          <Name>NoMarketSegmentsDerivative</Name>
+          <Required>N</Required>
+        </Group>
+        <Group>
+          <Name>NoRelatedSymDerivative</Name>
           <Required>N</Required>
         </Group>
       </Fields>
@@ -1329,7 +1329,7 @@
         <Field>
           <Tag>448</Tag>
           <Name>PartyID</Name>
-          <Required>Y</Required>
+          <Required>N</Required>
           <Type>String</Type>
           <Description>Party identifier.</Description>
         </Field>
@@ -1343,7 +1343,7 @@
         <Field>
           <Tag>452</Tag>
           <Name>PartyRole</Name>
-          <Required>Y</Required>
+          <Required>N</Required>
           <Type>Int</Type>
           <Description>Role of the specified PartyID.</Description>
         </Field>
@@ -1366,6 +1366,7 @@
     </Group>
 
     <!-- NoRelatedSym (146) -->
+    <!-- Changed: was one group shared by five messages; now Security List only (union of Multi Leg pp.68-70 and Single Future pp.73-76). Removed 54/38/202, added 7555, 1079 UTCTimestamp->TZTimeOnly -->
     <Group>
       <Name>NoRelatedSym</Name>
       <AnchorTag>146</AnchorTag>
@@ -1390,20 +1391,6 @@
           <Required>N</Required>
           <Type>String</Type>
           <Description>Source of the SecurityID.</Description>
-        </Field>
-        <Field>
-          <Tag>54</Tag>
-          <Name>Side</Name>
-          <Required>N</Required>
-          <Type>char</Type>
-          <Description>Side of order. Valid values: 1 = Buy, 2 = Sell.</Description>
-        </Field>
-        <Field>
-          <Tag>38</Tag>
-          <Name>OrderQty</Name>
-          <Required>N</Required>
-          <Type>Qty</Type>
-          <Description>Order quantity.</Description>
         </Field>
         <Field>
           <Tag>207</Tag>
@@ -1472,7 +1459,7 @@
           <Tag>1079</Tag>
           <Name>MaturityTime</Name>
           <Required>N</Required>
-          <Type>UTCTimestamp</Type>
+          <Type>TZTimeOnly</Type>
           <Description>Maturity time of the instrument.</Description>
         </Field>
         <Field>
@@ -1489,13 +1476,6 @@
           <Type>float</Type>
           <Description>Contract multiplier of the instrument.</Description>
         </Field>
-        <Field>
-          <Tag>202</Tag>
-          <Name>StrikePrice</Name>
-          <Required>N</Required>
-          <Type>Price</Type>
-          <Description>Strike price of the option.</Description>
-        </Field>
         <Group>
           <Name>NoLegs</Name>
           <Required>N</Required>
@@ -1508,10 +1488,18 @@
           <Name>NoLotTypeRules</Name>
           <Required>N</Required>
         </Group>
+        <Field>
+          <Tag>7555</Tag>
+          <Name>TradeSeqNoSeries</Name>
+          <Required>N</Required>
+          <Type>int</Type>
+          <Description>Subscription group.</Description>
+        </Field>
       </Fields>
     </Group>
 
     <!-- NoMarketSegments (1310) -->
+    <!-- Changed: now Market Data Request only (PDF p29); NoLotTypeRules moved to NoMarketSegmentsDerivative; 1301 Y->N (Reqd C) -->
     <Group>
       <Name>NoMarketSegments</Name>
       <AnchorTag>1310</AnchorTag>
@@ -1519,7 +1507,7 @@
         <Field>
           <Tag>1301</Tag>
           <Name>MarketID</Name>
-          <Required>Y</Required>
+          <Required>N</Required>
           <Type>String</Type>
           <Description>Identifier of the market.</Description>
         </Field>
@@ -1533,6 +1521,183 @@
       </Fields>
     </Group>
 
+    <!-- NoMarketSegmentsDerivative (1310) -->
+    <!-- Changed: Derivative Security List variant of NoMarketSegments (PDF p80); NoLotTypeRules appears only here -->
+    <Group>
+      <Name>NoMarketSegmentsDerivative</Name>
+      <AnchorTag>1310</AnchorTag>
+      <Fields>
+        <Field>
+          <Tag>1301</Tag>
+          <Name>MarketID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Identifies the market which lists and trades the instrument. Valid values: XSFE = Sydney Futures Exchange NZFX = New Zealand Futures and Options Exchange.</Description>
+        </Field>
+        <Field>
+          <Tag>1300</Tag>
+          <Name>MarketSegmentID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Identifies the segment of the market to which the specific trading rules and listing rules apply.</Description>
+        </Field>
+        <Group>
+          <Name>NoLotTypeRules</Name>
+          <Required>N</Required>
+        </Group>
+      </Fields>
+    </Group>
+
+    <!-- NoDerivativeEvents (1286) -->
+    <!-- Changed: added from PDF pp.79-80; 1287/1288 were flat fields in Derivative Security List -->
+    <Group>
+      <Name>NoDerivativeEvents</Name>
+      <AnchorTag>1286</AnchorTag>
+      <Fields>
+        <Field>
+          <Tag>1287</Tag>
+          <Name>DerivativeEventType</Name>
+          <Required>N</Required>
+          <Type>int</Type>
+          <Description>The type of event being described. Valid values: 99 = Other (Used for derivative settlement date by ASX).</Description>
+        </Field>
+        <Field>
+          <Tag>1288</Tag>
+          <Name>DerivativeEventDate</Name>
+          <Required>N</Required>
+          <Type>LocalMktDate</Type>
+          <Description>Date of event type.</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+    <!-- NoRelatedSymMarketData (146) -->
+    <!-- Changed: Market Data Request variant of NoRelatedSym (PDF p29) -->
+    <Group>
+      <Name>NoRelatedSymMarketData</Name>
+      <AnchorTag>146</AnchorTag>
+      <Fields>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>The common, human understood representation of the security. This tag is required to comply with FIX protocol. It is not possible to subscribe at an instrument level. Valid value: [N/A]</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+    <!-- NoRelatedSymQuote (146) -->
+    <!-- Changed: Quote Request variant of NoRelatedSym (PDF pp.55-56); Reqd C encoded N -->
+    <Group>
+      <Name>NoRelatedSymQuote</Name>
+      <AnchorTag>146</AnchorTag>
+      <Fields>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>The common, human understood representation of the security.</Description>
+        </Field>
+        <Field>
+          <Tag>48</Tag>
+          <Name>SecurityID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Security identifier value of SecurityIDSource (22) type. Requires SecurityIDSource (22).</Description>
+        </Field>
+        <Field>
+          <Tag>22</Tag>
+          <Name>SecurityIDSource</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Identifies the source of the SecurityID (48) value. Valid values: 8 = Exchange defined. Available as Tradeable Instrument ID.</Description>
+        </Field>
+        <Field>
+          <Tag>54</Tag>
+          <Name>Side</Name>
+          <Required>N</Required>
+          <Type>char</Type>
+          <Description>Side of order. Where this tag is not defined, tag indicates a two-sided quote. Valid values: 1 = Buy 2 = Sell 8 = Crossing.</Description>
+        </Field>
+        <Field>
+          <Tag>38</Tag>
+          <Name>OrderQty</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>OrderQty requested for RFQ.</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+    <!-- NoRelatedSymRfq (146) -->
+    <!-- Changed: RFQ Request variant of NoRelatedSym (PDF p58) -->
+    <Group>
+      <Name>NoRelatedSymRfq</Name>
+      <AnchorTag>146</AnchorTag>
+      <Fields>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>The common, human understood representation of the security. Required, if SecurityID (48) is not present. If SecurityID (48) is specified, set to [N/A]. If not subscribing by specifying instrument, set NoRelatedSym = 1 and Symbol = [N/A]. Request will be rejected if SecurityID (48) is present and Symbol (55) is not [N/A].</Description>
+        </Field>
+        <Field>
+          <Tag>48</Tag>
+          <Name>SecurityID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Security identifier value of SecurityIDSource (22) type. Requires SecurityIDSource (22). Symbol (55) must be set to [N/A] if SecurityID (48) is specified. Request will be rejected if SecurityID (48) is present and Symbol (55) is not [N/A].</Description>
+        </Field>
+        <Field>
+          <Tag>22</Tag>
+          <Name>SecurityIDSource</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Identifies the source of the SecurityID (48) value. Valid values: 8 = Exchange defined. Available as Tradeable Instrument ID.</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+    <!-- NoRelatedSymDerivative (146) -->
+    <!-- Changed: Derivative Security List variant of NoRelatedSym (PDF p81) -->
+    <Group>
+      <Name>NoRelatedSymDerivative</Name>
+      <AnchorTag>146</AnchorTag>
+      <Fields>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>The common, human understood representation of the security. Provided NoRelatedSym > 0.</Description>
+        </Field>
+        <Field>
+          <Tag>48</Tag>
+          <Name>SecurityID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Security identifier value of SecurityIDSource (22) type.</Description>
+        </Field>
+        <Field>
+          <Tag>22</Tag>
+          <Name>SecurityIDSource</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Identifies the source of the SecurityID (48) value. Valid values: 8 = Exchange defined. Available as Tradeable Instrument ID.</Description>
+        </Field>
+        <Field>
+          <Tag>202</Tag>
+          <Name>StrikePrice</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Strike Price for an Option.</Description>
+        </Field>
+      </Fields>
+    </Group>
+
     <!-- NoTradeSeqNoSeries (7565) -->
     <Group>
       <Name>NoTradeSeqNoSeries</Name>
@@ -1541,8 +1706,8 @@
         <Field>
           <Tag>7555</Tag>
           <Name>TradeSeqNoSeries</Name>
-          <Required>Y</Required>
-          <Type>String</Type>
+          <Required>N</Required>
+          <Type>int</Type>
           <Description>Asx 24 trade sequence number series.</Description>
           <!-- REVIEW: TradeSeqNoSeries Asx 24 specific tag 7555 -->
         </Field>
@@ -1780,7 +1945,7 @@
           <Tag>623</Tag>
           <Name>LegRatioQty</Name>
           <Required>N</Required>
-          <Type>Qty</Type>
+          <Type>float</Type>
           <Description>Ratio of quantity for this leg.</Description>
         </Field>
         <Field>
@@ -1806,14 +1971,20 @@
       <AnchorTag>870</AnchorTag>
       <Fields>
         <Field>
-          <Tag>870</Tag>
-          <Name>NoInstrAttrib</Name>
-          <Required>Y</Required>
-          <Type>NumInGroup</Type>
-          <Description>Number of instrument attributes.</Description>
+          <Tag>871</Tag>
+          <Name>InstrAttribType</Name>
+          <Required>N</Required>
+          <Type>int</Type>
+          <Description>The type of event being described. Valid values: 99 = Other (Used by ASX to define the settlement date for the futures instrument).</Description>
+        </Field>
+        <Field>
+          <Tag>872</Tag>
+          <Name>InstrAttribValue</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>The Settlement Day as specified in the ASX 24 contract specifications. Enter in LocalMktDate format.</Description>
         </Field>
       </Fields>
-      <!-- REVIEW: instrument attribute member tags not extractable from the source tables -->
     </Group>
 
     <!-- NoLotTypeRules (1234) -->
@@ -1822,14 +1993,20 @@
       <AnchorTag>1234</AnchorTag>
       <Fields>
         <Field>
-          <Tag>1234</Tag>
-          <Name>NoLotTypeRules</Name>
-          <Required>Y</Required>
-          <Type>NumInGroup</Type>
-          <Description>Number of lot type rules.</Description>
+          <Tag>1093</Tag>
+          <Name>LotType</Name>
+          <Required>N</Required>
+          <Type>char</Type>
+          <Description>Defines the lot type assigned to the order. Valid values: 3 = Block Lot Indicates the number of lots that represent a block lot for the order book. Note: A value of 0 indicates that this lot type is undefined for the order book.</Description>
+        </Field>
+        <Field>
+          <Tag>1231</Tag>
+          <Name>MinLotSize</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Minimum lot size allowed based on lot type specified in LotType (1093).</Description>
         </Field>
       </Fields>
-      <!-- REVIEW: lot type rule member tags not extractable from the source tables -->
     </Group>
 
     <!-- NoLinesOfText (33) -->
@@ -1864,11 +2041,13 @@
       <Enum>1</Enum>
       <Description>Buy</Description>
     </Value>
+
     <Value>
       <Type>Side</Type>
       <Enum>2</Enum>
       <Description>Sell</Description>
     </Value>
+
     <Value>
       <Type>MDUpdateType</Type>
       <Enum>1</Enum>

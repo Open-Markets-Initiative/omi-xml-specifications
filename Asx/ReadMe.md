@@ -5,7 +5,7 @@
 
 | Division | Protocol | Encoding | Version | Specification |
 | --- | --- | --- | --- | --- |
-| AsxDerivatives | DropCopy | Fix | 1.1 | [files](Asx.AsxDerivatives.DropCopy.Fix.v1.1/) |
+| AsxDerivatives | DropCopy | Fix | 2.05 | [files](Asx.AsxDerivatives.DropCopy.Fix.v2.05/) |
 | AsxDerivatives | MarketData | Fix | 2.02 | [files](Asx.AsxDerivatives.MarketData.Fix.v2.02/) |
 | AsxDerivatives | Ntp | Itch | 1.05 | [files](Asx.AsxDerivatives.Ntp.Itch.v1.05/) |
 | AsxDerivatives | OrderEntry | Fix | 2.05 | [files](Asx.AsxDerivatives.OrderEntry.Fix.v2.05/) |

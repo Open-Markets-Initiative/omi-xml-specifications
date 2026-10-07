@@ -10,7 +10,7 @@ The specification xmls in this repository are published copies of the original p
 
 | Specification Files |
 | --- |
-| 1,477 |
+| 1,537 |
 
 ## Testing
 
@@ -25,7 +25,7 @@ The Open Markets Initiative (Omi) is a group of technologists dedicated to enhan
 Other generated code can be found at [Omi Repositories](https://github.com/Open-Markets-Initiative/Directory/tree/main/Repositories "Open Markets Initiative Repositories"); for Omi rules and regulations, see [Omi Directory](https://github.com/Open-Markets-Initiative/Directory "Open Markets Initiative Directory").
 ## Organizations
 
-> [24X][24X.Directory] · [A2X][A2X.Directory] · [Aquis][Aquis.Directory] · [Asx][Asx.Directory] · [B3][B3.Directory] · [Bist][Bist.Directory] · [Biva][Biva.Directory] · [BlueOceanAts][BlueOceanAts.Directory] · [Box][Box.Directory] · [BruceAts][BruceAts.Directory] · [Bse][Bse.Directory] · [Cboe][Cboe.Directory] · [CixAts][CixAts.Directory] · [Cme][Cme.Directory] · [Coinbase][Coinbase.Directory] · [Currenex][Currenex.Directory] · [Databento][Databento.Directory] · [Eurex][Eurex.Directory] · [Euronext][Euronext.Directory] · [Finra][Finra.Directory] · [Hkex][Hkex.Directory] · [Ice][Ice.Directory] · [Iex][Iex.Directory] · [Imperative][Imperative.Directory] · [Jnx][Jnx.Directory] · [Jpx][Jpx.Directory] · [Jse][Jse.Directory] · [Koscom][Koscom.Directory] · [Lseg][Lseg.Directory] · [Ltse][Ltse.Directory] · [Memx][Memx.Directory] · [Miax][Miax.Directory] · [Nasdaq][Nasdaq.Directory] · [Nextrade][Nextrade.Directory] · [Nse][Nse.Directory] · [NsxAustralia][NsxAustralia.Directory] · [Nyse][Nyse.Directory] · [Odx][Odx.Directory] · [Osi][Osi.Directory] · [OtcMarkets][OtcMarkets.Directory] · [Sgx][Sgx.Directory] · [Siac][Siac.Directory] · [SmallX][SmallX.Directory] · [Tmx][Tmx.Directory] · [Txse][Txse.Directory]
+> [24X][24X.Directory] · [A2X][A2X.Directory] · [Aquis][Aquis.Directory] · [Asx][Asx.Directory] · [B3][B3.Directory] · [Bist][Bist.Directory] · [Biva][Biva.Directory] · [BlueOceanAts][BlueOceanAts.Directory] · [Box][Box.Directory] · [BruceAts][BruceAts.Directory] · [Bse][Bse.Directory] · [Cboe][Cboe.Directory] · [CixAts][CixAts.Directory] · [Cme][Cme.Directory] · [Coinbase][Coinbase.Directory] · [Currenex][Currenex.Directory] · [Eurex][Eurex.Directory] · [Euronext][Euronext.Directory] · [Finra][Finra.Directory] · [Hkex][Hkex.Directory] · [Ice][Ice.Directory] · [Iex][Iex.Directory] · [Imperative][Imperative.Directory] · [Jnx][Jnx.Directory] · [Jpx][Jpx.Directory] · [Jse][Jse.Directory] · [Koscom][Koscom.Directory] · [Lseg][Lseg.Directory] · [Ltse][Ltse.Directory] · [Memx][Memx.Directory] · [Miax][Miax.Directory] · [Nasdaq][Nasdaq.Directory] · [Nextrade][Nextrade.Directory] · [Nse][Nse.Directory] · [NsxAustralia][NsxAustralia.Directory] · [Nyse][Nyse.Directory] · [Odx][Odx.Directory] · [OtcMarkets][OtcMarkets.Directory] · [Sgx][Sgx.Directory] · [Siac][Siac.Directory] · [SmallX][SmallX.Directory] · [Tmx][Tmx.Directory] · [Txse][Txse.Directory]
 
 ## Exchanges
 
@@ -38,10 +38,6 @@ Other generated code can be found at [Omi Repositories](https://github.com/Open-
 ## Consolidators
 
 > [Cqs][Cqs.Consolidator] · [Cts][Cts.Consolidator] · [MdcsRealtime][MdcsRealtime.Consolidator] · [NyseConsolidated][NyseConsolidated.Consolidator] · [Opra][Opra.Consolidator] · [TitaniumConsolidated][TitaniumConsolidated.Consolidator] · [Uqdf][Uqdf.Consolidator] · [Utdf][Utdf.Consolidator] · [Utp][Utp.Consolidator]
-
-## Redistributors
-
-> [MarketData][MarketData.Redistributor]
 
 ## Related Definitions
 
@@ -85,7 +81,6 @@ Enjoy.
 [Cme.Directory]: https://github.com/Open-Markets-Initiative/omi-xml-specifications/tree/main/Cme "CME Group"
 [Coinbase.Directory]: https://github.com/Open-Markets-Initiative/omi-xml-specifications/tree/main/Coinbase "Coinbase"
 [Currenex.Directory]: https://github.com/Open-Markets-Initiative/omi-xml-specifications/tree/main/Currenex "Currenex"
-[Databento.Directory]: https://github.com/Open-Markets-Initiative/omi-xml-specifications/tree/main/Databento "Databento"
 [Eurex.Directory]: https://github.com/Open-Markets-Initiative/omi-xml-specifications/tree/main/Eurex "Eurex Exchange"
 [Euronext.Directory]: https://github.com/Open-Markets-Initiative/omi-xml-specifications/tree/main/Euronext "Euronext"
 [Finra.Directory]: https://github.com/Open-Markets-Initiative/omi-xml-specifications/tree/main/Finra "Financial Industry Regulatory Authority"
@@ -107,7 +102,6 @@ Enjoy.
 [NsxAustralia.Directory]: https://github.com/Open-Markets-Initiative/omi-xml-specifications/tree/main/NsxAustralia "Nation Stock Exchange of Australia"
 [Nyse.Directory]: https://github.com/Open-Markets-Initiative/omi-xml-specifications/tree/main/Nyse "New York Stock Exchange"
 [Odx.Directory]: https://github.com/Open-Markets-Initiative/omi-xml-specifications/tree/main/Odx "Osaka Digital Exchange"
-[Osi.Directory]: https://github.com/Open-Markets-Initiative/omi-xml-specifications/tree/main/Osi "Open Systems Interconnection"
 [OtcMarkets.Directory]: https://github.com/Open-Markets-Initiative/omi-xml-specifications/tree/main/OtcMarkets "OTC Markets Group"
 [Sgx.Directory]: https://github.com/Open-Markets-Initiative/omi-xml-specifications/tree/main/Sgx "Singapore Exchange"
 [Siac.Directory]: https://github.com/Open-Markets-Initiative/omi-xml-specifications/tree/main/Siac "The Securities Industry Automation Corporation"
@@ -172,7 +166,6 @@ Enjoy.
 [LinkNqb.Ats]: https://github.com/Open-Markets-Initiative/Open-Markets-Initiative/tree/main/Organizations/OtcMarkets/Protocols/LinkNqb "OTC Link NQB"
 [Lse.Exchange]: https://github.com/Open-Markets-Initiative/Open-Markets-Initiative/tree/main/Organizations/Lseg/Protocols/Lse "London Stock Exchange"
 [LtseEquities.Exchange]: https://github.com/Open-Markets-Initiative/Open-Markets-Initiative/tree/main/Organizations/Ltse/Protocols/LtseEquities "Ltse Equities"
-[MarketData.Redistributor]: https://github.com/Open-Markets-Initiative/Open-Markets-Initiative/tree/main/Organizations/Databento/Protocols/MarketData "Databento Market Data"
 [MatchNow.Exchange]: https://github.com/Open-Markets-Initiative/Open-Markets-Initiative/tree/main/Organizations/Cboe/Protocols/MatchNow "Cboe Canada MATCHNow"
 [MdcsRealtime.Consolidator]: https://github.com/Open-Markets-Initiative/Open-Markets-Initiative/tree/main/Organizations/Koscom/Protocols/MdcsRealtime "MDCS Realtime Market Data"
 [MemxEquities.Exchange]: https://github.com/Open-Markets-Initiative/Open-Markets-Initiative/tree/main/Organizations/Memx/Protocols/MemxEquities "Memx Equities"

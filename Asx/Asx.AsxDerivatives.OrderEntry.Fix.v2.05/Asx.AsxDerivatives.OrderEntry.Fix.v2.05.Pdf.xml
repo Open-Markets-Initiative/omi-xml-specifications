@@ -86,6 +86,7 @@
       </Field>
     </Fields>
   </Header>
+
   <Header Name="Exchange">
     <Fields>
       <Field>
@@ -1308,7 +1309,7 @@
           <Description>Method used to price the multileg instrument.</Description>
         </Field>
         <Group>
-          <Name>NoLegs</Name>
+          <Name>NoLegsDefinition</Name>
           <Required>N</Required>
         </Group>
       </Fields>
@@ -1711,6 +1712,7 @@
     </Group>
 
     <!-- NoLegs (555) -->
+    <!-- Changed: now ExecutionReport only (PDF pp.66-67); removed LegRatioQty (623), which belongs to SecurityDefinitionRequest (NoLegsDefinition) -->
     <Group>
       <Name>NoLegs</Name>
       <AnchorTag>555</AnchorTag>
@@ -1735,13 +1737,6 @@
           <Required>N</Required>
           <Type>String</Type>
           <Description>Source of the LegSecurityID.</Description>
-        </Field>
-        <Field>
-          <Tag>623</Tag>
-          <Name>LegRatioQty</Name>
-          <Required>N</Required>
-          <Type>Qty</Type>
-          <Description>Ratio of quantity for this leg.</Description>
         </Field>
         <Field>
           <Tag>624</Tag>
@@ -1806,31 +1801,83 @@
       </Fields>
     </Group>
 
+    <!-- NoLegsDefinition (555) -->
+    <!-- Changed: SecurityDefinitionRequest (c) variant of NoLegs (PDF pp.81-82); Reqd C encoded N -->
+    <Group>
+      <Name>NoLegsDefinition</Name>
+      <AnchorTag>555</AnchorTag>
+      <Fields>
+        <Field>
+          <Tag>600</Tag>
+          <Name>LegSymbol</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Common, human understood representation of the security. Required if LegSecurityID (602) is not present. If LegSecurityID (602) is specified, set LegSymbol (600) to [N/A]. Message will be rejected if LegSecurityID (602) is present and LegSymbol (600) is not [N/A].</Description>
+        </Field>
+        <Field>
+          <Tag>602</Tag>
+          <Name>LegSecurityID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Security identifier value of LegSecurityIDSource (603) type. Requires LegSecurityIDSource (603). LegSymbol (600) must be set to [N/A], if LegSecurityID (602) is specified. Message will be rejected if LegSecurityID (602) is present and LegSymbol (600) is not [N/A].</Description>
+        </Field>
+        <Field>
+          <Tag>603</Tag>
+          <Name>LegSecurityIDSource</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Identifies the source of the LegSecurityID (602) value. Required if LegSecurityID (602) is specified. Valid values: 8 = Exchange defined. Available as Tradeable Instrument ID.</Description>
+        </Field>
+        <Field>
+          <Tag>623</Tag>
+          <Name>LegRatioQty</Name>
+          <Required>N</Required>
+          <Type>float</Type>
+          <Description>Defines the volume an order with volume 1 in the combination book represents in this leg order book. ASX accepts only whole numbers for ratios.</Description>
+        </Field>
+        <Field>
+          <Tag>624</Tag>
+          <Name>LegSide</Name>
+          <Required>N</Required>
+          <Type>char</Type>
+          <Description>The side of this individual leg of the multileg security. Specifies if this leg is buy or sell when the combination order it belongs to is buy. Valid values: 1 = Buy 2 = Sell.</Description>
+        </Field>
+        <Field>
+          <Tag>566</Tag>
+          <Name>LegPrice</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Price for leg of multileg. Provide on one leg only. Required if MultilegPriceMethod=Individual (1378 = 3).</Description>
+        </Field>
+      </Fields>
+    </Group>
+
     <!-- NoLegInstrumentParties (2254) -->
+    <!-- Changed: members were PartyID/PartyIDSource/PartyRole (448/447/452); PDF ExecutionReport lists 2255/2256/2257 (p67) -->
     <Group>
       <Name>NoLegInstrumentParties</Name>
       <AnchorTag>2254</AnchorTag>
       <Fields>
         <Field>
-          <Tag>448</Tag>
-          <Name>PartyID</Name>
-          <Required>Y</Required>
+          <Tag>2255</Tag>
+          <Name>LegInstrumentPartyID</Name>
+          <Required>N</Required>
           <Type>String</Type>
-          <Description>Party identifier.</Description>
+          <Description>Identifies the party. Supplied if NoLegInstrumentParties > 0.</Description>
         </Field>
         <Field>
-          <Tag>447</Tag>
-          <Name>PartyIDSource</Name>
+          <Tag>2256</Tag>
+          <Name>LegInstrumentPartyIDSource</Name>
           <Required>N</Required>
           <Type>char</Type>
-          <Description>Source of the PartyID.</Description>
+          <Description>Identifies class or source of the LegInstrumentPartyID (2255) value. Supplied if LegInstrumentPartyID is specified. Valid values: D = Proprietary/Custom code.</Description>
         </Field>
         <Field>
-          <Tag>452</Tag>
-          <Name>PartyRole</Name>
+          <Tag>2257</Tag>
+          <Name>LegInstrumentPartyRole</Name>
           <Required>N</Required>
-          <Type>Int</Type>
-          <Description>Role of the specified PartyID.</Description>
+          <Type>int</Type>
+          <Description>The role of the party in the transaction. Required if LegInstrumentPartyID is specified. Valid values: 1 = Executing Firm. 17 = Contra Firm. Additional values specified in PartyRole (452) may also be supplied.</Description>
         </Field>
       </Fields>
     </Group>
@@ -1867,30 +1914,31 @@
     </Group>
 
     <!-- NoPartyDetails (1671) -->
+    <!-- Changed: members were PartyID/PartyIDSource/PartyRole (448/447/452); PDF PartyRiskLimitsReport lists 1691/1692/1693 (pp.98-99). PDF spells 1692 "PartyDetaiIDSource". -->
     <Group>
       <Name>NoPartyDetails</Name>
       <AnchorTag>1671</AnchorTag>
       <Fields>
         <Field>
-          <Tag>448</Tag>
-          <Name>PartyID</Name>
-          <Required>Y</Required>
+          <Tag>1691</Tag>
+          <Name>PartyDetailID</Name>
+          <Required>N</Required>
           <Type>String</Type>
-          <Description>Party identifier.</Description>
+          <Description>Identifies the party. Required if NoPartyDetails > 0. The maximum number of characters depends on the PartyDetailRole (1692) value. See PartyDetailRole (1692).</Description>
         </Field>
         <Field>
-          <Tag>447</Tag>
-          <Name>PartyIDSource</Name>
+          <Tag>1692</Tag>
+          <Name>PartyDetailIDSource</Name>
           <Required>N</Required>
           <Type>char</Type>
-          <Description>Source of the PartyID.</Description>
+          <Description>Identifies the source of the PartyDetailID value. Required when NoPartyRiskLimits > 0. Valid values: D = Proprietary/Custom code.</Description>
         </Field>
         <Field>
-          <Tag>452</Tag>
-          <Name>PartyRole</Name>
+          <Tag>1693</Tag>
+          <Name>PartyDetailRole</Name>
           <Required>N</Required>
-          <Type>Int</Type>
-          <Description>Role of the specified PartyID.</Description>
+          <Type>int</Type>
+          <Description>Identifies the role of the party. Required when NoPartyRiskLimits > 0. Valid values: 1 = Executing firm. Up to 64 characters. 24 = Account. The Account (1) value entered on the order when the risk applies to the account. Up to 10 characters.</Description>
         </Field>
       </Fields>
     </Group>
@@ -1900,15 +1948,99 @@
       <Name>NoRiskLimits</Name>
       <AnchorTag>1669</AnchorTag>
       <Fields>
+        <Group>
+          <Name>NoRiskLimitTypes</Name>
+          <Required>N</Required>
+        </Group>
+        <Group>
+          <Name>NoRiskInstrumentScopes</Name>
+          <Required>N</Required>
+        </Group>
+      </Fields>
+    </Group>
+
+    <!-- NoRiskLimitTypes (1529) -->
+    <Group>
+      <Name>NoRiskLimitTypes</Name>
+      <AnchorTag>1529</AnchorTag>
+      <Fields>
         <Field>
-          <Tag>1669</Tag>
-          <Name>NoRiskLimits</Name>
-          <Required>Y</Required>
-          <Type>NumInGroup</Type>
-          <Description>Number of risk limits.</Description>
+          <Tag>1530</Tag>
+          <Name>RiskLimitType</Name>
+          <Required>N</Required>
+          <Type>int</Type>
+          <Description>Used to specify the type of risk limit. Required if NoRiskLimitTypes > 0. Valid values: 4 = Long limit 5 = short limit.</Description>
+        </Field>
+        <Field>
+          <Tag>1765</Tag>
+          <Name>RiskLimitUtilizationPercent</Name>
+          <Required>N</Required>
+          <Type>Percentage</Type>
+          <Description>Percentage of utilisation of a party's set risk limit.</Description>
+        </Field>
+        <Field>
+          <Tag>1767</Tag>
+          <Name>RiskLimitAction</Name>
+          <Required>N</Required>
+          <Type>int</Type>
+          <Description>Risk protection action. Valid values: 4 = Warning.</Description>
+        </Field>
+        <Group>
+          <Name>NoRiskWarningLevel</Name>
+          <Required>N</Required>
+        </Group>
+      </Fields>
+    </Group>
+
+    <!-- NoRiskWarningLevel (1559) -->
+    <Group>
+      <Name>NoRiskWarningLevel</Name>
+      <AnchorTag>1559</AnchorTag>
+      <Fields>
+        <Field>
+          <Tag>1769</Tag>
+          <Name>RiskWarningLevelAction</Name>
+          <Required>N</Required>
+          <Type>int</Type>
+          <Description>Action to be taken when warning level is breached. Valid values: 4 = Warning.</Description>
+        </Field>
+        <Field>
+          <Tag>1560</Tag>
+          <Name>RiskWarningLevelPercent</Name>
+          <Required>N</Required>
+          <Type>Percentage</Type>
+          <Description>Percent of risk limit at which this warning is being issued.</Description>
         </Field>
       </Fields>
-      <!-- REVIEW: risk limit member fields not extractable from the source tables -->
+    </Group>
+
+    <!-- NoRiskInstrumentScopes (1534) -->
+    <Group>
+      <Name>NoRiskInstrumentScopes</Name>
+      <AnchorTag>1534</AnchorTag>
+      <Fields>
+        <Field>
+          <Tag>1535</Tag>
+          <Name>InstrumentScopeOperator</Name>
+          <Required>N</Required>
+          <Type>int</Type>
+          <Description>Specifies the instruments included in the limit. Valid values: 1 = Include.</Description>
+        </Field>
+        <Field>
+          <Tag>1545</Tag>
+          <Name>InstrumentScopeSecurityGroup</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Commodity code of securities that the risk limit applied to, e.g. XT.</Description>
+        </Field>
+        <Field>
+          <Tag>1616</Tag>
+          <Name>InstrumentScopeSecurityExchange</Name>
+          <Required>N</Required>
+          <Type>Exchange</Type>
+          <Description>SecurityExchange the limit applies to. Valid values: XSFE = Sydney Futures Exchange NZFX = New Zealand Futures and Options Exchange.</Description>
+        </Field>
+      </Fields>
     </Group>
 
   </Groups>
@@ -1922,11 +2054,13 @@
       <Kind>Static</Kind>
       <Description>FIXT 1.1</Description>
     </Value>
+
     <Value>
       <Type>Side</Type>
       <Enum>1</Enum>
       <Description>Buy</Description>
     </Value>
+
     <Value>
       <Type>Side</Type>
       <Enum>2</Enum>

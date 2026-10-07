@@ -1,6 +1,6 @@
 <OmiFixPdf>
 
-  <!-- ASX 24 FIX Drop Copy Specification -->
+  <!-- ASX 24 FIX Drop Copy Specification V2.05 -->
 
   <Header Name="Client">
     <Fields>
@@ -86,6 +86,7 @@
       </Field>
     </Fields>
   </Header>
+
   <Header Name="Exchange">
     <Fields>
       <Field>
@@ -445,13 +446,7 @@
           <Type>Int</Type>
           <Description>Code to identify reason for the business rejection.</Description>
         </Field>
-        <Field>
-          <Tag>379</Tag>
-          <Name>BusinessRejectRefID</Name>
-          <Required>N</Required>
-          <Type>String</Type>
-          <Description>RefID of the message being rejected.</Description>
-        </Field>
+        <!-- Changed: removed BusinessRejectRefID (379); not listed in PDF BusinessMessageReject (V2.05 p53) -->
         <Field>
           <Tag>58</Tag>
           <Name>Text</Name>
@@ -999,13 +994,6 @@
           <Name>NoRelatedSym</Name>
           <Required>N</Required>
         </Group>
-        <Field>
-          <Tag>60</Tag>
-          <Name>TransactTime</Name>
-          <Required>N</Required>
-          <Type>UTCTimestamp</Type>
-          <Description>Time the transaction occurred.</Description>
-        </Field>
       </Fields>
     </Message>
 
@@ -1229,36 +1217,37 @@
     </Group>
 
     <!-- NoRootPartyIDs (1116) -->
+    <!-- Changed: members were PartyID/PartyIDSource/PartyRole (448/447/452); PDF QuoteRequest (R) lists 1117/1118/1119 (V2.05 p50) -->
     <Group>
       <Name>NoRootPartyIDs</Name>
       <AnchorTag>1116</AnchorTag>
       <Fields>
         <Field>
-          <Tag>448</Tag>
-          <Name>PartyID</Name>
-          <Required>Y</Required>
+          <Tag>1117</Tag>
+          <Name>RootPartyID</Name>
+          <Required>N</Required>
           <Type>String</Type>
-          <Description>Party identifier.</Description>
+          <Description>Identifies the party Required if NoRootPartyIDs > 0 The maximum number of characters depends on the RootPartyRole (1119) value. See RootPartyRole (1119).</Description>
         </Field>
         <Field>
-          <Tag>447</Tag>
-          <Name>PartyIDSource</Name>
+          <Tag>1118</Tag>
+          <Name>RootPartyIDSource</Name>
           <Required>N</Required>
           <Type>char</Type>
-          <Description>Source of the PartyID.</Description>
+          <Description>Identifies the source of the RootPartyID value. Required when NoRootPartyIDs > 0 Valid values: D = Proprietary/Custom code</Description>
         </Field>
         <Field>
-          <Tag>452</Tag>
-          <Name>PartyRole</Name>
+          <Tag>1119</Tag>
+          <Name>RootPartyRole</Name>
           <Required>N</Required>
-          <Type>Int</Type>
-          <Description>Role of the specified PartyID.</Description>
+          <Type>int</Type>
+          <Description>Identifies the role of the party. Maximum number of characters for each type in []. Required when NoRootPartyIDs > 0 Valid values: 7 = Entering firm [64] 36 = Entering trader [64]</Description>
         </Field>
       </Fields>
-      <!-- REVIEW: root party member tags reconstructed from mangled PDF columns -->
     </Group>
 
     <!-- NoRelatedSym (146) -->
+    <!-- Changed: TransactTime (60) moved here from QuoteRequest message level; PDF nests it in NoRelatedSym (V2.05 p51) -->
     <Group>
       <Name>NoRelatedSym</Name>
       <AnchorTag>146</AnchorTag>
@@ -1298,10 +1287,18 @@
           <Type>Qty</Type>
           <Description>Order quantity.</Description>
         </Field>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>N</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Timestamp when the quote entered by the user was accepted by the matching engine.</Description>
+        </Field>
       </Fields>
     </Group>
 
     <!-- NoLegs (555) -->
+    <!-- Changed: added LegOrderQty (685) and NoLegInstrumentParties (2254) from PDF ExecutionReport (V2.05 p33) -->
     <Group>
       <Name>NoLegs</Name>
       <AnchorTag>555</AnchorTag>
@@ -1369,6 +1366,47 @@
           <Type>Currency</Type>
           <Description>Currency of the individual leg.</Description>
         </Field>
+        <Field>
+          <Tag>685</Tag>
+          <Name>LegOrderQty</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Quantity ordered of this leg.</Description>
+        </Field>
+        <Group>
+          <Name>NoLegInstrumentParties</Name>
+          <Required>N</Required>
+        </Group>
+      </Fields>
+    </Group>
+
+    <!-- NoLegInstrumentParties (2254) -->
+    <!-- Changed: added from PDF ExecutionReport (V2.05 p33) -->
+    <Group>
+      <Name>NoLegInstrumentParties</Name>
+      <AnchorTag>2254</AnchorTag>
+      <Fields>
+        <Field>
+          <Tag>2255</Tag>
+          <Name>LegInstrumentPartyID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Identifies the party. Supplied if NoLegInstrumentParties > 0.</Description>
+        </Field>
+        <Field>
+          <Tag>2256</Tag>
+          <Name>LegInstrumentPartyIDSource</Name>
+          <Required>N</Required>
+          <Type>char</Type>
+          <Description>Identifies class or source of the LegInstrumentPartyID (2255) value. Supplied if LegInstrumentPartyID is specified. Valid values: D = Proprietary/Custom code.</Description>
+        </Field>
+        <Field>
+          <Tag>2257</Tag>
+          <Name>LegInstrumentPartyRole</Name>
+          <Required>N</Required>
+          <Type>int</Type>
+          <Description>The role of the party in the transaction. Required if LegInstrumentPartyID is specified. Valid values: 1 = Executing Firm. 17 = Contra Firm. Additional values specified in PartyRole (452) may also be supplied.</Description>
+        </Field>
       </Fields>
     </Group>
 
@@ -1404,30 +1442,31 @@
     </Group>
 
     <!-- NoPartyDetails (1671) -->
+    <!-- Changed: members were PartyID/PartyIDSource/PartyRole (448/447/452); PDF PartyRiskLimitsReport lists 1691/1692/1693 (V2.05 pp.42-43). PDF spells 1692 "PartyDetaiIDSource". -->
     <Group>
       <Name>NoPartyDetails</Name>
       <AnchorTag>1671</AnchorTag>
       <Fields>
         <Field>
-          <Tag>448</Tag>
-          <Name>PartyID</Name>
-          <Required>Y</Required>
+          <Tag>1691</Tag>
+          <Name>PartyDetailID</Name>
+          <Required>N</Required>
           <Type>String</Type>
-          <Description>Party identifier.</Description>
+          <Description>Identifies the party. Required if NoPartyDetails > 0. The maximum number of characters depends on the PartyDetailRole (1692) value. See PartyDetailRole (1692).</Description>
         </Field>
         <Field>
-          <Tag>447</Tag>
-          <Name>PartyIDSource</Name>
+          <Tag>1692</Tag>
+          <Name>PartyDetailIDSource</Name>
           <Required>N</Required>
           <Type>char</Type>
-          <Description>Source of the PartyID.</Description>
+          <Description>Identifies the source of the PartyDetailID value. Required when NoPartyRiskLimits > 0. Valid values: D = Proprietary/Custom code.</Description>
         </Field>
         <Field>
-          <Tag>452</Tag>
-          <Name>PartyRole</Name>
+          <Tag>1693</Tag>
+          <Name>PartyDetailRole</Name>
           <Required>N</Required>
-          <Type>Int</Type>
-          <Description>Role of the specified PartyID.</Description>
+          <Type>int</Type>
+          <Description>Identifies the role of the party. Required when NoPartyRiskLimits > 0. Valid values: 1 = Executing firm. Up to 64 characters. 24 = Account (Account (1) value entered on the order when the risk applies to the account. Up to 10 characters.)</Description>
         </Field>
       </Fields>
     </Group>
@@ -1437,15 +1476,99 @@
       <Name>NoRiskLimits</Name>
       <AnchorTag>1669</AnchorTag>
       <Fields>
+        <Group>
+          <Name>NoRiskLimitTypes</Name>
+          <Required>N</Required>
+        </Group>
+      </Fields>
+    </Group>
+
+    <!-- NoRiskLimitTypes (1529) -->
+    <Group>
+      <Name>NoRiskLimitTypes</Name>
+      <AnchorTag>1529</AnchorTag>
+      <Fields>
         <Field>
-          <Tag>1669</Tag>
-          <Name>NoRiskLimits</Name>
-          <Required>Y</Required>
-          <Type>NumInGroup</Type>
-          <Description>Number of risk limits.</Description>
+          <Tag>1530</Tag>
+          <Name>RiskLimitType</Name>
+          <Required>N</Required>
+          <Type>int</Type>
+          <Description>Used to specify the type of risk limit. Required, if NoRiskLimitTypes > 0. Valid values: 4 = Long limit 5 = Short limit.</Description>
+        </Field>
+        <Field>
+          <Tag>1765</Tag>
+          <Name>RiskLimitUtilizationPercent</Name>
+          <Required>N</Required>
+          <Type>Percentage</Type>
+          <Description>Percentage of utilisation of a party's set risk limit.</Description>
+        </Field>
+        <Field>
+          <Tag>1767</Tag>
+          <Name>RiskLimitAction</Name>
+          <Required>N</Required>
+          <Type>int</Type>
+          <Description>Risk protection action. Valid values: 4 = Warning</Description>
+        </Field>
+        <Group>
+          <Name>NoRiskWarningLevel</Name>
+          <Required>N</Required>
+        </Group>
+        <Group>
+          <Name>NoRiskInstrumentScopes</Name>
+          <Required>N</Required>
+        </Group>
+      </Fields>
+    </Group>
+
+    <!-- NoRiskWarningLevel (1559) -->
+    <Group>
+      <Name>NoRiskWarningLevel</Name>
+      <AnchorTag>1559</AnchorTag>
+      <Fields>
+        <Field>
+          <Tag>1769</Tag>
+          <Name>RiskWarningLevelAction</Name>
+          <Required>N</Required>
+          <Type>int</Type>
+          <Description>Action to be taken when warning level is breached. Valid values: 4 = Warning.</Description>
+        </Field>
+        <Field>
+          <Tag>1560</Tag>
+          <Name>RiskWarningLevelPercent</Name>
+          <Required>N</Required>
+          <Type>Percentage</Type>
+          <Description>Percent of risk limit at which a warning is issued.</Description>
         </Field>
       </Fields>
-      <!-- REVIEW: risk limit member fields not extractable from the source tables -->
+    </Group>
+
+    <!-- NoRiskInstrumentScopes (1534) -->
+    <Group>
+      <Name>NoRiskInstrumentScopes</Name>
+      <AnchorTag>1534</AnchorTag>
+      <Fields>
+        <Field>
+          <Tag>1535</Tag>
+          <Name>InstrumentScopeOperator</Name>
+          <Required>N</Required>
+          <Type>int</Type>
+          <Description>Specifies the instruments included in the limit. Valid values: 1 = Include.</Description>
+        </Field>
+        <Field>
+          <Tag>1545</Tag>
+          <Name>InstrumentScopeSecurityGroup</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Commodity code of securities that the risk limit applied to, e.g. XT.</Description>
+        </Field>
+        <Field>
+          <Tag>1616</Tag>
+          <Name>InstrumentScopeSecurityExchange</Name>
+          <Required>N</Required>
+          <Type>Exchange</Type>
+          <Description>SecurityExchange the limit applies to. Valid values: XSFE = Sydney Futures Exchange NZFX = New Zealand Futures and Options Exchange.</Description>
+        </Field>
+      </Fields>
     </Group>
 
   </Groups>
@@ -1459,11 +1582,13 @@
       <Kind>Static</Kind>
       <Description>FIXT 1.1</Description>
     </Value>
+
     <Value>
       <Type>Side</Type>
       <Enum>1</Enum>
       <Description>Buy</Description>
     </Value>
+
     <Value>
       <Type>Side</Type>
       <Enum>2</Enum>
