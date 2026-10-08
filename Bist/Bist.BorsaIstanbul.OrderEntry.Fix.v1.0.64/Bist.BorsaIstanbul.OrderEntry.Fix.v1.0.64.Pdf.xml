@@ -2867,7 +2867,7 @@
           <Required>N</Required>
         </Group>
         <Group>
-          <Name>QuoteSetAckGrp/NoQuoteSets</Name>
+          <Name>NoQuoteSetsAck</Name>
           <Required>Y</Required>
         </Group>
         <Field>
@@ -2905,23 +2905,9 @@
           <Required>Y</Required>
         </Group>
         <Group>
-          <Name>NoRootParyIDs</Name>
+          <Name>NoRootPartyIDs</Name>
           <Required>N</Required>
         </Group>
-        <Field>
-          <Tag>1118</Tag>
-          <Name>RootPartyIDSource</Name>
-          <Required>Y</Required>
-          <Type>String</Type>
-          <Description>Valid values: D = Proprietary/Custom code</Description>
-        </Field>
-        <Field>
-          <Tag>1119</Tag>
-          <Name>RootPartyRole</Name>
-          <Required>Y</Required>
-          <Type>String</Type>
-          <Description>Role of the current PartyID. Valid values: 66 = Market Maker* Tag FIX tag name Req'd Comment</Description>
-        </Field>
       </Fields>
     </Message>
 
@@ -4202,13 +4188,18 @@
           <Type>String</Type>
           <Description>Total number of quotes for all quote sets (will be equal to NoQuoteEntries in this solution).</Description>
         </Field>
-        <Field>
-          <Tag>295</Tag>
+        <Group>
           <Name>NoQuoteEntries</Name>
           <Required>Y</Required>
-          <Type>String</Type>
-          <Description>Number of double-sided quotes in Quote Set.</Description>
-        </Field>
+        </Group>
+      </Fields>
+    </Group>
+
+    <!-- NoQuoteEntries (295): Mass Quote entries, nested in NoQuoteSets (PDF p88) -->
+    <Group>
+      <Name>NoQuoteEntries</Name>
+      <AnchorTag>295</AnchorTag>
+      <Fields>
         <Field>
           <Tag>299</Tag>
           <Name>QuoteEntryID</Name>
@@ -4265,9 +4256,11 @@
       </Fields>
     </Group>
 
+    <!-- NoQuoteSetsAck (296): the PDF's QuoteSetAckGrp/NoQuoteSets, Mass Quote Acknowledgement (p89) -->
     <Group>
-      <Name>QuoteSetAckGrp/NoQuoteSets</Name>
+      <Name>NoQuoteSetsAck</Name>
       <AnchorTag>296</AnchorTag>
+      <Underlying>NoQuoteSets</Underlying>
       <Fields>
         <Field>
           <Tag>302</Tag>
@@ -4276,13 +4269,19 @@
           <Type>String</Type>
           <Description>Required in FIX. Will be set to 1.</Description>
         </Field>
-        <Field>
-          <Tag>295</Tag>
-          <Name>NoQuoteEntries</Name>
+        <Group>
+          <Name>NoQuoteEntriesAck</Name>
           <Required>Y</Required>
-          <Type>String</Type>
-          <Description>Number of double-sided quotes in Quote Set.</Description>
-        </Field>
+        </Group>
+      </Fields>
+    </Group>
+
+    <!-- NoQuoteEntriesAck (295): acknowledged entries, nested in NoQuoteSetsAck (p89) -->
+    <Group>
+      <Name>NoQuoteEntriesAck</Name>
+      <AnchorTag>295</AnchorTag>
+      <Underlying>NoQuoteEntries</Underlying>
+      <Fields>
         <Field>
           <Tag>299</Tag>
           <Name>QuoteEntryID</Name>
@@ -4338,20 +4337,6 @@
           <Required>N</Required>
           <Type>Qty</Type>
           <Description>Minimum quantity requested. NOTE: The absence of MinQty implies that any size is acceptable.</Description>
-        </Field>
-      </Fields>
-    </Group>
-
-    <Group>
-      <Name>NoRootParyIDs</Name>
-      <AnchorTag>1116</AnchorTag>
-      <Fields>
-        <Field>
-          <Tag>1117</Tag>
-          <Name>RootPartyID</Name>
-          <Required>Y</Required>
-          <Type>String</Type>
-          <Description>Party identifier.</Description>
         </Field>
       </Fields>
     </Group>
