@@ -8,6 +8,7 @@
 | AmexEquities | Bbo | Pillar | 2.5.d | [files](Nyse.AmexEquities.Bbo.Pillar.v2.5.d/) |
 | AmexEquities | BinaryGateway | PillarStream | 5.17 | [files](Nyse.AmexEquities.BinaryGateway.PillarStream.v5.17/) |
 | AmexEquities | BinaryGateway | PillarStream | 6.0 | [files](Nyse.AmexEquities.BinaryGateway.PillarStream.v6.0/) |
+| AmexEquities | BinaryGateway | PillarStream | 6.1 | [files](Nyse.AmexEquities.BinaryGateway.PillarStream.v6.1/) |
 | AmexEquities | Bqt | Xdp | 2.4.a | [files](Nyse.AmexEquities.Bqt.Xdp.v2.4.a/) |
 | AmexEquities | Bqt | Xdp | 2.4.b | [files](Nyse.AmexEquities.Bqt.Xdp.v2.4.b/) |
 | AmexEquities | DepthFeed | Pillar | 1.6 | [files](Nyse.AmexEquities.DepthFeed.Pillar.v1.6/) |
@@ -54,6 +55,7 @@
 | ArcaEquities | Bbo | Xdp | 2.4.c | [files](Nyse.ArcaEquities.Bbo.Xdp.v2.4.c/) |
 | ArcaEquities | BinaryGateway | PillarStream | 5.17 | [files](Nyse.ArcaEquities.BinaryGateway.PillarStream.v5.17/) |
 | ArcaEquities | BinaryGateway | PillarStream | 6.0 | [files](Nyse.ArcaEquities.BinaryGateway.PillarStream.v6.0/) |
+| ArcaEquities | BinaryGateway | PillarStream | 6.1 | [files](Nyse.ArcaEquities.BinaryGateway.PillarStream.v6.1/) |
 | ArcaEquities | Bqt | Xdp | 2.4.a | [files](Nyse.ArcaEquities.Bqt.Xdp.v2.4.a/) |
 | ArcaEquities | Bqt | Xdp | 2.4.b | [files](Nyse.ArcaEquities.Bqt.Xdp.v2.4.b/) |
 | ArcaEquities | DepthFeed | Pillar | 1.6 | [files](Nyse.ArcaEquities.DepthFeed.Pillar.v1.6/) |
@@ -96,6 +98,7 @@
 | NationalEquities | Bbo | Pillar | 2.5.d | [files](Nyse.NationalEquities.Bbo.Pillar.v2.5.d/) |
 | NationalEquities | BinaryGateway | PillarStream | 5.17 | [files](Nyse.NationalEquities.BinaryGateway.PillarStream.v5.17/) |
 | NationalEquities | BinaryGateway | PillarStream | 6.0 | [files](Nyse.NationalEquities.BinaryGateway.PillarStream.v6.0/) |
+| NationalEquities | BinaryGateway | PillarStream | 6.1 | [files](Nyse.NationalEquities.BinaryGateway.PillarStream.v6.1/) |
 | NationalEquities | Bqt | Xdp | 2.4.a | [files](Nyse.NationalEquities.Bqt.Xdp.v2.4.a/) |
 | NationalEquities | Bqt | Xdp | 2.4.b | [files](Nyse.NationalEquities.Bqt.Xdp.v2.4.b/) |
 | NationalEquities | DepthFeed | Pillar | 1.6 | [files](Nyse.NationalEquities.DepthFeed.Pillar.v1.6/) |
@@ -124,9 +127,10 @@
 | NyseEquities | Bbo | Pillar | 2.5.b | [files](Nyse.NyseEquities.Bbo.Pillar.v2.5.b/) |
 | NyseEquities | Bbo | Pillar | 2.5.d | [files](Nyse.NyseEquities.Bbo.Pillar.v2.5.d/) |
 | NyseEquities | Bbo | Xdp | 2.4.g | [files](Nyse.NyseEquities.Bbo.Xdp.v2.4.g/) |
+| NyseEquities | BinaryGateway | PillarStream | 5.10 | [files](Nyse.NyseEquities.BinaryGateway.PillarStream.v5.10/) |
 | NyseEquities | BinaryGateway | PillarStream | 5.17 | [files](Nyse.NyseEquities.BinaryGateway.PillarStream.v5.17/) |
-| NyseEquities | BinaryGateway | PillarStream | 5.8 | [files](Nyse.NyseEquities.BinaryGateway.PillarStream.v5.8/) |
 | NyseEquities | BinaryGateway | PillarStream | 6.0 | [files](Nyse.NyseEquities.BinaryGateway.PillarStream.v6.0/) |
+| NyseEquities | BinaryGateway | PillarStream | 6.1 | [files](Nyse.NyseEquities.BinaryGateway.PillarStream.v6.1/) |
 | NyseEquities | Bqt | Xdp | 1.7.a | [files](Nyse.NyseEquities.Bqt.Xdp.v1.7.a/) |
 | NyseEquities | Bqt | Xdp | 2.1.a | [files](Nyse.NyseEquities.Bqt.Xdp.v2.1.a/) |
 | NyseEquities | Bqt | Xdp | 2.4.a | [files](Nyse.NyseEquities.Bqt.Xdp.v2.4.a/) |
@@ -170,6 +174,7 @@
 | TexasEquities | Bbo | Pillar | 2.5.d | [files](Nyse.TexasEquities.Bbo.Pillar.v2.5.d/) |
 | TexasEquities | BinaryGateway | PillarStream | 5.17 | [files](Nyse.TexasEquities.BinaryGateway.PillarStream.v5.17/) |
 | TexasEquities | BinaryGateway | PillarStream | 6.0 | [files](Nyse.TexasEquities.BinaryGateway.PillarStream.v6.0/) |
+| TexasEquities | BinaryGateway | PillarStream | 6.1 | [files](Nyse.TexasEquities.BinaryGateway.PillarStream.v6.1/) |
 | TexasEquities | Bqt | Xdp | 2.4.a | [files](Nyse.TexasEquities.Bqt.Xdp.v2.4.a/) |
 | TexasEquities | Bqt | Xdp | 2.4.b | [files](Nyse.TexasEquities.Bqt.Xdp.v2.4.b/) |
 | TexasEquities | DepthFeed | Pillar | 1.6 | [files](Nyse.TexasEquities.DepthFeed.Pillar.v1.6/) |
