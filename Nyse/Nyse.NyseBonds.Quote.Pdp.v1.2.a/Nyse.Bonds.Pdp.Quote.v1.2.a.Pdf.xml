@@ -1,0 +1,478 @@
+<OmiNysePillarPdf>
+
+  <!--
+    Nyse Bonds Quotes Client Specification 1.2a.
+
+    The Udp feed side. The Tcp request channel messages - Retransmission Request (20), Refresh
+    Request (22), Symbol Index Mapping Request (25) and their Retransmission Response (10) and
+    Heartbeat Response (24) - belong to a request protocol of their own, as the Pillar feeds
+    separate their Request channels, and are not modelled here.
+
+    Every body below is asserted against the size the specification's header table quotes, given
+    that MsgSize counts the sixteen byte header but not its own two bytes. The document carries
+    two copies of that header table, in sections 3.8 and 5.3, and they disagree twice: section
+    3.8 says Retransmission Response is 46 bytes and Symbol Index Mapping 54, while 5.3 says 42
+    and 58. The field layouts settle it in favour of 5.3 - Symbol Index Mapping's own table runs
+    to offset 60, which is a 44 byte body and so MsgSize 58.
+
+    PriceScaleCode carries no value list here: the specification gives only the power of ten
+    formula and one example, so none is invented.
+  -->
+
+  <Messages>
+
+    <!-- Sequence Number Reset Message -->
+    <Message>
+      <Name>Sequence Number Reset Message</Name>
+      <Type>Administrative</Type>
+      <Category>Session</Category>
+      <Branch>payload</Branch>
+      <Dependency>msgtype</Dependency>
+      <Code>1</Code>
+      <Description>Sent to reset the sequence number at start of day and in response to failures. The message
+        carries its own valid sequence number in the header.
+      </Description>
+      <Fields>
+        <Field>
+          <Name>NextSeqNumber</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>The sequence number the recipient should expect in the immediately succeeding data packet.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Heartbeat Message -->
+    <Message>
+      <Name>Heartbeat Message</Name>
+      <Type>Administrative</Type>
+      <Category>Session</Category>
+      <Branch>payload</Branch>
+      <Dependency>msgtype</Dependency>
+      <Code>2</Code>
+      <Description>Sent to subscribers connected to the Tcp retransmission server to show the connection is still
+        alive. There is no message body.
+      </Description>
+      <Fields />
+    </Message>
+
+    <!-- Message Unavailable Message -->
+    <Message>
+      <Name>Message Unavailable Message</Name>
+      <Type>Administrative</Type>
+      <Category>Session</Category>
+      <Branch>payload</Branch>
+      <Dependency>msgtype</Dependency>
+      <Code>5</Code>
+      <Description>Sent when the requested messages cannot be retransmitted.</Description>
+      <Fields>
+        <Field>
+          <Name>BeginSeqNum</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>The first sequence number that is unavailable.</Description>
+        </Field>
+        <Field>
+          <Name>EndSeqNum</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>The last sequence number that is unavailable.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Refresh Quote Message -->
+    <Message>
+      <Name>Refresh Quote Message</Name>
+      <Type>Quote</Type>
+      <Category>Application</Category>
+      <Branch>payload</Branch>
+      <Dependency>msgtype</Dependency>
+      <Code>23</Code>
+      <Description>Sent in response to a Refresh Quote Request, and automatically when there are intraday symbol
+        additions. The same body as a Quote message with the symbol and Cusip appended.
+      </Description>
+      <Fields>
+        <Field>
+          <Name>Symbol Index</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>The numerical representation of the symbol.</Description>
+        </Field>
+        <Field>
+          <Name>SourceTime</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>The quote generation time, in milliseconds since midnight of the same day.</Description>
+        </Field>
+        <Field>
+          <Name>QuoteLinkID</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Identifies a unique quote, allowing quotes to be correlated to the last sale. For future use.</Description>
+        </Field>
+        <Field>
+          <Name>AskPriceNumerator</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Ask price for the quote, scaled by the PriceScaleCode.</Description>
+        </Field>
+        <Field>
+          <Name>AskSize</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Size of the quote on the ask side, in shares.</Description>
+        </Field>
+        <Field>
+          <Name>BidPriceNumerator</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Bid price for the quote, scaled by the PriceScaleCode.</Description>
+        </Field>
+        <Field>
+          <Name>BidSize</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Size of the quote on the bid side, in shares.</Description>
+        </Field>
+        <Field>
+          <Name>PriceScaleCode</Name>
+          <Type>Binary</Type>
+          <Size>1</Size>
+          <Description>The power of ten that is the common denominator for the price numerators in this message. A
+            price of 27.56 is a numerator of 2756 with a PriceScaleCode of 2.
+          </Description>
+        </Field>
+        <Field>
+          <Name>ExchangeID</Name>
+          <Type>ASCII</Type>
+          <Size>1</Size>
+          <Description>The originating exchange of the quote.</Description>
+        </Field>
+        <Field>
+          <Name>SecurityType</Name>
+          <Type>ASCII</Type>
+          <Size>1</Size>
+          <Description>The security type for this message.</Description>
+        </Field>
+        <Field>
+          <Name>QuoteCondition</Name>
+          <Type>ASCII</Type>
+          <Size>1</Size>
+          <Description>The condition of the quote. Nyse Arca will only send quote condition R.</Description>
+        </Field>
+        <Field>
+          <Name>FlatPricing</Name>
+          <Type>ASCII</Type>
+          <Size>1</Size>
+          <Description>Whether flat pricing or interest pricing is in effect.</Description>
+        </Field>
+        <Field>
+          <Name>Trading Action</Name>
+          <Type>Binary</Type>
+          <Size>1</Size>
+          <Description>The current state of trading for this bond.</Description>
+        </Field>
+        <Field>
+          <Name>FILLER</Name>
+          <Type>ASCII</Type>
+          <Size>2</Size>
+          <Description>Reserved for future use.</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>ASCII</Type>
+          <Size>22</Size>
+          <Description>The bond symbol.</Description>
+        </Field>
+        <Field>
+          <Name>Cusip</Name>
+          <Type>ASCII</Type>
+          <Size>14</Size>
+          <Description>The bond Cusip.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Symbol Index Mapping Message -->
+    <Message>
+      <Name>Symbol Index Mapping Message</Name>
+      <Type>Reference</Type>
+      <Category>Application</Category>
+      <Branch>payload</Branch>
+      <Dependency>msgtype</Dependency>
+      <Code>26</Code>
+      <Description>Maps a symbol index to its bond symbol and Cusip.</Description>
+      <Fields>
+        <Field>
+          <Name>SymbolIndex</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>The numerical representation of the symbol.</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>ASCII</Type>
+          <Size>22</Size>
+          <Description>The bond symbol.</Description>
+        </Field>
+        <Field>
+          <Name>Cusip</Name>
+          <Type>ASCII</Type>
+          <Size>14</Size>
+          <Description>The bond Cusip.</Description>
+        </Field>
+        <Field>
+          <Name>FILLER</Name>
+          <Type>ASCII</Type>
+          <Size>4</Size>
+          <Description>Reserved for future use.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Quote Message -->
+    <Message>
+      <Name>Quote Message</Name>
+      <Type>Quote</Type>
+      <Category>Application</Category>
+      <Branch>payload</Branch>
+      <Dependency>msgtype</Dependency>
+      <Code>141</Code>
+      <Description>The L1 top of book quote for a bond.</Description>
+      <Fields>
+        <Field>
+          <Name>Symbol Index</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>The numerical representation of the symbol.</Description>
+        </Field>
+        <Field>
+          <Name>SourceTime</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>The quote generation time, in milliseconds since midnight of the same day.</Description>
+        </Field>
+        <Field>
+          <Name>QuoteLinkID</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Identifies a unique quote, allowing quotes to be correlated to the last sale. For future use.</Description>
+        </Field>
+        <Field>
+          <Name>AskPriceNumerator</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Ask price for the quote, scaled by the PriceScaleCode.</Description>
+        </Field>
+        <Field>
+          <Name>AskSize</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Size of the quote on the ask side, in shares.</Description>
+        </Field>
+        <Field>
+          <Name>BidPriceNumerator</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Bid price for the quote, scaled by the PriceScaleCode.</Description>
+        </Field>
+        <Field>
+          <Name>BidSize</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Size of the quote on the bid side, in shares.</Description>
+        </Field>
+        <Field>
+          <Name>PriceScaleCode</Name>
+          <Type>Binary</Type>
+          <Size>1</Size>
+          <Description>The power of ten that is the common denominator for the price numerators in this message. A
+            price of 27.56 is a numerator of 2756 with a PriceScaleCode of 2.
+          </Description>
+        </Field>
+        <Field>
+          <Name>ExchangeID</Name>
+          <Type>ASCII</Type>
+          <Size>1</Size>
+          <Description>The originating exchange of the quote.</Description>
+        </Field>
+        <Field>
+          <Name>SecurityType</Name>
+          <Type>ASCII</Type>
+          <Size>1</Size>
+          <Description>The security type for this message.</Description>
+        </Field>
+        <Field>
+          <Name>QuoteCondition</Name>
+          <Type>ASCII</Type>
+          <Size>1</Size>
+          <Description>The condition of the quote. Nyse Arca will only send quote condition R.</Description>
+        </Field>
+        <Field>
+          <Name>FlatPricing</Name>
+          <Type>ASCII</Type>
+          <Size>1</Size>
+          <Description>Whether flat pricing or interest pricing is in effect.</Description>
+        </Field>
+        <Field>
+          <Name>Trading Action</Name>
+          <Type>Binary</Type>
+          <Size>1</Size>
+          <Description>The current state of trading for this bond.</Description>
+        </Field>
+        <Field>
+          <Name>FILLER</Name>
+          <Type>ASCII</Type>
+          <Size>2</Size>
+          <Description>Reserved for future use.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+  </Messages>
+
+  <Enums>
+
+    <!-- ExchangeID -->
+    <Enum>
+      <Name>ExchangeID</Name>
+      <Values>
+        <Value>
+          <Data>N</Data>
+          <Name>NYSE</Name>
+        </Value>
+        <Value>
+          <Data>P</Data>
+          <Name>NYSE Arca</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- SecurityType -->
+    <Enum>
+      <Name>SecurityType</Name>
+      <Values>
+        <Value>
+          <Data>F</Data>
+          <Name>Fixed Income/Bonds</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- QuoteCondition -->
+    <Enum>
+      <Name>QuoteCondition</Name>
+      <Values>
+        <Value>
+          <Data>A</Data>
+          <Name>Slow on Ask side</Name>
+        </Value>
+        <Value>
+          <Data>B</Data>
+          <Name>Slow on Bid side</Name>
+        </Value>
+        <Value>
+          <Data>C</Data>
+          <Name>Closing</Name>
+        </Value>
+        <Value>
+          <Data>E</Data>
+          <Name>Slow on the Bid Due to an LRP or Gap Quote</Name>
+        </Value>
+        <Value>
+          <Data>F</Data>
+          <Name>Slow on the Ask Due to an LRP or Gap Quote</Name>
+        </Value>
+        <Value>
+          <Data>H</Data>
+          <Name>Slow on both Ask and Bid</Name>
+        </Value>
+        <Value>
+          <Data>N</Data>
+          <Name>Non-firm quote</Name>
+        </Value>
+        <Value>
+          <Data>O</Data>
+          <Name>Opening quote</Name>
+        </Value>
+        <Value>
+          <Data>R</Data>
+          <Name>Regular quote</Name>
+        </Value>
+        <Value>
+          <Data>U</Data>
+          <Name>Slow on the Bid and Ask Due to an LRP or Gap Quote</Name>
+        </Value>
+        <Value>
+          <Data>W</Data>
+          <Name>Slow on the Bid and Ask due to a Set Slow List</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- FlatPricing -->
+    <Enum>
+      <Name>FlatPricing</Name>
+      <Values>
+        <Value>
+          <Data>F</Data>
+          <Name>Flat pricing is in effect</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Trading Action -->
+    <Enum>
+      <Name>Trading Action</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Called</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>De-listed</Name>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Ex-interest</Name>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>Missed an interest payment</Name>
+        </Value>
+        <Value>
+          <Data>5</Data>
+          <Name>Bankrupt</Name>
+        </Value>
+        <Value>
+          <Data>6</Data>
+          <Name>Late Filing</Name>
+        </Value>
+        <Value>
+          <Data>7</Data>
+          <Name>Below Listing Standards</Name>
+        </Value>
+        <Value>
+          <Data>8</Data>
+          <Name>Late Filing and Below Listing Standards</Name>
+        </Value>
+        <Value>
+          <Data>9</Data>
+          <Name>Bankrupt and Late Filing</Name>
+        </Value>
+        <Value>
+          <Data>10</Data>
+          <Name>Bankrupt and Below Listing Standards</Name>
+        </Value>
+        <Value>
+          <Data>11</Data>
+          <Name>Bankrupt, Below Listing Standards, and Late Filing</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+  </Enums>
+
+</OmiNysePillarPdf>

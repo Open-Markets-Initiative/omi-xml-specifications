@@ -1,0 +1,515 @@
+<OmiNysePillarPdf>
+
+  <!--
+    Nyse Bonds Trades Client Specification 1.07a, 4 September 2012.
+
+    Exchange to client messages only. The four session messages the client sends (Login, Logoff,
+    Heartbeat Response, Test Request) use a different framing - Ascii, no header, <ETX> terminated -
+    and are not modelled here; see ArcaTrade.Message.Tcp.Source.xml.
+
+    Offsets check out against each table's stated body length: Last Sale, Trade Bust and Closing
+    Price each run to offset 68, which is the 64 byte body the tables quote plus the four byte
+    header. Price Scale Code is Ascii, not binary - section 3.2 names it and Auction Time as the
+    only alphanumeric numeric fields.
+  -->
+
+  <Messages>
+
+    <!-- Login Accepted Message -->
+    <Message>
+      <Name>Login Accepted Message</Name>
+      <Type>Response</Type>
+      <Category>Session</Category>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>Q</Code>
+      <Description>Sent to indicate a successful login. Carries the current version of ArcaTrade.</Description>
+      <Fields>
+        <Field>
+          <Name>Version ID</Name>
+          <Type>ASCII</Type>
+          <Size>5</Size>
+          <Description>Version of the ArcaTrade protocol, formatted vv.vv.</Description>
+        </Field>
+        <Field>
+          <Name>Padding</Name>
+          <Type>ASCII</Type>
+          <Size>1</Size>
+          <Description>Not used.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Login Rejected Message -->
+    <Message>
+      <Name>Login Rejected Message</Name>
+      <Type>Response</Type>
+      <Category>Session</Category>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>R</Code>
+      <Description>Sent when login fails authentication, the client does not log in within 30 seconds,
+        no trade data feed was subscribed to, the sequence number was invalid, or no connections are
+        available. The socket is closed afterwards.
+      </Description>
+      <Fields>
+        <Field>
+          <Name>Reject Code</Name>
+          <Type>ASCII</Type>
+          <Size>1</Size>
+          <Description>The reason the login was rejected.</Description>
+        </Field>
+        <Field>
+          <Name>Padding</Name>
+          <Type>ASCII</Type>
+          <Size>1</Size>
+          <Description>Not used.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Heartbeat Message -->
+    <Message>
+      <Name>Heartbeat Message</Name>
+      <Type>Administrative</Type>
+      <Category>Session</Category>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>H</Code>
+      <Description>Sent every 60 seconds during periods of client inactivity, so that firewalls do not
+        time the connection out. The client must answer with a Heartbeat Response. There is no message
+        body, and the header length is always zero.
+      </Description>
+      <Fields />
+    </Message>
+
+    <!-- Test Response Message -->
+    <Message>
+      <Name>Test Response Message</Name>
+      <Type>Response</Type>
+      <Category>Session</Category>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>S</Code>
+      <Description>Sent in response to a Test Request, echoing back any text the request carried.</Description>
+      <Fields>
+        <Field>
+          <Name>Test Message</Name>
+          <Type>ASCII</Type>
+          <Size>20</Size>
+          <Description>Text sent in the Test Request message.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Last Sale Message -->
+    <Message>
+      <Name>Last Sale Message</Name>
+      <Type>Trade</Type>
+      <Category>Application</Category>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>X</Code>
+      <Description>Sent when an order partially trades or completely trades.</Description>
+      <Fields>
+        <Field>
+          <Name>Last Sale Time</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Time the trade occurred, in milliseconds since midnight.</Description>
+        </Field>
+        <Field>
+          <Name>Sequence Number</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Message sequence number, 1 to 2147483647.</Description>
+        </Field>
+        <Field>
+          <Name>Trade Reference Number</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>The unique reference number per trading platform (system code) assigned to this
+            trade.
+          </Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Number of bonds traded.</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Trade price. Divide by the denominator the Price Scale Code names.</Description>
+        </Field>
+        <Field>
+          <Name>Price Scale Code</Name>
+          <Type>ASCII</Type>
+          <Size>1</Size>
+          <Description>The power of ten dividing the price fields in this message.</Description>
+        </Field>
+        <Field>
+          <Name>System Code</Name>
+          <Type>ASCII</Type>
+          <Size>1</Size>
+          <Description>The trading platform that produced this trade.</Description>
+        </Field>
+        <Field>
+          <Name>Exchange Code</Name>
+          <Type>ASCII</Type>
+          <Size>1</Size>
+          <Description>Whether this is a Nyse listed bond.</Description>
+        </Field>
+        <Field>
+          <Name>Trade Condition</Name>
+          <Type>Binary</Type>
+          <Size>1</Size>
+          <Description>Reserved for future use.</Description>
+        </Field>
+        <Field>
+          <Name>Security Type</Name>
+          <Type>Binary</Type>
+          <Size>1</Size>
+          <Description>The type of bond. Additional types will be supported in future releases.</Description>
+        </Field>
+        <Field>
+          <Name>NYSE Bond Symbol</Name>
+          <Type>ASCII</Type>
+          <Size>22</Size>
+          <Description>A Nyse Arca specific identity for this bond.</Description>
+        </Field>
+        <Field>
+          <Name>CUSIP / ISIN</Name>
+          <Type>ASCII</Type>
+          <Size>14</Size>
+          <Description>Cusip or Isin for the bond. Null unless the client requested the data and holds a
+            licence.
+          </Description>
+        </Field>
+        <Field>
+          <Name>Padding</Name>
+          <Type>ASCII</Type>
+          <Size>3</Size>
+          <Description>Not used.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Trade Bust or Correction Message -->
+    <Message>
+      <Name>Trade Bust or Correction Message</Name>
+      <Type>Trade</Type>
+      <Category>Application</Category>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>U</Code>
+      <Description>Sent when trades are busted or corrected. The Event Code field says which.</Description>
+      <Fields>
+        <Field>
+          <Name>Last Sale Time</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Time the trade occurred, in milliseconds since midnight.</Description>
+        </Field>
+        <Field>
+          <Name>Sequence Number</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Message sequence number, 1 to 2147483647.</Description>
+        </Field>
+        <Field>
+          <Name>Trade Reference Number</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>The unique reference number per trading platform (system code) assigned to the
+            trade that has been busted or modified.
+          </Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Number of bonds busted or corrected.</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Busted or corrected trade price.</Description>
+        </Field>
+        <Field>
+          <Name>Price Scale Code</Name>
+          <Type>ASCII</Type>
+          <Size>1</Size>
+          <Description>The power of ten dividing the price fields in this message.</Description>
+        </Field>
+        <Field>
+          <Name>System Code</Name>
+          <Type>ASCII</Type>
+          <Size>1</Size>
+          <Description>The trading platform that produced this trade.</Description>
+        </Field>
+        <Field>
+          <Name>Event Code</Name>
+          <Type>ASCII</Type>
+          <Size>1</Size>
+          <Description>Whether the trade was busted or corrected.</Description>
+        </Field>
+        <Field>
+          <Name>Exchange Code</Name>
+          <Type>ASCII</Type>
+          <Size>1</Size>
+          <Description>Whether this is a Nyse listed bond.</Description>
+        </Field>
+        <Field>
+          <Name>Trade Condition</Name>
+          <Type>Binary</Type>
+          <Size>1</Size>
+          <Description>Reserved for future use.</Description>
+        </Field>
+        <Field>
+          <Name>Security Type</Name>
+          <Type>Binary</Type>
+          <Size>1</Size>
+          <Description>The type of bond. Additional types will be supported in future releases.</Description>
+        </Field>
+        <Field>
+          <Name>NYSE Bond Symbol</Name>
+          <Type>ASCII</Type>
+          <Size>22</Size>
+          <Description>A Nyse Arca specific identity for this bond.</Description>
+        </Field>
+        <Field>
+          <Name>CUSIP / ISIN</Name>
+          <Type>ASCII</Type>
+          <Size>14</Size>
+          <Description>Cusip or Isin for the bond. Null unless the client requested the data and holds a
+            licence.
+          </Description>
+        </Field>
+        <Field>
+          <Name>Padding</Name>
+          <Type>ASCII</Type>
+          <Size>2</Size>
+          <Description>Not used.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- NYSE Bond Closing Price Message -->
+    <Message>
+      <Name>NYSE Bond Closing Price Message</Name>
+      <Type>Trade</Type>
+      <Category>Application</Category>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>Z</Code>
+      <Description>Sent during day end processing with the final closing price and volume for a bond.
+        The specification notes this message is not supported at the time of writing and will be
+        implemented in a future release.
+      </Description>
+      <Fields>
+        <Field>
+          <Name>Closing Time</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Time the closing price was set, in milliseconds since midnight.</Description>
+        </Field>
+        <Field>
+          <Name>Sequence Number</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Message sequence number, 1 to 2147483647.</Description>
+        </Field>
+        <Field>
+          <Name>Trade Reference Number</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>The unique reference number per trading platform (system code) assigned to the
+            closing price.
+          </Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Number of bonds for the closing price.</Description>
+        </Field>
+        <Field>
+          <Name>Closing Price</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>The closing price.</Description>
+        </Field>
+        <Field>
+          <Name>Price Scale Code</Name>
+          <Type>ASCII</Type>
+          <Size>1</Size>
+          <Description>The power of ten dividing the price fields in this message.</Description>
+        </Field>
+        <Field>
+          <Name>System Code</Name>
+          <Type>ASCII</Type>
+          <Size>1</Size>
+          <Description>The trading platform that produced this closing price.</Description>
+        </Field>
+        <Field>
+          <Name>Exchange Code</Name>
+          <Type>ASCII</Type>
+          <Size>1</Size>
+          <Description>Whether this is a Nyse listed bond.</Description>
+        </Field>
+        <Field>
+          <Name>Trade Condition</Name>
+          <Type>Binary</Type>
+          <Size>1</Size>
+          <Description>Reserved for future use.</Description>
+        </Field>
+        <Field>
+          <Name>Security Type</Name>
+          <Type>Binary</Type>
+          <Size>1</Size>
+          <Description>The type of bond. Additional types will be supported in future releases.</Description>
+        </Field>
+        <Field>
+          <Name>NYSE Bond Symbol</Name>
+          <Type>ASCII</Type>
+          <Size>22</Size>
+          <Description>A Nyse Arca specific identity for this bond.</Description>
+        </Field>
+        <Field>
+          <Name>CUSIP / ISIN</Name>
+          <Type>ASCII</Type>
+          <Size>14</Size>
+          <Description>Cusip or Isin for the bond. Null unless the client requested the data and holds a
+            licence.
+          </Description>
+        </Field>
+        <Field>
+          <Name>Padding</Name>
+          <Type>ASCII</Type>
+          <Size>3</Size>
+          <Description>Not used.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+  </Messages>
+
+  <Enums>
+
+    <!-- Reject Code -->
+    <Enum>
+      <Name>Reject Code</Name>
+      <Values>
+        <Value>
+          <Data>A</Data>
+          <Name>Not Authorized</Name>
+        </Value>
+        <Value>
+          <Data>M</Data>
+          <Name>Maximum Server Connections Reached</Name>
+        </Value>
+        <Value>
+          <Data>R</Data>
+          <Name>Invalid Subscription</Name>
+        </Value>
+        <Value>
+          <Data>S</Data>
+          <Name>Invalid Sequence</Name>
+        </Value>
+        <Value>
+          <Data>T</Data>
+          <Name>Timeout</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Price Scale Code -->
+    <Enum>
+      <Name>Price Scale Code</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>No Division</Name>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Ten</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>One Hundred</Name>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>One Thousand</Name>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>Ten Thousand</Name>
+        </Value>
+        <Value>
+          <Data>5</Data>
+          <Name>One Hundred Thousand</Name>
+        </Value>
+        <Value>
+          <Data>6</Data>
+          <Name>One Million</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- System Code -->
+    <Enum>
+      <Name>System Code</Name>
+      <Values>
+        <Value>
+          <Data>F</Data>
+          <Name>Bonds Trading Platform</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Exchange Code -->
+    <Enum>
+      <Name>Exchange Code</Name>
+      <Values>
+        <Value>
+          <Data>N</Data>
+          <Name>NYSE listed bond</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Event Code -->
+    <Enum>
+      <Name>Event Code</Name>
+      <Values>
+        <Value>
+          <Data>B</Data>
+          <Name>Trade Bust</Name>
+        </Value>
+        <Value>
+          <Data>C</Data>
+          <Name>Trade Correction</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Security Type -->
+    <Enum>
+      <Name>Security Type</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Corporate Bonds</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+  </Enums>
+
+</OmiNysePillarPdf>

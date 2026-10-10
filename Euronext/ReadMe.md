@@ -79,6 +79,7 @@
 | Optiq | OrderEntry | Fix | 6.65 | [files](Euronext.Optiq.OrderEntry.Fix.v6.65/) |
 | Optiq | OrderEntry | Fix | 6.66 | [files](Euronext.Optiq.OrderEntry.Fix.v6.66/) |
 | Optiq | OrderEntry | Fix | 6.69 | [files](Euronext.Optiq.OrderEntry.Fix.v6.69/) |
+| Optiq | OrderEntry | Fix | 6.70 | [files](Euronext.Optiq.OrderEntry.Fix.v6.70/) |
 | Optiq | OrderEntryGateway | Sbe | 1.3 | [files](Euronext.Optiq.OrderEntryGateway.Sbe.v1.3/) |
 | Optiq | OrderEntryGateway | Sbe | 2.0 | [files](Euronext.Optiq.OrderEntryGateway.Sbe.v2.0/) |
 | Optiq | OrderEntryGateway | Sbe | 2.1 | [files](Euronext.Optiq.OrderEntryGateway.Sbe.v2.1/) |

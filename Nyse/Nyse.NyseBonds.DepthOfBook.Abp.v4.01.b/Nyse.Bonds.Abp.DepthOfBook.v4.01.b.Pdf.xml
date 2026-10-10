@@ -1,0 +1,870 @@
+<OmiNysePillarPdf>
+
+  <!--
+    Nyse Bonds Depth of Book Client Specification 4.01b, 13 October 2015.
+
+    Exchange to client messages only. The four messages the client sends use a different framing -
+    Ascii, no header, <ETX> terminated - and live in
+    Abp.MessageHeader.Tcp.Client.DepthOfBook.Source.xml.
+
+    Every body total below is asserted against the length its own table states. One disagreement:
+    the Imbalance table is headed "76 bytes", but its offsets chain to 76 from offset zero, which
+    is a 72 byte body. The offsets are self consistent and Add Order is genuinely 76, so the
+    heading is a copy from Add Order and the layout is what is transcribed.
+  -->
+
+  <Messages>
+
+    <!-- Login Accepted Message -->
+    <Message>
+      <Name>Login Accepted Message</Name>
+      <Type>Response</Type>
+      <Category>Session</Category>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>Q</Code>
+      <Description>Sent to indicate a successful login. Carries the current version of the Nyse ArcaBook protocol.</Description>
+      <Fields>
+        <Field>
+          <Name>Version ID</Name>
+          <Type>ASCII</Type>
+          <Size>5</Size>
+          <Description>Version of the Nyse ArcaBook protocol, formatted vv.vv.</Description>
+        </Field>
+        <Field>
+          <Name>Padding</Name>
+          <Type>ASCII</Type>
+          <Size>1</Size>
+          <Description>Not used.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Login Rejected Message -->
+    <Message>
+      <Name>Login Rejected Message</Name>
+      <Type>Response</Type>
+      <Category>Session</Category>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>R</Code>
+      <Description>Sent when login fails authentication, the client does not log in within 5 seconds, no order data
+        feed was subscribed to, the sequence number was invalid, no connections are available, or a
+        timeout occurred. The socket is closed afterwards.
+      </Description>
+      <Fields>
+        <Field>
+          <Name>Reject Code</Name>
+          <Type>ASCII</Type>
+          <Size>1</Size>
+          <Description>The reason the login was rejected.</Description>
+        </Field>
+        <Field>
+          <Name>Padding</Name>
+          <Type>ASCII</Type>
+          <Size>1</Size>
+          <Description>Not used.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Heartbeat Message -->
+    <Message>
+      <Name>Heartbeat Message</Name>
+      <Type>Administrative</Type>
+      <Category>Session</Category>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>H</Code>
+      <Description>Sent every 60 seconds during periods of client inactivity, so that firewalls do not time the
+        connection out. The client must answer with a Heartbeat Response. There is no message body, and
+        the header length is always zero.
+      </Description>
+      <Fields />
+    </Message>
+
+    <!-- Test Response Message -->
+    <Message>
+      <Name>Test Response Message</Name>
+      <Type>Response</Type>
+      <Category>Session</Category>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>S</Code>
+      <Description>Sent in response to a Test Request, echoing back any text the request carried.</Description>
+      <Fields>
+        <Field>
+          <Name>Test Message</Name>
+          <Type>ASCII</Type>
+          <Size>20</Size>
+          <Description>Text sent in the Test Request message.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Add Order Message -->
+    <Message>
+      <Name>Add Order Message</Name>
+      <Type>Depth</Type>
+      <Category>Application</Category>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>N</Code>
+      <Description>Sent for a new open order. The Order Reference Number is unique per order book, while the
+        Sequence Number is unique across all order books.
+      </Description>
+      <Fields>
+        <Field>
+          <Name>Time</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Message creation timestamp in milliseconds since midnight.</Description>
+        </Field>
+        <Field>
+          <Name>Sequence Number</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Message sequence number, 1 to 2147483647.</Description>
+        </Field>
+        <Field>
+          <Name>Order Reference Number</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>The unique reference number per order book (system code) assigned to this order.</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>The size of the order.</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>The limit price of the bond order. See Bond Price Types.</Description>
+        </Field>
+        <Field>
+          <Name>Price Scale Code</Name>
+          <Type>ASCII</Type>
+          <Size>1</Size>
+          <Description>The power of ten dividing the price fields in this message.</Description>
+        </Field>
+        <Field>
+          <Name>Exchange Code</Name>
+          <Type>ASCII</Type>
+          <Size>1</Size>
+          <Description>Whether this is a Nyse listed bond.</Description>
+        </Field>
+        <Field>
+          <Name>System Code</Name>
+          <Type>ASCII</Type>
+          <Size>1</Size>
+          <Description>Which order book this order belongs to.</Description>
+        </Field>
+        <Field>
+          <Name>Buy/Sell Indicator</Name>
+          <Type>ASCII</Type>
+          <Size>1</Size>
+          <Description>Whether this is a buy or a sell order.</Description>
+        </Field>
+        <Field>
+          <Name>Flat Pricing</Name>
+          <Type>ASCII</Type>
+          <Size>1</Size>
+          <Description>Whether flat pricing or interest pricing is in effect.</Description>
+        </Field>
+        <Field>
+          <Name>Trading Action</Name>
+          <Type>Binary</Type>
+          <Size>1</Size>
+          <Description>The current state of trading for this bond.</Description>
+        </Field>
+        <Field>
+          <Name>Security Type</Name>
+          <Type>Binary</Type>
+          <Size>1</Size>
+          <Description>The type of bond. Additional types will be supported in future releases.</Description>
+        </Field>
+        <Field>
+          <Name>Order Type</Name>
+          <Type>Binary</Type>
+          <Size>1</Size>
+          <Description>Whether the order is All or None, Minimum Quantity, or unspecified.</Description>
+        </Field>
+        <Field>
+          <Name>NYSE Bond Symbol</Name>
+          <Type>ASCII</Type>
+          <Size>22</Size>
+          <Description>A Nyse Bonds specific identity for this bond.</Description>
+        </Field>
+        <Field>
+          <Name>CUSIP / ISIN</Name>
+          <Type>ASCII</Type>
+          <Size>14</Size>
+          <Description>Cusip or Isin for the bond. Null unless the client requested the data and holds a licence.</Description>
+        </Field>
+        <Field>
+          <Name>Quote ID</Name>
+          <Type>ASCII</Type>
+          <Size>5</Size>
+          <Description>'A' plus the Mmid when attributed, otherwise 'ARCAX'.</Description>
+        </Field>
+        <Field>
+          <Name>Padding</Name>
+          <Type>ASCII</Type>
+          <Size>3</Size>
+          <Description>Not used.</Description>
+        </Field>
+        <Field>
+          <Name>Minimum Quantity</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>For an All or None order the size of the order, for a Minimum Quantity order the minimum size of
+            the order, and 0 for other order types.
+          </Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Modify Order Message -->
+    <Message>
+      <Name>Modify Order Message</Name>
+      <Type>Depth</Type>
+      <Category>Application</Category>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>C</Code>
+      <Description>Sent when an order in a Nyse Bonds book is modified: its price or size changes, it is partially
+        filled, or it is routed away with shares remaining. The Order Reference Number refers to the
+        original Add Order.
+      </Description>
+      <Fields>
+        <Field>
+          <Name>Time</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Message creation timestamp in milliseconds since midnight.</Description>
+        </Field>
+        <Field>
+          <Name>Sequence Number</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Message sequence number, 1 to 2147483647.</Description>
+        </Field>
+        <Field>
+          <Name>Order Reference Number</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>The unique reference number per order book (system code) assigned to this order.</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>The size of the order.</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>The limit price of the bond order. See Bond Price Types.</Description>
+        </Field>
+        <Field>
+          <Name>Price Scale Code</Name>
+          <Type>ASCII</Type>
+          <Size>1</Size>
+          <Description>The power of ten dividing the price fields in this message.</Description>
+        </Field>
+        <Field>
+          <Name>Exchange Code</Name>
+          <Type>ASCII</Type>
+          <Size>1</Size>
+          <Description>Whether this is a Nyse listed bond.</Description>
+        </Field>
+        <Field>
+          <Name>System Code</Name>
+          <Type>ASCII</Type>
+          <Size>1</Size>
+          <Description>Which order book this order belongs to.</Description>
+        </Field>
+        <Field>
+          <Name>Buy/Sell Indicator</Name>
+          <Type>ASCII</Type>
+          <Size>1</Size>
+          <Description>Whether this is a buy or a sell order.</Description>
+        </Field>
+        <Field>
+          <Name>Flat Pricing</Name>
+          <Type>ASCII</Type>
+          <Size>1</Size>
+          <Description>Whether flat pricing or interest pricing is in effect.</Description>
+        </Field>
+        <Field>
+          <Name>Trading Action</Name>
+          <Type>Binary</Type>
+          <Size>1</Size>
+          <Description>The current state of trading for this bond.</Description>
+        </Field>
+        <Field>
+          <Name>Security Type</Name>
+          <Type>Binary</Type>
+          <Size>1</Size>
+          <Description>The type of bond. Additional types will be supported in future releases.</Description>
+        </Field>
+        <Field>
+          <Name>Order Type</Name>
+          <Type>Binary</Type>
+          <Size>1</Size>
+          <Description>Whether the order is All or None, Minimum Quantity, or unspecified.</Description>
+        </Field>
+        <Field>
+          <Name>NYSE Bond Symbol</Name>
+          <Type>ASCII</Type>
+          <Size>22</Size>
+          <Description>A Nyse Bonds specific identity for this bond.</Description>
+        </Field>
+        <Field>
+          <Name>CUSIP / ISIN</Name>
+          <Type>ASCII</Type>
+          <Size>14</Size>
+          <Description>Cusip or Isin for the bond. Null unless the client requested the data and holds a licence.</Description>
+        </Field>
+        <Field>
+          <Name>Quote ID</Name>
+          <Type>ASCII</Type>
+          <Size>5</Size>
+          <Description>'A' plus the Mmid when attributed, otherwise 'ARCAX'.</Description>
+        </Field>
+        <Field>
+          <Name>Padding</Name>
+          <Type>ASCII</Type>
+          <Size>3</Size>
+          <Description>Not used.</Description>
+        </Field>
+        <Field>
+          <Name>Minimum Quantity</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>For an All or None order the size of the order, for a Minimum Quantity order the minimum size of
+            the order, and 0 for other order types.
+          </Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Delete Order Message -->
+    <Message>
+      <Name>Delete Order Message</Name>
+      <Type>Depth</Type>
+      <Category>Application</Category>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>K</Code>
+      <Description>Sent when an order is taken off the open order book because it was cancelled, expired, routed to
+        an away market, or filled.
+      </Description>
+      <Fields>
+        <Field>
+          <Name>Time</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Message creation timestamp in milliseconds since midnight.</Description>
+        </Field>
+        <Field>
+          <Name>Sequence Number</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Message sequence number, 1 to 2147483647.</Description>
+        </Field>
+        <Field>
+          <Name>Order Reference Number</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>The unique reference number per order book (system code) assigned to the original order.</Description>
+        </Field>
+        <Field>
+          <Name>Exchange Code</Name>
+          <Type>ASCII</Type>
+          <Size>1</Size>
+          <Description>Whether this is a Nyse listed bond.</Description>
+        </Field>
+        <Field>
+          <Name>System Code</Name>
+          <Type>ASCII</Type>
+          <Size>1</Size>
+          <Description>Which order book this order belonged to.</Description>
+        </Field>
+        <Field>
+          <Name>Buy/Sell Indicator</Name>
+          <Type>ASCII</Type>
+          <Size>1</Size>
+          <Description>Whether this was a buy or a sell order.</Description>
+        </Field>
+        <Field>
+          <Name>Flat Pricing</Name>
+          <Type>ASCII</Type>
+          <Size>1</Size>
+          <Description>Whether flat pricing or interest pricing is in effect.</Description>
+        </Field>
+        <Field>
+          <Name>Trading Action</Name>
+          <Type>Binary</Type>
+          <Size>1</Size>
+          <Description>The current state of trading for this bond.</Description>
+        </Field>
+        <Field>
+          <Name>Security Type</Name>
+          <Type>Binary</Type>
+          <Size>1</Size>
+          <Description>The type of bond.</Description>
+        </Field>
+        <Field>
+          <Name>Order Type</Name>
+          <Type>Binary</Type>
+          <Size>1</Size>
+          <Description>Whether the order was All or None, Minimum Quantity, or unspecified.</Description>
+        </Field>
+        <Field>
+          <Name>NYSE Bond Symbol</Name>
+          <Type>ASCII</Type>
+          <Size>22</Size>
+          <Description>A Nyse Bonds specific identity for this bond.</Description>
+        </Field>
+        <Field>
+          <Name>CUSIP / ISIN</Name>
+          <Type>ASCII</Type>
+          <Size>14</Size>
+          <Description>Cusip or Isin for the bond. Null unless the client requested the data and holds a licence.</Description>
+        </Field>
+        <Field>
+          <Name>Quote ID</Name>
+          <Type>ASCII</Type>
+          <Size>5</Size>
+          <Description>'A' plus the Mmid when attributed, otherwise 'ARCAX'.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Imbalance Message -->
+    <Message>
+      <Name>Imbalance Message</Name>
+      <Type>Imbalance</Type>
+      <Category>Application</Category>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>W</Code>
+      <Description>Sent in response to orders submitted during pending auctions, at the conclusion of the Opening,
+        Market Order and Closing Auctions, and for Halt Auctions. Total and market imbalance volumes are
+        negative for a sell imbalance.
+      </Description>
+      <Fields>
+        <Field>
+          <Name>Time</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Message creation timestamp in milliseconds since midnight.</Description>
+        </Field>
+        <Field>
+          <Name>Sequence Number</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Message sequence number, 1 to 2147483647.</Description>
+        </Field>
+        <Field>
+          <Name>Match Quantity</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>The indicative match volume.</Description>
+        </Field>
+        <Field>
+          <Name>Total Imbalance</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>The total imbalance volume.</Description>
+        </Field>
+        <Field>
+          <Name>Market Imbalance</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>The market imbalance volume.</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>The indicative match price.</Description>
+        </Field>
+        <Field>
+          <Name>Price Scale Code</Name>
+          <Type>ASCII</Type>
+          <Size>1</Size>
+          <Description>The power of ten dividing the price fields in this message.</Description>
+        </Field>
+        <Field>
+          <Name>Exchange Code</Name>
+          <Type>ASCII</Type>
+          <Size>1</Size>
+          <Description>Whether this is a Nyse listed bond.</Description>
+        </Field>
+        <Field>
+          <Name>System Code</Name>
+          <Type>ASCII</Type>
+          <Size>1</Size>
+          <Description>Which order book this imbalance belongs to.</Description>
+        </Field>
+        <Field>
+          <Name>Auction Type</Name>
+          <Type>ASCII</Type>
+          <Size>1</Size>
+          <Description>Which auction this imbalance is for.</Description>
+        </Field>
+        <Field>
+          <Name>Flat Pricing</Name>
+          <Type>ASCII</Type>
+          <Size>1</Size>
+          <Description>Whether flat pricing or interest pricing is in effect.</Description>
+        </Field>
+        <Field>
+          <Name>Trading Action</Name>
+          <Type>Binary</Type>
+          <Size>1</Size>
+          <Description>The current state of trading for this bond.</Description>
+        </Field>
+        <Field>
+          <Name>Security Type</Name>
+          <Type>Binary</Type>
+          <Size>1</Size>
+          <Description>The type of bond.</Description>
+        </Field>
+        <Field>
+          <Name>Quote Condition</Name>
+          <Type>Binary</Type>
+          <Size>1</Size>
+          <Description>Reserved for future use.</Description>
+        </Field>
+        <Field>
+          <Name>NYSE Bond Symbol</Name>
+          <Type>ASCII</Type>
+          <Size>22</Size>
+          <Description>A Nyse Bonds specific identity for this bond.</Description>
+        </Field>
+        <Field>
+          <Name>CUSIP / ISIN</Name>
+          <Type>ASCII</Type>
+          <Size>14</Size>
+          <Description>Cusip or Isin for the bond. Null unless the client requested the data and holds a licence.</Description>
+        </Field>
+        <Field>
+          <Name>Auction Time</Name>
+          <Type>ASCII</Type>
+          <Size>4</Size>
+          <Description>Projected auction time, formatted hhmm.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- System Event Message -->
+    <Message>
+      <Name>System Event Message</Name>
+      <Type>Administrative</Type>
+      <Category>Application</Category>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>Y</Code>
+      <Description>Sent to indicate a special system event to an order book. The Event Code says what happened and
+        the System Code which book is affected. Also carries the next sequence number subscribers should
+        expect, which is generally the current one plus one but may restart at 1.
+      </Description>
+      <Fields>
+        <Field>
+          <Name>Time</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Message creation timestamp in milliseconds since midnight.</Description>
+        </Field>
+        <Field>
+          <Name>Sequence Number</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>The sequence number of this message, 1 to 2147483647.</Description>
+        </Field>
+        <Field>
+          <Name>Next Expected Sequence Number</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>The sequence number that subscribers should expect next.</Description>
+        </Field>
+        <Field>
+          <Name>Event Code</Name>
+          <Type>ASCII</Type>
+          <Size>1</Size>
+          <Description>What type of event has occurred.</Description>
+        </Field>
+        <Field>
+          <Name>System Code</Name>
+          <Type>ASCII</Type>
+          <Size>1</Size>
+          <Description>Which order book is affected.</Description>
+        </Field>
+        <Field>
+          <Name>NYSE Bond Symbol</Name>
+          <Type>ASCII</Type>
+          <Size>22</Size>
+          <Description>A Nyse Bonds specific identity for this bond.</Description>
+        </Field>
+        <Field>
+          <Name>CUSIP / ISIN</Name>
+          <Type>ASCII</Type>
+          <Size>14</Size>
+          <Description>Cusip or Isin for the bond. Null unless the client requested the data and holds a licence.</Description>
+        </Field>
+        <Field>
+          <Name>Padding</Name>
+          <Type>ASCII</Type>
+          <Size>2</Size>
+          <Description>Not used.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+  </Messages>
+
+  <Enums>
+
+    <!-- Reject Code -->
+    <Enum>
+      <Name>Reject Code</Name>
+      <Values>
+        <Value>
+          <Data>A</Data>
+          <Name>Not Authorized</Name>
+        </Value>
+        <Value>
+          <Data>M</Data>
+          <Name>Maximum Server Connections Reached</Name>
+        </Value>
+        <Value>
+          <Data>R</Data>
+          <Name>Invalid Subscription</Name>
+        </Value>
+        <Value>
+          <Data>S</Data>
+          <Name>Invalid Sequence</Name>
+        </Value>
+        <Value>
+          <Data>T</Data>
+          <Name>Timeout</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Price Scale Code -->
+    <Enum>
+      <Name>Price Scale Code</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>No Division</Name>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Ten</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>One Hundred</Name>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>One Thousand</Name>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>Ten Thousand</Name>
+        </Value>
+        <Value>
+          <Data>5</Data>
+          <Name>One Hundred Thousand</Name>
+        </Value>
+        <Value>
+          <Data>6</Data>
+          <Name>One Million</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Exchange Code -->
+    <Enum>
+      <Name>Exchange Code</Name>
+      <Values>
+        <Value>
+          <Data>N</Data>
+          <Name>NYSE listed bond</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- System Code -->
+    <Enum>
+      <Name>System Code</Name>
+      <Values>
+        <Value>
+          <Data>F</Data>
+          <Name>Bonds</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Buy/Sell Indicator -->
+    <Enum>
+      <Name>Buy/Sell Indicator</Name>
+      <Values>
+        <Value>
+          <Data>B</Data>
+          <Name>Buy order</Name>
+        </Value>
+        <Value>
+          <Data>S</Data>
+          <Name>Sell order</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Flat Pricing -->
+    <Enum>
+      <Name>Flat Pricing</Name>
+      <Values>
+        <Value>
+          <Data>F</Data>
+          <Name>Flat pricing is in effect</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Trading Action -->
+    <Enum>
+      <Name>Trading Action</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Called</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>De-listed</Name>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Ex-interest</Name>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>Missed an interest payment</Name>
+        </Value>
+        <Value>
+          <Data>5</Data>
+          <Name>Bankrupt</Name>
+        </Value>
+        <Value>
+          <Data>6</Data>
+          <Name>Late Filing</Name>
+        </Value>
+        <Value>
+          <Data>7</Data>
+          <Name>Below Listing Standards</Name>
+        </Value>
+        <Value>
+          <Data>8</Data>
+          <Name>Late Filing and Below Listing Standards</Name>
+        </Value>
+        <Value>
+          <Data>9</Data>
+          <Name>Bankrupt and Late Filing</Name>
+        </Value>
+        <Value>
+          <Data>10</Data>
+          <Name>Bankrupt and Below Listing Standards</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Security Type -->
+    <Enum>
+      <Name>Security Type</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Corporate Bonds</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Order Type -->
+    <Enum>
+      <Name>Order Type</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>Unspecified</Name>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>All or None</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Minimum Quantity</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Auction Type -->
+    <Enum>
+      <Name>Auction Type</Name>
+      <Values>
+        <Value>
+          <Data>O</Data>
+          <Name>Open</Name>
+        </Value>
+        <Value>
+          <Data>M</Data>
+          <Name>Market</Name>
+        </Value>
+        <Value>
+          <Data>H</Data>
+          <Name>Halt</Name>
+        </Value>
+        <Value>
+          <Data>C</Data>
+          <Name>Closing</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Event Code -->
+    <Enum>
+      <Name>Event Code</Name>
+      <Values>
+        <Value>
+          <Data>C</Data>
+          <Name>Clear Book</Name>
+        </Value>
+        <Value>
+          <Data>S</Data>
+          <Name>Clear Book by Symbol</Name>
+        </Value>
+        <Value>
+          <Data>H</Data>
+          <Name>Halt Symbol</Name>
+        </Value>
+        <Value>
+          <Data>U</Data>
+          <Name>UnHalt Symbol</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+  </Enums>
+
+</OmiNysePillarPdf>

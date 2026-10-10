@@ -35,7 +35,7 @@
 | PearlEquities | ExpressOrders | Meo | 2.7 | [files](Miax.PearlEquities.ExpressOrders.Meo.v2.7/) |
 | PearlEquities | ExpressOrders | Meo | 2.7.a | [files](Miax.PearlEquities.ExpressOrders.Meo.v2.7.a/) |
 | PearlEquities | ExpressOrders | Meo | 2.7.b | [files](Miax.PearlEquities.ExpressOrders.Meo.v2.7.b/) |
-| PearlEquities | OrderEntry | Fix | 1.0 | [files](Miax.PearlEquities.OrderEntry.Fix.v1.0/) |
+| PearlEquities | OrderEntry | Fix | 2.6.b | [files](Miax.PearlEquities.OrderEntry.Fix.v2.6.b/) |
 | PearlEquities | TopOfMarket | Mach | 1.1.a | [files](Miax.PearlEquities.TopOfMarket.Mach.v1.1.a/) |
 | PearlEquities | TopOfMarket | Mach | 1.1.c | [files](Miax.PearlEquities.TopOfMarket.Mach.v1.1.c/) |
 | PearlOptions | DropCopy | Fix | 1.1.c | [files](Miax.PearlOptions.DropCopy.Fix.v1.1.c/) |

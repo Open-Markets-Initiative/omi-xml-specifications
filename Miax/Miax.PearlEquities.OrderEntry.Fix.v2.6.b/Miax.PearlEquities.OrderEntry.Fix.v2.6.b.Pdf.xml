@@ -1,6 +1,8 @@
 <OmiFixPdf>
 
-  <!-- Miami International Securities Exchange Pearl Equities FIX Order Interface and Drop Interface (FOI) v1.0 -->
+  <!-- Miami International Securities Exchange Pearl Equities FIX Order Interface and Drop Interface (FOI) v2.6.b -->
+
+  <!-- 2.1 Standard Message Header (PDF pp.10-12), Firm to MIAX Pearl Equities. One header table covers both directions; this side keeps OnBehalfOfCompID (115, required for all application messages from Firm, p.12) and OnBehalfOfSubID (116, described only "From Firm to MIAX Pearl Equities", p.12), and drops DeliverToCompID (128) and DeliverToSubID (129), which are described only "From MIAX Pearl Equities to Firm" (p.12). SenderSubID (50) and TargetSubID (57) are kept on both sides: the PDF (p.11) states only which direction requires each, not that the other direction never carries it. -->
 
   <Header Name="Client">
     <Fields>
@@ -40,14 +42,14 @@
         <Name>PossDupFlag</Name>
         <Required>N</Required>
         <Type>Boolean</Type>
-        <Description>Set to Y in messages during certain failure/recovery scenarios.</Description>
+        <Description>Indicates a message resent from the admin level (has a duplicate sequence number). Default is N.</Description>
       </Field>
       <Field>
         <Tag>49</Tag>
         <Name>SenderCompID</Name>
         <Required>Y</Required>
         <Type>String</Type>
-        <Description>Identifies the party sending the message.</Description>
+        <Description>Identifies the party sending the message. The sending Firm uses its Line Identifier as assigned by MIAX Pearl Equities.</Description>
       </Field>
       <Field>
         <Tag>50</Tag>
@@ -61,66 +63,54 @@
         <Name>SendingTime</Name>
         <Required>Y</Required>
         <Type>UTCTimestamp</Type>
-        <Description>Time of message transmission in UTC. Format: YYYYMMDD-HH:MM:SS.uuu</Description>
+        <Description>Time of message transmission in UTC. Must be within a configurable interval of the current time, else the order is rejected. Format: YYYYMMDD-HH:MM:SS.mmm</Description>
       </Field>
       <Field>
         <Tag>56</Tag>
         <Name>TargetCompID</Name>
         <Required>Y</Required>
         <Type>String</Type>
-        <Description>Identifies the party receiving the message.</Description>
+        <Description>Identifies the party receiving the message. Firms use the value as assigned by MIAX Pearl Equities.</Description>
       </Field>
       <Field>
         <Tag>57</Tag>
         <Name>TargetSubID</Name>
         <Required>C</Required>
         <Type>String</Type>
-        <Description>Sub identifier of the party receiving the message.</Description>
+        <Description>Sub identifier of the party receiving the message. Required for all application messages from Firm to MIAX Pearl Equities. Valid values: TEST = MIAX Pearl Equities TEST Env., PROD = MIAX Pearl Equities PROD Env.</Description>
       </Field>
       <Field>
         <Tag>97</Tag>
         <Name>PossResend</Name>
         <Required>N</Required>
         <Type>Boolean</Type>
-        <Description>Indicates a possible retransmission.</Description>
+        <Description>Applicable to application messages. N = new message (Default), Y = application level resend, which is not supported: the message is logged but effectively ignored.</Description>
       </Field>
       <Field>
         <Tag>115</Tag>
         <Name>OnBehalfOfCompID</Name>
         <Required>C</Required>
         <Type>String</Type>
-        <Description>Identifies the firm on whose behalf the message is sent.</Description>
+        <Description>Required for all application messages from Firm to MIAX Pearl Equities. The NSCC MPID of the Firm who owns the order sent in the message.</Description>
       </Field>
       <Field>
         <Tag>116</Tag>
         <Name>OnBehalfOfSubID</Name>
         <Required>N</Required>
         <Type>String</Type>
-        <Description>Sub identifier for OnBehalfOf.</Description>
+        <Description>Any 4 character string provided by the Firm. Could be used to identify a specific entity or trading desk of the Firm.</Description>
       </Field>
       <Field>
         <Tag>122</Tag>
         <Name>OrigSendingTime</Name>
         <Required>C</Required>
         <Type>UTCTimestamp</Type>
-        <Description>Required for resent messages.</Description>
-      </Field>
-      <Field>
-        <Tag>128</Tag>
-        <Name>DeliverToCompID</Name>
-        <Required>C</Required>
-        <Type>String</Type>
-        <Description>Identifies the target firm for delivery.</Description>
-      </Field>
-      <Field>
-        <Tag>129</Tag>
-        <Name>DeliverToSubID</Name>
-        <Required>C</Required>
-        <Type>String</Type>
-        <Description>Sub identifier for DeliverTo.</Description>
+        <Description>Required for resent messages. If no data is available, this value is set to the SendingTime value. Format: YYYYMMDD-HH:MM:SS.mmm</Description>
       </Field>
     </Fields>
   </Header>
+
+  <!-- 2.1 Standard Message Header (PDF pp.10-12), MIAX Pearl Equities to Firm. This side keeps DeliverToCompID (128) and DeliverToSubID (129), which echo back the Firm's OnBehalfOfCompID and OnBehalfOfSubID (p.12), and drops OnBehalfOfCompID (115) and OnBehalfOfSubID (116), which the PDF describes only from Firm to MIAX Pearl Equities (p.12). -->
 
   <Header Name="Exchange">
     <Fields>
@@ -160,35 +150,35 @@
         <Name>PossDupFlag</Name>
         <Required>N</Required>
         <Type>Boolean</Type>
-        <Description>Set to Y in messages during certain failure/recovery scenarios.</Description>
+        <Description>Indicates a message resent from the admin level (has a duplicate sequence number). Default is N.</Description>
       </Field>
       <Field>
         <Tag>49</Tag>
         <Name>SenderCompID</Name>
         <Required>Y</Required>
         <Type>String</Type>
-        <Description>Identifies the party sending the message.</Description>
+        <Description>Identifies the party sending the message. Same value the Firm sends in TargetCompID.</Description>
       </Field>
       <Field>
         <Tag>50</Tag>
         <Name>SenderSubID</Name>
         <Required>C</Required>
         <Type>String</Type>
-        <Description>Sub identifier of the party sending the message.</Description>
+        <Description>Sub identifier of the party sending the message. Required for all application messages from MIAX Pearl Equities to Firm. Valid values: TEST = MIAX Pearl Equities TEST Env., PROD = MIAX Pearl Equities PROD Env.</Description>
       </Field>
       <Field>
         <Tag>52</Tag>
         <Name>SendingTime</Name>
         <Required>Y</Required>
         <Type>UTCTimestamp</Type>
-        <Description>Time of message transmission in UTC. Format: YYYYMMDD-HH:MM:SS.uuu</Description>
+        <Description>Time of message transmission in UTC. Format: YYYYMMDD-HH:MM:SS.mmm</Description>
       </Field>
       <Field>
         <Tag>56</Tag>
         <Name>TargetCompID</Name>
         <Required>Y</Required>
         <Type>String</Type>
-        <Description>Identifies the party receiving the message.</Description>
+        <Description>Identifies the party receiving the message. Same value the Firm sends in SenderCompID.</Description>
       </Field>
       <Field>
         <Tag>57</Tag>
@@ -202,42 +192,28 @@
         <Name>PossResend</Name>
         <Required>N</Required>
         <Type>Boolean</Type>
-        <Description>Indicates a possible retransmission.</Description>
-      </Field>
-      <Field>
-        <Tag>115</Tag>
-        <Name>OnBehalfOfCompID</Name>
-        <Required>C</Required>
-        <Type>String</Type>
-        <Description>Identifies the firm on whose behalf the message is sent.</Description>
-      </Field>
-      <Field>
-        <Tag>116</Tag>
-        <Name>OnBehalfOfSubID</Name>
-        <Required>N</Required>
-        <Type>String</Type>
-        <Description>Sub identifier for OnBehalfOf.</Description>
+        <Description>Applicable to application messages. Set to Y during certain failure/recovery scenarios.</Description>
       </Field>
       <Field>
         <Tag>122</Tag>
         <Name>OrigSendingTime</Name>
         <Required>C</Required>
         <Type>UTCTimestamp</Type>
-        <Description>Required for resent messages.</Description>
+        <Description>Required for resent messages. If no data is available, this value is set to the SendingTime value. Format: YYYYMMDD-HH:MM:SS.mmm</Description>
       </Field>
       <Field>
         <Tag>128</Tag>
         <Name>DeliverToCompID</Name>
         <Required>C</Required>
         <Type>String</Type>
-        <Description>Identifies the target firm for delivery.</Description>
+        <Description>The NSCC MPID sent in OnBehalfOfCompID from the Firm is sent back.</Description>
       </Field>
       <Field>
         <Tag>129</Tag>
         <Name>DeliverToSubID</Name>
         <Required>C</Required>
         <Type>String</Type>
-        <Description>Sub identifier for DeliverTo.</Description>
+        <Description>The value sent in OnBehalfOfSubID by the Firm is sent back.</Description>
       </Field>
     </Fields>
   </Header>
@@ -604,7 +580,7 @@
           <Tag>9303</Tag>
           <Name>RoutingInst</Name>
           <Required>N</Required>
-          <Type>String</Type>
+          <Type>char</Type>
           <Description>Routing instruction. Valid values: O = Route Once, R = Re-routable, N = Do Not Route. Default is Do Not Route for Midpoint Peg, Primary Peg, Minimum Quantity, Post Only and ISO orders; else default is Route Once.</Description>
         </Field>
         <Field>
@@ -1173,7 +1149,7 @@
           <Tag>9303</Tag>
           <Name>RoutingInst</Name>
           <Required>N</Required>
-          <Type>String</Type>
+          <Type>char</Type>
           <Description>Routing instruction. Copied from order. System default if not provided.</Description>
         </Field>
         <Field>
@@ -1452,6 +1428,7 @@
           <Required>Y</Required>
           <Type>String</Type>
           <Description>Market ID (MIC code) of the market on which this execution occurred when it occurs on an exchange other than MIAX Pearl Equities. Used to delimit the repeating group.</Description>
+          <!-- The PDF marks ContraBroker Cond (p.33) because the whole NoContraBrokers group is conditional (only present when the execution occurred on another exchange). Kept Y: as the first field of the group it delimits every entry, which FIX requires whenever the group is present. -->
         </Field>
         <Field>
           <Tag>9375</Tag>
@@ -1520,6 +1497,74 @@
       <Description>Sell Short Exempt</Description>
     </Value>
 
+    <!-- TimeInForce (59), p.20. Order Cancel/Replace Request accepts only 0, 5, 6 and R (p.27). -->
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>0</Enum>
+      <Description>Day (Early and Regular Hours)</Description>
+    </Value>
+
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>3</Enum>
+      <Description>IOC (Immediate or Cancel)</Description>
+    </Value>
+
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>4</Enum>
+      <Description>Fill or Kill (FOK)</Description>
+    </Value>
+
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>5</Enum>
+      <Description>Good Till Extended Day (GTX)</Description>
+    </Value>
+
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>6</Enum>
+      <Description>Good Till Time (GTT)</Description>
+    </Value>
+
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>R</Enum>
+      <Description>RHO (Regular Hours Only)</Description>
+    </Value>
+
+    <!-- ExecInst (18), p.19. Any other value is rejected. -->
+    <Value>
+      <Type>ExecInst</Type>
+      <Enum>f</Enum>
+      <Description>Inter-market Sweep Order (ISO)</Description>
+    </Value>
+
+    <Value>
+      <Type>ExecInst</Type>
+      <Enum>M</Enum>
+      <Description>Midpoint Peg</Description>
+    </Value>
+
+    <Value>
+      <Type>ExecInst</Type>
+      <Enum>m</Enum>
+      <Description>Midpoint Peg, but do not match when NBBO is locked</Description>
+    </Value>
+
+    <Value>
+      <Type>ExecInst</Type>
+      <Enum>R</Enum>
+      <Description>Primary Peg</Description>
+    </Value>
+
+    <Value>
+      <Type>ExecInst</Type>
+      <Enum>r</Enum>
+      <Description>Primary Peg, but do not match when NBBO is locked</Description>
+    </Value>
+
     <!-- OrderCapacity -->
     <Value>
       <Type>OrderCapacity</Type>
@@ -1558,6 +1603,179 @@
       <Description>Correct (Trade Cancel/Correct)</Description>
     </Value>
 
+    <!-- OrdStatus (39), p.31 -->
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>0</Enum>
+      <Description>New</Description>
+    </Value>
+
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>1</Enum>
+      <Description>Partially Filled</Description>
+    </Value>
+
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>2</Enum>
+      <Description>Filled</Description>
+    </Value>
+
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>4</Enum>
+      <Description>Canceled</Description>
+    </Value>
+
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>5</Enum>
+      <Description>Replaced</Description>
+    </Value>
+
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>6</Enum>
+      <Description>Pending Cancel</Description>
+    </Value>
+
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>8</Enum>
+      <Description>Rejected</Description>
+    </Value>
+
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>E</Enum>
+      <Description>Pending Replace</Description>
+    </Value>
+
+    <!-- ExecType (150), pp.32-33 -->
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>0</Enum>
+      <Description>New</Description>
+    </Value>
+
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>1</Enum>
+      <Description>Partially filled</Description>
+    </Value>
+
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>2</Enum>
+      <Description>Filled</Description>
+    </Value>
+
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>4</Enum>
+      <Description>Canceled</Description>
+    </Value>
+
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>5</Enum>
+      <Description>Replaced</Description>
+    </Value>
+
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>6</Enum>
+      <Description>Pending Cancel</Description>
+    </Value>
+
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>8</Enum>
+      <Description>Rejected</Description>
+    </Value>
+
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>E</Enum>
+      <Description>Pending Replace</Description>
+    </Value>
+
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>D</Enum>
+      <Description>Restated</Description>
+    </Value>
+
+    <!-- ExecRestatementReason (378), pp.33-34. Only present when ExecType (150) = D. -->
+    <Value>
+      <Type>ExecRestatementReason</Type>
+      <Enum>3</Enum>
+      <Description>Repricing of Order</Description>
+    </Value>
+
+    <Value>
+      <Type>ExecRestatementReason</Type>
+      <Enum>5</Enum>
+      <Description>Reduction of OrderQty due to Self Trade Protection</Description>
+    </Value>
+
+    <Value>
+      <Type>ExecRestatementReason</Type>
+      <Enum>6</Enum>
+      <Description>Reserve Order Replenishment</Description>
+    </Value>
+
+    <!-- OrdRejReason (103), p.32 -->
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>0</Enum>
+      <Description>Broker Option (details in Text (58), see Appendix B)</Description>
+    </Value>
+
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>1</Enum>
+      <Description>Unknown Symbol</Description>
+    </Value>
+
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>2</Enum>
+      <Description>Exchange Closed</Description>
+    </Value>
+
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>6</Enum>
+      <Description>Duplicate Order (duplicate ClOrdID)</Description>
+    </Value>
+
+    <!-- CxlRejReason (102), p.29 -->
+    <Value>
+      <Type>CxlRejReason</Type>
+      <Enum>0</Enum>
+      <Description>Too late to cancel</Description>
+    </Value>
+
+    <Value>
+      <Type>CxlRejReason</Type>
+      <Enum>1</Enum>
+      <Description>Unknown order</Description>
+    </Value>
+
+    <Value>
+      <Type>CxlRejReason</Type>
+      <Enum>2</Enum>
+      <Description>Broker Option (details in Text (58), see Appendix B)</Description>
+    </Value>
+
+    <Value>
+      <Type>CxlRejReason</Type>
+      <Enum>3</Enum>
+      <Description>Previous cancel or cancel/replace request is still pending</Description>
+    </Value>
+
     <!-- CxlRejResponseTo -->
     <Value>
       <Type>CxlRejResponseTo</Type>
@@ -1569,6 +1787,335 @@
       <Type>CxlRejResponseTo</Type>
       <Enum>2</Enum>
       <Description>Order Cancel/Replace Request</Description>
+    </Value>
+
+    <!-- SessionRejectReason (373), p.17. Codes 7 and 8 are listed as "Unused/Not applicable" and are not transcribed. -->
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>0</Enum>
+      <Description>Invalid tag number</Description>
+    </Value>
+
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>1</Enum>
+      <Description>Required tag missing</Description>
+    </Value>
+
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>2</Enum>
+      <Description>Tag not defined for this message type</Description>
+    </Value>
+
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>3</Enum>
+      <Description>Undefined tag</Description>
+    </Value>
+
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>4</Enum>
+      <Description>Tag specified without a value</Description>
+    </Value>
+
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>5</Enum>
+      <Description>Value is incorrect (out of range) for this tag</Description>
+    </Value>
+
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>6</Enum>
+      <Description>Incorrect data format for value</Description>
+    </Value>
+
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>9</Enum>
+      <Description>Comp ID problem</Description>
+    </Value>
+
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>10</Enum>
+      <Description>SendingTime accuracy problem</Description>
+    </Value>
+
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>11</Enum>
+      <Description>Invalid MsgType</Description>
+    </Value>
+
+    <!-- BusinessRejectReason (380), p.37 -->
+    <Value>
+      <Type>BusinessRejectReason</Type>
+      <Enum>0</Enum>
+      <Description>Other</Description>
+    </Value>
+
+    <Value>
+      <Type>BusinessRejectReason</Type>
+      <Enum>1</Enum>
+      <Description>Unknown ID</Description>
+    </Value>
+
+    <Value>
+      <Type>BusinessRejectReason</Type>
+      <Enum>2</Enum>
+      <Description>Unknown Security</Description>
+    </Value>
+
+    <Value>
+      <Type>BusinessRejectReason</Type>
+      <Enum>3</Enum>
+      <Description>Unsupported Message Type</Description>
+    </Value>
+
+    <Value>
+      <Type>BusinessRejectReason</Type>
+      <Enum>4</Enum>
+      <Description>System not available</Description>
+    </Value>
+
+    <Value>
+      <Type>BusinessRejectReason</Type>
+      <Enum>5</Enum>
+      <Description>Required or conditional tag missing</Description>
+    </Value>
+
+    <!-- SenderSubID (50), p.11. Sent by MIAX Pearl Equities to the Firm. -->
+    <Value>
+      <Type>SenderSubID</Type>
+      <Enum>TEST</Enum>
+      <Description>MIAX Pearl Equities TEST Env.</Description>
+    </Value>
+
+    <Value>
+      <Type>SenderSubID</Type>
+      <Enum>PROD</Enum>
+      <Description>MIAX Pearl Equities PROD Env.</Description>
+    </Value>
+
+    <!-- TargetSubID (57), p.11. Sent by the Firm to MIAX Pearl Equities. -->
+    <Value>
+      <Type>TargetSubID</Type>
+      <Enum>TEST</Enum>
+      <Description>MIAX Pearl Equities TEST Env.</Description>
+    </Value>
+
+    <Value>
+      <Type>TargetSubID</Type>
+      <Enum>PROD</Enum>
+      <Description>MIAX Pearl Equities PROD Env.</Description>
+    </Value>
+
+    <!-- PossResend (97), pp.11-12. From Firm: N or Y. From MIAX Pearl Equities: Y during certain failure/recovery scenarios. -->
+    <Value>
+      <Type>PossResend</Type>
+      <Enum>N</Enum>
+      <Description>New message (Default)</Description>
+    </Value>
+
+    <Value>
+      <Type>PossResend</Type>
+      <Enum>Y</Enum>
+      <Description>Application level resend (not supported from the Firm: logged but effectively ignored)</Description>
+    </Value>
+
+    <!-- ExecBroker (76), p.20 -->
+    <Value>
+      <Type>ExecBroker</Type>
+      <Enum>PO</Enum>
+      <Description>Post Only</Description>
+    </Value>
+
+    <!-- LocateReqd (114), pp.21 and 27 -->
+    <Value>
+      <Type>LocateReqd</Type>
+      <Enum>N</Enum>
+      <Description>Client affirms ability to borrow or Member is relying on an exception to the Regulation SHO locate requirement (Default)</Description>
+    </Value>
+
+    <Value>
+      <Type>LocateReqd</Type>
+      <Enum>Y</Enum>
+      <Description>Client does not affirm ability to borrow (results in a reject)</Description>
+    </Value>
+
+    <!-- PriceSlidingAndRepriceFrequency (7947), p.23 -->
+    <Value>
+      <Type>PriceSlidingAndRepriceFrequency</Type>
+      <Enum>D</Enum>
+      <Description>Display Price Sliding, Re-price Once (Default for displayed orders)</Description>
+    </Value>
+
+    <Value>
+      <Type>PriceSlidingAndRepriceFrequency</Type>
+      <Enum>C</Enum>
+      <Description>Display Price Sliding, Re-price Once, but Cancel if Crossed at Entry</Description>
+    </Value>
+
+    <Value>
+      <Type>PriceSlidingAndRepriceFrequency</Type>
+      <Enum>M</Enum>
+      <Description>Display Price Sliding, Reprice Multiple Times</Description>
+    </Value>
+
+    <Value>
+      <Type>PriceSlidingAndRepriceFrequency</Type>
+      <Enum>N</Enum>
+      <Description>No Price Sliding</Description>
+    </Value>
+
+    <!-- MinQtyExecType (9110), p.23 -->
+    <Value>
+      <Type>MinQtyExecType</Type>
+      <Enum>1</Enum>
+      <Description>Only single contra order can fulfill MinQty requirement (Default when MinQty is specified)</Description>
+    </Value>
+
+    <Value>
+      <Type>MinQtyExecType</Type>
+      <Enum>2</Enum>
+      <Description>Multiple contra orders can fulfill MinQty requirement</Description>
+    </Value>
+
+    <!-- RoutingInst (9303), p.23 -->
+    <Value>
+      <Type>RoutingInst</Type>
+      <Enum>O</Enum>
+      <Description>Route Once</Description>
+    </Value>
+
+    <Value>
+      <Type>RoutingInst</Type>
+      <Enum>R</Enum>
+      <Description>Re-routable</Description>
+    </Value>
+
+    <Value>
+      <Type>RoutingInst</Type>
+      <Enum>N</Enum>
+      <Description>Do Not Route</Description>
+    </Value>
+
+    <!-- RoutingStrategy (9400), p.23 -->
+    <Value>
+      <Type>RoutingStrategy</Type>
+      <Enum>P</Enum>
+      <Description>Order Protection (Default)</Description>
+    </Value>
+
+    <Value>
+      <Type>RoutingStrategy</Type>
+      <Enum>PAC</Enum>
+      <Description>Primary Auction</Description>
+    </Value>
+
+    <!-- DisplayIndicator (9479), p.23 -->
+    <Value>
+      <Type>DisplayIndicator</Type>
+      <Enum>Y</Enum>
+      <Description>Displayed (Default for Limit and Market orders)</Description>
+    </Value>
+
+    <Value>
+      <Type>DisplayIndicator</Type>
+      <Enum>N</Enum>
+      <Description>Non-Displayed (Default for Midpoint Peg and Primary Peg orders)</Description>
+    </Value>
+
+    <!-- RetailOrderIndicator (9481), p.23 -->
+    <Value>
+      <Type>RetailOrderIndicator</Type>
+      <Enum>Y</Enum>
+      <Description>Retail Order</Description>
+    </Value>
+
+    <Value>
+      <Type>RetailOrderIndicator</Type>
+      <Enum>N</Enum>
+      <Description>Non Retail Order (Default)</Description>
+    </Value>
+
+    <!-- AttributableIndicator (9482), p.24. When the tag is not present, the session setting is used. -->
+    <Value>
+      <Type>AttributableIndicator</Type>
+      <Enum>N</Enum>
+      <Description>Do not attribute</Description>
+    </Value>
+
+    <Value>
+      <Type>AttributableIndicator</Type>
+      <Enum>Y</Enum>
+      <Description>Attributed to Firm MPID</Description>
+    </Value>
+
+    <Value>
+      <Type>AttributableIndicator</Type>
+      <Enum>R</Enum>
+      <Description>Attributed to RTAL</Description>
+    </Value>
+
+    <!-- CancelOrderIfNotNBBOSetter (9483), p.24 -->
+    <Value>
+      <Type>CancelOrderIfNotNBBOSetter</Type>
+      <Enum>Y</Enum>
+      <Description>If not NBBO Setter, order will be cancelled back</Description>
+    </Value>
+
+    <Value>
+      <Type>CancelOrderIfNotNBBOSetter</Type>
+      <Enum>N</Enum>
+      <Description>If not NBBO Setter, order will not be cancelled back (Default)</Description>
+    </Value>
+
+    <!-- CancelOrderIfNotNBBOSetterWithSize (9485), p.24 -->
+    <Value>
+      <Type>CancelOrderIfNotNBBOSetterWithSize</Type>
+      <Enum>Y</Enum>
+      <Description>If not NBBO Setter with Size, order will be cancelled back</Description>
+    </Value>
+
+    <Value>
+      <Type>CancelOrderIfNotNBBOSetterWithSize</Type>
+      <Enum>N</Enum>
+      <Description>If not NBBO Setter with Size, order will not be cancelled back (Default)</Description>
+    </Value>
+
+    <!-- NBBOIndicator (9484), p.34. Only present when ExecRestatementReason (378) = 3. -->
+    <Value>
+      <Type>NBBOIndicator</Type>
+      <Enum>Y</Enum>
+      <Description>NBBO Setter</Description>
+    </Value>
+
+    <Value>
+      <Type>NBBOIndicator</Type>
+      <Enum>F</Enum>
+      <Description>NBBO First Joiner</Description>
+    </Value>
+
+    <Value>
+      <Type>NBBOIndicator</Type>
+      <Enum>S</Enum>
+      <Description>NBBO Setter with Size</Description>
+    </Value>
+
+    <Value>
+      <Type>NBBOIndicator</Type>
+      <Enum>J</Enum>
+      <Description>NBBO First Joiner with Size</Description>
+    </Value>
+
+    <Value>
+      <Type>NBBOIndicator</Type>
+      <Enum>N</Enum>
+      <Description>None of the above values are applicable</Description>
     </Value>
 
   </Values>

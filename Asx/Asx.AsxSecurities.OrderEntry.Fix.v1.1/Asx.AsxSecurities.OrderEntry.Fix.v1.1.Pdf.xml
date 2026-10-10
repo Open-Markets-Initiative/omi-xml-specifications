@@ -493,7 +493,7 @@
         </Field>
         <Group>
           <Name>NoLegs</Name>
-          <Required>N</Required>
+          <Required>Y</Required>
         </Group>
       </Fields>
     </Message>
@@ -573,7 +573,7 @@
         </Field>
         <Group>
           <Name>NoPartyIDs</Name>
-          <Required>N</Required>
+          <Required>Y</Required>
         </Group>
         <Field>
           <Tag>1</Tag>
@@ -1107,7 +1107,7 @@
           <Description>Method used to display the order quantity.</Description>
         </Field>
         <Group>
-          <Name>NoLegs</Name>
+          <Name>NoLegsExecution</Name>
           <Required>N</Required>
         </Group>
       </Fields>
@@ -1122,7 +1122,7 @@
       <Fields>
         <Group>
           <Name>NoPartyIDs</Name>
-          <Required>N</Required>
+          <Required>Y</Required>
         </Group>
         <Field>
           <Tag>41</Tag>
@@ -1308,7 +1308,7 @@
         </Field>
         <Group>
           <Name>NoPartyIDs</Name>
-          <Required>N</Required>
+          <Required>Y</Required>
         </Group>
         <Field>
           <Tag>55</Tag>
@@ -1532,7 +1532,7 @@
         </Group>
         <Group>
           <Name>NoRelatedSym</Name>
-          <Required>N</Required>
+          <Required>Y</Required>
         </Group>
         <Field>
           <Tag>58</Tag>
@@ -1642,6 +1642,10 @@
           <Type>LocalMktDate</Type>
           <Description>Trade date. Format: YYYYMMDD.</Description>
         </Field>
+        <Group>
+          <Name>NoLegsTradeCapture</Name>
+          <Required>N</Required>
+        </Group>
         <Group>
           <Name>NoSides</Name>
           <Required>Y</Required>
@@ -1856,7 +1860,7 @@
         </Field>
         <Group>
           <Name>NoPartyIDs</Name>
-          <Required>N</Required>
+          <Required>Y</Required>
         </Group>
         <Group>
           <Name>NoTargetPartyIDs</Name>
@@ -2137,6 +2141,7 @@
     </Group>
 
     <!-- NoLegs (555) -->
+    <!-- Changed: was shared by Security Definition Request and Execution Report with only 600/624; now Security Definition Request only (PDF Table 12 p.26). Added 602/603/623; 624 N->Y; Reqd C encoded N -->
     <Group>
       <Name>NoLegs</Name>
       <AnchorTag>555</AnchorTag>
@@ -2149,11 +2154,144 @@
           <Description>Symbol of the individual leg. Used to delimit the repeating group.</Description>
         </Field>
         <Field>
+          <Tag>602</Tag>
+          <Name>LegSecurityID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Orderbook ID of the leg. Not required if LegSymbol (600) is set; mandatory if LegSymbol is [N/A].</Description>
+        </Field>
+        <Field>
+          <Tag>603</Tag>
+          <Name>LegSecurityIDSource</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Source of the LegSecurityID. Valid values: M = Marketplace-assigned identifier. Not required if LegSymbol (600) is set; mandatory if LegSymbol is [N/A].</Description>
+        </Field>
+        <Field>
+          <Tag>623</Tag>
+          <Name>LegRatioQty</Name>
+          <Required>Y</Required>
+          <Type>float</Type>
+          <Description>Leg ratio quantity.</Description>
+        </Field>
+        <Field>
+          <Tag>624</Tag>
+          <Name>LegSide</Name>
+          <Required>Y</Required>
+          <Type>char</Type>
+          <Description>Side of the individual leg.</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+    <!-- NoLegsExecution (555) -->
+    <!-- Changed: Execution Report variant of NoLegs (PDF Table 15 p.46); only populated for executions of combinations; Reqd C encoded N, except 600 kept Y as the group delimiter -->
+    <Group>
+      <Name>NoLegsExecution</Name>
+      <AnchorTag>555</AnchorTag>
+      <Underlying>NoLegs</Underlying>
+      <Fields>
+        <Field>
+          <Tag>600</Tag>
+          <Name>LegSymbol</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Symbol of the leg instrument. Used to delimit the repeating group.</Description>
+        </Field>
+        <Field>
+          <Tag>602</Tag>
+          <Name>LegSecurityID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Orderbook ID of the leg instrument.</Description>
+        </Field>
+        <Field>
+          <Tag>603</Tag>
+          <Name>LegSecurityIDSource</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Source of the LegSecurityID. Valid values: M = Marketplace-assigned identifier.</Description>
+        </Field>
+        <Field>
+          <Tag>24128</Tag>
+          <Name>LegAliasName</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Alias name of the leg instrument.</Description>
+          <!-- REVIEW: LegAliasName ASX-specific tag 24128 -->
+        </Field>
+        <Field>
+          <Tag>637</Tag>
+          <Name>LegLastPx</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Price of the leg execution.</Description>
+        </Field>
+        <Field>
+          <Tag>1418</Tag>
+          <Name>LegLastQty</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Quantity of the leg execution.</Description>
+        </Field>
+        <Field>
           <Tag>624</Tag>
           <Name>LegSide</Name>
           <Required>N</Required>
           <Type>char</Type>
+          <Description>Side of the individual leg in the view of the buyer of the multileg security.</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+    <!-- NoLegsTradeCapture (555) -->
+    <!-- Changed: Trade Capture Report variant of NoLegs (PDF Table 23 pp.90-91, 2-sided multileg); Reqd C encoded N -->
+    <Group>
+      <Name>NoLegsTradeCapture</Name>
+      <AnchorTag>555</AnchorTag>
+      <Underlying>NoLegs</Underlying>
+      <Fields>
+        <Field>
+          <Tag>600</Tag>
+          <Name>LegSymbol</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Symbol of the leg. Symbol or SecurityID is required (Symbol takes precedence); [N/A] if not used. Used to delimit the repeating group.</Description>
+        </Field>
+        <Field>
+          <Tag>602</Tag>
+          <Name>LegSecurityID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Orderbook ID of the leg.</Description>
+        </Field>
+        <Field>
+          <Tag>603</Tag>
+          <Name>LegSecurityIDSource</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Source of the LegSecurityID. Valid values: M = Marketplace-assigned identifier.</Description>
+        </Field>
+        <Field>
+          <Tag>624</Tag>
+          <Name>LegSide</Name>
+          <Required>Y</Required>
+          <Type>char</Type>
           <Description>Side of the individual leg.</Description>
+        </Field>
+        <Field>
+          <Tag>637</Tag>
+          <Name>LegLastPx</Name>
+          <Required>Y</Required>
+          <Type>Price</Type>
+          <Description>Leg trade price.</Description>
+        </Field>
+        <Field>
+          <Tag>1418</Tag>
+          <Name>LegLastQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>Leg trade quantity.</Description>
         </Field>
       </Fields>
     </Group>
