@@ -1,5 +1,13 @@
 <OmiNysePillarPdf>
 
+  <!-- Nyse MultiMarkets ControlMessages Refresh Pillar Version 2.3 -->
+
+  <!--
+  Nyse multi-market control messages carried on the refresh channels, transcribed from the
+  NYSE Multiple Markets Common Client Specification v2.3 (October 23, 2025), which covers the
+  NYSE Best Quote and Trades and NYSE Pillar Depth data feeds.
+  -->
+
   <Messages>
 
     <!-- Sequence Number Reset Message -->
@@ -39,42 +47,6 @@
           <Type>Binary</Type>
           <Size>1</Size>
           <Description>The ID of the multicast channel over which the packet was sent.</Description>
-        </Field>
-      </Fields>
-    </Message>
-
-    <!-- Source Time Reference Message -->
-    <Message>
-      <Name>Source Time Reference Message</Name>
-      <Category>Control</Category>
-      <Origin>Exchange</Origin>
-      <Branch>payload</Branch>
-      <Dependency>messagetype</Dependency>
-      <Code>2</Code>
-      <Description>For high-volume feeds, this message is sent at the start of every second during periods of active
-        data publication. The client can concatenate the SourceTime field with the SourceTimeNS field in subsequent
-        market data messages to get full 8-byte Matching Engine event timestamps.
-      </Description>
-      <Fields>
-        <Field>
-          <Name>ID</Name>
-          <Type>Binary</Type>
-          <Size>4</Size>
-          <Description>ID of the originating Matching Engine partition to which this message applies.</Description>
-        </Field>
-        <Field>
-          <Name>SymbolSeqNum</Name>
-          <Type>Binary</Type>
-          <Size>4</Size>
-          <Description>Reserved for future use. Ignore any content.</Description>
-        </Field>
-        <Field>
-          <Name>SourceTime</Name>
-          <Type>Binary</Type>
-          <Size>4</Size>
-          <Description>The time when this msg was generated in the order book, in seconds since Jan 1, 1970 00:00:00
-            UTC.
-          </Description>
         </Field>
       </Fields>
     </Message>
@@ -188,59 +160,10 @@
           </Description>
         </Field>
         <Field>
-          <Name>Late Close Eligible</Name>
+          <Name>Reserved 2</Name>
           <Type>Binary</Type>
-          <Size>1</Size>
-          <Description>The Outright series for the underlying symbol is eligible for a later Core session close.</Description>
-        </Field>
-        <Field>
-          <Name>ETH Eligible</Name>
-          <Type>Binary</Type>
-          <Size>1</Size>
-          <Description>The Outright series for the underlying symbol is eligible for Extended Trading Sessions.</Description>
-        </Field>
-      </Fields>
-    </Message>
-
-    <!-- Symbol Clear Message -->
-    <Message>
-      <Name>Symbol Clear Message</Name>
-      <Category>Control</Category>
-      <Origin>Exchange</Origin>
-      <Branch>payload</Branch>
-      <Dependency>messagetype</Dependency>
-      <Code>32</Code>
-      <Description>In case of a failure and recovery of a Matching Engine or an Pillar Publisher, the publisher may send
-        a full state refresh for every symbol affected. This unrequested refresh is preceded by a Symbol Clear message.
-        The client should react to receipt of a Symbol Clear message by clearing all state information for the specified
-        symbol in anticipation of receiving a full state refresh.
-      </Description>
-      <Fields>
-        <Field>
-          <Name>SourceTime</Name>
-          <Type>Binary</Type>
-          <Size>4</Size>
-          <Description>The time when this msg was generated in the order book, in seconds since Jan 1, 1970 00:00:00
-            UTC.
-          </Description>
-        </Field>
-        <Field>
-          <Name>SourceTimeNS</Name>
-          <Type>Binary</Type>
-          <Size>4</Size>
-          <Description>The nanosecond offset from the SourceTime.</Description>
-        </Field>
-        <Field>
-          <Name>SymbolIndex</Name>
-          <Type>Binary</Type>
-          <Size>4</Size>
-          <Description>The unique ID of the symbol in the Symbol Index msg.</Description>
-        </Field>
-        <Field>
-          <Name>NextSourceSeqNum</Name>
-          <Type>Binary</Type>
-          <Size>4</Size>
-          <Description>The sequence number in the next message for this symbol.</Description>
+          <Size>2</Size>
+          <Description>Reserved for future use. Disregard any content.</Description>
         </Field>
       </Fields>
     </Message>
@@ -297,9 +220,15 @@
           <Description>The halt or other condition associated with the security status change.</Description>
         </Field>
         <Field>
+          <Name>Market ID</Name>
+          <Type>Binary</Type>
+          <Size>2</Size>
+          <Description>ID of the Originating Market.</Description>
+        </Field>
+        <Field>
           <Name>Reserved</Name>
           <Type>Binary</Type>
-          <Size>4</Size>
+          <Size>2</Size>
           <Description>Future use. Any field content should be ignored.</Description>
         </Field>
         <Field>
@@ -367,39 +296,53 @@
       </Fields>
     </Message>
 
+    <!-- Refresh Header Message -->
+    <Message>
+      <Name>Refresh Header Message</Name>
+      <Type>Response</Type>
+      <Category>Control</Category>
+      <Origin>Exchange</Origin>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>35</Code>
+      <Description>The first message in each packet of refresh messages published over the Refresh multicast channels is
+        of this type.
+      </Description>
+      <Fields>
+        <Field>
+          <Name>CurrentRefreshPkt</Name>
+          <Type>Binary</Type>
+          <Size>2</Size>
+          <Description>The current refresh packet in the update.</Description>
+        </Field>
+        <Field>
+          <Name>TotalRefreshPkts</Name>
+          <Type>Binary</Type>
+          <Size>2</Size>
+          <Description>The total number of refresh packets you should expect in the update.</Description>
+        </Field>
+        <Field>
+          <Name>LastSeqNum</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>The last sequence number sent on the channel for any symbol. The refresh is the state of the
+            order book as of this sequence number.
+          </Description>
+        </Field>
+        <Field>
+          <Name>LastSymbolSeqNum</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>The last symbol sequence number sent for this symbol. The refresh is the symbol state of this
+            symbol as of this symbol sequence number.
+          </Description>
+        </Field>
+      </Fields>
+    </Message>
+
   </Messages>
 
   <Enums>
-
-    <!-- Late Close Eligible -->
-    <Enum>
-      <Name>Late Close Eligible</Name>
-      <Values>
-        <Value>
-          <Data>0</Data>
-          <Name>Not eligible</Name>
-        </Value>
-        <Value>
-          <Data>1</Data>
-          <Name>Eligible</Name>
-        </Value>
-      </Values>
-    </Enum>
-
-    <!-- ETH Eligible -->
-    <Enum>
-      <Name>ETH Eligible</Name>
-      <Values>
-        <Value>
-          <Data>0</Data>
-          <Name>Not eligible</Name>
-        </Value>
-        <Value>
-          <Data>1</Data>
-          <Name>Eligible</Name>
-        </Value>
-      </Values>
-    </Enum>
 
     <!-- Market ID -->
     <Enum>
@@ -407,23 +350,40 @@
       <Values>
         <Value>
           <Data>1</Data>
-          <Name>NYSE Equities</Name>
+          <Name>NYSE</Name>
+          <Description>NYSE Equities</Description>
         </Value>
         <Value>
           <Data>3</Data>
-          <Name>NYSE Arca Equities</Name>
+          <Name>NYSE Arca</Name>
+          <Description>NYSE Arca Equities</Description>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>NYSE Arca Options</Name>
+        </Value>
+        <Value>
+          <Data>5</Data>
+          <Name>NYSE Bonds</Name>
+        </Value>
+        <Value>
+          <Data>8</Data>
+          <Name>NYSE American Options</Name>
         </Value>
         <Value>
           <Data>9</Data>
-          <Name>NYSE American Equities</Name>
+          <Name>NYSE American</Name>
+          <Description>NYSE American Equities</Description>
         </Value>
         <Value>
           <Data>10</Data>
-          <Name>NYSE National Equities</Name>
+          <Name>NYSE National</Name>
+          <Description>NYSE National Equities</Description>
         </Value>
         <Value>
           <Data>11</Data>
-          <Name>NYSE Texas Equities</Name>
+          <Name>NYSE Texas</Name>
+          <Description>NYSE Texas Equities</Description>
         </Value>
       </Values>
     </Enum>
@@ -432,10 +392,6 @@
     <Enum>
       <Name>Exchange Code</Name>
       <Values>
-        <Value>
-          <Data>F</Data>
-          <Name>TXSE</Name>
-        </Value>
         <Value>
           <Data>A</Data>
           <Name>NYSE American</Name>
@@ -571,7 +527,7 @@
         </Value>
         <Value>
           <Data>6</Data>
-          <Name>Suspend/Operational Halt</Name>
+          <Name>Suspend</Name>
         </Value>
         <Value>
           <Data>A</Data>
@@ -650,7 +606,7 @@
         </Value>
         <Value>
           <Data>A</Data>
-          <Name>SIP Outage, Material SIP Latency, or Extraordinary Market Activity</Name>
+          <Name>Additional Information Requested</Name>
         </Value>
         <Value>
           <Data>C</Data>
@@ -662,7 +618,7 @@
         </Value>
         <Value>
           <Data>F</Data>
-          <Name>ETF IIV / ETF Component Prices Not Available</Name>
+          <Name>ETF Component Prices Not Available</Name>
         </Value>
         <Value>
           <Data>N</Data>
@@ -674,11 +630,11 @@
         </Value>
         <Value>
           <Data>V</Data>
-          <Name>Primary Listing Exchange Discretionary Halt</Name>
+          <Name>Intraday Indicative Value Not Available</Name>
         </Value>
         <Value>
           <Data>6</Data>
-          <Name>Suspend/Operational Halt</Name>
+          <Name>Suspend</Name>
         </Value>
         <Value>
           <Data>1</Data>
@@ -705,7 +661,7 @@
         </Value>
         <Value>
           <Data>B</Data>
-          <Name>NASDAQ OMS TX</Name>
+          <Name>NASDAQ OMX BX</Name>
         </Value>
         <Value>
           <Data>C</Data>
@@ -721,7 +677,7 @@
         </Value>
         <Value>
           <Data>H</Data>
-          <Name>Miami Peral</Name>
+          <Name>Miami Pearl</Name>
         </Value>
         <Value>
           <Data>I</Data>
@@ -869,6 +825,25 @@
         <Value>
           <Data>9</Data>
           <Name>Rejected due to: 1) Invalid MsgType, or 2) Mismatch between MsgType and MsgSize</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Price Resolution -->
+    <Enum>
+      <Name>Price Resolution</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>All Penny</Name>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Penny/Nickel</Name>
+        </Value>
+        <Value>
+          <Data>5</Data>
+          <Name>Nickel/Dime</Name>
         </Value>
       </Values>
     </Enum>

@@ -30,6 +30,8 @@
 | AmexEquities | IntegratedFeedRequest | Pillar | 2.5.h | [files](Nyse.AmexEquities.IntegratedFeedRequest.Pillar.v2.5.h/) |
 | AmexEquities | IntegratedFeedRetransmission | Pillar | 2.5.g | [files](Nyse.AmexEquities.IntegratedFeedRetransmission.Pillar.v2.5.g/) |
 | AmexEquities | IntegratedFeedRetransmission | Pillar | 2.5.h | [files](Nyse.AmexEquities.IntegratedFeedRetransmission.Pillar.v2.5.h/) |
+| AmexEquities | IntegratedFeedStockSummary | Pillar | 2.5.g | [files](Nyse.AmexEquities.IntegratedFeedStockSummary.Pillar.v2.5.g/) |
+| AmexEquities | IntegratedFeedStockSummary | Pillar | 2.5.h | [files](Nyse.AmexEquities.IntegratedFeedStockSummary.Pillar.v2.5.h/) |
 | AmexEquities | Ioi | Fix | 1.0 | [files](Nyse.AmexEquities.Ioi.Fix.v1.0/) |
 | AmexEquities | OpenBook | Ultra | 2.1.b | [files](Nyse.AmexEquities.OpenBook.Ultra.v2.1.b/) |
 | AmexEquities | OpenBook | Ultra | 2.1.k | [files](Nyse.AmexEquities.OpenBook.Ultra.v2.1.k/) |
@@ -76,6 +78,8 @@
 | ArcaEquities | IntegratedFeedRequest | Pillar | 2.5.h | [files](Nyse.ArcaEquities.IntegratedFeedRequest.Pillar.v2.5.h/) |
 | ArcaEquities | IntegratedFeedRetransmission | Pillar | 2.5.g | [files](Nyse.ArcaEquities.IntegratedFeedRetransmission.Pillar.v2.5.g/) |
 | ArcaEquities | IntegratedFeedRetransmission | Pillar | 2.5.h | [files](Nyse.ArcaEquities.IntegratedFeedRetransmission.Pillar.v2.5.h/) |
+| ArcaEquities | IntegratedFeedStockSummary | Pillar | 2.5.g | [files](Nyse.ArcaEquities.IntegratedFeedStockSummary.Pillar.v2.5.g/) |
+| ArcaEquities | IntegratedFeedStockSummary | Pillar | 2.5.h | [files](Nyse.ArcaEquities.IntegratedFeedStockSummary.Pillar.v2.5.h/) |
 | ArcaEquities | Ioi | Fix | 1.0 | [files](Nyse.ArcaEquities.Ioi.Fix.v1.0/) |
 | ArcaEquities | OrderEntry | Fix | 5.15 | [files](Nyse.ArcaEquities.OrderEntry.Fix.v5.15/) |
 | ArcaEquities | Trades | Pillar | 2.6 | [files](Nyse.ArcaEquities.Trades.Pillar.v2.6/) |
@@ -117,6 +121,8 @@
 | NationalEquities | IntegratedFeedRequest | Pillar | 2.5.h | [files](Nyse.NationalEquities.IntegratedFeedRequest.Pillar.v2.5.h/) |
 | NationalEquities | IntegratedFeedRetransmission | Pillar | 2.5.g | [files](Nyse.NationalEquities.IntegratedFeedRetransmission.Pillar.v2.5.g/) |
 | NationalEquities | IntegratedFeedRetransmission | Pillar | 2.5.h | [files](Nyse.NationalEquities.IntegratedFeedRetransmission.Pillar.v2.5.h/) |
+| NationalEquities | IntegratedFeedStockSummary | Pillar | 2.5.g | [files](Nyse.NationalEquities.IntegratedFeedStockSummary.Pillar.v2.5.g/) |
+| NationalEquities | IntegratedFeedStockSummary | Pillar | 2.5.h | [files](Nyse.NationalEquities.IntegratedFeedStockSummary.Pillar.v2.5.h/) |
 | NationalEquities | Ioi | Fix | 1.0 | [files](Nyse.NationalEquities.Ioi.Fix.v1.0/) |
 | NationalEquities | OrderEntry | Fix | 5.15 | [files](Nyse.NationalEquities.OrderEntry.Fix.v5.15/) |
 | NationalEquities | Trades | Pillar | 2.6 | [files](Nyse.NationalEquities.Trades.Pillar.v2.6/) |
@@ -163,6 +169,8 @@
 | NyseEquities | IntegratedFeedRequest | Pillar | 2.5.h | [files](Nyse.NyseEquities.IntegratedFeedRequest.Pillar.v2.5.h/) |
 | NyseEquities | IntegratedFeedRetransmission | Pillar | 2.5.g | [files](Nyse.NyseEquities.IntegratedFeedRetransmission.Pillar.v2.5.g/) |
 | NyseEquities | IntegratedFeedRetransmission | Pillar | 2.5.h | [files](Nyse.NyseEquities.IntegratedFeedRetransmission.Pillar.v2.5.h/) |
+| NyseEquities | IntegratedFeedStockSummary | Pillar | 2.5.g | [files](Nyse.NyseEquities.IntegratedFeedStockSummary.Pillar.v2.5.g/) |
+| NyseEquities | IntegratedFeedStockSummary | Pillar | 2.5.h | [files](Nyse.NyseEquities.IntegratedFeedStockSummary.Pillar.v2.5.h/) |
 | NyseEquities | Ioi | Fix | 1.0 | [files](Nyse.NyseEquities.Ioi.Fix.v1.0/) |
 | NyseEquities | OpenBook | Ultra | 2.1.b | [files](Nyse.NyseEquities.OpenBook.Ultra.v2.1.b/) |
 | NyseEquities | OpenBook | Ultra | 2.1.k | [files](Nyse.NyseEquities.OpenBook.Ultra.v2.1.k/) |
@@ -198,6 +206,8 @@
 | TexasEquities | IntegratedFeedRequest | Pillar | 2.5.h | [files](Nyse.TexasEquities.IntegratedFeedRequest.Pillar.v2.5.h/) |
 | TexasEquities | IntegratedFeedRetransmission | Pillar | 2.5.g | [files](Nyse.TexasEquities.IntegratedFeedRetransmission.Pillar.v2.5.g/) |
 | TexasEquities | IntegratedFeedRetransmission | Pillar | 2.5.h | [files](Nyse.TexasEquities.IntegratedFeedRetransmission.Pillar.v2.5.h/) |
+| TexasEquities | IntegratedFeedStockSummary | Pillar | 2.5.g | [files](Nyse.TexasEquities.IntegratedFeedStockSummary.Pillar.v2.5.g/) |
+| TexasEquities | IntegratedFeedStockSummary | Pillar | 2.5.h | [files](Nyse.TexasEquities.IntegratedFeedStockSummary.Pillar.v2.5.h/) |
 | TexasEquities | Ioi | Fix | 1.0 | [files](Nyse.TexasEquities.Ioi.Fix.v1.0/) |
 | TexasEquities | OrderEntry | Fix | 5.15 | [files](Nyse.TexasEquities.OrderEntry.Fix.v5.15/) |
 | TexasEquities | Trades | Pillar | 2.6 | [files](Nyse.TexasEquities.Trades.Pillar.v2.6/) |
