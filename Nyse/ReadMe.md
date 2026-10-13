@@ -46,8 +46,10 @@
 | AmexOptions | DeepFeed | Pillar | 1.2.l | [files](Nyse.AmexOptions.DeepFeed.Pillar.v1.2.l/) |
 | AmexOptions | DeepFeed | Pillar | 1.2.m | [files](Nyse.AmexOptions.DeepFeed.Pillar.v1.2.m/) |
 | AmexOptions | DeepFeed | Xdp | 1.3.a | [files](Nyse.AmexOptions.DeepFeed.Xdp.v1.3.a/) |
+| AmexOptions | DropCopy | Fix | 3.25 | [files](Nyse.AmexOptions.DropCopy.Fix.v3.25/) |
 | AmexOptions | FloorBroker | Fix | 2.6 | [files](Nyse.AmexOptions.FloorBroker.Fix.v2.6/) |
 | AmexOptions | OrderEntry | Fix | 3.24 | [files](Nyse.AmexOptions.OrderEntry.Fix.v3.24/) |
+| AmexOptions | OrderEntry | Fix | 3.25 | [files](Nyse.AmexOptions.OrderEntry.Fix.v3.25/) |
 | AmexOptions | TopFeed | Pillar | 1.2.j | [files](Nyse.AmexOptions.TopFeed.Pillar.v1.2.j/) |
 | AmexOptions | TopFeed | Pillar | 1.2.k | [files](Nyse.AmexOptions.TopFeed.Pillar.v1.2.k/) |
 | AmexOptions | TopFeed | Xdp | 1.3.a | [files](Nyse.AmexOptions.TopFeed.Xdp.v1.3.a/) |
@@ -93,8 +95,10 @@
 | ArcaOptions | DeepFeed | Pillar | 1.2.l | [files](Nyse.ArcaOptions.DeepFeed.Pillar.v1.2.l/) |
 | ArcaOptions | DeepFeed | Pillar | 1.2.m | [files](Nyse.ArcaOptions.DeepFeed.Pillar.v1.2.m/) |
 | ArcaOptions | DeepFeed | Xdp | 1.3.a | [files](Nyse.ArcaOptions.DeepFeed.Xdp.v1.3.a/) |
+| ArcaOptions | DropCopy | Fix | 3.25 | [files](Nyse.ArcaOptions.DropCopy.Fix.v3.25/) |
 | ArcaOptions | FloorBroker | Fix | 2.6 | [files](Nyse.ArcaOptions.FloorBroker.Fix.v2.6/) |
 | ArcaOptions | OrderEntry | Fix | 3.24 | [files](Nyse.ArcaOptions.OrderEntry.Fix.v3.24/) |
+| ArcaOptions | OrderEntry | Fix | 3.25 | [files](Nyse.ArcaOptions.OrderEntry.Fix.v3.25/) |
 | ArcaOptions | TopFeed | Pillar | 1.2.c | [files](Nyse.ArcaOptions.TopFeed.Pillar.v1.2.c/) |
 | ArcaOptions | TopFeed | Pillar | 1.2.j | [files](Nyse.ArcaOptions.TopFeed.Pillar.v1.2.j/) |
 | ArcaOptions | TopFeed | Pillar | 1.2.k | [files](Nyse.ArcaOptions.TopFeed.Pillar.v1.2.k/) |
