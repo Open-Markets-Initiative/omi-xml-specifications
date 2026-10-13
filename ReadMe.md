@@ -225,7 +225,7 @@ Enjoy.
 [Dfdl.Definitions.Repository]: https://github.com/Open-Markets-Initiative/omi-dfdl-definitions "Omi DFDL Definitions"
 [P4.Definitions.Repository]: https://github.com/Open-Markets-Initiative/omi-p4-definitions "Omi P4 Definitions"
 [Spicy.Definitions.Repository]: https://github.com/Open-Markets-Initiative/omi-spicy-definitions "Omi Spicy Definitions"
-[Lean.Definitions.Repository]: https://github.com/Open-Markets-Initiative/omi-lean-definitions "Omi Lean Definitions"
+[Lean.Definitions.Repository]: https://github.com/Open-Markets-Initiative/omi-lean4-definitions "Omi Lean Definitions"
 [Tla.Definitions.Repository]: https://github.com/Open-Markets-Initiative/omi-tlaplus-definitions "Omi TLA+ Definitions"
 [Fix.Dictionaries.Repository]: https://github.com/Open-Markets-Initiative/omi-fix-dictionaries "Omi FIX Dictionaries"
 [Wireshark.Lua.Dissectors]: https://github.com/Open-Markets-Initiative/omi-wireshark-lua "Omi Wireshark Lua Dissectors"
