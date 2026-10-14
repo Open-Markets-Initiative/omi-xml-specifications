@@ -2,21 +2,17 @@
 
 [![Omi](https://github.com/Open-Markets-Initiative/Open-Markets-Initiative/blob/main/About/Images/Logo.png)](https://github.com/Open-Markets-Initiative/Directory)
 
-Omi Xml Specifications are the exchange protocol specification xml files that carry the message layouts, enums and dispatch rules of each protocol version — the vendor schemas and message definitions, matching the original specification files. Every Omi generated output — dissectors, parsers, definitions — is compiled from these source specifications.
-
-## Development
-
-The specification xmls in this repository are published copies of the original protocol specifications — they are not generated. If you find an error in a specification, updates are welcome as pull requests.
-
-| Specification Files |
-| --- |
-| 1,583 |
+Omi Xml Specifications are exchange protocol specification xml files that carry the message layouts, enums and dispatch rules of each protocol version. Every Omi generated output — dissectors, parsers, definitions — is compiled from these source specifications.
 
 ## Testing
 
 [![Validate](https://github.com/Open-Markets-Initiative/omi-xml-specifications/actions/workflows/validate.yml/badge.svg)](https://github.com/Open-Markets-Initiative/omi-xml-specifications/actions/workflows/validate.yml)
 
 Every published specification is validated for well-formed xml on each change. Please report any malformed or incorrect specification as an [issue](https://github.com/Open-Markets-Initiative/omi-xml-specifications/issues "Omi Xml Specifications Issues").  Include a small note on the protocol and version, and a link or pdf specification documenting the correct behavior.
+
+| Specification Files |
+| --- |
+| 1,643 |
 
 ## Open Markets Initiative
 

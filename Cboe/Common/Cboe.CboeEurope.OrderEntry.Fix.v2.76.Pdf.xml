@@ -1,0 +1,1798 @@
+<OmiFixPdf>
+
+  <!-- CboeEurope OrderEntry FIX v2.76 -->
+  <!-- Source: BATS Europe Q3 FIX Specification (2022-01-21).pdf; cover: BATS Chi-X Europe FIX Specification, Version 2.76, 14 July, 2015 -->
+  <!-- The PDF prints Tag | Name | Description only: Required is not printed (written N); Type is not printed (curated transcription by tag, else FIX 4.2/4.4/5.0SP2 repository, else String). -->
+
+  <Header>
+    <Fields>
+      <Field>
+        <Tag>8</Tag>
+        <Name>BeginString</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+        <Description>FIX.4.2 or FIX.4.4 Must be the first field in the message. FIX 4.4 only available if the port is dedicated for trade reporting purposes.</Description>
+      </Field>
+      <Field>
+        <Tag>9</Tag>
+        <Name>BodyLength</Name>
+        <Required>N</Required>
+        <Type>Length</Type>
+        <Fixed>Y</Fixed>
+        <Description>Length of message following BodyLength field up to and including the delimiter preceding the CheckSum (10) field. Must be the second field in the message.</Description>
+      </Field>
+      <Field>
+        <Tag>35</Tag>
+        <Name>MsgType</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+        <Description>Must be the third field in the message.</Description>
+      </Field>
+      <Field>
+        <Tag>34</Tag>
+        <Name>MsgSeqNum</Name>
+        <Required>N</Required>
+        <Type>SeqNum</Type>
+        <Description>Sequential sequence number for the session.</Description>
+      </Field>
+      <Field>
+        <Tag>43</Tag>
+        <Name>PossDupFlag</Name>
+        <Required>N</Required>
+        <Type>Boolean</Type>
+        <Description>Indicates a message resent from the admin level (has a duplicate sequence number). Defaults to N.</Description>
+      </Field>
+      <Field>
+        <Tag>49</Tag>
+        <Name>SenderCompID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Description>ID of sender. Assigned by BATS for messages sent to BATS. (TargetCompID (56) for messages from BATS.)</Description>
+      </Field>
+      <Field>
+        <Tag>52</Tag>
+        <Name>SendingTime</Name>
+        <Required>N</Required>
+        <Type>UTCTimestamp</Type>
+        <Description>GMT date and time that message was sent. If enabled at the port or firm level, timestamps will be sent with microsecond resolution.</Description>
+      </Field>
+      <Field>
+        <Tag>56</Tag>
+        <Name>TargetCompID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Description>ID of destination. BATS for messages sent to BXE (BATS) ports. CHIX for messages sent to CXE (Chi-X) ports. (SenderCompID (49) for messages from BATS.)</Description>
+      </Field>
+      <Field>
+        <Tag>57</Tag>
+        <Name>TargetSubID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Description>Sub ID of destination. TEST for messages sent to the BATS test system. PROD for messages sent to the BATS production system. (SenderSubID (50) for messages from BATS.)</Description>
+      </Field>
+      <Field>
+        <Tag>97</Tag>
+        <Name>PossResend</Name>
+        <Required>N</Required>
+        <Type>Boolean</Type>
+        <Description>Possible resend flag. BATS has special handling for the PossResend for New Order Single messages. See New Order — Single below.</Description>
+      </Field>
+      <Field>
+        <Tag>115</Tag>
+        <Name>OnBehalfOfCompID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Description>Service bureau use. Identifies end-client on messages to BATS. Must be identifier known to BATS. May be used by non-service bureau to specify which clearing arrangement to use if multiple are configured.</Description>
+      </Field>
+      <Field>
+        <Tag>116</Tag>
+        <Name>OnBehalfOfSubID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Description>End-client sub identifier. Four characters, alphanumeric, otherwise not validated. Recorded and returned in DeliverToSubID (129). Available via Drop.</Description>
+      </Field>
+      <Field>
+        <Tag>122</Tag>
+        <Name>OrigSendingTime</Name>
+        <Required>N</Required>
+        <Type>UTCTimestamp</Type>
+        <Description>For messages with PossDupFlag (43) = Y, indicates time that message was first sent. If enabled at the port or firm level, timestamps will be sent with microsecond resolution.</Description>
+      </Field>
+      <Field>
+        <Tag>128</Tag>
+        <Name>DeliverToCompID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Description>Service bureau use. Identifies end-client on message from BATS. Must be BATS approved identifier.</Description>
+      </Field>
+      <Field>
+        <Tag>129</Tag>
+        <Name>DeliverToSubID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Description>Returns OnBehalfOfSubID (116) optionally sent by client.</Description>
+      </Field>
+    </Fields>
+  </Header>
+
+  <Trailer>
+    <Fields>
+      <Field>
+        <Tag>10</Tag>
+        <Name>CheckSum</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+        <Description>Modulo 256 checksum of all characters in the message up to and including the delimiter preceding the CheckSum field. Three digits with leading zeroes if necessary.</Description>
+      </Field>
+    </Fields>
+  </Trailer>
+
+  <Messages>
+
+    <!-- New Order — Single (D), p16 -->
+    <Message>
+      <Name>New Order — Single</Name>
+      <MsgType>D</MsgType>
+      <Category>app</Category>
+      <Origin>Client</Origin>
+      <Fields>
+        <Field>
+          <Tag>1</Tag>
+          <Name>Account</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Optional. Returned on execution reports associated with this order. 16 characters or less (ASCII 33–126). H: and C: prefix can be used to specify which CCP Account to use. If configured by BATS: House or Client CCP account can be de- faulted, regardless of OrderCapacity (47). Also the value supplied can be passed to the CCP and made available on the Drop feed.</Description>
+        </Field>
+        <Field>
+          <Tag>11</Tag>
+          <Name>ClOrdID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Day-unique ID chosen by client. 20 characters or less. Characters in ASCII range 33–126 are allowed, except for comma, semicolon, and pipe. If the ClOrdID matches a live order, it will be rejected as duplicate (unless PossResend (97) = Y; see above). Note: BATS only enforces the uniqueness of ClOrdID values among currently live orders. However, we strongly recommend that you keep your ClOrdID values day unique.</Description>
+        </Field>
+        <Field>
+          <Tag>15</Tag>
+          <Name>Currency</Name>
+          <Required>N</Required>
+          <Type>Currency</Type>
+          <Description>Required if IDSource (22) = 4 (ISIN). If Currency (15) is included when other symbology is used, it must match the currency expected by BATS for the given symbol.</Description>
+        </Field>
+        <Field>
+          <Tag>18</Tag>
+          <Name>ExecInst</Name>
+          <Required>N</Required>
+          <Type>MultipleValueString</Type>
+          <Description>Single value only (with no trailing space). P = Market Peg (peg buy to PBBO offer, peg sell to PBBO bid) R = Primary Peg (peg buy to PBBO bid, peg sell to PBBO offer) M = Midpoint (peg to PBBO midpoint) L = Alternate Midpoint (less aggressive of midpoint and 1 tick inside PBBO) for Periodic Auction Orders:11 M = Midpoint (peg to BATS EBBO midpoint) G = Guarded Midpoint (peg to BATS EBBO midpoint but suspend order if primary market quote becomes one-sided or disappears) for Smart Order Routing: u = BATS + External Dark Only v = BATS + External Dark + Lit (default for routable orders) w = BATS + External Lit Only NOTE: Values L and G differ in meaning from standard FIX 4.2. All other values are ignored. Midpoint pegged orders (M and L) are implicitly hidden (DisplayIndicator (9479) = I).</Description>
+        </Field>
+        <Field>
+          <Tag>22</Tag>
+          <Name>IDSource</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Values supported by BATS: 4 = ISIN 5 = RIC Required if Symbol (55) is not set.</Description>
+        </Field>
+        <Field>
+          <Tag>38</Tag>
+          <Name>OrderQty</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Number of shares for the order. System-wide limit is 99,999,999 shares.</Description>
+        </Field>
+        <Field>
+          <Tag>40</Tag>
+          <Name>OrdType</Name>
+          <Required>N</Required>
+          <Type>char</Type>
+          <Description>1 = Market 2 = Limit P = Pegged During continuous trading Market (1) implies TimeInForce (59) = 3 (IOC). Pegged requires ExecInst (18) = L, M, P, or R. Pegged orders may not be routable.</Description>
+        </Field>
+        <Field>
+          <Tag>44</Tag>
+          <Name>Price</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Limit price.</Description>
+        </Field>
+        <Field>
+          <Tag>47</Tag>
+          <Name>OrderCapacity</Name>
+          <Required>N</Required>
+          <Type>char</Type>
+          <Description>A = Agency P = Principal (default) R = Riskless</Description>
+        </Field>
+        <Field>
+          <Tag>48</Tag>
+          <Name>SecurityID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>ISIN, or RIC if IDSource (22) is set.</Description>
+        </Field>
+        <Field>
+          <Tag>54</Tag>
+          <Name>Side</Name>
+          <Required>N</Required>
+          <Type>char</Type>
+          <Description>1 = Buy 2 = Sell</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Security symbol. See Symbology (p. 4) for additional notes.</Description>
+        </Field>
+        <Field>
+          <Tag>59</Tag>
+          <Name>TimeInForce</Name>
+          <Required>N</Required>
+          <Type>char</Type>
+          <Description>0 = Day 1 = GTC (allowed, but treated as Day) 2 = AtTheOpen 3 = IOC 6 = GTD (expires at earlier of specified ExpireTime (126) or end of day) 7 = AtTheClose 8 = Good For Auction (only valid if RoutingInst (9303) = BP)</Description>
+        </Field>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>N</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Time order initiated/released. Required by FIX 4.2 but not used by BATS.</Description>
+        </Field>
+        <Field>
+          <Tag>110</Tag>
+          <Name>MinQty</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Optional minimum12 fill quantity for BATS Only hidden, BATS Dark Pool or IOC orders. Ignored if order is not BATS Only hidden, BATS Dark Pool, or IOC. Default is zero.</Description>
+        </Field>
+        <Field>
+          <Tag>111</Tag>
+          <Name>MaxFloor</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Portion of OrderQty (38) to display. The balance is reserve. 0 displays entire quantity (default). The displayed quantity of each order at a price level is decremented first. When displayed quantity is fully decremented, it is reloaded up to MaxFloor from reserve. May opt-in at the firm or port level to receive a restatement execution report on each reserve reload, allowing a Participant to know the new OrderID as represented on BATS’ market data feeds.</Description>
+        </Field>
+        <Field>
+          <Tag>126</Tag>
+          <Name>ExpireTime</Name>
+          <Required>N</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Required for TimeInForce (59) = 6 (GTD) orders, specifies the date and time (in GMT) that the order expires.</Description>
+        </Field>
+        <Field>
+          <Tag>207</Tag>
+          <Name>SecurityExchange</Name>
+          <Required>N</Required>
+          <Type>Exchange</Type>
+          <Description>Required when IDSource (22) = 4 (ISIN).</Description>
+        </Field>
+        <Field>
+          <Tag>211</Tag>
+          <Name>PegDifference</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Optional signed value up to four decimal places13 is added to the result of peg calculation. Default is 0. Must be ≥ 0 for sell orders. Must be ≤ 0 for buy orders. Must be zero (or not specified) for midpoint peg or non-pegged orders.</Description>
+        </Field>
+        <Field>
+          <Tag>439</Tag>
+          <Name>ClearingFirm</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Firm that will clear trade. Optional. Note: shares storage with OnBe- halfOfCompID (115). If both fields are set, they must be equal.</Description>
+        </Field>
+        <Field>
+          <Tag>440</Tag>
+          <Name>ClearingAccount</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Supplemental identifier. Optional. Recorded and returned in execution reports. Available via Drop. Note: shares storage with OnBehalfOf- SubID (116). If both fields are set, then OnBehalfOfSubID (116) takes precedence for Service Bureau connections and ClearingAccount takes precedence for other connections.</Description>
+        </Field>
+        <Field>
+          <Tag>7928</Tag>
+          <Name>PreventParticipantMatch</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Participant Trade Prevention: 3 characters (not space separated): 1st character - PTP Modifier: N = Cancel Newest O = Cancel Oldest B = Cancel Both D = Decrement Larger14 / Cancel Smaller d = Same as D above, but only decrement LeavesQty (151). Do not restate OrderQty (38). 2nd character - Unique ID Level: F = Prevent Match at Participant Level M = Prevent Match at Trading Firm Level P = Prevent Match at Port Owner Level 3rd character - Trading Group ID (optional): Member specified alphanumeric value 0-9, A-Z, or a-z. The Unique ID level (character 2) of both orders must match to prevent a trade. If specified on both orders, Trading Group ID (character 3) must match to prevent a trade. The PTP Modifier (character 1) of the inbound order will be honored, except that if the inbound order specified Decrement and the resting order does not, and the resting order is larger, then both orders will be canceled. This exception is to protect the order entry software for the resting order from receiving an unexpected restatement message.</Description>
+        </Field>
+        <Field>
+          <Tag>9303</Tag>
+          <Name>RoutingInst</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>BATS Only orders – up-to 2 characters (not space separated): B = BATS Only (default) P = BATS Only — Post Only (will reject rather than remove visible liquidity) Q = BATS Only — Post Only At Limit (remove shares that improve upon limit price and up to MaxRemovePct (9618) of remaining OrderQty (38) at limit price) U = Dark Sweep (interbook) u = Dark Lit Sweep (best-price) W = Lit Sweep (interbook, best-price) X = Lit Sweep (interbook, sequential) BD = BATS Dark Book Only (hidden midpoint peg orders only) BA = BATS Automatic Dark Routed (routes to BATS Integrated Book if order is Large In Scale (LIS) or is not a midpoint order, otherwise routes midpoint non-LIS orders to BATS Dark Book) BP = BATS Periodic Auction Book Post Only does not mix with TimeInForce (59) = 3 (IOC). If a RoutingInst is not specified a default value of B is implied (BATS Only). continued... Order Routing – up-to 4 characters (not space separated): 1st character - Specifies the target destination: R = Smart Route to visible markets (see 3rd character) L = BATS+ DRTOnly 15 Y = BATS+ Primary Listing Exchange 16 2nd character - Used to enable/disable Re-Route On Lock/Cross: N = Do not Re-Route (default) C = Re-Route only if another market crosses the limit L = Re-Route only if another market locks or crosses the limit 3rd character - Specifies the routing strategy: N = Use default strategy (default) D = Parallel-D 2 = Parallel-2D 4th character - Specifies the resting book: I = Rest on BATS Integrated Book (default) D = Rest on BATS Dark Book Resting Book does not mix with TimeInForce (59) = 3 (IOC). In order to specify values for the 2nd , 3rd and/or 4th character the prior characters MUST be populated with a valid value. ASCII NULs (0x00) in the 2nd , 3rd or 4th character positions will imply the default value from their respective position. For example, if RoutingInst (9303) = R a value of RNNI is implied (All visible markets/No re-route/Default strategy/Rest on integrated book). BATS Plus Primary and DRTOnly directed order types do not allow re- routing or strategy selection. The 2nd and 3rd characters should always be set to their default value of N if the optional 4th character is used to rest on the dark book e.g. LNND. If the 1st character is R (Smart Routing) the ExecInst (18) can be used to provide limited control over external venue selection. 17 Re-route is not currently supported for dark resting orders (4th = D). As the default RoutingInst value is subject to change with little or no notice it is recommended you specify values for all 4 character positions if you wish to maintain maximum control of your routing decisions. For more information regarding the various routing strategies available on BATS refer to http://www.batstrading.co.uk/features/</Description>
+        </Field>
+        <Field>
+          <Tag>9479</Tag>
+          <Name>DisplayIndicator</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>X = Displayed Order (default) I = Invisible Invisible orders must meet the MiFID CESR requirements for Large in Scale (LIS) unless routed to the BATS Dark Book.</Description>
+        </Field>
+        <Field>
+          <Tag>9618</Tag>
+          <Name>MaxRemovePct</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>For Post Only At Limit (RoutingInst (9303) = Q), what percentage of the order quantity which remains after price improvement may be removed at the limit price.</Description>
+        </Field>
+        <Field>
+          <Tag>9688</Tag>
+          <Name>OrigCompID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Drop only. TargetCompID (56) of original FIX execution report. Drop port must be configured to send this optional field.</Description>
+        </Field>
+        <Field>
+          <Tag>9689</Tag>
+          <Name>OrigSubID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Drop only. TargetSubID (57) of original FIX execution report. Drop port must be configured to send this optional field.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Order Cancel Request (F), p21 -->
+    <Message>
+      <Name>Order Cancel Request</Name>
+      <MsgType>F</MsgType>
+      <Category>app</Category>
+      <Origin>Client</Origin>
+      <Fields>
+        <Field>
+          <Tag>1</Tag>
+          <Name>Account</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Optional. Reflected back on Pending Cancel Execution Report or Cancel Reject associated with this cancel. 16 characters of less (ASCII 33–126). Configurably available via Drop.</Description>
+        </Field>
+        <Field>
+          <Tag>11</Tag>
+          <Name>ClOrdID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Day-unique cancel ID chosen by client. 20 characters or less. Characters in ASCII range 33–126 are allowed, except for commma, semicolon, and pipe. Duplicate ClOrdIDs will be rejected (or ignored if PossResend (97) = Y.</Description>
+        </Field>
+        <Field>
+          <Tag>15</Tag>
+          <Name>Currency</Name>
+          <Required>N</Required>
+          <Type>Currency</Type>
+          <Description>Required if IDSource (22) = 4 (ISIN). If Currency (15) is included when other symbology is used, it must match the currency expected by BATS for the given symbol.</Description>
+        </Field>
+        <Field>
+          <Tag>22</Tag>
+          <Name>IDSource</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Values supported by BATS: 4 = ISIN 5 = RIC Required if Symbol (55) is not set.</Description>
+        </Field>
+        <Field>
+          <Tag>37</Tag>
+          <Name>OrderID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Order identifier supplied by BATS on the order acknowledgement. (Op- tional, but recommended for performance.)</Description>
+        </Field>
+        <Field>
+          <Tag>38</Tag>
+          <Name>OrderQty</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Number of shares for the order. Must match original order.</Description>
+        </Field>
+        <Field>
+          <Tag>41</Tag>
+          <Name>OrigClOrdID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>ClOrdID of the order to cancel.</Description>
+        </Field>
+        <Field>
+          <Tag>48</Tag>
+          <Name>SecurityID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>ISIN, or RIC if IDSource (22) is set.</Description>
+        </Field>
+        <Field>
+          <Tag>54</Tag>
+          <Name>Side</Name>
+          <Required>N</Required>
+          <Type>char</Type>
+          <Description>1 = Buy 2 = Sell</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Security symbol. See Symbology (p. 4) for additional notes.</Description>
+        </Field>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>N</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Time cancel initiated/released. Required by FIX 4.2 but not used by BATS.</Description>
+        </Field>
+        <Field>
+          <Tag>207</Tag>
+          <Name>SecurityExchange</Name>
+          <Required>N</Required>
+          <Type>Exchange</Type>
+          <Description>Required when IDSource (22) = 4 (ISIN).</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Order Cancel/Replace Request (G), p22 -->
+    <Message>
+      <Name>Order Cancel/Replace Request</Name>
+      <MsgType>G</MsgType>
+      <Category>app</Category>
+      <Origin>Client</Origin>
+      <Fields>
+        <Field>
+          <Tag>1</Tag>
+          <Name>Account</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Optional. Returned on execution reports associated with this order. 16 characters or less (ASCII 33–126). H: and C: prefix can be used to specify which CCP Account to use. If configured by BATS: House or Client CCP account can be de- faulted, regardless of OrderCapacity (47). Also the value supplied can be passed to the CCP and made available on the Drop feed.</Description>
+        </Field>
+        <Field>
+          <Tag>11</Tag>
+          <Name>ClOrdID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Day-unique ID chosen by client. 20 characters or less. Characters in ASCII range 33–126 are allowed, except for comma, semicolon, and pipe. If the ClOrdID matches a live order, it will be rejected as duplicate (unless PossResend (97) = Y; see above). Note: BATS only enforces the uniqueness of ClOrdID values among currently live orders. However, we strongly recommend that you keep your ClOrdID values day unique.</Description>
+        </Field>
+        <Field>
+          <Tag>15</Tag>
+          <Name>Currency</Name>
+          <Required>N</Required>
+          <Type>Currency</Type>
+          <Description>Required if IDSource (22) = 4 (ISIN). If Currency (15) is included when other symbology is used, it must match the currency expected by BATS for the given symbol.</Description>
+        </Field>
+        <Field>
+          <Tag>22</Tag>
+          <Name>IDSource</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Values supported by BATS: 4 = ISIN 5 = RIC Required if Symbol (55) is not set.</Description>
+        </Field>
+        <Field>
+          <Tag>37</Tag>
+          <Name>OrderID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Order identifier supplied by BATS on the order acknowledgement. In the case of multiple changes to a single order, this should be the OrderID from the most recent acknowledgement.</Description>
+        </Field>
+        <Field>
+          <Tag>38</Tag>
+          <Name>OrderQty</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Number of shares for the order. This will modify the OrderQty of the current order, it does not directly set the remaining quantity.</Description>
+        </Field>
+        <Field>
+          <Tag>40</Tag>
+          <Name>OrdType</Name>
+          <Required>N</Required>
+          <Type>char</Type>
+          <Description>1 = Market 2 = Limit P = Pegged During continuous trading Market (1) implies TimeInForce (59) = 3 (IOC). Pegged requires ExecInst (18) = L, M, P, or R. Pegged orders may not be routable.</Description>
+        </Field>
+        <Field>
+          <Tag>41</Tag>
+          <Name>OrigClOrdID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>ClOrdID of the order to replace. In the case of multiple changes to a single order, this will be the ClOrdID of the most recently accepted change.</Description>
+        </Field>
+        <Field>
+          <Tag>44</Tag>
+          <Name>Price</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Limit price.</Description>
+        </Field>
+        <Field>
+          <Tag>48</Tag>
+          <Name>SecurityID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>ISIN, or RIC if IDSource (22) is set.</Description>
+        </Field>
+        <Field>
+          <Tag>54</Tag>
+          <Name>Side</Name>
+          <Required>N</Required>
+          <Type>char</Type>
+          <Description>1 = Buy 2 = Sell</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Security symbol. See Symbology (p. 4) for additional notes.</Description>
+        </Field>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>N</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Time cancel/replace initiated/released. Required by FIX 4.2 but not used by BATS.</Description>
+        </Field>
+        <Field>
+          <Tag>207</Tag>
+          <Name>SecurityExchange</Name>
+          <Required>N</Required>
+          <Type>Exchange</Type>
+          <Description>Required when IDSource (22) = 4 (ISIN).</Description>
+        </Field>
+        <Field>
+          <Tag>9619</Tag>
+          <Name>CancelOrigOnReject</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>N = Leave original order alone (default) Y = Cancel original order if replacement fails Default may be configured per port.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Execution Report (8), p29 -->
+    <Message>
+      <Name>Execution Report</Name>
+      <MsgType>8</MsgType>
+      <Category>app</Category>
+      <Origin>Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>1</Tag>
+          <Name>Account</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Copied from order, if present. (Available on Drop via optional port configuration)</Description>
+        </Field>
+        <Field>
+          <Tag>6</Tag>
+          <Name>AvgPx</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Average fill price.</Description>
+        </Field>
+        <Field>
+          <Tag>11</Tag>
+          <Name>ClOrdID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>ClOrdID of the order being accepted, executed, or rejected. –or– ClOrdID of the cancel or replace request. –or– ClOrdID of the order subject to unsolicited cancel (OrigClOrdID (41) will not be present).</Description>
+        </Field>
+        <Field>
+          <Tag>14</Tag>
+          <Name>CumQty</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Cumulative quantity of shares executed for this order.</Description>
+        </Field>
+        <Field>
+          <Tag>15</Tag>
+          <Name>Currency</Name>
+          <Required>N</Required>
+          <Type>Currency</Type>
+          <Description>Copied from order, if present.</Description>
+        </Field>
+        <Field>
+          <Tag>17</Tag>
+          <Name>ExecID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Day-unique ID of execution message.</Description>
+        </Field>
+        <Field>
+          <Tag>18</Tag>
+          <Name>ExecInst</Name>
+          <Required>N</Required>
+          <Type>MultipleValueString</Type>
+          <Description>Copied from order, if present.</Description>
+        </Field>
+        <Field>
+          <Tag>20</Tag>
+          <Name>ExecTransType</Name>
+          <Required>N</Required>
+          <Type>char</Type>
+          <Description>0 = New</Description>
+        </Field>
+        <Field>
+          <Tag>22</Tag>
+          <Name>IDSource</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Copied from order, if present.</Description>
+        </Field>
+        <Field>
+          <Tag>30</Tag>
+          <Name>LastMkt</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Segment MIC of this fill, if the port is configured to send this tag.</Description>
+        </Field>
+        <Field>
+          <Tag>31</Tag>
+          <Name>LastPx</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Price of this fill (zero for non-fills).</Description>
+        </Field>
+        <Field>
+          <Tag>32</Tag>
+          <Name>LastShares</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Quantity of shares traded on this fill (zero for non-fills).</Description>
+        </Field>
+        <Field>
+          <Tag>37</Tag>
+          <Name>OrderID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Order identifier supplied by BATS.</Description>
+        </Field>
+        <Field>
+          <Tag>38</Tag>
+          <Name>OrderQty</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Copied from order.</Description>
+        </Field>
+        <Field>
+          <Tag>39</Tag>
+          <Name>OrdStatus</Name>
+          <Required>N</Required>
+          <Type>char</Type>
+          <Description>State of order. 0 = New 1 = Partially Filled 2 = Filled 4 = Canceled 5 = Replaced 6 = Pending Cancel 8 = Rejected A = Pending Ack E = Pending Replace</Description>
+        </Field>
+        <Field>
+          <Tag>41</Tag>
+          <Name>OrigClOrdID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>ClOrdID of the order being canceled or replaced (for a solicited cancel or cancel/replace, otherwise not present).</Description>
+        </Field>
+        <Field>
+          <Tag>44</Tag>
+          <Name>Price</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Copied from order.</Description>
+        </Field>
+        <Field>
+          <Tag>48</Tag>
+          <Name>SecurityID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Copied from order, if present.</Description>
+        </Field>
+        <Field>
+          <Tag>54</Tag>
+          <Name>Side</Name>
+          <Required>N</Required>
+          <Type>char</Type>
+          <Description>Copied from order.</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Copied from order, if present.</Description>
+        </Field>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>If present, indicates reason for the message. Format is one letter reason code followed by colon and space followed by free form text message. Reason codes are: A = Admin D = Duplicate ClOrdID H = Halted K = Order Rate Threshold Exceeded L = Price Exceeds Cross Range N = Ran Out of Liquidity to Execute Against O = ClOrdID Doesn’t Match a Known Order P = Can’t Modify an Order That is Pending Fill Q = Waiting For First Trade R = Routing Unavailable T = Routing order would trade through an away destination U = User Requested V = Would Wash W = Add Liquidity Only Order Would Remove X = Order Expired Y = Symbol Not Supported Z = Unforseen Reason l = Large in Scale r = Reserve Reload m = Market Access Risk Limit Exceeded o = Max Open Orders Count Exceeded p = Static Collar Breach s = Symbol Level Risk Management</Description>
+        </Field>
+        <Field>
+          <Tag>59</Tag>
+          <Name>TimeInForce</Name>
+          <Required>N</Required>
+          <Type>char</Type>
+          <Description>Copied from order.</Description>
+        </Field>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>N</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Time transaction occurred. If enabled at the port or firm level, times- tamps will be sent with microsecond resolution.</Description>
+        </Field>
+        <Field>
+          <Tag>63</Tag>
+          <Name>SettlType</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Drop only. Only relevant if ExecType (150) = F and the original trade report utilised a non-standard settlement date. In this case, the relevant date will also be included in SettlDate (64).</Description>
+        </Field>
+        <Field>
+          <Tag>64</Tag>
+          <Name>SettlDate</Name>
+          <Required>N</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Drop only. Only relevant if ExecType (150) = F and the original trade report utilised SettlType (63)̸ = 0, in which case, the relevant date will be included in SettlDate (64); or, if the original trade report specified a SettlDate (64).</Description>
+        </Field>
+        <Field>
+          <Tag>103</Tag>
+          <Name>OrdRejReason</Name>
+          <Required>N</Required>
+          <Type>int</Type>
+          <Description>Optionally set when ExecType (150) = 8 (Rejected). 0 = Broker Option 1 = Unknown Symbol 2 = Exchange Closed 3 = Order Exceeds Limit 5 = Unknown Order 6 = Duplicate Order 8 = Stale Order</Description>
+        </Field>
+        <Field>
+          <Tag>111</Tag>
+          <Name>MaxFloor</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Copied from order.</Description>
+        </Field>
+        <Field>
+          <Tag>126</Tag>
+          <Name>ExpireTime</Name>
+          <Required>N</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Copied from order if TimeInForce (59) = 6 (GTD).</Description>
+        </Field>
+        <Field>
+          <Tag>150</Tag>
+          <Name>ExecType</Name>
+          <Required>N</Required>
+          <Type>char</Type>
+          <Description>Reason for this execution report. 0 = New (acknowledgement of new order) 1 = Partial Fill 2 = Fill 4 = Canceled 5 = Replaced 8 = Rejected D = Restated For Drop only, if optionally configured, the following value is also sup- ported: F = Trade</Description>
+        </Field>
+        <Field>
+          <Tag>151</Tag>
+          <Name>LeavesQty</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Quantity of shares still open for further execution. Will be zero if order is dead, otherwise will be OrderQty − CumQty. Note: It is possible for LeavesQty to be zero when ExecType (150) = 5 indicating that the order is dead.</Description>
+        </Field>
+        <Field>
+          <Tag>198</Tag>
+          <Name>SecondaryOrderID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Must request opt-in at firm or port level to receive this field. Present on Prevent Participant Match triggered cancel/restatement. De- notes the BATS OrderID (37) of contra side of prevented match. Present on a restatement execution report for reload of a reserve (ice- berg) order. Denotes the new BATS OrderID which will be present on BATS’ market data feeds.</Description>
+        </Field>
+        <Field>
+          <Tag>207</Tag>
+          <Name>SecurityExchange</Name>
+          <Required>N</Required>
+          <Type>Exchange</Type>
+          <Description>Copied from order, if present.</Description>
+        </Field>
+        <Field>
+          <Tag>375</Tag>
+          <Name>ContraBroker</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Only present on trades. Indicates the market of execution. A value of LP identifies an execution from an external liquidity provider, all other markets are identified by their ISO Market Identification Code (MIC)1819</Description>
+        </Field>
+        <Field>
+          <Tag>378</Tag>
+          <Name>ExecRestatementReason</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Required when ExecType (150) = D (Restated). 4 = Broker option; optionally sent during reload of a reserve (iceberg) order 5 = Partial decline of OrderQty</Description>
+        </Field>
+        <Field>
+          <Tag>382</Tag>
+          <Name>NoContraBrokers</Name>
+          <Required>N</Required>
+          <Type>NumInGroup</Type>
+          <Description>Only present on trades. Always 1.</Description>
+        </Field>
+        <Field>
+          <Tag>439</Tag>
+          <Name>ClearingFirm</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Copied from order, if present.</Description>
+        </Field>
+        <Field>
+          <Tag>440</Tag>
+          <Name>ClearingAccount</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Copied from order, if present.</Description>
+        </Field>
+        <Field>
+          <Tag>730</Tag>
+          <Name>SettlPrice</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Drop only. Only relevant if ExecType (150) = F and the original trade report utilised SettlPrice (730). This represents the price at which the trade will settle at.</Description>
+        </Field>
+        <Field>
+          <Tag>7772</Tag>
+          <Name>CentralCounterparty</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Only present on trades. The CCP handling the trade: EMCF = European Multilateral Clearing Facility LCHL = LCH.Clearnet XCLR = SIX x-clear ECCP = EuroCCP NONE = Clearing Suppressed for self match. Returned on trades if the participant has selected a Preferred CCP. The FIX port can be configured to always return this optional field.</Description>
+        </Field>
+        <Field>
+          <Tag>9621</Tag>
+          <Name>MTFAccessFee</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Only present on trades. Indication of access fee for this fill (up to five decimal places, negative for rebates).</Description>
+        </Field>
+        <Field>
+          <Tag>9730</Tag>
+          <Name>TradeLiquidityIndicator</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Only present on trades. A = Added Liquidity R = Removed Liquidity AD = Added Liquidity for the BATS Dark Pool RD = Removed Liquidity from the BATS Dark Pool RT = Removed Liquidity from the BATS Dark Pool by IOC order AI = Added Hidden Liquidity that was price improved AK = Added Liquidity from the hidden (reserve) portion of an iceberg order X = Routed to Another Market C = Auction P = Periodic Auction To allow for future expansion of this field, please ignore values with an unknown character in the 2nd position.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Cancel Reject (9), p33 -->
+    <Message>
+      <Name>Cancel Reject</Name>
+      <MsgType>9</MsgType>
+      <Category>app</Category>
+      <Origin>Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>1</Tag>
+          <Name>Account</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Copied from Cancel or Cancel/Replace request.</Description>
+        </Field>
+        <Field>
+          <Tag>11</Tag>
+          <Name>ClOrdID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>ClOrdID from the Cancel or Cancel/Replace request.</Description>
+        </Field>
+        <Field>
+          <Tag>37</Tag>
+          <Name>OrderID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>OrderID of the order that failed to be canceled or replaced. NONE if CxlRejReason (102) = 1 (Unknown Order).</Description>
+        </Field>
+        <Field>
+          <Tag>39</Tag>
+          <Name>OrdStatus</Name>
+          <Required>N</Required>
+          <Type>char</Type>
+          <Description>State of order that failed to be canceled or replaced.</Description>
+        </Field>
+        <Field>
+          <Tag>41</Tag>
+          <Name>OrigClOrdID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>ClOrdID of the order that failed to be canceled or replaced.</Description>
+        </Field>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Free-form text message.</Description>
+        </Field>
+        <Field>
+          <Tag>102</Tag>
+          <Name>CxlRejReason</Name>
+          <Required>N</Required>
+          <Type>int</Type>
+          <Description>0 = Too Late to Cancel 1 = Unknown Order 3 = Already Pending Cancel or Pending Replace</Description>
+        </Field>
+        <Field>
+          <Tag>434</Tag>
+          <Name>CxlRejResponseTo</Name>
+          <Required>N</Required>
+          <Type>char</Type>
+          <Description>1 = Cancel 2 = Cancel/Replace</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Trade Cancel/Correct (UCC), p34 -->
+    <Message>
+      <Name>Trade Cancel/Correct</Name>
+      <MsgType>UCC</MsgType>
+      <Category>app</Category>
+      <Origin>Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>11</Tag>
+          <Name>ClOrdID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>ClOrdID of the order whose trade is being canceled or corrected.</Description>
+        </Field>
+        <Field>
+          <Tag>15</Tag>
+          <Name>Currency</Name>
+          <Required>N</Required>
+          <Type>Currency</Type>
+          <Description>Copied from order if IDSource (22) = 4 (ISIN).</Description>
+        </Field>
+        <Field>
+          <Tag>17</Tag>
+          <Name>ExecID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Day-unique ID of execution message.</Description>
+        </Field>
+        <Field>
+          <Tag>19</Tag>
+          <Name>ExecRefID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Refers to the ExecID (17) of the execution being canceled or corrected.</Description>
+        </Field>
+        <Field>
+          <Tag>20</Tag>
+          <Name>ExecTransType</Name>
+          <Required>N</Required>
+          <Type>char</Type>
+          <Description>1 = Cancel 2 = Correct</Description>
+        </Field>
+        <Field>
+          <Tag>22</Tag>
+          <Name>IDSource</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Copied from order being canceled or corrected, if present.</Description>
+        </Field>
+        <Field>
+          <Tag>30</Tag>
+          <Name>LastMkt</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>LastMkt on the original trade being canceled or corrected, if the port is configured to send this tag.</Description>
+        </Field>
+        <Field>
+          <Tag>31</Tag>
+          <Name>LastPx</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Price on the original trade being canceled or corrected.</Description>
+        </Field>
+        <Field>
+          <Tag>32</Tag>
+          <Name>LastShares</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Quantity of shares on the original trade being canceled or corrected.</Description>
+        </Field>
+        <Field>
+          <Tag>37</Tag>
+          <Name>OrderID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>OrderID of the order whose trade is being canceled or corrected.</Description>
+        </Field>
+        <Field>
+          <Tag>42</Tag>
+          <Name>OrigTime</Name>
+          <Required>N</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Date and time of the original trade, in GMT.</Description>
+        </Field>
+        <Field>
+          <Tag>48</Tag>
+          <Name>SecurityID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Copied from original order being canceled or corrected if IDSource (22) = 4 (ISIN), or 5 (RIC) was used.</Description>
+        </Field>
+        <Field>
+          <Tag>54</Tag>
+          <Name>Side</Name>
+          <Required>N</Required>
+          <Type>char</Type>
+          <Description>Copied from trade being canceled or corrected.</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Copied from original order being canceled or corrected.</Description>
+        </Field>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>N</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Date and time of the cancel or correction. If enabled at the port or firm level, timestamps will be sent with microsecond resolution.</Description>
+        </Field>
+        <Field>
+          <Tag>63</Tag>
+          <Name>SettlType</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Drop only. SettlType on the original trade being canceled or corrected, if relevant.</Description>
+        </Field>
+        <Field>
+          <Tag>64</Tag>
+          <Name>SettlDate</Name>
+          <Required>N</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Drop only. SettlDate on the original trade being canceled or corrected, if relevant.</Description>
+        </Field>
+        <Field>
+          <Tag>207</Tag>
+          <Name>SecurityExchange</Name>
+          <Required>N</Required>
+          <Type>Exchange</Type>
+          <Description>Copied from order being canceled or corrected if IDSource (22) = 4 (ISIN) was used.</Description>
+        </Field>
+        <Field>
+          <Tag>439</Tag>
+          <Name>ClearingFirm</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Copied from trade being canceled or corrected, if present.</Description>
+        </Field>
+        <Field>
+          <Tag>440</Tag>
+          <Name>ClearingAccount</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Copied from trade being canceled or corrected, if present.</Description>
+        </Field>
+        <Field>
+          <Tag>730</Tag>
+          <Name>SettlPrice</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Drop only. SettlPrice on the original trade being canceled or corrected, if relevant.</Description>
+        </Field>
+        <Field>
+          <Tag>6655</Tag>
+          <Name>CorrectedSize</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>The corrected size of the trade. Only set if ExecTransType (20) = 2 (Trade Correct).</Description>
+        </Field>
+        <Field>
+          <Tag>9620</Tag>
+          <Name>CorrectedPrice</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>The corrected price of the trade. Only set if ExecTransType (20) = 2 (Trade Correct).</Description>
+        </Field>
+        <Field>
+          <Tag>9730</Tag>
+          <Name>TradeLiquidityIndicator</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Copied from trade being canceled or corrected.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+  </Messages>
+
+  <Values>
+
+    <!-- BeginString -->
+    <Value>
+      <Type>BeginString</Type>
+      <Enum>FIX.4.2</Enum>
+      <Kind>Static</Kind>
+      <Description>FIX 4.2</Description>
+    </Value>
+    <Value>
+      <Type>BeginString</Type>
+      <Enum>FIX.4.4</Enum>
+      <Kind>Static</Kind>
+      <Description>FIX 4.4</Description>
+    </Value>
+
+    <!-- PossResend -->
+    <Value>
+      <Type>PossResend</Type>
+      <Enum>N</Enum>
+      <Description>indicates a new order (default)</Description>
+    </Value>
+    <Value>
+      <Type>PossResend</Type>
+      <Enum>Y</Enum>
+      <Description>indicates an application level resend and is not supported</Description>
+    </Value>
+
+    <!-- ExecInst -->
+    <Value>
+      <Type>ExecInst</Type>
+      <Enum>P</Enum>
+      <Description>Market Peg (peg buy to PBBO offer, peg sell to PBBO bid)</Description>
+    </Value>
+    <Value>
+      <Type>ExecInst</Type>
+      <Enum>R</Enum>
+      <Description>Primary Peg (peg buy to PBBO bid, peg sell to PBBO offer)</Description>
+    </Value>
+    <Value>
+      <Type>ExecInst</Type>
+      <Enum>M</Enum>
+      <Description>Midpoint (peg to PBBO midpoint)</Description>
+    </Value>
+    <Value>
+      <Type>ExecInst</Type>
+      <Enum>L</Enum>
+      <Description>Alternate Midpoint (less aggressive of midpoint and 1 tick inside PBBO)</Description>
+    </Value>
+    <Value>
+      <Type>ExecInst</Type>
+      <Enum>G</Enum>
+      <Description>Guarded Midpoint (peg to BATS EBBO midpoint but suspend order if primary market quote becomes one-sided or disappears)</Description>
+    </Value>
+    <Value>
+      <Type>ExecInst</Type>
+      <Enum>u</Enum>
+      <Description>BATS + External Dark Only</Description>
+    </Value>
+    <Value>
+      <Type>ExecInst</Type>
+      <Enum>v</Enum>
+      <Description>BATS + External Dark + Lit (default for routable orders)</Description>
+    </Value>
+    <Value>
+      <Type>ExecInst</Type>
+      <Enum>w</Enum>
+      <Description>BATS + External Lit Only</Description>
+    </Value>
+
+    <!-- IDSource -->
+    <Value>
+      <Type>IDSource</Type>
+      <Enum>4</Enum>
+      <Description>ISIN</Description>
+    </Value>
+    <Value>
+      <Type>IDSource</Type>
+      <Enum>5</Enum>
+      <Description>RIC</Description>
+    </Value>
+
+    <!-- OrdType -->
+    <Value>
+      <Type>OrdType</Type>
+      <Enum>1</Enum>
+      <Description>Market</Description>
+    </Value>
+    <Value>
+      <Type>OrdType</Type>
+      <Enum>2</Enum>
+      <Description>Limit</Description>
+    </Value>
+    <Value>
+      <Type>OrdType</Type>
+      <Enum>P</Enum>
+      <Description>Pegged</Description>
+    </Value>
+
+    <!-- OrderCapacity -->
+    <Value>
+      <Type>OrderCapacity</Type>
+      <Enum>A</Enum>
+      <Description>Agency</Description>
+    </Value>
+    <Value>
+      <Type>OrderCapacity</Type>
+      <Enum>P</Enum>
+      <Description>Principal (default)</Description>
+    </Value>
+    <Value>
+      <Type>OrderCapacity</Type>
+      <Enum>R</Enum>
+      <Description>Riskless</Description>
+    </Value>
+
+    <!-- Side -->
+    <Value>
+      <Type>Side</Type>
+      <Enum>1</Enum>
+      <Description>Buy</Description>
+    </Value>
+    <Value>
+      <Type>Side</Type>
+      <Enum>2</Enum>
+      <Description>Sell</Description>
+    </Value>
+
+    <!-- TimeInForce -->
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>0</Enum>
+      <Description>Day</Description>
+    </Value>
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>1</Enum>
+      <Description>GTC (allowed, but treated as Day)</Description>
+    </Value>
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>2</Enum>
+      <Description>AtTheOpen</Description>
+    </Value>
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>3</Enum>
+      <Description>IOC</Description>
+    </Value>
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>6</Enum>
+      <Description>GTD (expires at earlier of specified ExpireTime (126) or end of day)</Description>
+    </Value>
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>7</Enum>
+      <Description>AtTheClose</Description>
+    </Value>
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>8</Enum>
+      <Description>Good For Auction (only valid if RoutingInst (9303) = BP)</Description>
+    </Value>
+
+    <!-- PreventParticipantMatch -->
+    <Value>
+      <Type>PreventParticipantMatch</Type>
+      <Enum>N</Enum>
+      <Description>Cancel Newest</Description>
+    </Value>
+    <Value>
+      <Type>PreventParticipantMatch</Type>
+      <Enum>O</Enum>
+      <Description>Cancel Oldest</Description>
+    </Value>
+    <Value>
+      <Type>PreventParticipantMatch</Type>
+      <Enum>B</Enum>
+      <Description>Cancel Both</Description>
+    </Value>
+    <Value>
+      <Type>PreventParticipantMatch</Type>
+      <Enum>D</Enum>
+      <Description>Decrement Larger14 / Cancel Smaller</Description>
+    </Value>
+    <Value>
+      <Type>PreventParticipantMatch</Type>
+      <Enum>d</Enum>
+      <Description>Same as D above, but only decrement LeavesQty (151). Do not restate OrderQty (38).</Description>
+    </Value>
+    <Value>
+      <Type>PreventParticipantMatch</Type>
+      <Enum>F</Enum>
+      <Description>Prevent Match at Participant Level</Description>
+    </Value>
+    <Value>
+      <Type>PreventParticipantMatch</Type>
+      <Enum>M</Enum>
+      <Description>Prevent Match at Trading Firm Level</Description>
+    </Value>
+    <Value>
+      <Type>PreventParticipantMatch</Type>
+      <Enum>P</Enum>
+      <Description>Prevent Match at Port Owner Level</Description>
+    </Value>
+
+    <!-- RoutingInst -->
+    <Value>
+      <Type>RoutingInst</Type>
+      <Enum>B</Enum>
+      <Description>BATS Only (default)</Description>
+    </Value>
+    <Value>
+      <Type>RoutingInst</Type>
+      <Enum>P</Enum>
+      <Description>BATS Only — Post Only (will reject rather than remove visible liquidity)</Description>
+    </Value>
+    <Value>
+      <Type>RoutingInst</Type>
+      <Enum>Q</Enum>
+      <Description>BATS Only — Post Only At Limit (remove shares that improve upon limit price and up to MaxRemovePct (9618) of remaining OrderQty (38) at limit price)</Description>
+    </Value>
+    <Value>
+      <Type>RoutingInst</Type>
+      <Enum>U</Enum>
+      <Description>Dark Sweep (interbook)</Description>
+    </Value>
+    <Value>
+      <Type>RoutingInst</Type>
+      <Enum>u</Enum>
+      <Description>Dark Lit Sweep (best-price)</Description>
+    </Value>
+    <Value>
+      <Type>RoutingInst</Type>
+      <Enum>W</Enum>
+      <Description>Lit Sweep (interbook, best-price)</Description>
+    </Value>
+    <Value>
+      <Type>RoutingInst</Type>
+      <Enum>X</Enum>
+      <Description>Lit Sweep (interbook, sequential)</Description>
+    </Value>
+    <Value>
+      <Type>RoutingInst</Type>
+      <Enum>BD</Enum>
+      <Description>BATS Dark Book Only (hidden midpoint peg orders only)</Description>
+    </Value>
+    <Value>
+      <Type>RoutingInst</Type>
+      <Enum>BA</Enum>
+      <Description>BATS Automatic Dark Routed (routes to BATS Integrated Book if order is Large In Scale (LIS) or is not a midpoint order, otherwise routes midpoint non-LIS orders to BATS Dark Book)</Description>
+    </Value>
+    <Value>
+      <Type>RoutingInst</Type>
+      <Enum>BP</Enum>
+      <Description>BATS Periodic Auction Book</Description>
+    </Value>
+    <Value>
+      <Type>RoutingInst</Type>
+      <Enum>R</Enum>
+      <Description>Smart Route to visible markets (see 3rd character)</Description>
+    </Value>
+    <Value>
+      <Type>RoutingInst</Type>
+      <Enum>L</Enum>
+      <Description>BATS+ DRTOnly 15</Description>
+    </Value>
+    <Value>
+      <Type>RoutingInst</Type>
+      <Enum>Y</Enum>
+      <Description>BATS+ Primary Listing Exchange 16</Description>
+    </Value>
+    <Value>
+      <Type>RoutingInst</Type>
+      <Enum>N</Enum>
+      <Description>Do not Re-Route (default)</Description>
+    </Value>
+    <Value>
+      <Type>RoutingInst</Type>
+      <Enum>C</Enum>
+      <Description>Re-Route only if another market crosses the limit</Description>
+    </Value>
+    <Value>
+      <Type>RoutingInst</Type>
+      <Enum>D</Enum>
+      <Description>Parallel-D</Description>
+    </Value>
+    <Value>
+      <Type>RoutingInst</Type>
+      <Enum>2</Enum>
+      <Description>Parallel-2D</Description>
+    </Value>
+    <Value>
+      <Type>RoutingInst</Type>
+      <Enum>I</Enum>
+      <Description>Rest on BATS Integrated Book (default)</Description>
+    </Value>
+
+    <!-- DisplayIndicator -->
+    <Value>
+      <Type>DisplayIndicator</Type>
+      <Enum>X</Enum>
+      <Description>Displayed Order (default)</Description>
+    </Value>
+    <Value>
+      <Type>DisplayIndicator</Type>
+      <Enum>I</Enum>
+      <Description>Invisible</Description>
+    </Value>
+
+    <!-- CancelOrigOnReject -->
+    <Value>
+      <Type>CancelOrigOnReject</Type>
+      <Enum>N</Enum>
+      <Description>Leave original order alone (default)</Description>
+    </Value>
+    <Value>
+      <Type>CancelOrigOnReject</Type>
+      <Enum>Y</Enum>
+      <Description>Cancel original order if replacement fails</Description>
+    </Value>
+
+    <!-- SettlType -->
+    <Value>
+      <Type>SettlType</Type>
+      <Enum>0</Enum>
+      <Description>Regular (default)</Description>
+    </Value>
+    <Value>
+      <Type>SettlType</Type>
+      <Enum>6</Enum>
+      <Description>Future</Description>
+    </Value>
+
+    <!-- ExecType -->
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>F</Enum>
+      <Description>Trade</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>0</Enum>
+      <Description>New (acknowledgement of new order)</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>1</Enum>
+      <Description>Partial Fill</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>2</Enum>
+      <Description>Fill</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>4</Enum>
+      <Description>Canceled</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>5</Enum>
+      <Description>Replaced</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>8</Enum>
+      <Description>Rejected</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>D</Enum>
+      <Description>Restated</Description>
+    </Value>
+
+    <!-- ExecTransType -->
+    <Value>
+      <Type>ExecTransType</Type>
+      <Enum>0</Enum>
+      <Description>New</Description>
+    </Value>
+    <Value>
+      <Type>ExecTransType</Type>
+      <Enum>1</Enum>
+      <Description>Cancel</Description>
+    </Value>
+    <Value>
+      <Type>ExecTransType</Type>
+      <Enum>2</Enum>
+      <Description>Correct</Description>
+    </Value>
+
+    <!-- OrdStatus -->
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>0</Enum>
+      <Description>New</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>1</Enum>
+      <Description>Partially Filled</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>2</Enum>
+      <Description>Filled</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>4</Enum>
+      <Description>Canceled</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>5</Enum>
+      <Description>Replaced</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>6</Enum>
+      <Description>Pending Cancel</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>8</Enum>
+      <Description>Rejected</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>A</Enum>
+      <Description>Pending Ack</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>E</Enum>
+      <Description>Pending Replace</Description>
+    </Value>
+
+    <!-- Text -->
+    <Value>
+      <Type>Text</Type>
+      <Enum>A</Enum>
+      <Description>Admin</Description>
+    </Value>
+    <Value>
+      <Type>Text</Type>
+      <Enum>D</Enum>
+      <Description>Duplicate ClOrdID</Description>
+    </Value>
+    <Value>
+      <Type>Text</Type>
+      <Enum>H</Enum>
+      <Description>Halted</Description>
+    </Value>
+    <Value>
+      <Type>Text</Type>
+      <Enum>K</Enum>
+      <Description>Order Rate Threshold Exceeded</Description>
+    </Value>
+    <Value>
+      <Type>Text</Type>
+      <Enum>L</Enum>
+      <Description>Price Exceeds Cross Range</Description>
+    </Value>
+    <Value>
+      <Type>Text</Type>
+      <Enum>N</Enum>
+      <Description>Ran Out of Liquidity to Execute Against</Description>
+    </Value>
+    <Value>
+      <Type>Text</Type>
+      <Enum>O</Enum>
+      <Description>ClOrdID Doesn’t Match a Known Order</Description>
+    </Value>
+    <Value>
+      <Type>Text</Type>
+      <Enum>P</Enum>
+      <Description>Can’t Modify an Order That is Pending Fill</Description>
+    </Value>
+    <Value>
+      <Type>Text</Type>
+      <Enum>Q</Enum>
+      <Description>Waiting For First Trade</Description>
+    </Value>
+    <Value>
+      <Type>Text</Type>
+      <Enum>R</Enum>
+      <Description>Routing Unavailable</Description>
+    </Value>
+    <Value>
+      <Type>Text</Type>
+      <Enum>T</Enum>
+      <Description>Routing order would trade through an away destination</Description>
+    </Value>
+    <Value>
+      <Type>Text</Type>
+      <Enum>U</Enum>
+      <Description>User Requested</Description>
+    </Value>
+    <Value>
+      <Type>Text</Type>
+      <Enum>V</Enum>
+      <Description>Would Wash</Description>
+    </Value>
+    <Value>
+      <Type>Text</Type>
+      <Enum>W</Enum>
+      <Description>Add Liquidity Only Order Would Remove</Description>
+    </Value>
+    <Value>
+      <Type>Text</Type>
+      <Enum>X</Enum>
+      <Description>Order Expired</Description>
+    </Value>
+    <Value>
+      <Type>Text</Type>
+      <Enum>Y</Enum>
+      <Description>Symbol Not Supported</Description>
+    </Value>
+    <Value>
+      <Type>Text</Type>
+      <Enum>Z</Enum>
+      <Description>Unforseen Reason</Description>
+    </Value>
+    <Value>
+      <Type>Text</Type>
+      <Enum>l</Enum>
+      <Description>Large in Scale</Description>
+    </Value>
+    <Value>
+      <Type>Text</Type>
+      <Enum>r</Enum>
+      <Description>Reserve Reload</Description>
+    </Value>
+    <Value>
+      <Type>Text</Type>
+      <Enum>m</Enum>
+      <Description>Market Access Risk Limit Exceeded</Description>
+    </Value>
+    <Value>
+      <Type>Text</Type>
+      <Enum>o</Enum>
+      <Description>Max Open Orders Count Exceeded</Description>
+    </Value>
+    <Value>
+      <Type>Text</Type>
+      <Enum>p</Enum>
+      <Description>Static Collar Breach</Description>
+    </Value>
+    <Value>
+      <Type>Text</Type>
+      <Enum>s</Enum>
+      <Description>Symbol Level Risk Management</Description>
+    </Value>
+
+    <!-- OrdRejReason -->
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>0</Enum>
+      <Description>Broker Option</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>1</Enum>
+      <Description>Unknown Symbol</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>2</Enum>
+      <Description>Exchange Closed</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>3</Enum>
+      <Description>Order Exceeds Limit</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>5</Enum>
+      <Description>Unknown Order</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>6</Enum>
+      <Description>Duplicate Order</Description>
+    </Value>
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>8</Enum>
+      <Description>Stale Order</Description>
+    </Value>
+
+    <!-- ExecRestatementReason -->
+    <Value>
+      <Type>ExecRestatementReason</Type>
+      <Enum>4</Enum>
+      <Description>Broker option; optionally sent during reload of a reserve (iceberg)</Description>
+    </Value>
+
+    <!-- CentralCounterparty -->
+    <Value>
+      <Type>CentralCounterparty</Type>
+      <Enum>EMCF</Enum>
+      <Description>European Multilateral Clearing Facility</Description>
+    </Value>
+    <Value>
+      <Type>CentralCounterparty</Type>
+      <Enum>LCHL</Enum>
+      <Description>LCH.Clearnet</Description>
+    </Value>
+    <Value>
+      <Type>CentralCounterparty</Type>
+      <Enum>XCLR</Enum>
+      <Description>SIX x-clear</Description>
+    </Value>
+    <Value>
+      <Type>CentralCounterparty</Type>
+      <Enum>ECCP</Enum>
+      <Description>EuroCCP</Description>
+    </Value>
+    <Value>
+      <Type>CentralCounterparty</Type>
+      <Enum>NONE</Enum>
+      <Description>Clearing Suppressed for self match.</Description>
+    </Value>
+
+    <!-- TradeLiquidityIndicator -->
+    <Value>
+      <Type>TradeLiquidityIndicator</Type>
+      <Enum>A</Enum>
+      <Description>Added Liquidity</Description>
+    </Value>
+    <Value>
+      <Type>TradeLiquidityIndicator</Type>
+      <Enum>R</Enum>
+      <Description>Removed Liquidity</Description>
+    </Value>
+    <Value>
+      <Type>TradeLiquidityIndicator</Type>
+      <Enum>AD</Enum>
+      <Description>Added Liquidity for the BATS Dark Pool</Description>
+    </Value>
+    <Value>
+      <Type>TradeLiquidityIndicator</Type>
+      <Enum>RD</Enum>
+      <Description>Removed Liquidity from the BATS Dark Pool</Description>
+    </Value>
+    <Value>
+      <Type>TradeLiquidityIndicator</Type>
+      <Enum>RT</Enum>
+      <Description>Removed Liquidity from the BATS Dark Pool by IOC order</Description>
+    </Value>
+    <Value>
+      <Type>TradeLiquidityIndicator</Type>
+      <Enum>AI</Enum>
+      <Description>Added Hidden Liquidity that was price improved</Description>
+    </Value>
+    <Value>
+      <Type>TradeLiquidityIndicator</Type>
+      <Enum>AK</Enum>
+      <Description>Added Liquidity from the hidden (reserve) portion of an iceberg order</Description>
+    </Value>
+    <Value>
+      <Type>TradeLiquidityIndicator</Type>
+      <Enum>X</Enum>
+      <Description>Routed to Another Market</Description>
+    </Value>
+    <Value>
+      <Type>TradeLiquidityIndicator</Type>
+      <Enum>C</Enum>
+      <Description>Auction</Description>
+    </Value>
+    <Value>
+      <Type>TradeLiquidityIndicator</Type>
+      <Enum>P</Enum>
+      <Description>Periodic Auction</Description>
+    </Value>
+
+    <!-- CxlRejReason -->
+    <Value>
+      <Type>CxlRejReason</Type>
+      <Enum>0</Enum>
+      <Description>Too Late to Cancel</Description>
+    </Value>
+    <Value>
+      <Type>CxlRejReason</Type>
+      <Enum>1</Enum>
+      <Description>Unknown Order</Description>
+    </Value>
+    <Value>
+      <Type>CxlRejReason</Type>
+      <Enum>3</Enum>
+      <Description>Already Pending Cancel or Pending Replace</Description>
+    </Value>
+
+    <!-- CxlRejResponseTo -->
+    <Value>
+      <Type>CxlRejResponseTo</Type>
+      <Enum>1</Enum>
+      <Description>Cancel</Description>
+    </Value>
+    <Value>
+      <Type>CxlRejResponseTo</Type>
+      <Enum>2</Enum>
+      <Description>Cancel/Replace</Description>
+    </Value>
+
+  </Values>
+
+</OmiFixPdf>

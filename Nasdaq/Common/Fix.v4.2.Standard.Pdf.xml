@@ -1,0 +1,260 @@
+<OmiFixPdf>
+
+  <!-- The FIX 4.2 standard's session layer, as a source a venue's declaration names after its own
+       pdf: the standard header's required fields, the trailer, and the session messages Heartbeat (0)
+       to Logout (5) and Logon (A). Gap-fill takes from it only what the venue's pdf leaves out, and
+       never changes what the venue states, so a venue whose specification says its session messages
+       are "standard FIX 4.2" without printing their fields gets them from the standard, not from a
+       copy in its own transcription.
+
+       Source: FIX Protocol Version 4.2 (with Errata 20010501), the Standard Message Header, Standard
+       Message Trailer and the session messages. Each message carries its required fields and the
+       optional ones the venues using this source document; not every optional field FIX 4.2 defines. -->
+
+  <Header>
+    <Fields>
+      <Field>
+        <Tag>8</Tag>
+        <Name>BeginString</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Description>Identifies beginning of new message and protocol version. Always the first field in the message. FIX 4.2 standard field.</Description>
+      </Field>
+      <Field>
+        <Tag>9</Tag>
+        <Name>BodyLength</Name>
+        <Required>Y</Required>
+        <Type>Length</Type>
+        <Description>Message length, in bytes, forward to the CheckSum field. Always the second field in the message. FIX 4.2 standard field.</Description>
+      </Field>
+      <Field>
+        <Tag>35</Tag>
+        <Name>MsgType</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Description>Defines message type. Always the third field in the message. FIX 4.2 standard field.</Description>
+      </Field>
+      <Field>
+        <Tag>49</Tag>
+        <Name>SenderCompID</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Description>Assigned value used to identify the firm sending the message. FIX 4.2 standard field.</Description>
+      </Field>
+      <Field>
+        <Tag>56</Tag>
+        <Name>TargetCompID</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Description>Assigned value used to identify the receiving firm. FIX 4.2 standard field.</Description>
+      </Field>
+      <Field>
+        <Tag>34</Tag>
+        <Name>MsgSeqNum</Name>
+        <Required>Y</Required>
+        <Type>SeqNum</Type>
+        <Description>Integer message sequence number. FIX 4.2 standard field.</Description>
+      </Field>
+      <Field>
+        <Tag>52</Tag>
+        <Name>SendingTime</Name>
+        <Required>Y</Required>
+        <Type>UTCTimestamp</Type>
+        <Description>Time of message transmission, always expressed in UTC. FIX 4.2 standard field.</Description>
+      </Field>
+    </Fields>
+  </Header>
+
+  <Trailer>
+    <Fields>
+      <Field>
+        <Tag>10</Tag>
+        <Name>CheckSum</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+        <Description>Modulo 256 checksum of all characters in message up to and including the delimiter preceding the CheckSum field. Three digits with leading zeroes if necessary. Always the last field in the message. FIX 4.2 standard field.</Description>
+      </Field>
+    </Fields>
+  </Trailer>
+
+  <Messages>
+
+    <!-- Heartbeat (0) -->
+    <Message>
+      <Name>Heartbeat</Name>
+      <MsgType>0</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Description>Standard FIX 4.2 session message. Monitors the status of the communication link and identifies when the last of a string of messages was not received.</Description>
+      <Fields>
+        <Field>
+          <Tag>112</Tag>
+          <Name>TestReqID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Required when the heartbeat is the result of a Test Request message. FIX 4.2 standard field.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- TestRequest (1) -->
+    <Message>
+      <Name>TestRequest</Name>
+      <MsgType>1</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Description>Standard FIX 4.2 session message. Forces a heartbeat from the opposing application.</Description>
+      <Fields>
+        <Field>
+          <Tag>112</Tag>
+          <Name>TestReqID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Identifier included in the Test Request message to be returned in the resulting Heartbeat. FIX 4.2 standard field.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- ResendRequest (2) -->
+    <Message>
+      <Name>ResendRequest</Name>
+      <MsgType>2</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Description>Standard FIX 4.2 session message. Initiates the retransmission of messages.</Description>
+      <Fields>
+        <Field>
+          <Tag>7</Tag>
+          <Name>BeginSeqNo</Name>
+          <Required>Y</Required>
+          <Type>SeqNum</Type>
+          <Description>Message sequence number of first message in range to be resent. FIX 4.2 standard field.</Description>
+        </Field>
+        <Field>
+          <Tag>16</Tag>
+          <Name>EndSeqNo</Name>
+          <Required>Y</Required>
+          <Type>SeqNum</Type>
+          <Description>Message sequence number of last message in range to be resent; 0 for infinity. FIX 4.2 standard field.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Reject (3) -->
+    <Message>
+      <Name>Reject</Name>
+      <MsgType>3</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Description>Standard FIX 4.2 session message. Issued when a message is received but cannot be properly processed due to a session-level rule violation.</Description>
+      <Fields>
+        <Field>
+          <Tag>45</Tag>
+          <Name>RefSeqNum</Name>
+          <Required>Y</Required>
+          <Type>SeqNum</Type>
+          <Description>MsgSeqNum of rejected message. FIX 4.2 standard field.</Description>
+        </Field>
+        <Field>
+          <Tag>371</Tag>
+          <Name>RefTagID</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>The tag number of the FIX field being referenced. FIX 4.2 standard field.</Description>
+        </Field>
+        <Field>
+          <Tag>372</Tag>
+          <Name>RefMsgType</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>The MsgType of the FIX message being referenced. FIX 4.2 standard field.</Description>
+        </Field>
+        <Field>
+          <Tag>373</Tag>
+          <Name>SessionRejectReason</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Code to identify reason for a session-level Reject message. FIX 4.2 standard field.</Description>
+        </Field>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Where possible, message to explain reason for rejection. FIX 4.2 standard field.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- SequenceReset (4) -->
+    <Message>
+      <Name>SequenceReset</Name>
+      <MsgType>4</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Description>Standard FIX 4.2 session message. Gap Fill mode skips administrative or application messages that will not be resent; Reset mode re-establishes the sequence number.</Description>
+      <Fields>
+        <Field>
+          <Tag>123</Tag>
+          <Name>GapFillFlag</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>Indicates that the Sequence Reset message is replacing administrative or application messages which will not be resent. FIX 4.2 standard field.</Description>
+        </Field>
+        <Field>
+          <Tag>36</Tag>
+          <Name>NewSeqNo</Name>
+          <Required>Y</Required>
+          <Type>SeqNum</Type>
+          <Description>New sequence number. FIX 4.2 standard field.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Logout (5) -->
+    <Message>
+      <Name>Logout</Name>
+      <MsgType>5</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Description>Standard FIX 4.2 session message. Initiates or confirms the termination of a FIX session.</Description>
+      <Fields>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Free format text. FIX 4.2 standard field.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Logon (A) -->
+    <Message>
+      <Name>Logon</Name>
+      <MsgType>A</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Description>Standard FIX 4.2 session message. Authenticates a user establishing a connection to a remote system; the first message sent by the application requesting to initiate a FIX session.</Description>
+      <Fields>
+        <Field>
+          <Tag>98</Tag>
+          <Name>EncryptMethod</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Method of encryption. FIX 4.2 standard field.</Description>
+        </Field>
+        <Field>
+          <Tag>108</Tag>
+          <Name>HeartBtInt</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Heartbeat interval, in seconds. FIX 4.2 standard field.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+  </Messages>
+
+</OmiFixPdf>
