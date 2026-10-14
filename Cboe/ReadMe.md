@@ -34,7 +34,7 @@
 | BxeEquities | MulticastDepthOfBook | Pitch | 6.2 | [files](Cboe.BxeEquities.MulticastDepthOfBook.Pitch.v6.2/) |
 | BxeEquities | MulticastDepthOfBook | Pitch | 6.20 | [files](Cboe.BxeEquities.MulticastDepthOfBook.Pitch.v6.20/) |
 | BxeEquities | MulticastDepthOfBook | Pitch | 6.24 | [files](Cboe.BxeEquities.MulticastDepthOfBook.Pitch.v6.24/) |
-| BxeEquities | MulticastDepthOfBook | Pitch | 6.67 | [files](Cboe.BxeEquities.MulticastDepthOfBook.Pitch.v6.67/) |
+| BxeEquities | MulticastDepthOfBook | Pitch | 6.68 | [files](Cboe.BxeEquities.MulticastDepthOfBook.Pitch.v6.68/) |
 | BxeEquities | MulticastDepthOfBook | Pitch | 6.7 | [files](Cboe.BxeEquities.MulticastDepthOfBook.Pitch.v6.7/) |
 | BxeEquities | OrderEntry | Fix | 2.44 | [files](Cboe.BxeEquities.OrderEntry.Fix.v2.44/) |
 | BxeEquities | OrderEntry | Fix | 2.58 | [files](Cboe.BxeEquities.OrderEntry.Fix.v2.58/) |
@@ -217,7 +217,7 @@
 | CxeEquities | MulticastDepthOfBook | Pitch | 6.2 | [files](Cboe.CxeEquities.MulticastDepthOfBook.Pitch.v6.2/) |
 | CxeEquities | MulticastDepthOfBook | Pitch | 6.20 | [files](Cboe.CxeEquities.MulticastDepthOfBook.Pitch.v6.20/) |
 | CxeEquities | MulticastDepthOfBook | Pitch | 6.24 | [files](Cboe.CxeEquities.MulticastDepthOfBook.Pitch.v6.24/) |
-| CxeEquities | MulticastDepthOfBook | Pitch | 6.67 | [files](Cboe.CxeEquities.MulticastDepthOfBook.Pitch.v6.67/) |
+| CxeEquities | MulticastDepthOfBook | Pitch | 6.68 | [files](Cboe.CxeEquities.MulticastDepthOfBook.Pitch.v6.68/) |
 | CxeEquities | MulticastDepthOfBook | Pitch | 6.7 | [files](Cboe.CxeEquities.MulticastDepthOfBook.Pitch.v6.7/) |
 | CxeEquities | OrderEntry | Fix | 2.44 | [files](Cboe.CxeEquities.OrderEntry.Fix.v2.44/) |
 | CxeEquities | OrderEntry | Fix | 2.58 | [files](Cboe.CxeEquities.OrderEntry.Fix.v2.58/) |
@@ -255,7 +255,6 @@
 | DxeDerivatives | DropCopy | Fix | 2.3 | [files](Cboe.DxeDerivatives.DropCopy.Fix.v2.3/) |
 | DxeDerivatives | MulticastDepthOfBook | Pitch | 1.01 | [files](Cboe.DxeDerivatives.MulticastDepthOfBook.Pitch.v1.01/) |
 | DxeDerivatives | MulticastDepthOfBook | Pitch | 1.11 | [files](Cboe.DxeDerivatives.MulticastDepthOfBook.Pitch.v1.11/) |
-| DxeDerivatives | MulticastDepthOfBook | Pitch | 6.67 | [files](Cboe.DxeDerivatives.MulticastDepthOfBook.Pitch.v6.67/) |
 | DxeDerivatives | OrderEntry | Fix | 2.13 | [files](Cboe.DxeDerivatives.OrderEntry.Fix.v2.13/) |
 | DxeDerivatives | OrderEntry | Fix | 2.28 | [files](Cboe.DxeDerivatives.OrderEntry.Fix.v2.28/) |
 | DxeDerivatives | OrderEntry | Fix | 2.3 | [files](Cboe.DxeDerivatives.OrderEntry.Fix.v2.3/) |
@@ -263,6 +262,7 @@
 | DxeDerivatives | TradeCapture | Fix | 2.13 | [files](Cboe.DxeDerivatives.TradeCapture.Fix.v2.13/) |
 | DxeDerivatives | TradeCapture | Fix | 2.28 | [files](Cboe.DxeDerivatives.TradeCapture.Fix.v2.28/) |
 | DxeDerivatives | TradeCapture | Fix | 2.3 | [files](Cboe.DxeDerivatives.TradeCapture.Fix.v2.3/) |
+| DxeEquities | MulticastDepthOfBook | Pitch | 6.68 | [files](Cboe.DxeEquities.MulticastDepthOfBook.Pitch.v6.68/) |
 | EdgaEquities | BinaryOrderEntry | Boe | 2.4.55 | [files](Cboe.EdgaEquities.BinaryOrderEntry.Boe.v2.4.55/) |
 | EdgaEquities | BinaryOrderEntry | Boe | 2.4.57 | [files](Cboe.EdgaEquities.BinaryOrderEntry.Boe.v2.4.57/) |
 | EdgaEquities | DropCopy | Fix | 2.9 | [files](Cboe.EdgaEquities.DropCopy.Fix.v2.9/) |
