@@ -1,0 +1,371 @@
+<OmiCboeAustraliaPitchPdf>
+
+  <Messages>
+
+    <!-- Login Message -->
+    <Message>
+      <Name>Login Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x01</Code>
+      <Description>First message sent to the Spin Server by a participant's process after the connection to the Spin Server is established. Failure to login before sending any other message type will result in the connection being dropped by the Spin Server. Identical format to the GRP Login message.</Description>
+      <Fields>
+        <Field>
+          <Name>SessionSubId</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>SessionSubId supplied by Cboe Japan.</Description>
+        </Field>
+        <Field>
+          <Name>Username</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Username supplied by Cboe Japan.</Description>
+        </Field>
+        <Field>
+          <Name>Filler</Name>
+          <Type>Alphanumeric</Type>
+          <Size>2</Size>
+          <Description>(space filled)</Description>
+        </Field>
+        <Field>
+          <Name>Password</Name>
+          <Type>Alphanumeric</Type>
+          <Size>10</Size>
+          <Description>Password supplied by Cboe Japan.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Login Response Message -->
+    <Message>
+      <Name>Login Response Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x02</Code>
+      <Description>Sent by the Spin Server to a participant's process in response to a Login message. The status field is used to reflect an accepted login or the reason the session was not accepted. If login fails, the connection will be dropped after the Login Response message is sent.</Description>
+      <Fields>
+        <Field>
+          <Name>Login Response Status</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Accepted or reason for reject.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Spin Image Available Message -->
+    <Message>
+      <Name>Spin Image Available Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x80</Code>
+      <Description>Sent once per second and indicates through what sequence number a spin is available.</Description>
+      <Fields>
+        <Field>
+          <Name>Sequence</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Spin is available which is current through this sequence number.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Spin Request Message -->
+    <Message>
+      <Name>Spin Request Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x81</Code>
+      <Description>Used by a participant's process to request transmission of a spin of the unit's order book.</Description>
+      <Fields>
+        <Field>
+          <Name>Sequence</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Sequence number from a Spin Image Available message received by the participant.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Spin Response Message -->
+    <Message>
+      <Name>Spin Response Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x82</Code>
+      <Description>Sent in response to a participant's Spin Request message indicating whether a spin will be sent.</Description>
+      <Fields>
+        <Field>
+          <Name>Sequence</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Sequence number from a Spin Image Available message.</Description>
+        </Field>
+        <Field>
+          <Name>Order Count</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Number of Add Order messages which will be contained in this spin.</Description>
+        </Field>
+        <Field>
+          <Name>Spin Response Status</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Accepted or reason for reject.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Spin Finished Message -->
+    <Message>
+      <Name>Spin Finished Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x83</Code>
+      <Description>Sent to indicate that all messages for the spin requested have been sent. A Spin Finished message is only sent if a Spin Request was not rejected.</Description>
+      <Fields>
+        <Field>
+          <Name>Sequence</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Sequence number from the Spin Response message.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Trading Status Message -->
+    <Message>
+      <Name>Trading Status Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x50</Code>
+      <Description>Used to indicate the current trading status of a security. A Trading Status message will be sent whenever trading status changes for a security.</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>Binary UTC Timestamp</Type>
+          <Size>8</Size>
+          <Description>Nanoseconds since epoch.</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Alphanumeric</Type>
+          <Size>6</Size>
+          <Description>Symbol (right padded with spaces).</Description>
+        </Field>
+        <Field>
+          <Name>Trading Status</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Trading status of the session for the symbol.</Description>
+        </Field>
+        <Field>
+          <Name>Trading Status Flags</Name>
+          <Type>Bit Field</Type>
+          <Size>1</Size>
+          <Description>Trading status flags bit field.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Add Order Message -->
+    <Message>
+      <Name>Add Order Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x51</Code>
+      <Description>Represents a newly accepted order on the Cboe Japan book. It includes a day-specific Order Id assigned by Cboe Japan to the order.</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>Binary UTC Timestamp</Type>
+          <Size>8</Size>
+          <Description>Nanoseconds since epoch.</Description>
+        </Field>
+        <Field>
+          <Name>Order Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Day-specific identifier assigned to this order.</Description>
+        </Field>
+        <Field>
+          <Name>Side Indicator</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Side of the order.</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Number of shares being added to the book.</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Alphanumeric</Type>
+          <Size>6</Size>
+          <Description>Symbol (right padded with spaces).</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Binary Price</Type>
+          <Size>8</Size>
+          <Description>The display price of the order.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>Binary</Type>
+          <Size>1</Size>
+          <Description>Reserved (undefined).</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+  </Messages>
+
+  <Enums>
+
+    <!-- Login Response Status -->
+    <Enum>
+      <Name>Login Response Status</Name>
+      <Values>
+        <Value>
+          <Data>A</Data>
+          <Name>Login Accepted</Name>
+        </Value>
+        <Value>
+          <Data>N</Data>
+          <Name>Not authorized (Invalid Username/Password)</Name>
+        </Value>
+        <Value>
+          <Data>B</Data>
+          <Name>Session in use</Name>
+        </Value>
+        <Value>
+          <Data>S</Data>
+          <Name>Invalid Session</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Spin Response Status -->
+    <Enum>
+      <Name>Spin Response Status</Name>
+      <Values>
+        <Value>
+          <Data>A</Data>
+          <Name>Accepted</Name>
+        </Value>
+        <Value>
+          <Data>O</Data>
+          <Name>Out of Range (Sequence requested is greater than Sequence available by the next spin)</Name>
+        </Value>
+        <Value>
+          <Data>S</Data>
+          <Name>Spin already in progress (only one spin can be running at a time)</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Trading Status -->
+    <Enum>
+      <Name>Trading Status</Name>
+      <Values>
+        <Value>
+          <Data>C</Data>
+          <Name>Closed</Name>
+        </Value>
+        <Value>
+          <Data>T</Data>
+          <Name>Trading</Name>
+        </Value>
+        <Value>
+          <Data>H</Data>
+          <Name>Halted</Name>
+        </Value>
+        <Value>
+          <Data>h</Data>
+          <Name>Halted in Pre-Open</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Side Indicator -->
+    <Enum>
+      <Name>Side Indicator</Name>
+      <Values>
+        <Value>
+          <Data>B</Data>
+          <Name>Buy Order</Name>
+        </Value>
+        <Value>
+          <Data>S</Data>
+          <Name>Sell Order</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+  </Enums>
+
+  <Bitfields>
+
+    <!-- Trading Status Flags -->
+    <Bitfield>
+      <Name>Trading Status Flags</Name>
+      <Description>Trading status flags.</Description>
+      <Fields>
+        <Field>
+          <Name>Short sell price check</Name>
+          <Bits>1</Bits>
+          <Type>bit</Type>
+          <Description>0 = Short sell price check not in effect, 1 = Short sell price check in effect.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Bits>1</Bits>
+          <Type>bit</Type>
+          <Description>Reserved.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Bits>1</Bits>
+          <Type>bit</Type>
+          <Description>Reserved.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Bits>1</Bits>
+          <Type>bit</Type>
+          <Description>Reserved.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Bits>1</Bits>
+          <Type>bit</Type>
+          <Description>Reserved.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Bits>1</Bits>
+          <Type>bit</Type>
+          <Description>Reserved.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Bits>1</Bits>
+          <Type>bit</Type>
+          <Description>Reserved.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Bits>1</Bits>
+          <Type>bit</Type>
+          <Description>Reserved.</Description>
+        </Field>
+      </Fields>
+    </Bitfield>
+
+  </Bitfields>
+
+</OmiCboeAustraliaPitchPdf>

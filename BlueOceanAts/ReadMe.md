@@ -8,10 +8,13 @@
 | CommonHeader | Udp | 1.1 | [files](BlueOceanAts.CommonHeader.Udp.v1.1/) |
 | DropCopy | Fix | 1.13.1 | [files](BlueOceanAts.BlueEquities.DropCopy.Fix.v1.13.1/) |
 | Memo | Sbe | 1.13 | [files](BlueOceanAts.BlueEquities.Memo.Sbe.v1.13/) |
+| Memo | Sbe | 1.14 | [files](BlueOceanAts.BlueEquities.Memo.Sbe.v1.14/) |
 | MemoirDepthFeed | Sbe | 1.3 | [files](BlueOceanAts.BlueEquities.MemoirDepthFeed.Sbe.v1.3/) |
 | MemoirLastSale | Sbe | 1.3 | [files](BlueOceanAts.BlueEquities.MemoirLastSale.Sbe.v1.3/) |
 | MemoirTopOfBook | Sbe | 1.3 | [files](BlueOceanAts.BlueEquities.MemoirTopOfBook.Sbe.v1.3/) |
 | OrderEntry | Fix | 1.13 | [files](BlueOceanAts.BlueEquities.OrderEntry.Fix.v1.13/) |
+| OrderEntry | Fix | 1.13.2026 | [files](BlueOceanAts.BlueEquities.OrderEntry.Fix.v1.13.2026/) |
+| OrderEntry | Fix | 1.14 | [files](BlueOceanAts.BlueEquities.OrderEntry.Fix.v1.14/) |
 | TopOfBook | Fix | 2.0.1 | [files](BlueOceanAts.BlueEquities.TopOfBook.Fix.v2.0.1/) |
 
 

@@ -7,6 +7,7 @@
 | --- | --- | --- | --- | --- |
 | MemxEquities | CommonHeader | Tcp | 1.2 | [files](Memx.MemxEquities.CommonHeader.Tcp.v1.2/) |
 | MemxEquities | CommonHeader | Udp | 1.1 | [files](Memx.MemxEquities.CommonHeader.Udp.v1.1/) |
+| MemxEquities | DropCopy | Fix | 1.12 | [files](Memx.MemxEquities.DropCopy.Fix.v1.12/) |
 | MemxEquities | Memo | Sbe | 1.1 | [files](Memx.MemxEquities.Memo.Sbe.v1.1/) |
 | MemxEquities | Memo | Sbe | 1.10 | [files](Memx.MemxEquities.Memo.Sbe.v1.10/) |
 | MemxEquities | Memo | Sbe | 1.11 | [files](Memx.MemxEquities.Memo.Sbe.v1.11/) |
@@ -21,8 +22,13 @@
 | MemxEquities | MemoirLastSale | Sbe | 1.3 | [files](Memx.MemxEquities.MemoirLastSale.Sbe.v1.3/) |
 | MemxEquities | MemoirTopOfBook | Sbe | 1.1 | [files](Memx.MemxEquities.MemoirTopOfBook.Sbe.v1.1/) |
 | MemxEquities | MemoirTopOfBook | Sbe | 1.3 | [files](Memx.MemxEquities.MemoirTopOfBook.Sbe.v1.3/) |
+| MemxEquities | OrderEntry | Fix | 1.12 | [files](Memx.MemxEquities.OrderEntry.Fix.v1.12/) |
+| MemxOptions | DropCopy | Fix | 1.10 | [files](Memx.MemxOptions.DropCopy.Fix.v1.10/) |
+| MemxOptions | DropCopy | Fix | 1.10.a | [files](Memx.MemxOptions.DropCopy.Fix.v1.10.a/) |
 | MemxOptions | DropCopy | Fix | 1.8 | [files](Memx.MemxOptions.DropCopy.Fix.v1.8/) |
+| MemxOptions | DropCopy | Fix | 1.9 | [files](Memx.MemxOptions.DropCopy.Fix.v1.9/) |
 | MemxOptions | Memo | Sbe | 1.10 | [files](Memx.MemxOptions.Memo.Sbe.v1.10/) |
+| MemxOptions | Memo | Sbe | 1.10.a | [files](Memx.MemxOptions.Memo.Sbe.v1.10.a/) |
 | MemxOptions | Memo | Sbe | 1.3 | [files](Memx.MemxOptions.Memo.Sbe.v1.3/) |
 | MemxOptions | Memo | Sbe | 1.5.b | [files](Memx.MemxOptions.Memo.Sbe.v1.5.b/) |
 | MemxOptions | Memo | Sbe | 1.6.a | [files](Memx.MemxOptions.Memo.Sbe.v1.6.a/) |
@@ -34,7 +40,10 @@
 | MemxOptions | MemoirDepth | Sbe | 1.6.a | [files](Memx.MemxOptions.MemoirDepth.Sbe.v1.6.a/) |
 | MemxOptions | MemoirTop | Sbe | 1.3 | [files](Memx.MemxOptions.MemoirTop.Sbe.v1.3/) |
 | MemxOptions | MemoirTop | Sbe | 1.6.a | [files](Memx.MemxOptions.MemoirTop.Sbe.v1.6.a/) |
+| MemxOptions | OrderEntry | Fix | 1.10 | [files](Memx.MemxOptions.OrderEntry.Fix.v1.10/) |
+| MemxOptions | OrderEntry | Fix | 1.10.a | [files](Memx.MemxOptions.OrderEntry.Fix.v1.10.a/) |
 | MemxOptions | OrderEntry | Fix | 1.8 | [files](Memx.MemxOptions.OrderEntry.Fix.v1.8/) |
+| MemxOptions | OrderEntry | Fix | 1.9 | [files](Memx.MemxOptions.OrderEntry.Fix.v1.9/) |
 | MemxOptions | RiskControl | Sbe | 1.3 | [files](Memx.MemxOptions.RiskControl.Sbe.v1.3/) |
 | MemxOptions | RiskControl | Sbe | 1.6 | [files](Memx.MemxOptions.RiskControl.Sbe.v1.6/) |
 | MemxOptions | RiskControl | Sbe | 1.7 | [files](Memx.MemxOptions.RiskControl.Sbe.v1.7/) |

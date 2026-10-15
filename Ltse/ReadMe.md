@@ -8,11 +8,17 @@
 |  | CommonHeader | Tcp | 1.2 | [files](Ltse.CommonHeader.Tcp.v1.2/) |
 |  | CommonHeader | Udp | 1.1 | [files](Ltse.CommonHeader.Udp.v1.1/) |
 | LtseEquities | DropCopy | Fix | 1.12 | [files](Ltse.LtseEquities.DropCopy.Fix.v1.12/) |
+| LtseEquities | DropCopy | Fix | 2.0 | [files](Ltse.LtseEquities.DropCopy.Fix.v2.0/) |
 | LtseEquities | Memo | Sbe | 1.12 | [files](Ltse.LtseEquities.Memo.Sbe.v1.12/) |
+| LtseEquities | Memo | Sbe | 2.0 | [files](Ltse.LtseEquities.Memo.Sbe.v2.0/) |
 | LtseEquities | MemoirDepthFeed | Sbe | 1.3 | [files](Ltse.LtseEquities.MemoirDepthFeed.Sbe.v1.3/) |
+| LtseEquities | MemoirDepthFeed | Sbe | 2.0 | [files](Ltse.LtseEquities.MemoirDepthFeed.Sbe.v2.0/) |
 | LtseEquities | MemoirLastSale | Sbe | 1.3 | [files](Ltse.LtseEquities.MemoirLastSale.Sbe.v1.3/) |
+| LtseEquities | MemoirLastSale | Sbe | 2.0 | [files](Ltse.LtseEquities.MemoirLastSale.Sbe.v2.0/) |
 | LtseEquities | MemoirTopOfBook | Sbe | 1.3 | [files](Ltse.LtseEquities.MemoirTopOfBook.Sbe.v1.3/) |
+| LtseEquities | MemoirTopOfBook | Sbe | 2.0 | [files](Ltse.LtseEquities.MemoirTopOfBook.Sbe.v2.0/) |
 | LtseEquities | OrderEntry | Fix | 1.12 | [files](Ltse.LtseEquities.OrderEntry.Fix.v1.12/) |
+| LtseEquities | OrderEntry | Fix | 2.0 | [files](Ltse.LtseEquities.OrderEntry.Fix.v2.0/) |
 
 
 Ltse: [website](https://ltse.com "Go to Long-Term Stock Exchange")

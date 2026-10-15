@@ -1,0 +1,1091 @@
+<OmiCboeFuturesPitchPdf>
+
+  <!-- CFE OOF Multicast Depth Of Book Pitch: transcribed from the PDF field tables -->
+
+  <Messages>
+
+    <!-- Time Reference Message -->
+    <Message>
+      <Name>Time Reference Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0xB1</Code>
+      <Description>The Time Reference message is used to provide a midnight reference point for recipients of the feed. It is sent whenever the system starts up and when the system crosses a midnight boundary. All subsequent Time messages for the same unit will the use the last Midnight Reference until another Time Reference message is received for that unit. The Time Reference message includes the Trade Date, so most other sequenced messages will not include that information. Time Reference messages will be included in a spin response.</Description>
+      <Fields>
+        <Field>
+          <Name>Midnight Reference</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Midnight Central Time reference time for subsequent Time messages, expressed as number of whole seconds since the Epoch (Midnight January 1, 1970 UTC).</Description>
+        </Field>
+        <Field>
+          <Name>Time</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Number of whole seconds elapsed since the start of the current Central Time calendar day, derived by converting the current Central wall clock time (HH:MM:SS) to seconds. On Daylight Saving Time transition days, Time reflects wall clock seconds and does not adjust for the UTC offset change. On a DST spring- forward day, the maximum value will be 82,799 (23 hours). On a DST fall-back day, values between 3,600 and 7,199 will appear twice. Recipients requiring unambiguous absolute timestamps should use Epoch Time (where available) or Midnight Reference in the Time Reference message.</Description>
+        </Field>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+        <Field>
+          <Name>Trade Date</Name>
+          <Type>Binary Date</Type>
+          <Size>4</Size>
+          <Description>Current Trade Date</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Time Message -->
+    <Message>
+      <Name>Time Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x20</Code>
+      <Description>A Time message is immediately generated and sent when there is a PITCH event for a given clock second. If there is no PITCH event for a given clock second, then no Time message is sent for that second. All subsequent Time Offset fields for the same unit will use the new Time message value as the base until another Time message is received for the same unit. The Time field is the number of seconds relative to midnight Central Time, which is provided in the Time Reference message. The Time message also includes the Epoch Time field, which is the current time represented as the number of whole seconds since the Epoch (Midnight January 1, 1970).</Description>
+      <Fields>
+        <Field>
+          <Name>Time</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Number of whole seconds elapsed since the start of the current Central Time calendar day, derived by converting the current Central wall clock time (HH:MM:SS) to seconds. On Daylight Saving Time transition days, Time reflects wall clock seconds and does not adjust for the UTC offset change. On a DST spring- forward day, the maximum value will be 82,799 (23 hours). On a DST fall-back day, values between 3,600 and 7,199 will appear twice. Recipients requiring unambiguous absolute timestamps should use Epoch Time (where available) or Midnight Reference in the Time Reference message.</Description>
+        </Field>
+        <Field>
+          <Name>Epoch Time</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Number of whole seconds since the Epoch (Midnight January 1, 1970 UTC).</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Unit Clear Message -->
+    <Message>
+      <Name>Unit Clear Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x97</Code>
+      <Description>The Unit Clear message instructs feed recipients to clear all orders for the CFE book in the unit specified in the Sequenced Unit Header message header. It would be distributed in rare recovery events such as a data center fail-over.</Description>
+      <Fields>
+        <Field>
+          <Name>Time offset</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Transaction Begin Message -->
+    <Message>
+      <Name>Transaction Begin Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0xBC</Code>
+      <Description>The Transaction Begin message indicates any subsequent messages, up to the accompanying Transaction End message, are all part of the same transaction block. One example of where this might be used is when a single aggressive order executes against several resting orders. All PITCH messages corresponding to such an event would be included between a Transaction Begin message and Transaction End message. It is important to note that any PITCH Message Type may be included in a transaction block and there is no guarantee that the messages apply to the same price level or even the same Symbol. Transaction Begin messages do not alter the book and can be ignored if messages are being used solely to build a book. Feed processors can use a transaction block as a trigger to postpone publishing a quote update until the end of the transaction block. In the prior example of a single aggressive order executing against multiple resting orders, a top of book feed would be able to publish a single trade message and quote update resulting from multiple Order Executed messages once it finished processing all of the messages within the transaction block.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Transaction End Message -->
+    <Message>
+      <Name>Transaction End Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0xBD</Code>
+      <Description>The Transaction End message indicates that a transaction indicated by a previous Transaction Begin message has completed. Transaction End messages do not alter the book and can be ignored if messages are being used solely to build a book.</Description>
+      <Fields>
+        <Field>
+          <Name>Time offset</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- OOF Symbol Mapping Message -->
+    <Message>
+      <Name>OOF Symbol Mapping Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0xF9</Code>
+      <Description>An OOF Symbol Mapping message is used to map the 6 character multicast feed symbol field and options on futures name to the option contract and future underlying. The option contract is comprised of the strike price, put/call flag, options expiration date, and future underlying. The future underlying is comprised of the futures product and futures expiration date, which map to a futures symbol. This message can be sent either as a sequenced message or as an unsequenced message. It is sent as a sequenced message at system startup upon the beginning of a trading session or if an instrument is created or modified during a trading day. A new sequenced message may also be sent for a symbol that does not visibly change any attribute. A continuous loop of unsequenced symbol mapping messages (sequence = 0) is sent throughout the day at variable rates as bandwidth allows. The Time Offset field should be ignored on unsequenced messages. OOF Symbol Mapping messages are included in a spin response and will be disseminated before Complex Instrument Definition Expanded messages.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+        <Field>
+          <Name>Feed Symbol</Name>
+          <Type>Printable ASCII</Type>
+          <Size>6</Size>
+          <Description>Option symbol. Six character, base 62.</Description>
+        </Field>
+        <Field>
+          <Name>Futures Product</Name>
+          <Type>Printable ASCII</Type>
+          <Size>8</Size>
+          <Description>Underlying futures contract product name.</Description>
+        </Field>
+        <Field>
+          <Name>Futures Expiration</Name>
+          <Type>Binary Date</Type>
+          <Size>4</Size>
+          <Description>Underlying futures contract expiration date.</Description>
+        </Field>
+        <Field>
+          <Name>Futures Symbol</Name>
+          <Type>Printable ASCII</Type>
+          <Size>6</Size>
+          <Description>Underlying Cboe-formatted futures contract symbol. Six character, base 62.</Description>
+        </Field>
+        <Field>
+          <Name>Strike Price</Name>
+          <Type>Binary Price</Type>
+          <Size>8</Size>
+          <Description>Option contract strike price.</Description>
+        </Field>
+        <Field>
+          <Name>Call Put Indicator</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>C = Call P = Put</Description>
+        </Field>
+        <Field>
+          <Name>Options Expiration</Name>
+          <Type>Binary Date</Type>
+          <Size>4</Size>
+          <Description>Options contract expiration date.</Description>
+        </Field>
+        <Field>
+          <Name>Options on Futures Name</Name>
+          <Type>Alphanumeric</Type>
+          <Size>16</Size>
+          <Description>Textual symbol description comprising options product symbol, underlying futures expiration, put/call and the option strike price with two digits to the right of the decimal point. For example "UX1A/X4 C2000" represents the 20.00 strike Call option on the UX1A product with underlying futures expiration X4".</Description>
+        </Field>
+        <Field>
+          <Name>Symbol Condition</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>N = Normal C = Closing Only</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Complex Instrument Definition Expanded Message -->
+    <Message>
+      <Name>Complex Instrument Definition Expanded Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x9A</Code>
+      <Description>A Complex Instrument Definition Expanded message represents a complex instrument that is available to place orders. This message can be sent either as a sequenced message or as an unsequenced message. It is sent as a sequenced message at system startup upon the beginning of a trading session or if an instrument is created or modified during a trading day. A new sequenced message may also be sent for a symbol that does not visibly change any attribute. A continuous loop of unsequenced symbol mapping messages (sequence = 0) is sent throughout the day at variable rates as bandwidth allows. The Time Offset field should be ignored on unsequenced messages. The Complex Instrument Definition Expanded message will contain two or more repeating groups of leg definitions. There is a limit of 16 leg definitions. Complex Instrument Definition Expanded messages are included in a spin response.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+        <Field>
+          <Name>Complex Instrument Id</Name>
+          <Type>Printable ASCII</Type>
+          <Size>6</Size>
+          <Description>Complex Instrument Id. Six character, base 62.</Description>
+        </Field>
+        <Field>
+          <Name>Complex Instrument Underlying</Name>
+          <Type>Printable ASCII</Type>
+          <Size>8</Size>
+          <Description>Complex Instrument Underlying right padded with spaces.</Description>
+        </Field>
+        <Field>
+          <Name>Complex Instrument Type</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>4 character field; each field describes a characteristic. Character 1: Complex Option Type O = All legs are options Characters 2-4: Reserved</Description>
+        </Field>
+        <Field>
+          <Name>Leg Count</Name>
+          <Type>Binary</Type>
+          <Size>1</Size>
+          <Description>The number of legs in the complex instrument. The maximum number of legs is 16.</Description>
+        </Field>
+        <Field>
+          <Name>Option Leg</Name>
+          <Type>group</Type>
+          <Size>13</Size>
+          <Description>The following fields repeat Leg Count times for multi-leg strategies. Leg Index is zero-based.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Trading Status Message -->
+    <Message>
+      <Name>Trading Status Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x31</Code>
+      <Description>The Trading Status message is used to indicate the current trading status of a symbol. A Trading Status message will be sent for all symbols as they transition through various trading states. If a Trading Status message has not been received for a symbol, then the Trading Status for the symbol should be assumed to be H = Halted. The following summarizes the Trading Status values for options in the CFE system: H = Halted state. This state is used for Supervisory Halts initiated by the Trade Desk. Orders are not being accepted in this state. Q = Queuing state. This state is used when orders are being accepted for queuing. The Queuing state is used during the pre-open for all symbols. It is also used for spread instruments that may not be tradeable due to Threshold Width. T = Trading state. This state is used when the symbol is available for trading. CFE will send a Trading Status of Q once orders can be accepted for queuing in preparation for the open. At or after the opening time, CFE will send a Trading Status of T as symbols are opened for trading. Once trading is done for the day CFE will send a Trading Status of H indicating the symbol is Halted.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Printable ASCII</Type>
+          <Size>6</Size>
+          <Description>Six character, base 62.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved1</Name>
+          <Type>Binary</Type>
+          <Size>2</Size>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>Trading Status</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>H = Halted Q = Queuing T = Trading</Description>
+        </Field>
+        <Field>
+          <Name>Reserved2</Name>
+          <Type>Binary</Type>
+          <Size>3</Size>
+          <Description>Reserved</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Add Order Long Message -->
+    <Message>
+      <Name>Add Order Long Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x21</Code>
+      <Description>An Add Order message represents a newly accepted visible order on the CFE book. It includes a day- specific Order Id assigned by CFE to the order.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+        <Field>
+          <Name>Order Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Day-specific identifier assigned to this order.</Description>
+        </Field>
+        <Field>
+          <Name>Side Indicator</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>B = Buy Order S = Sell Order</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Number of contracts being added to the book (may be less than the number entered).</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Printable ASCII</Type>
+          <Size>6</Size>
+          <Description>Six character, base 62 symbol.</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Binary Price</Type>
+          <Size>8</Size>
+          <Description>The limit order price.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Add Order Short Message -->
+    <Message>
+      <Name>Add Order Short Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x22</Code>
+      <Description>An Add Order message represents a newly accepted visible order on the CFE book. It includes a day- specific Order Id assigned by CFE to the order.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+        <Field>
+          <Name>Order Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Day-specific identifier assigned to this order.</Description>
+        </Field>
+        <Field>
+          <Name>Side Indicator</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>B = Buy Order S = Sell Order</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>Binary</Type>
+          <Size>2</Size>
+          <Description>Number of contracts being added to the book (may be less than the number entered).</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Printable ASCII</Type>
+          <Size>6</Size>
+          <Description>Six character, base 62 symbol.</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Binary Short Price</Type>
+          <Size>2</Size>
+          <Description>The limit order price.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Order Executed Message -->
+    <Message>
+      <Name>Order Executed Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x23</Code>
+      <Description>Order Executed messages are sent when an order on the CFE book is executed in whole or in part. The execution price equals the limit order price found in the original Add Order message or the limit order price in the latest Modify Order message referencing the Order Id.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+        <Field>
+          <Name>Order Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Order Id of a previously sent Add Order message that was executed.</Description>
+        </Field>
+        <Field>
+          <Name>Executed Quantity</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Number of contracts executed.</Description>
+        </Field>
+        <Field>
+          <Name>Execution Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>CFE generated day-unique execution identifier of this execution. Execution Id is also referenced in the Trade Break message.</Description>
+        </Field>
+        <Field>
+          <Name>Trade Condition</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>(Space) = Normal trade O = Opening trade1 S = Spread trade1 1Sent for simple (non-spread) symbols only.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Reduce Size Long Message -->
+    <Message>
+      <Name>Reduce Size Long Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x25</Code>
+      <Description>Reduce Size messages are sent when a visible order on the CFE book is partially reduced.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+        <Field>
+          <Name>Order Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Order Id of a previously sent Add Order message that has been reduced.</Description>
+        </Field>
+        <Field>
+          <Name>Canceled Quantity</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Number of contracts canceled.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Reduce Size Short Message -->
+    <Message>
+      <Name>Reduce Size Short Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x26</Code>
+      <Description>Reduce Size messages are sent when a visible order on the CFE book is partially reduced.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+        <Field>
+          <Name>Order Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Order Id of a previously sent Add Order message that has been reduced.</Description>
+        </Field>
+        <Field>
+          <Name>Canceled Quantity</Name>
+          <Type>Binary</Type>
+          <Size>2</Size>
+          <Description>Number of contracts canceled.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Modify Order Long Message -->
+    <Message>
+      <Name>Modify Order Long Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x27</Code>
+      <Description>The Modify Order message is sent whenever an open order is visibly modified. The Order Id refers to the Order Id of the original Add Order message. Note that Modify Order messages that appear to be "no ops" (i.e. they do not appear to modify any relevant fields) will still lose priority.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+        <Field>
+          <Name>Order Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Order Id of a previously sent Add Order message that has been modified.</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Number of contracts associated with this order after this modify (may be less than the number entered).</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Binary Price</Type>
+          <Size>8</Size>
+          <Description>The limit order price after this modify.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Modify Order Short Message -->
+    <Message>
+      <Name>Modify Order Short Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x28</Code>
+      <Description>The Modify Order message is sent whenever an open order is visibly modified. The Order Id refers to the Order Id of the original Add Order message. Note that Modify Order messages that appear to be "no ops" (i.e. they do not appear to modify any relevant fields) will still lose priority.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+        <Field>
+          <Name>Order Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Order Id of a previously sent Add Order message that has been modified.</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>Binary</Type>
+          <Size>2</Size>
+          <Description>Number of contracts associated with this order after this modify (may be less than the number entered).</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Binary Short Price</Type>
+          <Size>2</Size>
+          <Description>The limit order price after this modify.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Delete Order Message -->
+    <Message>
+      <Name>Delete Order Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x29</Code>
+      <Description>The Delete Order message is sent whenever a booked order is cancelled or leaves the order book. The Order Id refers to the Order Id of the original Add Order message. An order that is deleted from the book may return to the book later under certain circumstances. Therefore, a Delete Order message does not indicate that a given Order Id will not be sent again on a subsequent Add Order message.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+        <Field>
+          <Name>Order Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Order Id of a previously sent Add Order message that has been removed from order book.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Trade Long Message -->
+    <Message>
+      <Name>Trade Long Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x2A</Code>
+      <Description>The Trade message provides information about executions that occur off of the CFE book (such as Block trades). Trade messages are necessary to calculate CFE execution data. Trade messages do not alter the book and can be ignored if messages are being used solely to build a book. The Order Id sent in a Trade message is obfuscated and will not tie back to any real Order Id sent back via a FIX or BOE order entry session.</Description>
+      <Fields>
+        <Field>
+          <Name>Time offset</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+        <Field>
+          <Name>Order Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Obfuscated Order ID or Order Id of the executed order.</Description>
+        </Field>
+        <Field>
+          <Name>Side Indicator</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Always B = Buy Order regardless of resting side.</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Incremental number of contracts executed.</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Printable ASCII</Type>
+          <Size>6</Size>
+          <Description>Six character, base 62 symbol.</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Binary Price</Type>
+          <Size>8</Size>
+          <Description>The execution price of the order.</Description>
+        </Field>
+        <Field>
+          <Name>Execution Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>CFE generated day-unique execution identifier of this trade. Execution Id is also referenced in the Trade Break message.</Description>
+        </Field>
+        <Field>
+          <Name>Trade Condition</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>(Space) = Normal trade O = Opening trade1 S = Spread trade1 B = Block trade 1Sent for simple (non-spread) symbols only.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Trade Short Message -->
+    <Message>
+      <Name>Trade Short Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x2B</Code>
+      <Description>The Trade message provides information about executions that occur off of the CFE book (such as Block trades). Trade messages are necessary to calculate CFE execution data. Trade messages do not alter the book and can be ignored if messages are being used solely to build a book. The Order Id sent in a Trade message is obfuscated and will not tie back to any real Order Id sent back via a FIX or BOE order entry session.</Description>
+      <Fields>
+        <Field>
+          <Name>Time offset</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+        <Field>
+          <Name>Order Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Obfuscated Order ID or Order Id of the executed order.</Description>
+        </Field>
+        <Field>
+          <Name>Side Indicator</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Always B = Buy Order regardless of resting side.</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>Binary</Type>
+          <Size>2</Size>
+          <Description>Incremental Number of contracts executed.</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Printable ASCII</Type>
+          <Size>6</Size>
+          <Description>Six character, base 62 symbol.</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Binary Short Price</Type>
+          <Size>2</Size>
+          <Description>The execution price of the order.</Description>
+        </Field>
+        <Field>
+          <Name>Execution Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>CFE generated day-unique execution identifier of this trade. Execution Id is also referenced in the Trade Break message.</Description>
+        </Field>
+        <Field>
+          <Name>Trade Condition</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>(Space) = Normal trade O = Opening trade1 S = Spread trade1 B = Block trade 1Sent for simple (non-spread) symbols only.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Trade Break Message -->
+    <Message>
+      <Name>Trade Break Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x2C</Code>
+      <Description>The Trade Break message is sent whenever an execution on CFE is broken. Trade breaks are rare and only affect applications that rely upon CFE execution-based data. A Trade Break message followed immediately be a new Trade message with the same Execution Id indicates that a trade correction has occurred. Applications that simply build a CFE book can ignore Trade Break messages.</Description>
+      <Fields>
+        <Field>
+          <Name>Time offset</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+        <Field>
+          <Name>Execution Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>CFE execution identifier of the execution that was broken. Execution Id refers to previously sent Order Executed message or Trade message.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Settlement Message -->
+    <Message>
+      <Name>Settlement Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0xB9</Code>
+      <Description>Settlement messages are used to provide information concerning indicative, approved, or corrected daily and final settlement prices for CFE products. An indicative daily settlement price (Issue = I) is calculated by the system and sent immediately after an instrument closes trading but before the settlement price is approved. An approved settlement price (Issue = S) is sent once the CFE Trade Desk approves a settlement price for an instrument. If there is an error in the approved settlement price, then it may be re-issued (Issue = R).</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Printable ASCII</Type>
+          <Size>6</Size>
+          <Description>Six character, base 62 symbol.</Description>
+        </Field>
+        <Field>
+          <Name>Trade Date</Name>
+          <Type>Binary Date</Type>
+          <Size>4</Size>
+          <Description>Trade Date for the settlement.</Description>
+        </Field>
+        <Field>
+          <Name>Settlement Price</Name>
+          <Type>Binary Price</Type>
+          <Size>8</Size>
+          <Description>Settlement Price</Description>
+        </Field>
+        <Field>
+          <Name>Issue</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>I = Indicative Settlement S = Initial Settlement R = Re-issued Settlement</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- End Of Day Summary Message -->
+    <Message>
+      <Name>End Of Day Summary Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0xBA</Code>
+      <Description>The End of Day Summary message is sent out right after trading ends for a symbol. No more markdate data update messages will follow an End of Day Summary message for a particular symbol. A value of zero in the Total Volume field means that no volume traded on that symbol for the day. The Total Volume field reflects all contracts traded during the day. Block trades are included in the Total Volume field, but they are also reported separately to provide more detail. The Summary Flags field provides additional information on how to interpret the High Price and Low Price fields, especially in instruments that had no volume for the day and/or where 0 is a valid price (e.g. complex instruments). There are flags that indicate whether or not the High Price and Low Price fields are valid. If they are not valid, then there was no High (and/or Low) Price for the day. There are also flags that indicate whether the High Price was set by the highest bid and the Low Price was set by the lowest offer rather than a trade. All End of Day Summary message values will span the full trading day, including all extended hours trading and all trading segments.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Printable ASCII</Type>
+          <Size>6</Size>
+          <Description>Six character, base 62 symbol.</Description>
+        </Field>
+        <Field>
+          <Name>Trade Date</Name>
+          <Type>Binary Date</Type>
+          <Size>4</Size>
+          <Description>Trade Date for the message.</Description>
+        </Field>
+        <Field>
+          <Name>Open Interest</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Prior Trade Date Open Interest for this symbol.</Description>
+        </Field>
+        <Field>
+          <Name>High Price</Name>
+          <Type>Binary Price</Type>
+          <Size>8</Size>
+          <Description>The higher of highest bid price and highest trade price for the day. Block trades (Trade Condition = B or E) do not update High Price.</Description>
+        </Field>
+        <Field>
+          <Name>Low Price</Name>
+          <Type>Binary Price</Type>
+          <Size>8</Size>
+          <Description>The lower of lowest offer price and lowest trade price for the day. Block trades (Trade Condition = B or E) do not update Low Price.</Description>
+        </Field>
+        <Field>
+          <Name>Open Price</Name>
+          <Type>Binary Price</Type>
+          <Size>8</Size>
+          <Description>The first trade on the day (in any session) will set the Open Price for the day (valid only if Total Volume &gt; 0). Block trades (Trade Condition = B or E) do not update Open Price.</Description>
+        </Field>
+        <Field>
+          <Name>Close Price</Name>
+          <Type>Binary Price</Type>
+          <Size>8</Size>
+          <Description>The last trade on the day (in any session) will set the Close Price for the day (valid only if Total Volume &gt; 0). Block trades (Trade Condition = B or E) do not update Close Price.</Description>
+        </Field>
+        <Field>
+          <Name>Total Volume</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Total number of contracts traded for the day, including block trades.</Description>
+        </Field>
+        <Field>
+          <Name>Block Volume</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Total number of block contracts traded for the day.</Description>
+        </Field>
+        <Field>
+          <Name>ECRP Volume</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Always zero.</Description>
+        </Field>
+        <Field>
+          <Name>Summary Flags</Name>
+          <Type>Bit Field</Type>
+          <Size>1</Size>
+          <Description>Bit 0 = High Price Valid - Set if High Price is a valid value. Bit 1 = High Price is bid- Set if High Price was set by the highest bid (rather than a trade). Bit 2 = Low Price Valid - Set if Low Price is a valid value. Bit 3 = Low Price is offer - Set if Low Price was set by the lowest offer (rather than a trade). Bit 4 = Open/Close Valid - Set if both Open Price and Close Price fields contain valid values. Bit 5-7 = Reserved</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- End of Session Message -->
+    <Message>
+      <Name>End of Session Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x2D</Code>
+      <Description>The End of Session message is sent for each unit when the unit shuts down. No more sequenced messages will be delivered for this unit, but heartbeats from the unit may be received.</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+  </Messages>
+
+  <Groups>
+
+    <!-- Option Leg -->
+    <Group>
+      <Name>Option Leg</Name>
+      <Dependency>Leg Count</Dependency>
+      <Description>The following fields repeat Leg Count times for multi-leg strategies. Leg Index is zero-based.</Description>
+      <Fields>
+        <Field>
+          <Name>Leg Symbol</Name>
+          <Type>Printable ASCII</Type>
+          <Size>8</Size>
+          <Description>Option Symbol of leg. Six character, base 62.</Description>
+        </Field>
+        <Field>
+          <Name>Leg Ratio</Name>
+          <Type>Signed Binary</Type>
+          <Size>4</Size>
+          <Description>Leg ratio (positive for buy-side, negative for sell-side). For options this is the number of contracts, for equities this is the number of shares.</Description>
+        </Field>
+        <Field>
+          <Name>Leg Security Type</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>O = Leg is an Option instrument</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+  </Groups>
+
+  <Bitfields>
+
+    <!-- Summary Flags -->
+    <Bitfield>
+      <Name>Summary Flags</Name>
+      <Description>Summary Flags bitfields</Description>
+      <Fields>
+        <Field>
+          <Name>High Price Valid</Name>
+          <Bits>1</Bits>
+          <Type>bit</Type>
+          <Description>Set if High Price is a valid value.</Description>
+        </Field>
+        <Field>
+          <Name>High Price is bid</Name>
+          <Bits>1</Bits>
+          <Type>bit</Type>
+          <Description>Set if High Price was set by the highest bid (rather than a trade).</Description>
+        </Field>
+        <Field>
+          <Name>Low Price Valid</Name>
+          <Bits>1</Bits>
+          <Type>bit</Type>
+          <Description>Set if Low Price is a valid value.</Description>
+        </Field>
+        <Field>
+          <Name>Low Price is offer</Name>
+          <Bits>1</Bits>
+          <Type>bit</Type>
+          <Description>Set if Low Price was set by the lowest offer (rather than a trade).</Description>
+        </Field>
+        <Field>
+          <Name>Open/Close Valid</Name>
+          <Bits>1</Bits>
+          <Type>bit</Type>
+          <Description>Set if both Open Price and Close Price fields contain valid values.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Bits>3</Bits>
+          <Type>bit</Type>
+          <Description>Reserved</Description>
+        </Field>
+      </Fields>
+    </Bitfield>
+
+  </Bitfields>
+
+  <Enums>
+
+    <!-- Call Put Indicator -->
+    <Enum>
+      <Name>Call Put Indicator</Name>
+      <Values>
+        <Value>
+          <Data>C</Data>
+          <Name>Call</Name>
+        </Value>
+        <Value>
+          <Data>P</Data>
+          <Name>Put</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Symbol Condition -->
+    <Enum>
+      <Name>Symbol Condition</Name>
+      <Values>
+        <Value>
+          <Data>N</Data>
+          <Name>Normal</Name>
+        </Value>
+        <Value>
+          <Data>C</Data>
+          <Name>Closing Only</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Trading Status -->
+    <Enum>
+      <Name>Trading Status</Name>
+      <Values>
+        <Value>
+          <Data>H</Data>
+          <Name>Halted</Name>
+        </Value>
+        <Value>
+          <Data>Q</Data>
+          <Name>Queuing</Name>
+        </Value>
+        <Value>
+          <Data>T</Data>
+          <Name>Trading</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Side Indicator -->
+    <Enum>
+      <Name>Side Indicator</Name>
+      <Values>
+        <Value>
+          <Data>B</Data>
+          <Name>Buy Order</Name>
+        </Value>
+        <Value>
+          <Data>S</Data>
+          <Name>Sell Order</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Trade Condition -->
+    <Enum>
+      <Name>Trade Condition</Name>
+      <Values>
+        <Value>
+          <Data>" "</Data>
+          <Name>Normal trade</Name>
+        </Value>
+        <Value>
+          <Data>O</Data>
+          <Name>Opening trade</Name>
+          <Description>Sent for simple (non-spread) symbols only.</Description>
+        </Value>
+        <Value>
+          <Data>S</Data>
+          <Name>Spread trade</Name>
+          <Description>Sent for simple (non-spread) symbols only.</Description>
+        </Value>
+        <Value>
+          <Data>B</Data>
+          <Name>Block trade</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Issue -->
+    <Enum>
+      <Name>Issue</Name>
+      <Values>
+        <Value>
+          <Data>I</Data>
+          <Name>Indicative Settlement</Name>
+        </Value>
+        <Value>
+          <Data>S</Data>
+          <Name>Initial Settlement</Name>
+        </Value>
+        <Value>
+          <Data>R</Data>
+          <Name>Re-issued Settlement</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Leg Security Type -->
+    <Enum>
+      <Name>Leg Security Type</Name>
+      <Values>
+        <Value>
+          <Data>O</Data>
+          <Name>Leg is an Option instrument</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+  </Enums>
+
+</OmiCboeFuturesPitchPdf>

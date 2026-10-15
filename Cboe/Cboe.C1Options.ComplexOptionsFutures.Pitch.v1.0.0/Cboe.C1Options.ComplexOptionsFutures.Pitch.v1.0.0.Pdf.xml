@@ -1,0 +1,1414 @@
+<OmiCboeOptionsPitchPdf>
+
+  <!-- Cboe C1 Options Complex Options/Futures Multicast Pitch: transcribed from the PDF field tables -->
+
+  <Messages>
+
+    <!-- Time Message -->
+    <Message>
+      <Name>Time Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x20</Code>
+      <Description>A Time message is immediately generated and sent when there is a PITCH event for a given clock second. If there is no PITCH event for a given clock second, then no Time message is sent for that second. The Time field is the number of seconds relative to midnight Eastern Time. All subsequent time offset fields for the same unit will use the new Time value as the base until another Time message is received for the same unit. The Time message will also include the Epoch Time field, which is the current time represented as the number of whole seconds since the Epoch (midnight January 1, 1970). A given trading day may span multiple calendar days. Market data recipients must prepare for a crossing of the midnight ET boundary. At such time, a new Time Reference message will be sent and the Time field in subsequent Time messages will reset to reflect the number of seconds from the most recent midnight ET time.</Description>
+      <Fields>
+        <Field>
+          <Name>Time</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Number of whole seconds from midnight Eastern Time</Description>
+        </Field>
+        <Field>
+          <Name>Epoch Time</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Number of whole seconds since the Epoch (midnight January 1, 1970 UTC).</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Unit Clear Message -->
+    <Message>
+      <Name>Unit Clear Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x97</Code>
+      <Description>The Unit Clear message instructs feed recipients to clear all orders for the Cboe complex book in the unit specified in the Sequenced Unit Header.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Time Offset</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Transaction Begin Message -->
+    <Message>
+      <Name>Transaction Begin Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0xBC</Code>
+      <Description>The Transaction Begin message indicates any subsequent messages, up to the accompanying Transaction End message, are all part of the same transaction block. All PITCH messages corresponding to such an event would be included between a Transaction Begin and Transaction End. It is important to note that any PITCH Message Type may be included in a transaction block and there is no guarantee that the messages apply to the same price level or even the same Symbol. Transaction Begin messages do not alter the book and can be ignored if messages are being used solely to build a book. Feed processors can use a transaction block as a trigger to postpone publishing a quote update until the end of the transaction block.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Time Offset</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Transaction End Message -->
+    <Message>
+      <Name>Transaction End Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0xBD</Code>
+      <Description>The Transaction End message indicates that a transaction indicated by a previous Transaction Begin message has completed. Transaction End messages do not alter the book and can be ignored if messages are being used solely to build a book.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Time Offset</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Complex Options Futures Instrument Definition Message -->
+    <Message>
+      <Name>Complex Options Futures Instrument Definition Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0xFC</Code>
+      <Description>A Complex Options Futures Instrument Definition message represents a complex instrument that is available to place orders. It is sent as a sequenced message the first time a Complex Options Futures Instrument Definition message is sent for a symbol. These messages will also be sent continuously through the day as an unsequenced message (sequence = 0) at variable rates as bandwidth allows. The Time offset field should be ignored on an unsequenced Complex Options Futures Instrument Definition message. The Complex Options Futures Instrument Definition message will contain two or more repeating groups of leg definitions. There is a limit of 16 leg definitions, one of which is a futures leg.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Time Offset</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+        <Field>
+          <Name>Complex Instrument Id</Name>
+          <Type>Printable ASCII</Type>
+          <Size>6</Size>
+          <Description>Complex Instrument Id right padded with spaces.</Description>
+        </Field>
+        <Field>
+          <Name>Complex Instrument Underlying</Name>
+          <Type>Printable ASCII</Type>
+          <Size>8</Size>
+          <Description>Complex Instrument Underlying right padded with spaces.</Description>
+        </Field>
+        <Field>
+          <Name>Complex Instrument Type</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Complex Option Type F = One leg is a futures leg</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>Reserved</Type>
+          <Size>3</Size>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>Leg Count</Name>
+          <Type>Binary</Type>
+          <Size>1</Size>
+          <Description>The number of legs in the complex instrument. The maximum number of legs is 16.</Description>
+        </Field>
+        <Field>
+          <Name>Futures Price Leg Count</Name>
+          <Type>Binary</Type>
+          <Size>1</Size>
+          <Description>The number of futures leg prices. This must match the number of futures legs.</Description>
+        </Field>
+        <Field>
+          <Name>Complex Leg</Name>
+          <Type>group</Type>
+          <Size>11</Size>
+          <Description>The following fields repeat Leg Count times for multi-leg strategies. Leg Index is zero-based.</Description>
+        </Field>
+        <Field>
+          <Name>Futures Price Leg</Name>
+          <Type>group</Type>
+          <Size>9</Size>
+          <Description>The following fields repeat Futures Leg Price Count times. Futures Price Leg Index is zero-based.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Symbol Mapping Message -->
+    <Message>
+      <Name>Symbol Mapping Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x2E</Code>
+      <Description>A Symbol Mapping message is used to map the 6 character multicast feed symbol field to an OSI symbol and Underlying. These messages are not sequenced (sequence = 0) and are sent continuously through the day at variable rates as bandwidth allows.</Description>
+      <Fields>
+        <Field>
+          <Name>Feed Symbol</Name>
+          <Type>Printable ASCII</Type>
+          <Size>6</Size>
+          <Description>Symbol right padded with spaces.</Description>
+        </Field>
+        <Field>
+          <Name>OSI Symbol</Name>
+          <Type>Printable ASCII</Type>
+          <Size>21</Size>
+          <Description>OSI Symbol</Description>
+        </Field>
+        <Field>
+          <Name>Symbol Condition</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>N = Normal C = Closing Only</Description>
+        </Field>
+        <Field>
+          <Name>Underlying</Name>
+          <Type>Alphanumeric</Type>
+          <Size>8</Size>
+          <Description>Symbol of underlying equity right padded with spaces. All spaces if not available or not applicable.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Add Order Long Message -->
+    <Message>
+      <Name>Add Order Long Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x21</Code>
+      <Description>An Add Order message represents a newly accepted visible order on the Cboe complex book. It includes a day-specific Order Id assigned by Cboe to the complex order.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Time Offset</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp</Description>
+        </Field>
+        <Field>
+          <Name>Order Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Day-specific identifier assigned to this order</Description>
+        </Field>
+        <Field>
+          <Name>Side Indicator</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>B = Buy Order S = Sell Order</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Instrument quantity added to the complex book (may be less than the number entered).</Description>
+        </Field>
+        <Field>
+          <Name>Complex Instrument Id</Name>
+          <Type>Printable ASCII</Type>
+          <Size>6</Size>
+          <Description>Complex Instrument Id right padded with spaces.</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Binary Signed Long Price</Type>
+          <Size>8</Size>
+          <Description>The limit order price. This is the price of the option legs only and does not include the futures leg price.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>Reserved</Type>
+          <Size>1</Size>
+          <Description>Reserved</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Add Order Short Message -->
+    <Message>
+      <Name>Add Order Short Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x22</Code>
+      <Description>An Add Order message represents a newly accepted visible order on the Cboe complex book. It includes a day-specific Order Id assigned by Cboe to the complex order.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Time Offset</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp</Description>
+        </Field>
+        <Field>
+          <Name>Order Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Day-specific identifier assigned to this order</Description>
+        </Field>
+        <Field>
+          <Name>Side Indicator</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>B = Buy Order S = Sell Order</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>Binary</Type>
+          <Size>2</Size>
+          <Description>Instrument quantity being added to the complex book (may be less than the number entered).</Description>
+        </Field>
+        <Field>
+          <Name>Complex Instrument Id</Name>
+          <Type>Printable ASCII</Type>
+          <Size>6</Size>
+          <Description>Complex Instrument Id right padded with spaces.</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Binary Signed Short Price</Type>
+          <Size>2</Size>
+          <Description>The limit order price. This is the price of the option legs only and does not include the futures leg price.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>Reserved</Type>
+          <Size>1</Size>
+          <Description>Reserved</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Add Order Expanded Message -->
+    <Message>
+      <Name>Add Order Expanded Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x2F</Code>
+      <Description>An Add Order message represents a newly accepted visible order on the Cboe complex book. It includes a day-specific Order Id assigned by Cboe to the complex order.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Time Offset</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp</Description>
+        </Field>
+        <Field>
+          <Name>Order Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Day-specific identifier assigned to this order</Description>
+        </Field>
+        <Field>
+          <Name>Side Indicator</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>B = Buy Order S = Sell Order</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Instrument quantity being added to the complex book (may be less than the number entered).</Description>
+        </Field>
+        <Field>
+          <Name>Complex Instrument Id</Name>
+          <Type>Printable ASCII</Type>
+          <Size>8</Size>
+          <Description>Complex Instrument Id right padded with spaces.</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Binary Signed Long Price</Type>
+          <Size>8</Size>
+          <Description>The limit order price. This is the price of the option legs only and does not include the futures leg price.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>Reserved</Type>
+          <Size>1</Size>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>Participant ID</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Optionally specified.If specified the Executing Broker of firm attributed to this quote. Space filled otherwise.</Description>
+        </Field>
+        <Field>
+          <Name>Customer Indicator</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>N = Non-Customer C = Customer</Description>
+        </Field>
+        <Field>
+          <Name>Client ID</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Optional user specified value attributed to this quote. Space filled otherwise.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>Reserved</Type>
+          <Size>5</Size>
+          <Description>Reserved</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Order Executed Message -->
+    <Message>
+      <Name>Order Executed Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x23</Code>
+      <Description>Order Executed messages are sent when a visible complex order on the Cboe complex book is executed in whole or in part. The execution price equals the limit order price found in the original Add Order message or the limit order price in the latest Modify Order message referencing the Order Id. Note even if there are single leg to complex order executions, this feed will only contain the order execution for the complex order. Any single leg execution information is available on the standard PITCH feed.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Time Offset</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp</Description>
+        </Field>
+        <Field>
+          <Name>Order Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Order Id of a previously sent Add Order message that was executed</Description>
+        </Field>
+        <Field>
+          <Name>Executed Quantity</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Instrument quantity executed</Description>
+        </Field>
+        <Field>
+          <Name>Execution Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Cboe generated day-unique execution identifier of this execution.</Description>
+        </Field>
+        <Field>
+          <Name>Trade Condition</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>N = Future Options auto electronic trade - Electronic execution of a multi leg future/options order traded on the complex book M = Future Options auction trade - Electronic execution of a multi leg future/options order traded in a two sided auction P = Future Options cross - Electronic execution of a multi leg future/options order traded in a two sided crossing mechanism that does not go through an exposure period</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Order Executed at Price Size Message -->
+    <Message>
+      <Name>Order Executed at Price Size Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x24</Code>
+      <Description>Order Execution at Price/Size messages are sent when a complex order on the Cboe complex book is executed in whole or in part at a different price than the limit price on the original Add Order message or the limit order price in the latest Modify Order message referencing the Order Id. If the Remaining Quantity field contains a 0 the complex order should be completely removed from the complex book. Order Execution at Price/Size messages may also be sent in the event the existing size for Order Id is not equal to Executed Quantity + Remaining Quantity. In this case the complex order should be prioritized the same as a new complex order.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Time Offset</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp</Description>
+        </Field>
+        <Field>
+          <Name>Order Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Order Id of a previously sent Add Order message that was executed</Description>
+        </Field>
+        <Field>
+          <Name>Executed Quantity</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Instrument quantity executed</Description>
+        </Field>
+        <Field>
+          <Name>Remaining Quantity</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Number of contracts remaining after the execution</Description>
+        </Field>
+        <Field>
+          <Name>Execution Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Cboe generated day-unique execution identifier of this execution.</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Binary Signed Long Price</Type>
+          <Size>8</Size>
+          <Description>The execution price of the order. This is the price of the option legs only and does not include the futures leg price.</Description>
+        </Field>
+        <Field>
+          <Name>Trade Condition</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>N = Future Options auto electronic trade - Electronic execution of a multi leg future/options order traded on the complex book M = Future Options auction trade - Electronic execution of a multi leg future/options order traded in a two sided auction P = Future Options cross - Electronic execution of a multi leg future/options order traded in a two sided crossing mechanism that does not go through an exposure period See Options Trade Condition Codes for details about new codes.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Reduce Size Long Message -->
+    <Message>
+      <Name>Reduce Size Long Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x25</Code>
+      <Description>Reduce Size messages are sent when a complex order on the Cboe complex book is partially reduced.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Time Offset</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp</Description>
+        </Field>
+        <Field>
+          <Name>Order Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Order Id of a previously sent Add Order message that has been reduced</Description>
+        </Field>
+        <Field>
+          <Name>Canceled Quantity</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Instrument quantity canceled</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Reduce Size Short Message -->
+    <Message>
+      <Name>Reduce Size Short Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x26</Code>
+      <Description>Reduce Size messages are sent when a complex order on the Cboe complex book is partially reduced.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Time Offset</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp</Description>
+        </Field>
+        <Field>
+          <Name>Order Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Order Id of a previously sent Add Order message that has been reduced</Description>
+        </Field>
+        <Field>
+          <Name>Canceled Quantity</Name>
+          <Type>Binary</Type>
+          <Size>2</Size>
+          <Description>Instrument quantity canceled</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Modify Order Long Message -->
+    <Message>
+      <Name>Modify Order Long Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x27</Code>
+      <Description>The Modify Order message is sent whenever an open complex order is visibly modified. The Order Id refers to the Order Id of the original Add Order message. Note that Modify Order messages that appear to be "no ops" (i.e. they do not appear to modify any relevant fields) will still lose priority.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Time Offset</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp</Description>
+        </Field>
+        <Field>
+          <Name>Order Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Order Id of a previously sent Add Order message that has been modified</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Instrument quantity associated with this complex order after this modify (may be less than the number entered)</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Binary Signed Long Price</Type>
+          <Size>8</Size>
+          <Description>The limit order price after this modify. This is the price of the option legs only and does not include the futures leg price.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>Bit Field</Type>
+          <Size>1</Size>
+          <Description>Reserved</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Modify Order Short Message -->
+    <Message>
+      <Name>Modify Order Short Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x28</Code>
+      <Description>The Modify Order message is sent whenever an open complex order is visibly modified. The Order Id refers to the Order Id of the original Add Order message. Note that Modify Order messages that appear to be "no ops" (i.e. they do not appear to modify any relevant fields) will still lose priority.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Time Offset</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp</Description>
+        </Field>
+        <Field>
+          <Name>Order Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Order Id of a previously sent Add Order message that has been modified</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>Binary</Type>
+          <Size>2</Size>
+          <Description>Instrument quantity associated with this complex order after this modify (may be less than the number entered)</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Binary Signed Short Price</Type>
+          <Size>2</Size>
+          <Description>The limit order price after this modify. This is the price of the option legs only and does not include the futures leg price.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>Bit Field</Type>
+          <Size>1</Size>
+          <Description>Reserved</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Delete Order Message -->
+    <Message>
+      <Name>Delete Order Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x29</Code>
+      <Description>The Delete Order message is sent whenever a booked order is cancelled or leaves the order book. The Order Id refers to the Order Id of the original Add Order message. An order that is deleted from the book may return to the book later under certain circumstances. Therefore, a Delete Order message does not indicate that a given Order Id will not be sent again on a subsequent Add Order message.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Time Offset</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp</Description>
+        </Field>
+        <Field>
+          <Name>Order Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Order Id of a previously sent Add Order message that has been removed from order book.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Trade Long Message -->
+    <Message>
+      <Name>Trade Long Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x2A</Code>
+      <Description>The Trade message provides information about executions of complex order auctions on the Cboe complex book. A Trade message can also be sent when an auction executes against a non-displayed order, such as a contra response. Trade messages are necessary to calculate Cboe execution-based data. Trade messages do not alter the complex book and can be ignored if messages are being used solely to build a complex book. No Add Order message is sent for complex auction orders, and thus, no order modification messages may be sent when complex auctions are executed. Instead, a Trade message is sent whenever a complex auction is executed in whole or in part. A complete view of all Cboe complex executions can be built by combining all Order Executed messages and Trade messages.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Time Offset</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp</Description>
+        </Field>
+        <Field>
+          <Name>Order Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Order Id of the executed order.</Description>
+        </Field>
+        <Field>
+          <Name>Side Indicator</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Always B=Buy Order regardless of resting side</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Instrument quantity traded</Description>
+        </Field>
+        <Field>
+          <Name>Complex Instrument Id</Name>
+          <Type>Printable ASCII</Type>
+          <Size>6</Size>
+          <Description>Complex Instrument Id right padded with spaces.</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Binary Signed Long Price</Type>
+          <Size>8</Size>
+          <Description>The execution price of the order. This is the price of the option legs only and does not include the futures leg price.</Description>
+        </Field>
+        <Field>
+          <Name>Execution Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Cboe generated day-unique execution identifier of this trade.</Description>
+        </Field>
+        <Field>
+          <Name>Trade Condition</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>N = Future Options auto electronic trade - Electronic execution of a multi leg future/options order traded on the complex book M = Future Options auction trade - Electronic execution of a multi leg future/options order traded in a two sided auction P = Future Options cross - Electronic execution of a multi leg future/options order traded in a two sided crossing mechanism that does not go through an exposure period</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Trade Short Message -->
+    <Message>
+      <Name>Trade Short Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x2B</Code>
+      <Description>The Trade message provides information about executions of complex order auctions on the Cboe complex book. A Trade message can also be sent when an auction executes against a non-displayed order, such as a contra response. Trade messages are necessary to calculate Cboe execution-based data. Trade messages do not alter the complex book and can be ignored if messages are being used solely to build a complex book. No Add Order message is sent for complex auction orders, and thus, no order modification messages may be sent when complex auctions are executed. Instead, a Trade message is sent whenever a complex auction is executed in whole or in part. A complete view of all Cboe complex executions can be built by combining all Order Executed messages and Trade messages.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Time Offset</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp</Description>
+        </Field>
+        <Field>
+          <Name>Order Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Order Id of the executed order.</Description>
+        </Field>
+        <Field>
+          <Name>Side Indicator</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Always B=Buy Order regardless of resting side</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>Binary</Type>
+          <Size>2</Size>
+          <Description>Instrument quantity traded</Description>
+        </Field>
+        <Field>
+          <Name>Complex Instrument Id</Name>
+          <Type>Printable ASCII</Type>
+          <Size>6</Size>
+          <Description>Complex Instrument Id right padded with spaces.</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Binary Signed Short Price</Type>
+          <Size>2</Size>
+          <Description>The execution price of the order. This is the price of the option legs only and does not include the futures leg price.</Description>
+        </Field>
+        <Field>
+          <Name>Execution Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Cboe generated day-unique execution identifier of this trade.</Description>
+        </Field>
+        <Field>
+          <Name>Trade Condition</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>N = Future Options auto electronic trade - Electronic execution of a multi leg future/options order traded on the complex book M = Future Options auction trade - Electronic execution of a multi leg future/options order traded in a two sided auction P = Future Options cross - Electronic execution of a multi leg future/options order traded in a two sided crossing mechanism that does not go through an exposure period</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Trade Futures Options Message -->
+    <Message>
+      <Name>Trade Futures Options Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0xFD</Code>
+      <Description>The Trade message provides information about executions of complex order auctions on the Cboe complex book. A Trade message can also be sent when an auction executes against a non-displayed order, such as a contra response. Trade messages are necessary to calculate Cboe execution-based data. Trade messages do not alter the complex book and can be ignored if messages are being used solely to build a complex book. No Add Order message is sent for complex auction orders, and thus, no order modification messages may be sent when complex auctions are executed. Instead, a Trade message is sent whenever a complex auction is executed in whole or in part. A complete view of all Cboe complex executions can be built by combining all Order Executed messages and Trade messages.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Time Offset</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp</Description>
+        </Field>
+        <Field>
+          <Name>Order Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Order Id of the executed order.</Description>
+        </Field>
+        <Field>
+          <Name>Side Indicator</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Always B =Buy Order regardless of resting side</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Instrument quantity traded</Description>
+        </Field>
+        <Field>
+          <Name>Complex Instrument Id</Name>
+          <Type>Printable ASCII</Type>
+          <Size>6</Size>
+          <Description>Complex Instrument Id right padded with spaces.</Description>
+        </Field>
+        <Field>
+          <Name>Total Price</Name>
+          <Type>Binary Signed Long Price</Type>
+          <Size>8</Size>
+          <Description>The total execution price of the order. This is the total execution price of the order including all the option legs and the futures leg.</Description>
+        </Field>
+        <Field>
+          <Name>Execution Id</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Cboe generated day-unique execution identifier of this trade.</Description>
+        </Field>
+        <Field>
+          <Name>Trade Condition</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>N = Future Options auto electronic trade - Electronic execution of a multi leg future/options order traded on the complex book M = Future Options auction trade - Electronic execution of a multi leg future/options order traded in a two sided auction P = Future Options cross - Electronic execution of a multi leg future/options order traded in a two sided crossing mechanism that does not go through an exposure period</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Auction Notification Message -->
+    <Message>
+      <Name>Auction Notification Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0xAD</Code>
+      <Description>Auction Notification messages are used to disseminate order details of a complex auction. Auctions will be available for a defined period of time known as the exposure period.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Time Offset</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+        <Field>
+          <Name>Complex Instrument Id</Name>
+          <Type>Printable ASCII</Type>
+          <Size>6</Size>
+          <Description>Complex Instrument Id right padded with spaces.</Description>
+        </Field>
+        <Field>
+          <Name>Auction ID</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Day specific identifier assigned to this auction.</Description>
+        </Field>
+        <Field>
+          <Name>Auction Type</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>C=Complex Auction (COA) B=Complex AIM</Description>
+        </Field>
+        <Field>
+          <Name>Side</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>B=Buy S=Sell</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Binary Signed Long Price</Type>
+          <Size>8</Size>
+          <Description>Auction price. This is the auction price of the option legs only and does not include the futures leg price.</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Instrument quantity.</Description>
+        </Field>
+        <Field>
+          <Name>Customer Indicator</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>N=Non-Customer C=Customer</Description>
+        </Field>
+        <Field>
+          <Name>ParticipantID</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Executing Broker (optional) of firm attributed to this quote.</Description>
+        </Field>
+        <Field>
+          <Name>Auction End Offset</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last timestamp.</Description>
+        </Field>
+        <Field>
+          <Name>Client ID</Name>
+          <Type>Alphanumeric</Type>
+          <Size>4</Size>
+          <Description>Optional user specified value attributed to this quote. Space filled otherwise.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Auction Cancel Message -->
+    <Message>
+      <Name>Auction Cancel Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0xAE</Code>
+      <Description>Auction Cancel messages are used to disseminate the cancellation of an earlier Auction Notification message as a result of a user cancellation of the original complex auction, a user modification request to change the complex auction price or increase the original complex auction quantity, a fading of the NBBO or to cancel any remaining complex auction quantity from the original Auction Notification following the complex auction termination. A user request to modify the complex auction price or to increase the original complex auction quantity will result in a cancellation of the complex auction followed by a new Auction Notification message. Auction Cancel messages will not be issued for complex auction quantity decrements.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Time Offset</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp</Description>
+        </Field>
+        <Field>
+          <Name>Auction ID</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Day specific identifier assigned to this auction</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Auction Trade Message -->
+    <Message>
+      <Name>Auction Trade Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0xAF</Code>
+      <Description>Auction Trade messages are used to disseminate executions resulting from a complex auction.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Time Offset</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+        <Field>
+          <Name>Auction ID</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Day specific identifier assigned to this auction</Description>
+        </Field>
+        <Field>
+          <Name>Execution ID</Name>
+          <Type>Binary</Type>
+          <Size>8</Size>
+          <Description>Day specific identifier assigned to this execution</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Binary Signed Long Price</Type>
+          <Size>8</Size>
+          <Description>Trade price. This is the trade price of the option legs only and does not include the futures leg price.</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Instrument quantity traded</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Trading Status Message -->
+    <Message>
+      <Name>Trading Status Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x31</Code>
+      <Description>The Trading Status message is used to indicate the current trading status of a complex instrument. A Trading Status message will be sent whenever a complex instrument trading status changes. A Trading Status message will be sent for all complex instruments as they transition through various trading states. Starting at 7:30 a.m. ET, Cboe will send a Trading Status of Q once orders can be accepted for queuing in preparation for the RTH open. At or after 9:30 a.m. ET, Cboe will send a Trading Status of T as series are open for trading. Cboe will send a Trading Status of L as SPX or VIX series transition from RTH trading to Curb trading. A Trading Status message will also be sent: for a Regulatory Halt Q=Quotingperiod in any series where the underlying has experienced a Regulatory Halt as well as the T=Trading resumption for the same series. for instruments that are in a Q=Quoting period for auctions. The Trading Status field will be used to represent the status of the RTH (9:30 a.m. ET - 4:15 p.m. ET) and Curb sessions. The GTH Trading Status field will be used to represent the status of series that trade during the GTH session. The GTH session runs from 8:15 p.m. to 9:25 a.m. ET for SPX and VIX series.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Time Offset</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp</Description>
+        </Field>
+        <Field>
+          <Name>Complex Symbol ID</Name>
+          <Type>Printable ASCII</Type>
+          <Size>6</Size>
+          <Description>Complex Symbol right padded with spaces.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>Reserved</Type>
+          <Size>2</Size>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>Trading Status</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>H=Halted L=Curb Trading Q=Quote-Only T=RTH Trading</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>Reserved</Type>
+          <Size>1</Size>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>GTH Trading Status</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>H=Halted Q=Quote-Only T=Trading</Description>
+        </Field>
+        <Field>
+          <Name>Reserved2</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>Reserved</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Options Auction Update Message -->
+    <Message>
+      <Name>Options Auction Update Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0xD1</Code>
+      <Description>Options Auction Update messages are used to disseminate price and size information during the Opening and Re-Opening (halt) process for complex instruments. The Options Auction Update messages are sent every 5 seconds during an opening period. Refer to the Cboe Options Complex Book Process specification for more information.</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Time Offset</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+        <Field>
+          <Name>Complex Instrument ID</Name>
+          <Type>Printable ASCII</Type>
+          <Size>8</Size>
+          <Description>Complex Instrument right padded with spaces.</Description>
+        </Field>
+        <Field>
+          <Name>Auction Type</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>G=GTH Opening O=RTH Opening H=Halt Re-Opening</Description>
+        </Field>
+        <Field>
+          <Name>Reference Price</Name>
+          <Type>Binary Long Price</Type>
+          <Size>8</Size>
+          <Description>Not used for complex series. Will contain zero value.</Description>
+        </Field>
+        <Field>
+          <Name>Buy Contracts</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Cumulative Buy interest at the Indicative Price.</Description>
+        </Field>
+        <Field>
+          <Name>Sell Contracts</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Cumulative Sell interest at the Indicative Price.</Description>
+        </Field>
+        <Field>
+          <Name>Indicative Price</Name>
+          <Type>Binary Signed Long Price</Type>
+          <Size>8</Size>
+          <Description>SNBBO Collared Volume Maximizing Imbalance Minimizing Price computed on combined Auction-Only and Continuous Book (if any). This is the price of the option legs only and does not include the futures leg price.</Description>
+        </Field>
+        <Field>
+          <Name>Auction Only Price</Name>
+          <Type>Binary Signed Long Price</Type>
+          <Size>8</Size>
+          <Description>Not used for complex series. Will contain zero value.</Description>
+        </Field>
+        <Field>
+          <Name>Opening Condition</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>Not used for Complex series. Will contain zero value.</Description>
+        </Field>
+        <Field>
+          <Name>Composite Market Bid Price</Name>
+          <Type>Binary Signed Long Price</Type>
+          <Size>8</Size>
+          <Description>Not used for Complex series. Will contain zero value.</Description>
+        </Field>
+        <Field>
+          <Name>Composite Market Offer Price</Name>
+          <Type>Binary Signed Long Price</Type>
+          <Size>8</Size>
+          <Description>Not used for complex series. Will contain zero value.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Auction Summary Message -->
+    <Message>
+      <Name>Auction Summary Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x96</Code>
+      <Description>Auction Summary messages are used to disseminate the results of an auction of a complex instrument. An Opening or Re-Opening Auction Summary message for each complex instrument is sent at the conclusion of its Opening or Re-Opening auction and represents Cboe opening price. Refer to the Cboe Options Complex Book Process specification for more information. The Auction Summary message has the following format:</Description>
+      <Fields>
+        <Field>
+          <Name>Time Offset</Name>
+          <Type>Time Offset</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp.</Description>
+        </Field>
+        <Field>
+          <Name>Complex Instrument Id</Name>
+          <Type>Printable ASCII</Type>
+          <Size>8</Size>
+          <Description>Complex Instrument Id right padded with spaces.</Description>
+        </Field>
+        <Field>
+          <Name>Auction Type</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>G=GTH Opening O=RTH Opening H=Halt Re-Opening</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Binary Signed Long Price</Type>
+          <Size>8</Size>
+          <Description>Auction price. This is the price of the option legs only and does not include the futures leg price.</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Cumulative instrument quantity executed during the auction</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- End of Session Message -->
+    <Message>
+      <Name>End of Session Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Application</Category>
+      <Code>0x2D</Code>
+      <Description>The End of Session message is sent for each unit when the unit shuts down. No more sequenced messages will be delivered for this unit, but heartbeats from the unit may be received.</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>Binary</Type>
+          <Size>4</Size>
+          <Description>Nanosecond offset from last unit timestamp</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+  </Messages>
+
+  <Groups>
+
+    <!-- Complex Leg -->
+    <Group>
+      <Name>Complex Leg</Name>
+      <Dependency>Leg Count</Dependency>
+      <Description>The following fields repeat Leg Count times for multi-leg strategies. Leg Index is zero-based.</Description>
+      <Fields>
+        <Field>
+          <Name>Leg Symbol</Name>
+          <Type>Printable ASCII</Type>
+          <Size>6</Size>
+          <Description>Option or Futures Symbol of leg, right padded with spaces.</Description>
+        </Field>
+        <Field>
+          <Name>Leg Ratio</Name>
+          <Type>Signed Binary</Type>
+          <Size>4</Size>
+          <Description>Leg ratio (positive for buy-side, negative for sell-side). This is the number of contracts.</Description>
+        </Field>
+        <Field>
+          <Name>Leg Security Type</Name>
+          <Type>Alphanumeric</Type>
+          <Size>1</Size>
+          <Description>O=Leg is an Option instrument F=Leg is an Futures instrument</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+    <!-- Futures Price Leg -->
+    <Group>
+      <Name>Futures Price Leg</Name>
+      <Dependency>Futures Price Leg Count</Dependency>
+      <Description>The following fields repeat Futures Leg Price Count times. Futures Price Leg Index is zero-based.</Description>
+      <Fields>
+        <Field>
+          <Name>Leg Index</Name>
+          <Type>Binary</Type>
+          <Size>1</Size>
+          <Description>The Leg Index the future price corresponds to. Leg Index is zero-based.</Description>
+        </Field>
+        <Field>
+          <Name>Futures Leg Price</Name>
+          <Type>Binary Unsigned Price</Type>
+          <Size>8</Size>
+          <Description>Futures leg price</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+  </Groups>
+
+  <Enums>
+
+    <!-- Complex Instrument Type -->
+    <Enum>
+      <Name>Complex Instrument Type</Name>
+      <Values>
+        <Value>
+          <Data>F</Data>
+          <Name>One leg is a futures leg</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Leg Security Type -->
+    <Enum>
+      <Name>Leg Security Type</Name>
+      <Values>
+        <Value>
+          <Data>O</Data>
+          <Name>Leg is an Option instrument</Name>
+        </Value>
+        <Value>
+          <Data>F</Data>
+          <Name>Leg is an Futures instrument</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Symbol Condition -->
+    <Enum>
+      <Name>Symbol Condition</Name>
+      <Values>
+        <Value>
+          <Data>N</Data>
+          <Name>Normal</Name>
+        </Value>
+        <Value>
+          <Data>C</Data>
+          <Name>Closing Only</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Side Indicator -->
+    <Enum>
+      <Name>Side Indicator</Name>
+      <Values>
+        <Value>
+          <Data>B</Data>
+          <Name>Buy Order</Name>
+        </Value>
+        <Value>
+          <Data>S</Data>
+          <Name>Sell Order</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Customer Indicator -->
+    <Enum>
+      <Name>Customer Indicator</Name>
+      <Values>
+        <Value>
+          <Data>N</Data>
+          <Name>Non-Customer</Name>
+        </Value>
+        <Value>
+          <Data>C</Data>
+          <Name>Customer</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Trade Condition -->
+    <Enum>
+      <Name>Trade Condition</Name>
+      <Values>
+        <Value>
+          <Data>N</Data>
+          <Name>Future Options auto electronic trade</Name>
+          <Description>Electronic execution of a multi leg future/options order traded on the complex book</Description>
+        </Value>
+        <Value>
+          <Data>M</Data>
+          <Name>Future Options auction trade</Name>
+          <Description>Electronic execution of a multi leg future/options order traded in a two sided auction</Description>
+        </Value>
+        <Value>
+          <Data>P</Data>
+          <Name>Future Options cross</Name>
+          <Description>Electronic execution of a multi leg future/options order traded in a two sided crossing mechanism that does not go through an exposure period</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Auction Type -->
+    <Enum>
+      <Name>Auction Type</Name>
+      <Values>
+        <Value>
+          <Data>C</Data>
+          <Name>Complex Auction (COA)</Name>
+        </Value>
+        <Value>
+          <Data>B</Data>
+          <Name>Complex AIM</Name>
+        </Value>
+        <Value>
+          <Data>G</Data>
+          <Name>GTH Opening</Name>
+        </Value>
+        <Value>
+          <Data>O</Data>
+          <Name>RTH Opening</Name>
+        </Value>
+        <Value>
+          <Data>H</Data>
+          <Name>Halt Re-Opening</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Side -->
+    <Enum>
+      <Name>Side</Name>
+      <Values>
+        <Value>
+          <Data>B</Data>
+          <Name>Buy</Name>
+        </Value>
+        <Value>
+          <Data>S</Data>
+          <Name>Sell</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Trading Status -->
+    <Enum>
+      <Name>Trading Status</Name>
+      <Values>
+        <Value>
+          <Data>H</Data>
+          <Name>Halted</Name>
+        </Value>
+        <Value>
+          <Data>L</Data>
+          <Name>Curb Trading</Name>
+        </Value>
+        <Value>
+          <Data>Q</Data>
+          <Name>Quote-Only</Name>
+        </Value>
+        <Value>
+          <Data>T</Data>
+          <Name>RTH Trading</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- GTH Trading Status -->
+    <Enum>
+      <Name>GTH Trading Status</Name>
+      <Values>
+        <Value>
+          <Data>H</Data>
+          <Name>Halted</Name>
+        </Value>
+        <Value>
+          <Data>Q</Data>
+          <Name>Quote-Only</Name>
+        </Value>
+        <Value>
+          <Data>T</Data>
+          <Name>Trading</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+  </Enums>
+
+</OmiCboeOptionsPitchPdf>
