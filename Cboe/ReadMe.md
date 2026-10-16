@@ -61,6 +61,7 @@
 | BxeEquities | TradeReporting | Fix | 1.55 | [files](Cboe.BxeEquities.TradeReporting.Fix.v1.55/) |
 | ByxEquities | BinaryOrderEntry | Boe | 2.4.55 | [files](Cboe.ByxEquities.BinaryOrderEntry.Boe.v2.4.55/) |
 | ByxEquities | BinaryOrderEntry | Boe | 2.4.57 | [files](Cboe.ByxEquities.BinaryOrderEntry.Boe.v2.4.57/) |
+| ByxEquities | BinaryOrderEntry | Boe3 | 1.0.14 | [files](Cboe.ByxEquities.BinaryOrderEntry.Boe3.v1.0.14/) |
 | ByxEquities | DropCopy | Fix | 2.9 | [files](Cboe.ByxEquities.DropCopy.Fix.v2.9/) |
 | ByxEquities | LastSale | AsciiPitch | 1.2.4 | [files](Cboe.ByxEquities.LastSale.AsciiPitch.v1.2.4/) |
 | ByxEquities | MulticastDepthOfBook | Pitch | 2.41.29 | [files](Cboe.ByxEquities.MulticastDepthOfBook.Pitch.v2.41.29/) |
@@ -75,11 +76,12 @@
 | ByxEquities | TcpDepthOfBook | AsciiPitch | 1.15.13 | [files](Cboe.ByxEquities.TcpDepthOfBook.AsciiPitch.v1.15.13/) |
 | ByxEquities | Top | AsciiPitch | 1.3.10 | [files](Cboe.ByxEquities.Top.AsciiPitch.v1.3.10/) |
 | ByxEquities | Top | AsciiPitch | 1.3.2 | [files](Cboe.ByxEquities.Top.AsciiPitch.v1.3.2/) |
-| ByxEquities | Top | AsciiPitch | 1.3.9 | [files](Cboe.ByxEquities.Top.AsciiPitch.v1.3.9/) |
+| ByxEquities | Top | AsciiPitch | 1.3.8 | [files](Cboe.ByxEquities.Top.AsciiPitch.v1.3.8/) |
 | BzxEquities | AuctionFeed | AsciiPitch | 1.3.8 | [files](Cboe.BzxEquities.AuctionFeed.AsciiPitch.v1.3.8/) |
 | BzxEquities | BinaryOrderEntry | Boe | 2.3 | [files](Cboe.BzxEquities.BinaryOrderEntry.Boe.v2.3/) |
 | BzxEquities | BinaryOrderEntry | Boe | 2.4.55 | [files](Cboe.BzxEquities.BinaryOrderEntry.Boe.v2.4.55/) |
 | BzxEquities | BinaryOrderEntry | Boe | 2.4.57 | [files](Cboe.BzxEquities.BinaryOrderEntry.Boe.v2.4.57/) |
+| BzxEquities | BinaryOrderEntry | Boe3 | 1.0.14 | [files](Cboe.BzxEquities.BinaryOrderEntry.Boe3.v1.0.14/) |
 | BzxEquities | DropCopy | Fix | 2.9 | [files](Cboe.BzxEquities.DropCopy.Fix.v2.9/) |
 | BzxEquities | LastSale | AsciiPitch | 1.2.4 | [files](Cboe.BzxEquities.LastSale.AsciiPitch.v1.2.4/) |
 | BzxEquities | MulticastDepthOfBook | Pitch | 2.20.4 | [files](Cboe.BzxEquities.MulticastDepthOfBook.Pitch.v2.20.4/) |
@@ -98,7 +100,7 @@
 | BzxEquities | TcpDepthOfBook | AsciiPitch | 1.15.13 | [files](Cboe.BzxEquities.TcpDepthOfBook.AsciiPitch.v1.15.13/) |
 | BzxEquities | TcpDepthOfBook | AsciiPitch | 1.15.16 | [files](Cboe.BzxEquities.TcpDepthOfBook.AsciiPitch.v1.15.16/) |
 | BzxEquities | Top | AsciiPitch | 1.3.10 | [files](Cboe.BzxEquities.Top.AsciiPitch.v1.3.10/) |
-| BzxEquities | Top | AsciiPitch | 1.3.9 | [files](Cboe.BzxEquities.Top.AsciiPitch.v1.3.9/) |
+| BzxEquities | Top | AsciiPitch | 1.3.8 | [files](Cboe.BzxEquities.Top.AsciiPitch.v1.3.8/) |
 | BzxOptions | BinaryOrderEntry | Boe | 2.10 | [files](Cboe.BzxOptions.BinaryOrderEntry.Boe.v2.10/) |
 | BzxOptions | BinaryOrderEntry | Boe | 2.11.115 | [files](Cboe.BzxOptions.BinaryOrderEntry.Boe.v2.11.115/) |
 | BzxOptions | BinaryOrderEntry | Boe3 | 1.0.10 | [files](Cboe.BzxOptions.BinaryOrderEntry.Boe3.v1.0.10/) |
@@ -298,6 +300,7 @@
 | DxeEquities | MulticastDepthOfBook | Pitch | 6.68 | [files](Cboe.DxeEquities.MulticastDepthOfBook.Pitch.v6.68/) |
 | EdgaEquities | BinaryOrderEntry | Boe | 2.4.55 | [files](Cboe.EdgaEquities.BinaryOrderEntry.Boe.v2.4.55/) |
 | EdgaEquities | BinaryOrderEntry | Boe | 2.4.57 | [files](Cboe.EdgaEquities.BinaryOrderEntry.Boe.v2.4.57/) |
+| EdgaEquities | BinaryOrderEntry | Boe3 | 1.0.14 | [files](Cboe.EdgaEquities.BinaryOrderEntry.Boe3.v1.0.14/) |
 | EdgaEquities | DropCopy | Fix | 2.9 | [files](Cboe.EdgaEquities.DropCopy.Fix.v2.9/) |
 | EdgaEquities | LastSale | AsciiPitch | 1.2.4 | [files](Cboe.EdgaEquities.LastSale.AsciiPitch.v1.2.4/) |
 | EdgaEquities | MulticastDepthOfBook | Pitch | 2.41.29 | [files](Cboe.EdgaEquities.MulticastDepthOfBook.Pitch.v2.41.29/) |
@@ -311,10 +314,11 @@
 | EdgaEquities | SummaryDepth | Csdp | 1.0.9 | [files](Cboe.EdgaEquities.SummaryDepth.Csdp.v1.0.9/) |
 | EdgaEquities | TcpDepthOfBook | AsciiPitch | 1.15.13 | [files](Cboe.EdgaEquities.TcpDepthOfBook.AsciiPitch.v1.15.13/) |
 | EdgaEquities | Top | AsciiPitch | 1.3.10 | [files](Cboe.EdgaEquities.Top.AsciiPitch.v1.3.10/) |
-| EdgaEquities | Top | AsciiPitch | 1.3.9 | [files](Cboe.EdgaEquities.Top.AsciiPitch.v1.3.9/) |
+| EdgaEquities | Top | AsciiPitch | 1.3.8 | [files](Cboe.EdgaEquities.Top.AsciiPitch.v1.3.8/) |
 | EdgxEquities | BinaryOrderEntry | Boe | 2.3 | [files](Cboe.EdgxEquities.BinaryOrderEntry.Boe.v2.3/) |
 | EdgxEquities | BinaryOrderEntry | Boe | 2.4.55 | [files](Cboe.EdgxEquities.BinaryOrderEntry.Boe.v2.4.55/) |
 | EdgxEquities | BinaryOrderEntry | Boe | 2.4.57 | [files](Cboe.EdgxEquities.BinaryOrderEntry.Boe.v2.4.57/) |
+| EdgxEquities | BinaryOrderEntry | Boe3 | 1.0.14 | [files](Cboe.EdgxEquities.BinaryOrderEntry.Boe3.v1.0.14/) |
 | EdgxEquities | DropCopy | Fix | 2.9 | [files](Cboe.EdgxEquities.DropCopy.Fix.v2.9/) |
 | EdgxEquities | LastSale | AsciiPitch | 1.2.4 | [files](Cboe.EdgxEquities.LastSale.AsciiPitch.v1.2.4/) |
 | EdgxEquities | MulticastDepthOfBook | Pitch | 2.41.29 | [files](Cboe.EdgxEquities.MulticastDepthOfBook.Pitch.v2.41.29/) |
@@ -331,7 +335,7 @@
 | EdgxEquities | TcpDepthOfBook | AsciiPitch | 1.15.13 | [files](Cboe.EdgxEquities.TcpDepthOfBook.AsciiPitch.v1.15.13/) |
 | EdgxEquities | TcpDepthOfBook | AsciiPitch | 1.15.16 | [files](Cboe.EdgxEquities.TcpDepthOfBook.AsciiPitch.v1.15.16/) |
 | EdgxEquities | Top | AsciiPitch | 1.3.10 | [files](Cboe.EdgxEquities.Top.AsciiPitch.v1.3.10/) |
-| EdgxEquities | Top | AsciiPitch | 1.3.9 | [files](Cboe.EdgxEquities.Top.AsciiPitch.v1.3.9/) |
+| EdgxEquities | Top | AsciiPitch | 1.3.8 | [files](Cboe.EdgxEquities.Top.AsciiPitch.v1.3.8/) |
 | EdgxOptions | AuctionFeed | Pitch | 1.1.1 | [files](Cboe.EdgxOptions.AuctionFeed.Pitch.v1.1.1/) |
 | EdgxOptions | AuctionFeed | Pitch | 1.1.39 | [files](Cboe.EdgxOptions.AuctionFeed.Pitch.v1.1.39/) |
 | EdgxOptions | AuctionFeed | Pitch | 1.1.44 | [files](Cboe.EdgxOptions.AuctionFeed.Pitch.v1.1.44/) |

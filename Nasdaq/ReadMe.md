@@ -120,7 +120,7 @@
 | NordicEquities | TotalView | Itch | 3.04.X | [files](Nasdaq.NordicEquities.TotalView.Itch.v3.04.X/) |
 | NordicEquities | TradeReporting | Fix | 2.01.2 | [files](Nasdaq.NordicEquities.TradeReporting.Fix.v2.01.2/) |
 | NordicEquities | TradeReporting | Fix | 2.01.3 | [files](Nasdaq.NordicEquities.TradeReporting.Fix.v2.01.3/) |
-| NsmEquities | Aggregated | Itch | 2.0 | [files](Nasdaq.NsmEquities.Aggregated.Itch.v2.0/) |
+| NsmEquities | Aggregated | Itch | 2.0 | private |
 | NsmEquities | Aggregated | Itch | 2.0.2026 | [files](Nasdaq.NsmEquities.Aggregated.Itch.v2.0.2026/) |
 | NsmEquities | BasicPlus | Itch | 1.0 | [files](Nasdaq.NsmEquities.BasicPlus.Itch.v1.0/) |
 | NsmEquities | CoreDropCopy | Fix | 1.0 | [files](Nasdaq.NsmEquities.CoreDropCopy.Fix.v1.0/) |
@@ -148,7 +148,7 @@
 | NsmEquities | LastSaleTrfTradesFilterView | AsciiItch | 2.0.2013 | [files](Nasdaq.NsmEquities.LastSaleTrfTradesFilterView.AsciiItch.v2.0.2013/) |
 | NsmEquities | LastSaleTrfTradesFilterView | Itch | 3.0.2024 | [files](Nasdaq.NsmEquities.LastSaleTrfTradesFilterView.Itch.v3.0.2024/) |
 | NsmEquities | LastSaleTrfTradesFilterView | Itch | 4.0.2026 | [files](Nasdaq.NsmEquities.LastSaleTrfTradesFilterView.Itch.v4.0.2026/) |
-| NsmEquities | Level2 | Itch | 2.0 | [files](Nasdaq.NsmEquities.Level2.Itch.v2.0/) |
+| NsmEquities | Level2 | Itch | 2.0 | private |
 | NsmEquities | Level2 | Itch | 2.0.2026 | [files](Nasdaq.NsmEquities.Level2.Itch.v2.0.2026/) |
 | NsmEquities | MatchView | AsciiItch | 1.0 | [files](Nasdaq.NsmEquities.MatchView.AsciiItch.v1.0/) |
 | NsmEquities | MatchView | AsciiItch | 1.1 | [files](Nasdaq.NsmEquities.MatchView.AsciiItch.v1.1/) |
@@ -168,14 +168,14 @@
 | NsmEquities | NoiView | AsciiItch | 2.1.2012 | [files](Nasdaq.NsmEquities.NoiView.AsciiItch.v2.1.2012/) |
 | NsmEquities | NoiView | AsciiItch | 2.1.2013 | [files](Nasdaq.NsmEquities.NoiView.AsciiItch.v2.1.2013.1/) |
 | NsmEquities | NoiView | AsciiItch | 2.1.2013 | [files](Nasdaq.NsmEquities.NoiView.AsciiItch.v2.1.2013.2/) |
-| NsmEquities | NoiView | AsciiItch | 3.0.2013 | [files](Nasdaq.NsmEquities.NoiView.AsciiItch.v3.0.2013/) |
+| NsmEquities | NoiView | AsciiItch | 3.0.2013 | private |
 | NsmEquities | NoiView | Itch | 3.0.2014 | [files](Nasdaq.NsmEquities.NoiView.Itch.v3.0.2014/) |
 | NsmEquities | NoiView | Itch | 3.0.2015 | [files](Nasdaq.NsmEquities.NoiView.Itch.v3.0.2015/) |
 | NsmEquities | NoiView | Itch | 3.0.2017 | [files](Nasdaq.NsmEquities.NoiView.Itch.v3.0.2017/) |
 | NsmEquities | NoiView | Itch | 3.0.2022 | [files](Nasdaq.NsmEquities.NoiView.Itch.v3.0.2022/) |
 | NsmEquities | NoiView | Itch | 3.0.2023 | [files](Nasdaq.NsmEquities.NoiView.Itch.v3.0.2023/) |
-| NsmEquities | NoiView | Itch | 3.0.2026 | [files](Nasdaq.NsmEquities.NoiView.Itch.v3.0.2026/) |
-| NsmEquities | NoiView | Itch | 3.0.2026 | [files](Nasdaq.NsmEquities.NoiView.Itch.v3.0.2026.2/) |
+| NsmEquities | NoiView | Itch | 3.0.2026 | private |
+| NsmEquities | NoiView | Itch | 3.0.2026 | private |
 | NsmEquities | OrderEntry | Fix | 4.2 | [files](Nasdaq.NsmEquities.OrderEntry.Fix.v4.2/) |
 | NsmEquities | Orders | Ouch | 4.2 | [files](Nasdaq.NsmEquities.Orders.Ouch.v4.2/) |
 | NsmEquities | Orders | Ouch | 5.0 | [files](Nasdaq.NsmEquities.Orders.Ouch.v5.0/) |
@@ -215,7 +215,7 @@
 | NtxEquities | Drop | AsciiDrop | 2.3 | [files](Nasdaq.NtxEquities.Drop.AsciiDrop.v2.3/) |
 | NtxEquities | Flite | Fix | 1.0 | [files](Nasdaq.NtxEquities.Flite.Fix.v1.0/) |
 | NtxEquities | LastSale | Itch | 4.0.2026 | [files](Nasdaq.NtxEquities.LastSale.Itch.v4.0.2026/) |
-| NtxEquities | MatchView | AsciiItch | 1.1 | [files](Nasdaq.NtxEquities.MatchView.AsciiItch.v1.1/) |
+| NtxEquities | MatchView | AsciiItch | 1.1 | private |
 | NtxEquities | OrderEntry | Fix | 4.2 | [files](Nasdaq.NtxEquities.OrderEntry.Fix.v4.2/) |
 | NtxEquities | Orders | Ouch | 4.2 | [files](Nasdaq.NtxEquities.Orders.Ouch.v4.2/) |
 | NtxEquities | Rash | AsciiRash | 1.1 | [files](Nasdaq.NtxEquities.Rash.AsciiRash.v1.1/) |
@@ -228,26 +228,26 @@
 | NtxOptions | Cti | Itch | 1.3 | [files](Nasdaq.NtxOptions.Cti.Itch.v1.3/) |
 | NtxOptions | Cti | Itch | 2.1 | [files](Nasdaq.NtxOptions.Cti.Itch.v2.1/) |
 | NtxOptions | Cti | Itch | 3.0 | [files](Nasdaq.NtxOptions.Cti.Itch.v3.0/) |
-| NtxOptions | DepthOfMarket | Glimpse | 2.1 | [files](Nasdaq.NtxOptions.DepthOfMarket.Glimpse.v2.1/) |
-| NtxOptions | DepthOfMarket | Itch | 1.3 | [files](Nasdaq.NtxOptions.DepthOfMarket.Itch.v1.3/) |
-| NtxOptions | DepthOfMarket | Itch | 2.2 | [files](Nasdaq.NtxOptions.DepthOfMarket.Itch.v2.2/) |
+| NtxOptions | DepthOfMarket | Glimpse | 2.1 | private |
+| NtxOptions | DepthOfMarket | Itch | 1.3 | private |
+| NtxOptions | DepthOfMarket | Itch | 2.2 | private |
 | NtxOptions | DropCopy | Fix | 2.3.f | [files](Nasdaq.NtxOptions.DropCopy.Fix.v2.3/) |
 | NtxOptions | OrderEntry | Fix | 1.3.g | [files](Nasdaq.NtxOptions.OrderEntry.Fix.v1.3/) |
 | NtxOptions | OrderEntry | Fix | 2.0.f | [files](Nasdaq.NtxOptions.OrderEntry.Fix.v2.0/) |
 | NtxOptions | Quoting | Sqf | 9.0 | [files](Nasdaq.NtxOptions.Quoting.Sqf.v9.0/) |
-| NtxOptions | TopOfMarket | Glimpse | 1.1 | [files](Nasdaq.NtxOptions.TopOfMarket.Glimpse.v1.1/) |
+| NtxOptions | TopOfMarket | Glimpse | 1.1 | private |
 | NtxOptions | TopOfMarket | Itch | 1.2 | [files](Nasdaq.NtxOptions.TopOfMarket.Itch.v1.2/) |
-| NtxOptions | TopOfMarket | Itch | 2.2 | [files](Nasdaq.NtxOptions.TopOfMarket.Itch.v2.2/) |
+| NtxOptions | TopOfMarket | Itch | 2.2 | private |
 | NtxOptions | TradeFeed | Itch | 2.1 | [files](Nasdaq.NtxOptions.TradeFeed.Itch.v2.1/) |
 | PhlxOptions | Cti | Itch | 3.0 | [files](Nasdaq.PhlxOptions.Cti.Itch.v3.0/) |
 | PhlxOptions | DepthOfMarket | Glimpse | 2.1 | [files](Nasdaq.PhlxOptions.DepthOfMarket.Glimpse.v2.1/) |
-| PhlxOptions | DepthOfMarket | Itch | 1.5 | [files](Nasdaq.PhlxOptions.DepthOfMarket.Itch.v1.5/) |
+| PhlxOptions | DepthOfMarket | Itch | 1.5 | private |
 | PhlxOptions | DepthOfMarket | Itch | 1.6 | [files](Nasdaq.PhlxOptions.DepthOfMarket.Itch.v1.6/) |
 | PhlxOptions | DepthOfMarket | Itch | 1.7 | [files](Nasdaq.PhlxOptions.DepthOfMarket.Itch.v1.7/) |
-| PhlxOptions | DepthOfMarket | Itch | 2.1 | [files](Nasdaq.PhlxOptions.DepthOfMarket.Itch.v2.1/) |
+| PhlxOptions | DepthOfMarket | Itch | 2.1 | private |
 | PhlxOptions | DepthOfMarket | Itch | 2.1.2026 | [files](Nasdaq.PhlxOptions.DepthOfMarket.Itch.v2.1.2026/) |
 | PhlxOptions | DropCopy | Fix | 2.1 | [files](Nasdaq.PhlxOptions.DropCopy.Fix.v2.1/) |
-| PhlxOptions | OrderEntry | Fix | 1.0 | [files](Nasdaq.PhlxOptions.OrderEntry.Fix.v1.0/) |
+| PhlxOptions | OrderEntry | Fix | 1.0 | private |
 | PhlxOptions | OrderEntry | Fix | 1.0.n | [files](Nasdaq.PhlxOptions.OrderEntry.Fix.v1.0.n/) |
 | PhlxOptions | OrderEntry | Fix | 13.4 | [files](Nasdaq.PhlxOptions.OrderEntry.Fix.v13.4/) |
 | PhlxOptions | Orders | Itch | 1.9 | [files](Nasdaq.PhlxOptions.Orders.Itch.v1.9/) |
@@ -302,6 +302,8 @@
 | Utdf | Output | Utp | 3.0.c | [files](Nasdaq.Utdf.Output.Utp.v3.0.c/) |
 | Utp | Input | Utp | 4.0 | [files](Nasdaq.Utp.Input.Utp.v4.0/) |
 | Utp | Snapshot | Utp | 3.0 | [files](Nasdaq.Utp.Snapshot.Utp.v3.0/) |
+
+A specification marked private is released by the venue to registered participants only. Those protocols are listed here for completeness, and nothing read out of their documents is published: no message layouts, no field names, no wording. The generated parsers in the definition repositories describe the wire format and are published as usual.
 
 
 Nasdaq: [website](https://www.nasdaq.com "Go to National Association of Securities Dealers Automated Quotations (Nasdaq)")

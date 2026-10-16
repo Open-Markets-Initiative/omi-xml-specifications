@@ -25,6 +25,8 @@
 | Deribit | OrdersApi | Sbe | 0.1 | [files](Coinbase.Deribit.OrdersApi.Sbe.v0.1/) |
 | Deribit | OrdersApi | Sbe | 1.0 | [files](Coinbase.Deribit.OrdersApi.Sbe.v1.0/) |
 | Deribit | OrdersApi | Sbe | 1.3 | [files](Coinbase.Deribit.OrdersApi.Sbe.v1.3/) |
+| Deribit | OrdersApi | Sbe | 1.4 | [files](Coinbase.Deribit.OrdersApi.Sbe.v1.4/) |
+| Deribit | OrdersApi | Sbe | 1.5 | [files](Coinbase.Deribit.OrdersApi.Sbe.v1.5/) |
 
 
 Coinbase: [website](https://www.coinbase.com/ "Go to Coinbase")

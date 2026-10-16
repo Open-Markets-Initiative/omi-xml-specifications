@@ -5,7 +5,9 @@
 
 | Division | Protocol | Encoding | Version | Specification |
 | --- | --- | --- | --- | --- |
-| QseCash | MarketData | Xdp | 2.6 | [files](Qse.QseCash.MarketData.Xdp.v2.6/) |
+| QseCash | MarketData | Xdp | 2.6 | private |
+
+A specification marked private is released by the venue to registered participants only. Those protocols are listed here for completeness, and nothing read out of their documents is published: no message layouts, no field names, no wording. The generated parsers in the definition repositories describe the wire format and are published as usual.
 
 
 Qse: [website](https://www.qe.com.qa "Go to Qatar Stock Exchange")

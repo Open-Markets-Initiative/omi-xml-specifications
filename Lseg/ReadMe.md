@@ -5,7 +5,7 @@
 
 | Division | Protocol | Encoding | Version | Specification |
 | --- | --- | --- | --- | --- |
-| Idem | OrderEntry | Fix | 3.2 | [files](Lseg.Idem.OrderEntry.Fix.v3.2/) |
+| Idem | OrderEntry | Fix | 3.2 | private |
 | Lse | Analytics | Gtp | 26.2 | [files](Lseg.Lse.Analytics.Gtp.v26.2/) |
 | Lse | AnalyticsReplay | Gtp | 26.2 | [files](Lseg.Lse.AnalyticsReplay.Gtp.v26.2/) |
 | Lse | Level1 | Gtp | 26.2 | [files](Lseg.Lse.Level1.Gtp.v26.2/) |
@@ -23,14 +23,14 @@
 | Lse | Mifid2PostTrade | Gtp | 26.2 | [files](Lseg.Lse.Mifid2PostTrade.Gtp.v26.2/) |
 | Lse | Mifid2PostTradeRecovery | Gtp | 26.2 | [files](Lseg.Lse.Mifid2PostTradeRecovery.Gtp.v26.2/) |
 | Lse | Mifid2PostTradeReplay | Gtp | 26.2 | [files](Lseg.Lse.Mifid2PostTradeReplay.Gtp.v26.2/) |
-| Millennium | DropCopy | Fix | 17.0 | [files](Lseg.Millennium.DropCopy.Fix.v17.0/) |
-| Millennium | Level2 | Mitch | 11.9 | [files](Lseg.Millennium.Level2.Mitch.v11.9/) |
+| Millennium | DropCopy | Fix | 17.0 | private |
+| Millennium | Level2 | Mitch | 11.9 | private |
 | Millennium | Level2Recovery | Mitch | 11.9 | [files](Lseg.Millennium.Level2Recovery.Mitch.v11.9/) |
 | Millennium | Level2Replay | Mitch | 11.9 | [files](Lseg.Millennium.Level2Replay.Mitch.v11.9/) |
-| Millennium | NativeTradingGateway | Ntgi | 21.2 | [files](Lseg.Millennium.NativeTradingGateway.Ntgi.v21.2/) |
+| Millennium | NativeTradingGateway | Ntgi | 21.2 | private |
 | Millennium | NativeTradingGatewayRecovery | Ntgi | 21.2 | [files](Lseg.Millennium.NativeTradingGatewayRecovery.Ntgi.v21.2/) |
-| Millennium | PostTrade | Fix | 19.0 | [files](Lseg.Millennium.PostTrade.Fix.v19.0/) |
-| Millennium | Trading | Fix | 21.1 | [files](Lseg.Millennium.Trading.Fix.v21.1/) |
+| Millennium | PostTrade | Fix | 19.0 | private |
+| Millennium | Trading | Fix | 21.1 | private |
 | Millennium | UdpUnitHeader | Mitch | 1.0 | [files](Lseg.Millennium.UdpUnitHeader.Mitch.v1.0/) |
 | TradeEcho | Level2Incremental | Gtp | 24.4 | [files](Lseg.TradeEcho.Level2Incremental.Gtp.v24.4/) |
 | TradeEcho | Level2Incremental | Gtp | 26.1.2 | [files](Lseg.TradeEcho.Level2Incremental.Gtp.v26.1.2/) |
@@ -57,6 +57,8 @@
 | Turquoise | Recovery | Gtp | 26.3 | [files](Lseg.Turquoise.Recovery.Gtp.v26.3/) |
 | Turquoise | Replay | Gtp | 24.4 | [files](Lseg.Turquoise.Replay.Gtp.v24.4/) |
 | Turquoise | Replay | Gtp | 26.3 | [files](Lseg.Turquoise.Replay.Gtp.v26.3/) |
+
+A specification marked private is released by the venue to registered participants only. Those protocols are listed here for completeness, and nothing read out of their documents is published: no message layouts, no field names, no wording. The generated parsers in the definition repositories describe the wire format and are published as usual.
 
 
 Lseg: [website](https://www.lseg.com "Go to London Stock Exchange")
