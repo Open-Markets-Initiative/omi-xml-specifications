@@ -12,6 +12,7 @@
 | Trace | Btds | Dfi | 2.1 | [files](Finra.Trace.Btds.Dfi.v2.1/) |
 | Trace | Btds144A | Dfi | 2.1 | [files](Finra.Trace.Btds144A.Dfi.v2.1/) |
 | Trace | Spds | Dfi | 2.1 | [files](Finra.Trace.Spds.Dfi.v2.1/) |
+| Trace | Spds144A | Dfi | 2.1 | [files](Finra.Trace.Spds144A.Dfi.v2.1/) |
 
 
 Finra: [website](https://www.finra.org "Go to Financial Industry Regulatory Authority")
