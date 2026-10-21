@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<sbe:messageSchema xmlns:sbe="http://fixprotocol.io/2016/sbe" xmlns:enx="http://www.euronext.com/dd" xmlns:str="http://exslt.org/strings" xmlns:ext="http://exslt.org/common" package="com.euronext.optiq.dd" id="0" version="203" semanticVersion="2.0.1" description="OEG Binary" byteOrder="littleEndian">
+<?xml version="1.0"?>
+<sbe:messageSchema xmlns:sbe="http://fixprotocol.io/2016/sbe" xmlns:enx="http://www.euronext.com/dd" xmlns:str="http://exslt.org/strings" xmlns:ext="http://exslt.org/common" package="com.euronext.optiq.dd" id="0" version="302" semanticVersion="4.2.0" description="OEG Binary" byteOrder="littleEndian">
   <types>
     <type name="unsigned_char" primitiveType="uint8" nullValue="255" presence="optional" minValue="0" maxValue="254"/>
     <type name="int8_t" primitiveType="int8" nullValue="-128" presence="optional" minValue="-127" maxValue="127"/>
@@ -9,13 +9,14 @@
     <type name="int32_t" primitiveType="int32" nullValue="-2147483648" presence="optional" minValue="-2147483647" maxValue="2147483647"/>
     <type name="int64_t" primitiveType="int64" nullValue="-9223372036854775808" presence="optional" minValue="-9223372036854775807" maxValue="9223372036854775807"/>
     <type name="time_t" primitiveType="uint64" nullValue="0" presence="optional"/>
-    <!--  Auto generated list of character types  -->
+    <!-- Auto generated list of character types -->
     <type name="char1" length="1" primitiveType="char"/>
     <type name="char2" length="2" primitiveType="char"/>
     <type name="char3" length="3" primitiveType="char"/>
     <type name="char4" length="4" primitiveType="char"/>
     <type name="char5" length="5" primitiveType="char"/>
     <type name="char6" length="6" primitiveType="char"/>
+    <type name="char7" length="7" primitiveType="char"/>
     <type name="char8" length="8" primitiveType="char"/>
     <type name="char10" length="10" primitiveType="char"/>
     <type name="char11" length="11" primitiveType="char"/>
@@ -35,6 +36,7 @@
     <type name="char60" length="60" primitiveType="char"/>
     <type name="char100" length="100" primitiveType="char"/>
     <type name="char102" length="102" primitiveType="char"/>
+    <type name="char250" length="250" primitiveType="char"/>
     <composite name="messageHeader" description="Message identifiers and length of message root">
       <type name="blockLength" primitiveType="uint16"/>
       <type name="templateId" primitiveType="uint16"/>
@@ -132,6 +134,9 @@
     </enum>
     <enum name="CCPID_enum" encodingType="uint8">
       <validValue name="LCH_SA">1</validValue>
+      <validValue name="Bilateral_Settlement" sinceVersion="300">2</validValue>
+      <validValue name="LCH_Limited" sinceVersion="300">3</validValue>
+      <validValue name="SIX_X_Clear" sinceVersion="300">5</validValue>
       <validValue name="EuroCCP">6</validValue>
     </enum>
     <enum name="MessagePriceNotation_enum" encodingType="uint8">
@@ -268,6 +273,7 @@
       <validValue name="VFU_VFC_Triggered_Ack">16</validValue>
       <validValue name="Open_Order_Request_Ack">17</validValue>
       <validValue name="RFIE_Ack" sinceVersion="203">21</validValue>
+      <validValue name="Cross_Order_Ack" sinceVersion="204">22</validValue>
     </enum>
     <enum name="ExecutionPhase_enum" encodingType="uint8">
       <validValue name="Continuous_Trading_Phase">1</validValue>
@@ -350,6 +356,8 @@
       <validValue name="Order_cancelled_due_to_Trade_Price_Validation" sinceVersion="200">26</validValue>
       <validValue name="Conditional_Order_cancelled_due_to_Potential_Matching" sinceVersion="110">30</validValue>
       <validValue name="Order_Cancelled_due_to_a_potential_trade_outside_FSP_limits" sinceVersion="203">36</validValue>
+      <validValue name="Remaining_RFC_Quantity_Cancelled" sinceVersion="204">37</validValue>
+      <validValue name="Order_Cancelled_due_to_an_incorrect_Reactor_Response" sinceVersion="204">38</validValue>
     </enum>
     <enum name="SellRevisionIndicator_enum" encodingType="uint8">
       <validValue name="New">0</validValue>
@@ -415,10 +423,15 @@
       <validValue name="ETF_MTF_NAV_Dark_Trade_price_in_bp" deprecated="107">38</validValue>
       <validValue name="Guaranteed_Cross_Negotiated_deal_NLIQ">39</validValue>
       <validValue name="Guaranteed_Cross_Negotiated_deal_OILQ">40</validValue>
+      <validValue name="Large_in_Scale_Trade">41</validValue>
       <validValue name="Large_in_Scale_Trade_in_basis_points" sinceVersion="107">42</validValue>
       <validValue name="Large_in_Scale_Package_Trade_in_basis_points" sinceVersion="107">43</validValue>
       <validValue name="Strategy_Leg_Large_in_Scale_Trade_in_basis_points" sinceVersion="107" deprecated="200">44</validValue>
-      <validValue name="Large_in_Scale_Trade">41</validValue>
+      <validValue name="Non_Standard_Settlement" sinceVersion="302">46</validValue>
+      <validValue name="Repurchase_Agreement___Repo" sinceVersion="302">47</validValue>
+      <validValue name="Exchange_Granted_Trade" sinceVersion="302">48</validValue>
+      <validValue name="Other" sinceVersion="302">49</validValue>
+      <validValue name="Odd_Lot" sinceVersion="302">50</validValue>
       <validValue name="Conventional_Trade___Provisional_price" sinceVersion="203">100</validValue>
       <validValue name="Large_in_Scale__LiS__Trade___Provisional_price" sinceVersion="203">101</validValue>
       <validValue name="Large_in_Scale__LiS__Package_Trade___Provisional_price" sinceVersion="203">102</validValue>
@@ -515,6 +528,10 @@
       <validValue name="Initiator">1</validValue>
       <validValue name="Reactor">2</validValue>
     </enum>
+    <enum name="OrderOrigin_enum" encodingType="uint8">
+      <validValue name="COB">1</validValue>
+      <validValue name="LP_Answer">2</validValue>
+    </enum>
     <enum name="QuoteRequestOrderSide_enum" encodingType="uint8">
       <validValue name="Buy">1</validValue>
       <validValue name="Sell">2</validValue>
@@ -607,6 +624,7 @@
       <choice name="Session1">1</choice>
       <choice name="Session2">2</choice>
       <choice name="Session3">3</choice>
+      <choice name="Session4" sinceVersion="301">4</choice>
     </set>
     <set name="WaiverIndicator_set" encodingType="uint8">
       <choice name="LRGS">0</choice>
@@ -625,7 +643,7 @@
     </set>
   </types>
   <sbe:message name="NewOrder" id="1">
-    <!-- Expanding sub message -->
+    <!--Expanding sub message-->
     <field id="1" name="clMsgSeqNum" type="uint32_t"/>
     <field id="2" name="firmID" type="char8"/>
     <field id="3" name="sendingTime" type="uint64_t"/>
@@ -676,14 +694,16 @@
       <field id="6" name="clearingInstruction" presence="optional" type="ClearingInstruction_enum"/>
       <field id="7" name="accountTypeCross" presence="optional" type="AccountTypeCross_enum"/>
     </group>
-    <group id="25" dimensionType="groupSizeEncoding" name="NotUsedGroup1" sinceVersion="106"> </group>
-    <group id="26" dimensionType="groupSizeEncoding" name="NotUsedGroup2" sinceVersion="106"> </group>
+    <group id="25" dimensionType="groupSizeEncoding" name="NotUsedGroup1" sinceVersion="106">
+    </group>
+    <group id="26" dimensionType="groupSizeEncoding" name="NotUsedGroup2" sinceVersion="106">
+    </group>
     <group id="27" dimensionType="groupSizeEncoding" name="AdditionalInfos" sinceVersion="203">
       <field id="1" name="longClientID" presence="optional" type="char16"/>
     </group>
   </sbe:message>
   <sbe:message name="Ack" id="3">
-    <!-- Expanding sub message -->
+    <!--Expanding sub message-->
     <field id="1" name="msgSeqNum" type="uint32_t"/>
     <field id="2" name="firmID" type="char8"/>
     <field id="3" name="sendingTime" presence="optional" type="uint64_t"/>
@@ -712,7 +732,7 @@
     </group>
   </sbe:message>
   <sbe:message name="Fill" id="4">
-    <!-- Expanding sub message -->
+    <!--Expanding sub message-->
     <field id="1" name="msgSeqNum" type="uint32_t"/>
     <field id="2" name="firmID" type="char8"/>
     <field id="3" name="tradeTime" type="uint64_t"/>
@@ -754,10 +774,12 @@
     <group id="24" dimensionType="groupSizeEncoding" name="OptionalFieldsDerivatives" sinceVersion="203">
       <field id="1" name="evaluatedPrice" presence="optional" type="int64_t"/>
       <field id="2" name="messagePriceNotation" presence="optional" type="MessagePriceNotation_enum"/>
+      <field id="3" name="finalSymbolIndex" presence="optional" type="uint32_t" sinceVersion="204"/>
+      <field id="4" name="finalExecutionID" presence="optional" type="uint32_t" sinceVersion="204"/>
     </group>
   </sbe:message>
   <sbe:message name="Kill" id="5">
-    <!-- Expanding sub message -->
+    <!--Expanding sub message-->
     <field id="1" name="msgSeqNum" type="uint32_t"/>
     <field id="2" name="firmID" type="char8"/>
     <field id="3" name="sendingTime" presence="optional" type="uint64_t"/>
@@ -781,7 +803,7 @@
     </group>
   </sbe:message>
   <sbe:message name="CancelReplace" id="6">
-    <!-- Expanding sub message -->
+    <!--Expanding sub message-->
     <field id="1" name="clMsgSeqNum" type="uint32_t"/>
     <field id="2" name="firmID" type="char8"/>
     <field id="3" name="sendingTime" type="uint64_t"/>
@@ -825,8 +847,10 @@
       <field id="5" name="openClose" presence="optional" type="OpenClose_set"/>
       <field id="6" name="clearingInstruction" presence="optional" type="ClearingInstruction_enum"/>
     </group>
-    <group id="25" dimensionType="groupSizeEncoding" name="NotUsedGroup1" sinceVersion="106"> </group>
-    <group id="26" dimensionType="groupSizeEncoding" name="NotUsedGroup2" sinceVersion="106"> </group>
+    <group id="25" dimensionType="groupSizeEncoding" name="NotUsedGroup1" sinceVersion="106">
+    </group>
+    <group id="26" dimensionType="groupSizeEncoding" name="NotUsedGroup2" sinceVersion="106">
+    </group>
     <group id="27" dimensionType="groupSizeEncoding" name="AdditionalInfos" sinceVersion="203">
       <field id="1" name="longClientID" presence="optional" type="char16"/>
     </group>
@@ -860,7 +884,7 @@
     </group>
   </sbe:message>
   <sbe:message name="Quotes" id="8">
-    <!-- Expanding sub message -->
+    <!--Expanding sub message-->
     <field id="1" name="clMsgSeqNum" type="uint32_t"/>
     <field id="2" name="firmID" type="char8"/>
     <field id="3" name="sendingTime" type="uint64_t"/>
@@ -896,7 +920,7 @@
     </group>
   </sbe:message>
   <sbe:message name="QuoteAck" id="9">
-    <!-- Expanding sub message -->
+    <!--Expanding sub message-->
     <field id="1" name="msgSeqNum" type="uint32_t"/>
     <field id="2" name="firmID" type="char8"/>
     <field id="3" name="sendingTime" presence="optional" type="uint64_t"/>
@@ -923,7 +947,7 @@
     </group>
   </sbe:message>
   <sbe:message name="QuoteRequest" id="10">
-    <!-- Expanding sub message -->
+    <!--Expanding sub message-->
     <field id="1" name="clMsgSeqNum" type="uint32_t"/>
     <field id="2" name="firmID" type="char8"/>
     <field id="3" name="sendingTime" type="uint64_t"/>
@@ -938,9 +962,10 @@
     <field id="12" name="endClient" presence="optional" type="char11"/>
     <field id="13" name="darkExecutionInstruction" type="DarkExecutionInstruction_set" sinceVersion="107"/>
     <field id="14" name="minOrderQty" presence="optional" type="uint64_t" sinceVersion="107"/>
+    <field id="15" name="accountType" presence="optional" type="AccountType_enum" sinceVersion="300"/>
   </sbe:message>
   <sbe:message name="CancelRequest" id="12">
-    <!-- Expanding sub message -->
+    <!--Expanding sub message-->
     <field id="1" name="clMsgSeqNum" type="uint32_t"/>
     <field id="2" name="firmID" type="char8"/>
     <field id="3" name="sendingTime" type="uint64_t"/>
@@ -954,11 +979,13 @@
     <field id="11" name="orderSide" type="CancelRequestOrderSide_enum"/>
     <field id="12" name="orderType" type="OrderType_enum"/>
     <field id="13" name="orderCategory" presence="optional" type="OrderCategory_enum" sinceVersion="107"/>
-    <group id="14" dimensionType="groupSizeEncoding" name="NotUsedGroup1" sinceVersion="106"> </group>
-    <group id="15" dimensionType="groupSizeEncoding" name="NotUsedGroup2" sinceVersion="106"> </group>
+    <group id="14" dimensionType="groupSizeEncoding" name="NotUsedGroup1" sinceVersion="106">
+    </group>
+    <group id="15" dimensionType="groupSizeEncoding" name="NotUsedGroup2" sinceVersion="106">
+    </group>
   </sbe:message>
   <sbe:message name="MassCancel" id="13">
-    <!-- Expanding sub message -->
+    <!--Expanding sub message-->
     <field id="1" name="clMsgSeqNum" type="uint32_t"/>
     <field id="2" name="firmID" type="char8"/>
     <field id="3" name="sendingTime" type="uint64_t"/>
@@ -977,11 +1004,13 @@
     <field id="16" name="optionType" presence="optional" type="OptionType_enum"/>
     <field id="17" name="orderCategory" presence="optional" type="OrderCategory_enum" sinceVersion="107"/>
     <field id="18" name="targetExecutionWithinFirmShortCode" presence="optional" type="int32_t" sinceVersion="200"/>
-    <group id="19" dimensionType="groupSizeEncoding" name="NotUsedGroup1" sinceVersion="106"> </group>
-    <group id="20" dimensionType="groupSizeEncoding" name="NotUsedGroup2" sinceVersion="106"> </group>
+    <group id="19" dimensionType="groupSizeEncoding" name="NotUsedGroup1" sinceVersion="106">
+    </group>
+    <group id="20" dimensionType="groupSizeEncoding" name="NotUsedGroup2" sinceVersion="106">
+    </group>
   </sbe:message>
   <sbe:message name="MassCancelAck" id="14">
-    <!-- Expanding sub message -->
+    <!--Expanding sub message-->
     <field id="1" name="msgSeqNum" type="uint32_t"/>
     <field id="2" name="firmID" type="char8"/>
     <field id="3" name="sendingTime" presence="optional" type="uint64_t"/>
@@ -1013,7 +1042,7 @@
     </group>
   </sbe:message>
   <sbe:message name="OpenOrderRequest" id="15">
-    <!-- Expanding sub message -->
+    <!--Expanding sub message-->
     <field id="1" name="clMsgSeqNum" type="uint32_t"/>
     <field id="2" name="firmID" type="char8"/>
     <field id="3" name="sendingTime" type="uint64_t"/>
@@ -1027,7 +1056,7 @@
     <field id="11" name="orderCategory" presence="optional" type="OrderCategory_enum" sinceVersion="107"/>
   </sbe:message>
   <sbe:message name="OwnershipRequestAck" id="17">
-    <!-- Expanding sub message -->
+    <!--Expanding sub message-->
     <field id="1" name="msgSeqNum" type="uint32_t"/>
     <field id="2" name="firmID" type="char8"/>
     <field id="3" name="clientOrderID" type="int64_t"/>
@@ -1039,7 +1068,7 @@
     <field id="9" name="orderCategory" presence="optional" type="OrderCategory_enum" sinceVersion="107"/>
   </sbe:message>
   <sbe:message name="OwnershipRequest" id="18">
-    <!-- Expanding sub message -->
+    <!--Expanding sub message-->
     <field id="1" name="clMsgSeqNum" type="uint32_t"/>
     <field id="2" name="firmID" type="char8"/>
     <field id="3" name="sendingTime" type="uint64_t"/>
@@ -1055,7 +1084,7 @@
     <field id="13" name="orderCategory" presence="optional" type="OrderCategory_enum" sinceVersion="107"/>
   </sbe:message>
   <sbe:message name="TradeBustNotification" id="19">
-    <!-- Expanding sub message -->
+    <!--Expanding sub message-->
     <field id="1" name="msgSeqNum" type="uint32_t"/>
     <field id="2" name="firmID" type="char8"/>
     <field id="3" name="bookIn" type="uint64_t"/>
@@ -1072,7 +1101,7 @@
     <field id="14" name="parentSymbolIndex" presence="optional" type="uint32_t" sinceVersion="200"/>
   </sbe:message>
   <sbe:message name="CollarBreachConfirmation" id="20">
-    <!-- Expanding sub message -->
+    <!--Expanding sub message-->
     <field id="1" name="clMsgSeqNum" type="uint32_t"/>
     <field id="2" name="firmID" type="char8"/>
     <field id="3" name="sendingTime" type="uint64_t"/>
@@ -1085,7 +1114,7 @@
     <field id="10" name="origClientOrderID" presence="optional" type="int64_t"/>
   </sbe:message>
   <sbe:message name="PriceInput" id="28">
-    <!-- Expanding sub message -->
+    <!--Expanding sub message-->
     <field id="1" name="clMsgSeqNum" type="uint32_t"/>
     <field id="2" name="firmID" type="char8"/>
     <field id="3" name="sendingTime" type="uint64_t"/>
@@ -1098,7 +1127,7 @@
     <field id="10" name="price" presence="optional" type="int64_t"/>
   </sbe:message>
   <sbe:message name="LiquidityProviderCommand" id="32">
-    <!-- Expanding sub message -->
+    <!--Expanding sub message-->
     <field id="1" name="clMsgSeqNum" type="uint32_t"/>
     <field id="2" name="firmID" type="char8"/>
     <field id="3" name="sendingTime" type="uint64_t"/>
@@ -1110,7 +1139,7 @@
     <field id="9" name="lPActionCode" type="LPActionCode_enum"/>
   </sbe:message>
   <sbe:message name="AskForQuote" id="33">
-    <!-- Expanding sub message -->
+    <!--Expanding sub message-->
     <field id="1" name="msgSeqNum" type="uint32_t"/>
     <field id="2" name="firmID" type="char8"/>
     <field id="3" name="symbolIndex" type="uint32_t"/>
@@ -1118,14 +1147,14 @@
     <field id="5" name="aFQReason" type="AFQReason_enum"/>
   </sbe:message>
   <sbe:message name="RequestForExecution" id="34">
-    <!-- Expanding sub message -->
+    <!--Expanding sub message-->
     <field id="1" name="msgSeqNum" type="uint32_t"/>
     <field id="2" name="firmID" type="char8"/>
     <field id="3" name="symbolIndex" type="uint32_t"/>
     <field id="4" name="eMM" type="EMM_enum"/>
   </sbe:message>
   <sbe:message name="RFQNotification" id="35">
-    <!-- Expanding sub message -->
+    <!--Expanding sub message-->
     <field id="1" name="msgSeqNum" type="uint32_t"/>
     <field id="2" name="firmID" type="char8"/>
     <field id="3" name="bookIn" type="uint64_t"/>
@@ -1142,9 +1171,10 @@
     <field id="14" name="endClient" presence="optional" type="char11"/>
     <field id="15" name="darkExecutionInstruction" type="DarkExecutionInstruction_set" sinceVersion="107"/>
     <field id="16" name="minOrderQty" presence="optional" type="uint64_t" sinceVersion="107"/>
+    <field id="17" name="accountType" presence="optional" type="AccountType_enum" sinceVersion="300"/>
   </sbe:message>
   <sbe:message name="RFQMatchingStatus" id="36">
-    <!-- Expanding sub message -->
+    <!--Expanding sub message-->
     <field id="1" name="msgSeqNum" type="uint32_t"/>
     <field id="2" name="firmID" type="char8"/>
     <field id="3" name="bookIn" type="uint64_t"/>
@@ -1161,7 +1191,7 @@
     <field id="14" name="recipientType" type="RecipientType_enum" deprecated="106"/>
   </sbe:message>
   <sbe:message name="RFQLPMatchingStatus" id="37">
-    <!-- Expanding sub message -->
+    <!--Expanding sub message-->
     <field id="1" name="msgSeqNum" type="uint32_t"/>
     <field id="2" name="firmID" type="char8"/>
     <field id="3" name="bookIn" type="uint64_t"/>
@@ -1175,7 +1205,7 @@
     <field id="11" name="orderSide" type="OrderSide_enum"/>
   </sbe:message>
   <sbe:message name="UserNotification" id="39">
-    <!-- Expanding sub message -->
+    <!--Expanding sub message-->
     <field id="1" name="msgSeqNum" type="uint32_t"/>
     <field id="2" name="firmID" type="char8"/>
     <field id="3" name="executionWithinFirmShortCode" presence="optional" type="int32_t"/>
@@ -1185,10 +1215,11 @@
     <field id="7" name="userStatus" type="UserStatus_enum"/>
     <field id="8" name="logicalAccessID" presence="optional" type="uint32_t" sinceVersion="203"/>
     <field id="9" name="orderSizeLimit" presence="optional" type="uint64_t" sinceVersion="203"/>
-    <group id="10" dimensionType="groupSizeEncoding" name="NotUsedGroup1" sinceVersion="111"> </group>
+    <group id="10" dimensionType="groupSizeEncoding" name="NotUsedGroup1" sinceVersion="111">
+    </group>
   </sbe:message>
   <sbe:message name="MMSignIn" id="47" sinceVersion="203">
-    <!-- Expanding sub message -->
+    <!--Expanding sub message-->
     <field id="1" name="clMsgSeqNum" type="uint32_t"/>
     <field id="2" name="firmID" type="char8"/>
     <field id="3" name="sendingTime" type="uint64_t"/>
@@ -1207,7 +1238,7 @@
     <field id="16" name="longClientID" presence="optional" type="char16"/>
   </sbe:message>
   <sbe:message name="MMSignInAck" id="48" sinceVersion="203">
-    <!-- Expanding sub message -->
+    <!--Expanding sub message-->
     <field id="1" name="msgSeqNum" type="uint32_t"/>
     <field id="2" name="firmID" type="char8"/>
     <field id="3" name="sendingTime" presence="optional" type="uint64_t"/>
@@ -1247,7 +1278,7 @@
     <field id="4" name="lastBookInTime" type="uint64_t"/>
   </sbe:message>
   <sbe:message name="SecurityDefinitionRequest" id="60" sinceVersion="200">
-    <!-- Expanding sub message -->
+    <!--Expanding sub message-->
     <field id="1" name="clMsgSeqNum" type="uint32_t"/>
     <field id="2" name="firmID" type="char8"/>
     <field id="3" name="sendingTime" type="uint64_t"/>
@@ -1266,7 +1297,7 @@
     </group>
   </sbe:message>
   <sbe:message name="SecurityDefinitionAck" id="61" sinceVersion="200">
-    <!-- Expanding sub message -->
+    <!--Expanding sub message-->
     <field id="1" name="msgSeqNum" type="uint32_t"/>
     <field id="2" name="firmID" type="char8"/>
     <field id="3" name="sendingTime" presence="optional" type="uint64_t"/>
@@ -1280,7 +1311,7 @@
     <field id="11" name="symbolIndex" type="uint32_t"/>
   </sbe:message>
   <sbe:message name="MMProtectionRequest" id="62" sinceVersion="200">
-    <!-- Expanding sub message -->
+    <!--Expanding sub message-->
     <field id="1" name="clMsgSeqNum" type="uint32_t"/>
     <field id="2" name="firmID" type="char8"/>
     <field id="3" name="sendingTime" type="uint64_t"/>
@@ -1296,7 +1327,7 @@
     </group>
   </sbe:message>
   <sbe:message name="MMProtectionAck" id="63" sinceVersion="200">
-    <!-- Expanding sub message -->
+    <!--Expanding sub message-->
     <field id="1" name="msgSeqNum" type="uint32_t"/>
     <field id="2" name="firmID" type="char8"/>
     <field id="3" name="sendingTime" presence="optional" type="uint64_t"/>
@@ -1320,7 +1351,7 @@
     </group>
   </sbe:message>
   <sbe:message name="NewWholesaleOrder" id="64" sinceVersion="203">
-    <!-- Expanding sub message -->
+    <!--Expanding sub message-->
     <field id="1" name="clMsgSeqNum" type="uint32_t"/>
     <field id="2" name="firmID" type="char8"/>
     <field id="3" name="sendingTime" type="uint64_t"/>
@@ -1367,7 +1398,7 @@
     </group>
   </sbe:message>
   <sbe:message name="WholesaleOrderAck" id="65" sinceVersion="203">
-    <!-- Expanding sub message -->
+    <!--Expanding sub message-->
     <field id="1" name="msgSeqNum" type="uint32_t"/>
     <field id="2" name="firmID" type="char8"/>
     <field id="3" name="sendingTime" presence="optional" type="uint64_t"/>
@@ -1408,7 +1439,7 @@
     </group>
   </sbe:message>
   <sbe:message name="RequestForImpliedExecution" id="66" sinceVersion="203">
-    <!-- Expanding sub message -->
+    <!--Expanding sub message-->
     <field id="1" name="clMsgSeqNum" type="uint32_t"/>
     <field id="2" name="firmID" type="char8"/>
     <field id="3" name="sendingTime" type="uint64_t"/>
@@ -1421,7 +1452,7 @@
     <field id="10" name="miFIDIndicators" type="MiFIDIndicators_set"/>
   </sbe:message>
   <sbe:message name="CrossOrder" id="67" sinceVersion="203">
-    <!-- Expanding sub message -->
+    <!--Expanding sub message-->
     <field id="1" name="clMsgSeqNum" type="uint32_t"/>
     <field id="2" name="firmID" type="char8"/>
     <field id="3" name="sendingTime" type="uint64_t"/>
@@ -1461,6 +1492,25 @@
       <field id="3" name="legInstrumentID" presence="optional" type="uint32_t"/>
     </group>
   </sbe:message>
+  <sbe:message name="RFQAudit" id="72" sinceVersion="300">
+    <!--Expanding sub message-->
+    <field id="1" name="msgSeqNum" type="uint32_t"/>
+    <field id="2" name="firmID" type="char8"/>
+    <field id="3" name="bookIn" type="uint64_t"/>
+    <field id="4" name="bookOUTTime" type="uint64_t"/>
+    <field id="5" name="oEGINFromME" type="uint64_t"/>
+    <field id="6" name="oEGOUTToMember" type="uint64_t"/>
+    <field id="7" name="quoteReqID" type="uint64_t"/>
+    <field id="8" name="symbolIndex" type="uint32_t"/>
+    <field id="9" name="eMM" type="EMM_enum"/>
+    <group id="10" dimensionType="groupSizeEncoding" name="RFQCounterparts">
+      <field id="1" name="orderOrigin" presence="optional" type="OrderOrigin_enum"/>
+      <field id="2" name="orderPrice" presence="optional" type="int64_t"/>
+      <field id="3" name="lastTradedQuantity" presence="optional" type="uint64_t"/>
+      <field id="4" name="darkExecutionInstruction" presence="optional" type="DarkExecutionInstruction_set"/>
+      <field id="5" name="minimumOrderQuantity" presence="optional" type="uint64_t"/>
+    </group>
+  </sbe:message>
   <sbe:message name="Logon" id="100">
     <field id="1" name="logicalAccessID" type="uint32_t"/>
     <field id="2" name="oEPartitionID" type="uint16_t"/>
@@ -1491,7 +1541,7 @@
     <field id="5" name="rejectedMessageID" presence="optional" type="uint16_t" sinceVersion="102"/>
   </sbe:message>
   <sbe:message name="DeclarationEntry" id="40">
-    <!-- Expanding sub message -->
+    <!--Expanding sub message-->
     <field id="1" name="clMsgSeqNum" type="uint32_t"/>
     <field id="2" name="firmID" type="char8"/>
     <field id="3" name="sendingTime" type="uint64_t"/>
@@ -1528,10 +1578,11 @@
     <field id="34" name="freeTextCross" presence="optional" type="char18"/>
     <field id="35" name="investmentDecisionWFirmShortCode" presence="optional" type="int32_t"/>
     <field id="36" name="clientIdentificationShortCodeCross" presence="optional" type="int32_t"/>
-    <group id="37" dimensionType="groupSizeEncoding" name="NotUsedGroup1" sinceVersion="112"> </group>
+    <group id="37" dimensionType="groupSizeEncoding" name="NotUsedGroup1" sinceVersion="112">
+    </group>
   </sbe:message>
   <sbe:message name="DeclarationEntryAck" id="41">
-    <!-- Expanding sub message -->
+    <!--Expanding sub message-->
     <field id="1" name="msgSeqNum" type="uint32_t"/>
     <field id="2" name="firmID" type="char8"/>
     <field id="3" name="declarationID" presence="optional" type="uint64_t"/>
@@ -1542,10 +1593,11 @@
     <field id="8" name="operationType" type="OperationType_enum"/>
     <field id="9" name="preMatchingType" presence="optional" type="PreMatchingType_enum"/>
     <field id="10" name="waiverIndicator" presence="optional" type="WaiverIndicator_set"/>
-    <group id="11" dimensionType="groupSizeEncoding" name="NotUsedGroup1" sinceVersion="112"> </group>
+    <group id="11" dimensionType="groupSizeEncoding" name="NotUsedGroup1" sinceVersion="112">
+    </group>
   </sbe:message>
   <sbe:message name="DeclarationNotice" id="42">
-    <!-- Expanding sub message -->
+    <!--Expanding sub message-->
     <field id="1" name="msgSeqNum" type="uint32_t"/>
     <field id="2" name="firmID" type="char8"/>
     <field id="3" name="clientOrderID" presence="optional" type="int64_t"/>
@@ -1584,11 +1636,13 @@
     <field id="36" name="previousDayIndicator" presence="optional" type="unsigned_char"/>
     <field id="37" name="miscellaneousFeeAmount" presence="optional" type="int64_t"/>
     <field id="38" name="cCPID" presence="optional" type="CCPID_enum" sinceVersion="105"/>
-    <group id="39" dimensionType="groupSizeEncoding" name="NotUsedGroup1" sinceVersion="112"> </group>
-    <group id="40" dimensionType="groupSizeEncoding" name="NotUsedGroup2" sinceVersion="112"> </group>
+    <group id="39" dimensionType="groupSizeEncoding" name="NotUsedGroup1" sinceVersion="112">
+    </group>
+    <group id="40" dimensionType="groupSizeEncoding" name="NotUsedGroup2" sinceVersion="112">
+    </group>
   </sbe:message>
   <sbe:message name="DeclarationCancelAndRefusal" id="43">
-    <!-- Expanding sub message -->
+    <!--Expanding sub message-->
     <field id="1" name="clMsgSeqNum" type="uint32_t"/>
     <field id="2" name="firmID" type="char8"/>
     <field id="3" name="sendingTime" type="uint64_t"/>
@@ -1599,7 +1653,7 @@
     <field id="8" name="actionType" type="ActionType_enum"/>
   </sbe:message>
   <sbe:message name="FundPriceInput" id="44">
-    <!-- Expanding sub message -->
+    <!--Expanding sub message-->
     <field id="1" name="clMsgSeqNum" type="uint32_t"/>
     <field id="2" name="firmID" type="char8"/>
     <field id="3" name="sendingTime" type="uint64_t"/>
@@ -1610,7 +1664,7 @@
     <field id="8" name="bypassIndicator" presence="optional" type="unsigned_char"/>
   </sbe:message>
   <sbe:message name="FundPriceInputAck" id="45">
-    <!-- Expanding sub message -->
+    <!--Expanding sub message-->
     <field id="1" name="msgSeqNum" type="uint32_t"/>
     <field id="2" name="firmID" type="char8"/>
     <field id="3" name="clientOrderID" type="int64_t"/>
@@ -1620,7 +1674,7 @@
     <field id="7" name="bypassIndicator" presence="optional" type="unsigned_char"/>
   </sbe:message>
   <sbe:message name="DeclarationEntryReject" id="46">
-    <!-- Expanding sub message -->
+    <!--Expanding sub message-->
     <field id="1" name="msgSeqNum" type="uint32_t"/>
     <field id="2" name="firmID" type="char8"/>
     <field id="3" name="clientOrderID" type="int64_t"/>
@@ -1631,6 +1685,7 @@
     <field id="8" name="errorCode" type="uint16_t"/>
     <field id="9" name="rejectedMessage" presence="optional" type="unsigned_char"/>
     <field id="10" name="rejectedMessageID" presence="optional" type="uint16_t" sinceVersion="102"/>
-    <group id="11" dimensionType="groupSizeEncoding" name="NotUsedGroup1" sinceVersion="112"> </group>
+    <group id="11" dimensionType="groupSizeEncoding" name="NotUsedGroup1" sinceVersion="112">
+    </group>
   </sbe:message>
 </sbe:messageSchema>

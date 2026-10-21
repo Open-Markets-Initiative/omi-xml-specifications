@@ -5,7 +5,7 @@
 
 | Division | Protocol | Encoding | Version | Specification |
 | --- | --- | --- | --- | --- |
-| TitanDt | DepthOfBook | Glimpse | 1.4 | [files](Sgx.TitanDt.DepthOfBook.Glimpse.v1.4/) |
+| TitanDt | DepthOfBook | Glimpse | 1.4 | private |
 | TitanDt | DepthOfBook | Itch | 1.4 | private |
 | TitanDt | MarketData | Fix | 0.8 | private |
 | TitanDt | ReferenceData | Fix | 0.8 | private |

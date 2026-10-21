@@ -5,9 +5,25 @@
 
 | Division | Protocol | Encoding | Version | Specification |
 | --- | --- | --- | --- | --- |
-| Globex | BrokerTecUst | Sbe | 10.1 | [files](Cme.Globex.BrokerTecUst.Sbe.v10.1/) |
+| BrokerTec | iLink3 | Sbe | 8.2 | [files](Cme.BrokerTec.iLink3.Sbe.v8.2/) |
+| BrokerTec | iLink3 | Sbe | 8.3 | [files](Cme.BrokerTec.iLink3.Sbe.v8.3/) |
+| BrokerTec | iLink3 | Sbe | 8.4 | [files](Cme.BrokerTec.iLink3.Sbe.v8.4/) |
+| BrokerTec | iLink3 | Sbe | 8.5 | [files](Cme.BrokerTec.iLink3.Sbe.v8.5/) |
+| BrokerTec | iLink3 | Sbe | 8.6 | [files](Cme.BrokerTec.iLink3.Sbe.v8.6/) |
+| BrokerTec | iLink3 | Sbe | 8.7 | [files](Cme.BrokerTec.iLink3.Sbe.v8.7/) |
+| BrokerTec | iLink3 | Sbe | 8.8 | [files](Cme.BrokerTec.iLink3.Sbe.v8.8/) |
+| BrokerTec | iLink3 | Sbe | 8.9 | [files](Cme.BrokerTec.iLink3.Sbe.v8.9/) |
+| BrokerTec | UsTreasury | Sbe | 10.1 | [files](Cme.BrokerTec.UsTreasury.Sbe.v10.1/) |
+| Ebs | iLink3 | Sbe | 8.2 | [files](Cme.Ebs.iLink3.Sbe.v8.2/) |
+| Ebs | iLink3 | Sbe | 8.3 | [files](Cme.Ebs.iLink3.Sbe.v8.3/) |
+| Ebs | iLink3 | Sbe | 8.4 | [files](Cme.Ebs.iLink3.Sbe.v8.4/) |
+| Ebs | iLink3 | Sbe | 8.5 | [files](Cme.Ebs.iLink3.Sbe.v8.5/) |
+| Ebs | iLink3 | Sbe | 8.6 | [files](Cme.Ebs.iLink3.Sbe.v8.6/) |
+| Ebs | iLink3 | Sbe | 8.7 | [files](Cme.Ebs.iLink3.Sbe.v8.7/) |
+| Ebs | iLink3 | Sbe | 8.8 | [files](Cme.Ebs.iLink3.Sbe.v8.8/) |
+| Ebs | iLink3 | Sbe | 8.9 | [files](Cme.Ebs.iLink3.Sbe.v8.9/) |
+| Ebs | Spectrum | Sbe | 12.0 | [files](Cme.Ebs.Spectrum.Sbe.v12.0/) |
 | Globex | Derived | Sbe | 12.0 | [files](Cme.Globex.Derived.Sbe.v12.0/) |
-| Globex | EbsSpectrum | Sbe | 12.0 | [files](Cme.Globex.EbsSpectrum.Sbe.v12.0/) |
 | Globex | iLink3 | Sbe | 8.2 | [files](Cme.Globex.iLink3.Sbe.v8.2/) |
 | Globex | iLink3 | Sbe | 8.3 | [files](Cme.Globex.iLink3.Sbe.v8.3/) |
 | Globex | iLink3 | Sbe | 8.4 | [files](Cme.Globex.iLink3.Sbe.v8.4/) |

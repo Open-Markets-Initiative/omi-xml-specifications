@@ -23,6 +23,9 @@
 | NseCm | Mtbt | Binary | 7.0 | [files](Nse.NseCm.Mtbt.Binary.v7.0/) |
 | NseCm | Mtbt | Binary | 7.1 | [files](Nse.NseCm.Mtbt.Binary.v7.1/) |
 | NseCm | MtbtNdal | Binary | 6.5 | [files](Nse.NseCm.MtbtNdal.Binary.v6.5/) |
+| NseCm | OrderEntry | Nnf | 6.6 | [files](Nse.NseCm.OrderEntry.Nnf.v6.6/) |
+| NseCm | OrderEntry | NnfDirect | 6.6 | [files](Nse.NseCm.OrderEntry.NnfDirect.v6.6/) |
+| NseCm | OrderEntry | NnfTrimmed | 6.6 | [files](Nse.NseCm.OrderEntry.NnfTrimmed.v6.6/) |
 | NseCm | Recovery | Binary | 6.8 | [files](Nse.NseCm.Recovery.Binary.v6.8/) |
 | NseCm | Recovery | Binary | 6.9 | [files](Nse.NseCm.Recovery.Binary.v6.9/) |
 | NseCm | Recovery | Binary | 7.0 | [files](Nse.NseCm.Recovery.Binary.v7.0/) |

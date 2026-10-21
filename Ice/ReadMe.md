@@ -5,6 +5,7 @@
 
 | Division | Protocol | Encoding | Version | Specification |
 | --- | --- | --- | --- | --- |
+| IceFutures | Bgw | Sbe | 7.0 | private |
 | IceFutures | Mdf | iMpact | 1.1.24 | private |
 | IceFutures | Mdf | iMpact | 1.1.33 | private |
 | IceFutures | Mdf | iMpact | 1.1.34 | private |

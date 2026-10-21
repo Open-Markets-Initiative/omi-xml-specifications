@@ -5,21 +5,28 @@
 
 | Division | Protocol | Encoding | Version | Specification |
 | --- | --- | --- | --- | --- |
-| Mx | SolaMulticast | Hsvf | 1.11 | [files](Tmx.Mx.SolaMulticast.Hsvf.v1.11/) |
+| Mx | SolaMulticast | Hsvf | 1.11 | private |
 | Mx | SolaMulticast | Hsvf | 1.12 | private |
-| Mx | SolaMulticast | Hsvf | 1.13 | [files](Tmx.Mx.SolaMulticast.Hsvf.v1.13/) |
-| Mx | SolaMulticast | Hsvf | 1.14 | [files](Tmx.Mx.SolaMulticast.Hsvf.v1.14/) |
-| Mx | SolaMulticast | Hsvf | 2.1 | [files](Tmx.Mx.SolaMulticast.Hsvf.v2.1/) |
+| Mx | SolaMulticast | Hsvf | 1.13 | private |
+| Mx | SolaMulticast | Hsvf | 1.14 | private |
+| Mx | SolaMulticast | Hsvf | 2.1 | private |
 | Mx | SolaOrderEntry | Sail | 1.21 | private |
+| Mx | SolaTcpRetransmission | Hsvf | 1.11 | private |
+| Mx | SolaTcpRetransmission | Hsvf | 1.12 | private |
+| Mx | SolaTcpRetransmission | Hsvf | 1.13 | private |
+| Mx | SolaTcpRetransmission | Hsvf | 1.14 | private |
 | Tsx | GlobalFx | Gfx | 1.0 | private |
-| Tsx | QuantumFeedLevel1 | Xmt | 2.6 | [files](Tmx.Tsx.QuantumFeedLevel1.Xmt.v2.6/) |
-| Tsx | QuantumFeedLevel1 | Xmt | 2.8 | [files](Tmx.Tsx.QuantumFeedLevel1.Xmt.v2.8/) |
-| Tsx | QuantumFeedLevel2 | Xmt | 2.1 | [files](Tmx.Tsx.QuantumFeedLevel2.Xmt.v2.1/) |
-| Tsx | QuantumFeedLevel2 | Xmt | 3.6 | [files](Tmx.Tsx.QuantumFeedLevel2.Xmt.v3.6/) |
-| TsxAlpha | QuantumFeedLevel1 | Xmt | 2.1 | [files](Tmx.TsxAlpha.QuantumFeedLevel1.Xmt.v2.1/) |
-| TsxAlpha | QuantumFeedLevel1 | Xmt | 2.2 | [files](Tmx.TsxAlpha.QuantumFeedLevel1.Xmt.v2.2/) |
-| TsxAlpha | QuantumFeedLevel2 | Xmt | 2.1 | [files](Tmx.TsxAlpha.QuantumFeedLevel2.Xmt.v2.1/) |
-| TsxAlpha | QuantumFeedLevel2 | Xmt | 2.2 | [files](Tmx.TsxAlpha.QuantumFeedLevel2.Xmt.v2.2/) |
+| Tsx | IndexFeed | Qrtmd | 1.19 | private |
+| Tsx | Level1 | Qrtmd | 2.8 | private |
+| Tsx | QuantumFeedLevel1 | Xmt | 2.6 | private |
+| Tsx | QuantumFeedLevel1 | Xmt | 2.8 | private |
+| Tsx | QuantumFeedLevel2 | Xmt | 2.1 | private |
+| Tsx | QuantumFeedLevel2 | Xmt | 3.6 | private |
+| TsxAlpha | Level1 | Qrtmd | 2.1 | private |
+| TsxAlpha | QuantumFeedLevel1 | Xmt | 2.1 | private |
+| TsxAlpha | QuantumFeedLevel1 | Xmt | 2.2 | private |
+| TsxAlpha | QuantumFeedLevel2 | Xmt | 2.1 | private |
+| TsxAlpha | QuantumFeedLevel2 | Xmt | 2.2 | private |
 
 A specification marked private is released by the venue to registered participants only. Those protocols are listed here for completeness, and nothing read out of their documents is published: no message layouts, no field names, no wording. The generated parsers in the definition repositories describe the wire format and are published as usual.
 

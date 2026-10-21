@@ -5,7 +5,7 @@
 
 | Protocol | Encoding | Version | Specification |
 | --- | --- | --- | --- |
-| CommonHeader | Udp | 1.1 | [files](BlueOceanAts.CommonHeader.Udp.v1.1/) |
+| CommonHeader | Udp | 1.1 | private |
 | DropCopy | Fix | 1.13.1 | private |
 | Memo | Sbe | 1.13 | private |
 | Memo | Sbe | 1.14 | private |
