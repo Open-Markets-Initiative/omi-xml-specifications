@@ -15,7 +15,7 @@
 | BxEquities | SumoOrders | Fix | 4.2.2020.016 | [files](Nasdaq.BxEquities.SumoOrders.Fix.v4.2/) |
 | GemxOptions | Cti | Itch | 3.0 | [files](Nasdaq.GemxOptions.Cti.Itch.v3.0/) |
 | GemxOptions | DepthOfMarket | Glimpse | 2.1 | [files](Nasdaq.GemxOptions.DepthOfMarket.Glimpse.v2.1/) |
-| GemxOptions | DepthOfMarket | Itch | 2.1 | private |
+| GemxOptions | DepthOfMarket | Itch | 2.1 | [files](Nasdaq.GemxOptions.DepthOfMarket.Itch.v2.1/) |
 | GemxOptions | DepthOfMarket | Itch | 2.1.2026 | [files](Nasdaq.GemxOptions.DepthOfMarket.Itch.v2.1.2026/) |
 | GemxOptions | DropCopy | Fix | 2.1 | [files](Nasdaq.GemxOptions.DropCopy.Fix.v2.1/) |
 | GemxOptions | OrderEntry | Fix | 12.1.12 | [files](Nasdaq.GemxOptions.OrderEntry.Fix.v12.1.12/) |
@@ -28,7 +28,7 @@
 | GemxOptions | TradeFeed | Itch | 2.1 | [files](Nasdaq.GemxOptions.TradeFeed.Itch.v2.1/) |
 | IseOptions | Cti | Itch | 3.0 | [files](Nasdaq.IseOptions.Cti.Itch.v3.0/) |
 | IseOptions | DepthOfMarket | Glimpse | 2.1 | [files](Nasdaq.IseOptions.DepthOfMarket.Glimpse.v2.1/) |
-| IseOptions | DepthOfMarket | Itch | 2.1 | private |
+| IseOptions | DepthOfMarket | Itch | 2.1 | [files](Nasdaq.IseOptions.DepthOfMarket.Itch.v2.1/) |
 | IseOptions | DepthOfMarket | Itch | 2.1.2026 | [files](Nasdaq.IseOptions.DepthOfMarket.Itch.v2.1.2026/) |
 | IseOptions | DropCopy | Fix | 2.1 | [files](Nasdaq.IseOptions.DropCopy.Fix.v2.1/) |
 | IseOptions | OrderComboFeed | Itch | 1.1 | [files](Nasdaq.IseOptions.OrderComboFeed.Itch.v1.1/) |
@@ -52,7 +52,7 @@
 | IseOptions | TradeFeed | Itch | 2.1 | [files](Nasdaq.IseOptions.TradeFeed.Itch.v2.1/) |
 | MrxOptions | Cti | Itch | 3.0 | [files](Nasdaq.MrxOptions.Cti.Itch.v3.0/) |
 | MrxOptions | DepthOfMarket | Glimpse | 2.1 | [files](Nasdaq.MrxOptions.DepthOfMarket.Glimpse.v2.1/) |
-| MrxOptions | DepthOfMarket | Itch | 2.1 | private |
+| MrxOptions | DepthOfMarket | Itch | 2.1 | [files](Nasdaq.MrxOptions.DepthOfMarket.Itch.v2.1/) |
 | MrxOptions | DepthOfMarket | Itch | 2.1.2026 | [files](Nasdaq.MrxOptions.DepthOfMarket.Itch.v2.1.2026/) |
 | MrxOptions | DropCopy | Fix | 2.1 | [files](Nasdaq.MrxOptions.DropCopy.Fix.v2.1/) |
 | MrxOptions | OrderEntry | Fix | 12.1.12 | [files](Nasdaq.MrxOptions.OrderEntry.Fix.v12.1.12/) |

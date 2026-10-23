@@ -387,11 +387,13 @@
 | TitaniumConsolidated | Indices | Cgif | 1.4.13 | [files](Cboe.TitaniumConsolidated.Indices.Cgif.v1.4.13/) |
 | TitaniumConsolidated | MulticastOneEquities | CboeOne | 1.4.13 | [files](Cboe.TitaniumConsolidated.MulticastOneEquities.CboeOne.v1.4.13/) |
 | TitaniumConsolidated | MulticastOneEquities | CboeOne | 1.4.15 | [files](Cboe.TitaniumConsolidated.MulticastOneEquities.CboeOne.v1.4.15/) |
+| TitaniumConsolidated | MulticastOneEquities | CboeOne | 1.4.16 | [files](Cboe.TitaniumConsolidated.MulticastOneEquities.CboeOne.v1.4.16/) |
 | TitaniumConsolidated | OneOptions | Pitch | 1.0.10 | [files](Cboe.TitaniumConsolidated.OneOptions.Pitch.v1.0.10/) |
 | TitaniumConsolidated | OneOptions | Pitch | 1.1.19 | [files](Cboe.TitaniumConsolidated.OneOptions.Pitch.v1.1.19/) |
 | TitaniumConsolidated | OneOptions | Spin | 1.0.10 | [files](Cboe.TitaniumConsolidated.OneOptions.Spin.v1.0.10/) |
 | TitaniumConsolidated | TcpOneEquities | CboeOne | 1.4.13 | [files](Cboe.TitaniumConsolidated.TcpOneEquities.CboeOne.v1.4.13/) |
 | TitaniumConsolidated | TcpOneEquities | CboeOne | 1.4.15 | [files](Cboe.TitaniumConsolidated.TcpOneEquities.CboeOne.v1.4.15/) |
+| TitaniumConsolidated | TcpOneEquities | CboeOne | 1.4.16 | [files](Cboe.TitaniumConsolidated.TcpOneEquities.CboeOne.v1.4.16/) |
 
 
 Cboe: [website](https://www.cboe.com "Go to Chicago Board Options Exchange")
