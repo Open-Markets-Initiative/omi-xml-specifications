@@ -12,7 +12,7 @@ Every published specification is validated for well-formed xml on each change. P
 
 | Specification Files |
 | --- |
-| 1,817 |
+| 1,853 |
 
 ## Open Markets Initiative
 
