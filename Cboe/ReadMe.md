@@ -78,6 +78,7 @@
 | ByxEquities | Top | AsciiPitch | 1.3.2 | [files](Cboe.ByxEquities.Top.AsciiPitch.v1.3.2/) |
 | ByxEquities | Top | AsciiPitch | 1.3.8 | [files](Cboe.ByxEquities.Top.AsciiPitch.v1.3.8/) |
 | BzxEquities | AuctionFeed | AsciiPitch | 1.3.8 | [files](Cboe.BzxEquities.AuctionFeed.AsciiPitch.v1.3.8/) |
+| BzxEquities | AuctionFeed | AsciiPitch | 1.3.9 | [files](Cboe.BzxEquities.AuctionFeed.AsciiPitch.v1.3.9/) |
 | BzxEquities | BinaryOrderEntry | Boe | 2.3 | [files](Cboe.BzxEquities.BinaryOrderEntry.Boe.v2.3/) |
 | BzxEquities | BinaryOrderEntry | Boe | 2.4.55 | [files](Cboe.BzxEquities.BinaryOrderEntry.Boe.v2.4.55/) |
 | BzxEquities | BinaryOrderEntry | Boe | 2.4.57 | [files](Cboe.BzxEquities.BinaryOrderEntry.Boe.v2.4.57/) |

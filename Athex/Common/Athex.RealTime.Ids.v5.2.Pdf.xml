@@ -1,0 +1,1705 @@
+<OmiAthexIdsPdf>
+
+<!--
+  Athex Oasis Ids real time channel, version 5.2 (ATHEX OASIS IDS Market Data Feed Specification
+  5.2, Table 3-3 and chapter 4). Fourteen message categories, dispatched by the Message Category
+  of the shared Ids header, which Ids.Header.Tcp.Source.xml declares along with the Soh, Etx and
+  Lrc that frame them.
+
+  Every field is printable ascii: an alpha run left justified and space filled, a numeric run
+  right justified and zero filled with the decimal point implied by the digit pattern the document
+  states in prose, which the Format restates as N whole digits and D decimal ones.
+
+  Category K carries its own second discriminator. Its Message Type selects one of four control
+  bodies, three of which are that character and nothing more.
+
+  Three things the document states inconsistently, transcribed as its field tables give them:
+
+  - Section 4.1 opens "The twenty category codes listed on section 3.3.2 represent the twenty
+    different types of message packets", where 3.3.2 lists fourteen categories and 3.3.3 four
+    more, eighteen in all, of which this channel carries the fourteen.
+  - Section 3.4 gives a Category A Trade Message for a stock as "eighty five characters long",
+    where Table 4-5 sums to and states 147. The field table is authoritative and is what is
+    transcribed.
+  - The TimeStamp of Table 4-13, the Category O Instrument State Message, is spelled with a Greek
+    capital Tau rather than a Latin T. It is transcribed as the Latin TimeStamp every other table
+    uses, so that the one field does not become two.
+
+  The Category P Market ID has no code table: section 7 lists Board IDs and Market Statuses but
+  no Market IDs, and the field's own description breaks off mid sentence as "The Market's ID for
+  possible values)". It is transcribed as the single alpha character the table gives, with no
+  value set.
+
+  The Waiver Indicator fields are four numeric characters holding a bit mask, not a wire bitfield:
+  the document's own examples read 8 as PRIC and 24 as PRIC and SIZE, so the flags combine and no
+  single value set can name them.
+-->
+
+  <Messages>
+
+    <!-- Control Message -->
+    <Message>
+      <Name>Control Message</Name>
+      <Dependency>Message Category</Dependency>
+      <Branch>Message Text</Branch>
+      <Code>K</Code>
+      <Category>Control</Category>
+      <Origin>Exchange</Origin>
+      <Description>System specific information the Ids provides to Data Vendors, of one of four types</Description>
+      <Fields>
+        <Field>
+          <Name>Message Type</Name>
+          <Type>Alpha character</Type>
+          <Size>1</Size>
+          <Description>The Category's type</Description>
+        </Field>
+        <Field>
+          <Name>Control Message Text</Name>
+          <Type>branch</Type>
+          <Description>The control message the Message Type selects</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Start of Day Control Message -->
+    <Message>
+      <Name>Start of Day Control Message</Name>
+      <Dependency>Message Type</Dependency>
+      <Branch>Control Message Text</Branch>
+      <Code>A</Code>
+      <Category>Control</Category>
+      <Origin>Exchange</Origin>
+      <Description>First message transmitted to the Data Vendors, signalling the start of the trading day and that the Ids is ready to process information packets sent by the trading platform</Description>
+    </Message>
+
+    <!-- Administrative Message -->
+    <Message>
+      <Name>Administrative Message</Name>
+      <Dependency>Message Type</Dependency>
+      <Branch>Control Message Text</Branch>
+      <Code>F</Code>
+      <Category>Control</Category>
+      <Origin>Exchange</Origin>
+      <Description>General information that may be of value to the investors, disseminated whenever the exchange decides</Description>
+      <Fields>
+        <Field>
+          <Name>Free Text</Name>
+          <Type>TEXT</Type>
+          <Description>The actual message, of any size between one and four hundred characters, written in English</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- End of Day Control Message -->
+    <Message>
+      <Name>End of Day Control Message</Name>
+      <Dependency>Message Type</Dependency>
+      <Branch>Control Message Text</Branch>
+      <Code>H</Code>
+      <Category>Control</Category>
+      <Origin>Exchange</Origin>
+      <Description>Last message transmitted to the Data Vendors, signalling the end of the trading day and that the Ids has concluded its operation</Description>
+    </Message>
+
+    <!-- Line Verification Control Message -->
+    <Message>
+      <Name>Line Verification Control Message</Name>
+      <Dependency>Message Type</Dependency>
+      <Branch>Control Message Text</Branch>
+      <Code>T</Code>
+      <Category>Control</Category>
+      <Origin>Exchange</Origin>
+      <Description>Transmitted on a minute basis while the data dissemination line remains idle, verifying to the Data Vendors that the Ids continues uninterrupted. It does not increment the Sequence Number and is excluded from retransmission</Description>
+    </Message>
+
+    <!-- Trade Message -->
+    <Message>
+      <Name>Trade Message</Name>
+      <Dependency>Message Category</Dependency>
+      <Branch>Message Text</Branch>
+      <Code>A</Code>
+      <Category>Market Data</Category>
+      <Origin>Exchange</Origin>
+      <Description>Transmitted when an instrument trade occurs in the trading platform or the clearing system</Description>
+      <Fields>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Alpha character</Type>
+          <Size>15</Size>
+          <Description>The Instrument's fifteen character symbol</Description>
+        </Field>
+        <Field>
+          <Name>Board ID</Name>
+          <Type>Alpha character</Type>
+          <Size>1</Size>
+          <Description>The trading board under which the instrument is being traded</Description>
+        </Field>
+        <Field>
+          <Name>Trade number</Name>
+          <Type>Numeric Characters</Type>
+          <Size>6</Size>
+          <Description>Unique for the trading day</Description>
+        </Field>
+        <Field>
+          <Name>Buy order number</Name>
+          <Type>Numeric Characters</Type>
+          <Size>8</Size>
+          <Description>The sequence number of the buy side order being matched</Description>
+        </Field>
+        <Field>
+          <Name>Buy order date</Name>
+          <Type>DATE</Type>
+          <Size>8</Size>
+          <Format>YYYYMMDD</Format>
+          <Description>The date the buy side order was entered into the trading system</Description>
+        </Field>
+        <Field>
+          <Name>Sell order number</Name>
+          <Type>Numeric Characters</Type>
+          <Size>8</Size>
+          <Description>The sequence number of the sell side order being matched</Description>
+        </Field>
+        <Field>
+          <Name>Sell order date</Name>
+          <Type>DATE</Type>
+          <Size>8</Size>
+          <Format>YYYYMMDD</Format>
+          <Description>The date the sell side order was entered into the trading system</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>PRICE</Type>
+          <Size>9</Size>
+          <Format>NNNNNDDDD</Format>
+          <Description>The trade's price</Description>
+        </Field>
+        <Field>
+          <Name>Volume</Name>
+          <Type>Numeric Characters</Type>
+          <Size>17</Size>
+          <Format>NNNNNNNNNNNNNNNDD</Format>
+          <Description>The trade's volume</Description>
+        </Field>
+        <Field>
+          <Name>Total Volume</Name>
+          <Type>Numeric Characters</Type>
+          <Size>17</Size>
+          <Format>NNNNNNNNNNNNNNNDD</Format>
+          <Description>The total number of stocks or contracts traded up to that point</Description>
+        </Field>
+        <Field>
+          <Name>Trade Type</Name>
+          <Type>Alpha Character</Type>
+          <Size>1</Size>
+          <Description>Whether the trade is new or an edit of one already reported</Description>
+        </Field>
+        <Field>
+          <Name>Trade Source</Name>
+          <Type>Alpha Character</Type>
+          <Size>1</Size>
+          <Description>The system the trade came from</Description>
+        </Field>
+        <Field>
+          <Name>Buy order type</Name>
+          <Type>Alpha character</Type>
+          <Size>1</Size>
+          <Description>The type of the buy side order</Description>
+        </Field>
+        <Field>
+          <Name>Sell order type</Name>
+          <Type>Alpha character</Type>
+          <Size>1</Size>
+          <Description>The type of the sell side order</Description>
+        </Field>
+        <Field>
+          <Name>Buy Waiver Indicator</Name>
+          <Type>bitfield</Type>
+          <Size>4</Size>
+          <Description>Waiver flags for the buy side, a bit mask spelled as four numeric characters</Description>
+        </Field>
+        <Field>
+          <Name>Sell Waiver Indicator</Name>
+          <Type>bitfield</Type>
+          <Size>4</Size>
+          <Description>Waiver flags for the sell side, a bit mask spelled as four numeric characters</Description>
+        </Field>
+        <Field>
+          <Name>Notional amount</Name>
+          <Type>Numeric Characters</Type>
+          <Size>14</Size>
+          <Format>NNNNNNNNNNNNDD</Format>
+          <Description>Trade value</Description>
+        </Field>
+        <Field>
+          <Name>Buy ALGO flag</Name>
+          <Type>Alpha character</Type>
+          <Size>1</Size>
+          <Description>Algorithmic transaction flag of the buy side. Y is flag on and any other value is flag off</Description>
+        </Field>
+        <Field>
+          <Name>Sell ALGO flag</Name>
+          <Type>Alpha character</Type>
+          <Size>1</Size>
+          <Description>Algorithmic transaction flag of the sell side. Y is flag on and any other value is flag off</Description>
+        </Field>
+        <Field>
+          <Name>SDIV flag</Name>
+          <Type>Alpha character</Type>
+          <Size>1</Size>
+          <Description>Special Dividend transaction flag. Y is flag on and any other value is flag off</Description>
+        </Field>
+        <Field>
+          <Name>DUPL flag</Name>
+          <Type>Alpha character</Type>
+          <Size>1</Size>
+          <Description>Duplicative Trade reports flag. Y is flag on and any other value is flag off</Description>
+        </Field>
+        <Field>
+          <Name>TimeStamp</Name>
+          <Type>DATETIME</Type>
+          <Size>20</Size>
+          <Format>YYYYMMDDHHMMSSdddddd</Format>
+          <Description>Time the message was created in the Trading System, as local time to the microsecond</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Quote Message -->
+    <Message>
+      <Name>Quote Message</Name>
+      <Dependency>Message Category</Dependency>
+      <Branch>Message Text</Branch>
+      <Code>B</Code>
+      <Category>Market Data</Category>
+      <Origin>Exchange</Origin>
+      <Description>Transmitted when at least one side of the supported Quote levels for the given instrument becomes changed. The Ids will not send a Quote level that contains no data</Description>
+      <Fields>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Alpha character</Type>
+          <Size>15</Size>
+          <Description>The Instrument's fifteen character symbol</Description>
+        </Field>
+        <Field>
+          <Name>Quote Levels</Name>
+          <Type>Numeric characters</Type>
+          <Size>3</Size>
+          <Description>The number of Bid and Ask levels contained in this message for the given instrument</Description>
+        </Field>
+        <Field>
+          <Name>Quote Level</Name>
+          <Type>group</Type>
+          <Description>One Bid and Ask level of the given instrument</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Index Message -->
+    <Message>
+      <Name>Index Message</Name>
+      <Dependency>Message Category</Dependency>
+      <Branch>Message Text</Branch>
+      <Code>C</Code>
+      <Category>Market Data</Category>
+      <Origin>Exchange</Origin>
+      <Description>Transmitted every time the trading platform calculates the price of a given index</Description>
+      <Fields>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Alpha character</Type>
+          <Size>15</Size>
+          <Description>The Index's fifteen character symbol</Description>
+        </Field>
+        <Field>
+          <Name>Index Price</Name>
+          <Type>Numeric characters</Type>
+          <Size>9</Size>
+          <Format>NNNNNDDDD</Format>
+          <Description>The calculated value of the Index</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Instrument Summary Message -->
+    <Message>
+      <Name>Instrument Summary Message</Name>
+      <Dependency>Message Category</Dependency>
+      <Branch>Message Text</Branch>
+      <Code>G</Code>
+      <Category>Market Data</Category>
+      <Origin>Exchange</Origin>
+      <Description>Transmitted for each instrument right after the corresponding market status changes to End of Day</Description>
+      <Fields>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Alpha character</Type>
+          <Size>15</Size>
+          <Description>The Instrument's fifteen character symbol</Description>
+        </Field>
+        <Field>
+          <Name>Opening Price</Name>
+          <Type>PRICE</Type>
+          <Size>9</Size>
+          <Format>NNNNNDDDD</Format>
+          <Description>The Instrument's opening price</Description>
+        </Field>
+        <Field>
+          <Name>High</Name>
+          <Type>PRICE</Type>
+          <Size>9</Size>
+          <Format>NNNNNDDDD</Format>
+          <Description>The highest price with which the given Instrument was traded, during the trading day</Description>
+        </Field>
+        <Field>
+          <Name>Low</Name>
+          <Type>PRICE</Type>
+          <Size>9</Size>
+          <Format>NNNNNDDDD</Format>
+          <Description>The lowest price with which the given Instrument was traded, during the trading day</Description>
+        </Field>
+        <Field>
+          <Name>Last</Name>
+          <Type>PRICE</Type>
+          <Size>9</Size>
+          <Format>NNNNNDDDD</Format>
+          <Description>The last price with which the given Instrument was traded, during the trading day</Description>
+        </Field>
+        <Field>
+          <Name>Closing Price</Name>
+          <Type>PRICE</Type>
+          <Size>9</Size>
+          <Format>NNNNNDDDD</Format>
+          <Description>The Instrument's closing price</Description>
+        </Field>
+        <Field>
+          <Name>Start Of Day Price</Name>
+          <Type>PRICE</Type>
+          <Size>9</Size>
+          <Format>NNNNNDDDD</Format>
+          <Description>Usually the previous day's closing price adjusted, if necessary, from various corporate actions</Description>
+        </Field>
+        <Field>
+          <Name>Total Volume</Name>
+          <Type>Numeric Characters</Type>
+          <Size>17</Size>
+          <Format>NNNNNNNNNNNNNNNDD</Format>
+          <Description>The sum of the volumes of all Instrument trades occurred, during the trading day</Description>
+        </Field>
+        <Field>
+          <Name>Total Value</Name>
+          <Type>Numeric Characters</Type>
+          <Size>17</Size>
+          <Format>NNNNNNNNNNNNNNNDD</Format>
+          <Description>The total value traded in the given Market for the given Instrument, during the trading day</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Cancelled Trade Message -->
+    <Message>
+      <Name>Cancelled Trade Message</Name>
+      <Dependency>Message Category</Dependency>
+      <Branch>Message Text</Branch>
+      <Code>I</Code>
+      <Category>Market Data</Category>
+      <Origin>Exchange</Origin>
+      <Description>Transmitted when an instrument trade cancellation occurs in the trading platform or clearing system</Description>
+      <Fields>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Alpha Character</Type>
+          <Size>15</Size>
+          <Description>The Instrument's fifteen character symbol</Description>
+        </Field>
+        <Field>
+          <Name>Board ID</Name>
+          <Type>Alpha character</Type>
+          <Size>1</Size>
+          <Description>The trading board under which the instrument is being traded</Description>
+        </Field>
+        <Field>
+          <Name>Trade number</Name>
+          <Type>Numeric Characters</Type>
+          <Size>6</Size>
+          <Description>Unique for the trading day</Description>
+        </Field>
+        <Field>
+          <Name>Buy order number</Name>
+          <Type>Numeric Characters</Type>
+          <Size>8</Size>
+          <Description>The sequence number of the buy side order being matched</Description>
+        </Field>
+        <Field>
+          <Name>Buy order date</Name>
+          <Type>DATE</Type>
+          <Size>8</Size>
+          <Format>YYYYMMDD</Format>
+          <Description>The date the buy side order was entered into the trading system</Description>
+        </Field>
+        <Field>
+          <Name>Sell order number</Name>
+          <Type>Numeric Characters</Type>
+          <Size>8</Size>
+          <Description>The sequence number of the sell side order being matched</Description>
+        </Field>
+        <Field>
+          <Name>Sell order date</Name>
+          <Type>DATE</Type>
+          <Size>8</Size>
+          <Format>YYYYMMDD</Format>
+          <Description>The date the sell side order was entered into the trading system</Description>
+        </Field>
+        <Field>
+          <Name>Cancelled Trade Price</Name>
+          <Type>PRICE</Type>
+          <Size>9</Size>
+          <Format>NNNNNDDDD</Format>
+          <Description>The price of the cancelled trade</Description>
+        </Field>
+        <Field>
+          <Name>Cancelled Volume</Name>
+          <Type>Numeric Characters</Type>
+          <Size>17</Size>
+          <Format>NNNNNNNNNNNNNNNDD</Format>
+          <Description>The volume of the cancelled trade</Description>
+        </Field>
+        <Field>
+          <Name>Total Volume</Name>
+          <Type>Numeric Characters</Type>
+          <Size>17</Size>
+          <Format>NNNNNNNNNNNNNNNDD</Format>
+          <Description>The total number of Instrument traded in the current trading day up to that point, adjusted according to the cancelled volume</Description>
+        </Field>
+        <Field>
+          <Name>Trade Type</Name>
+          <Type>Alpha Character</Type>
+          <Size>1</Size>
+          <Description>Whether the trade is new or an edit of one already reported</Description>
+        </Field>
+        <Field>
+          <Name>Trade Source</Name>
+          <Type>Alpha Character</Type>
+          <Size>1</Size>
+          <Description>The system the trade came from</Description>
+        </Field>
+        <Field>
+          <Name>Buy order type</Name>
+          <Type>Alpha character</Type>
+          <Size>1</Size>
+          <Description>The type of the buy side order</Description>
+        </Field>
+        <Field>
+          <Name>Sell order type</Name>
+          <Type>Alpha character</Type>
+          <Size>1</Size>
+          <Description>The type of the sell side order</Description>
+        </Field>
+        <Field>
+          <Name>Buy Waiver Indicator</Name>
+          <Type>bitfield</Type>
+          <Size>4</Size>
+          <Description>Waiver flags for the buy side, a bit mask spelled as four numeric characters</Description>
+        </Field>
+        <Field>
+          <Name>Sell Waiver Indicator</Name>
+          <Type>bitfield</Type>
+          <Size>4</Size>
+          <Description>Waiver flags for the sell side, a bit mask spelled as four numeric characters</Description>
+        </Field>
+        <Field>
+          <Name>Notional amount</Name>
+          <Type>Numeric Characters</Type>
+          <Size>14</Size>
+          <Format>NNNNNNNNNNNNDD</Format>
+          <Description>Canceled Trade value</Description>
+        </Field>
+        <Field>
+          <Name>Buy ALGO flag</Name>
+          <Type>Alpha character</Type>
+          <Size>1</Size>
+          <Description>Algorithmic transaction flag of the buy side. Y is flag on and any other value is flag off</Description>
+        </Field>
+        <Field>
+          <Name>Sell ALGO flag</Name>
+          <Type>Alpha character</Type>
+          <Size>1</Size>
+          <Description>Algorithmic transaction flag of the sell side. Y is flag on and any other value is flag off</Description>
+        </Field>
+        <Field>
+          <Name>SDIV flag</Name>
+          <Type>Alpha character</Type>
+          <Size>1</Size>
+          <Description>Special Dividend transaction flag. Y is flag on and any other value is flag off</Description>
+        </Field>
+        <Field>
+          <Name>DUPL flag</Name>
+          <Type>Alpha character</Type>
+          <Size>1</Size>
+          <Description>Duplicative Trade reports flag. Y is flag on and any other value is flag off</Description>
+        </Field>
+        <Field>
+          <Name>TimeStamp</Name>
+          <Type>DATETIME</Type>
+          <Size>20</Size>
+          <Format>YYYYMMDDHHMMSSdddddd</Format>
+          <Description>Time the message was created in the Trading System, as local time to the microsecond</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Closing Price Message -->
+    <Message>
+      <Name>Closing Price Message</Name>
+      <Dependency>Message Category</Dependency>
+      <Branch>Message Text</Branch>
+      <Code>L</Code>
+      <Category>Market Data</Category>
+      <Origin>Exchange</Origin>
+      <Description>Transmitted for every instrument whose closing price has been calculated by the trading platform, and again whenever the trading platform recalculates one</Description>
+      <Fields>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Alpha Character</Type>
+          <Size>15</Size>
+          <Description>The Instrument's fifteen character symbol</Description>
+        </Field>
+        <Field>
+          <Name>Closing</Name>
+          <Type>PRICE</Type>
+          <Size>9</Size>
+          <Format>NNNNNDDDD</Format>
+          <Description>The Instrument's closing price, as Oasis calculated it</Description>
+        </Field>
+        <Field>
+          <Name>Open Interest</Name>
+          <Type>Numeric characters</Type>
+          <Size>8</Size>
+          <Description>Total number of outstanding contracts</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Projected Auction Auction Open Projected Close Price Message -->
+    <Message>
+      <Name>Projected Auction Auction Open Projected Close Price Message</Name>
+      <Dependency>Message Category</Dependency>
+      <Branch>Message Text</Branch>
+      <Code>M</Code>
+      <Category>Market Data</Category>
+      <Origin>Exchange</Origin>
+      <Description>Transmitted whenever the trading platform calculates a Projected Auction, Auction Open or Projected Close price for the instrument</Description>
+      <Fields>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Alpha Character</Type>
+          <Size>15</Size>
+          <Description>The Instrument's fifteen character symbol</Description>
+        </Field>
+        <Field>
+          <Name>Price Flag</Name>
+          <Type>Alpha character</Type>
+          <Size>1</Size>
+          <Description>Which of the three prices the message carries</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>PRICE</Type>
+          <Size>9</Size>
+          <Format>NNNNNDDDD</Format>
+          <Description>The Instrument's projected or auction open price, or the Instrument's projected close price when applicable</Description>
+        </Field>
+        <Field>
+          <Name>Volume</Name>
+          <Type>Numeric Characters</Type>
+          <Size>17</Size>
+          <Format>NNNNNNNNNNNNNNNDD</Format>
+          <Description>The Instrument's projected or auction open or Projected Close volume</Description>
+        </Field>
+        <Field>
+          <Name>TimeStamp</Name>
+          <Type>DATETIME</Type>
+          <Size>20</Size>
+          <Format>YYYYMMDDHHMMSSdddddd</Format>
+          <Description>Time the message was created in the Trading System, as local time to the microsecond</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- High Low Limit Modification Message -->
+    <Message>
+      <Name>High Low Limit Modification Message</Name>
+      <Dependency>Message Category</Dependency>
+      <Branch>Message Text</Branch>
+      <Code>N</Code>
+      <Category>Market Data</Category>
+      <Origin>Exchange</Origin>
+      <Description>Transmitted at the beginning of the trading day, and whenever the static High and Low limits for the given instrument change</Description>
+      <Fields>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Alpha Character</Type>
+          <Size>15</Size>
+          <Description>The Instrument's fifteen character symbol</Description>
+        </Field>
+        <Field>
+          <Name>Ceiling Price</Name>
+          <Type>PRICE</Type>
+          <Size>9</Size>
+          <Format>NNNNNDDDD</Format>
+          <Description>The Instrument's ceiling price</Description>
+        </Field>
+        <Field>
+          <Name>Floor Price</Name>
+          <Type>PRICE</Type>
+          <Size>9</Size>
+          <Format>NNNNNDDDD</Format>
+          <Description>The Instrument's floor price</Description>
+        </Field>
+        <Field>
+          <Name>Start Of Day Price</Name>
+          <Type>PRICE</Type>
+          <Size>9</Size>
+          <Format>NNNNNDDDD</Format>
+          <Description>The start of day price of the instrument</Description>
+        </Field>
+        <Field>
+          <Name>Accrued Interest</Name>
+          <Type>Numeric Characters</Type>
+          <Size>14</Size>
+          <Format>NNNNNNNNDDDDDD</Format>
+          <Description>For bonds</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Instrument State Message -->
+    <Message>
+      <Name>Instrument State Message</Name>
+      <Dependency>Message Category</Dependency>
+      <Branch>Message Text</Branch>
+      <Code>O</Code>
+      <Category>Market Data</Category>
+      <Origin>Exchange</Origin>
+      <Description>Transmitted at the beginning of the trading day, and whenever the instrument changes its trading phase or its status</Description>
+      <Fields>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Alpha character</Type>
+          <Size>15</Size>
+          <Description>The Instrument's fifteen character symbol</Description>
+        </Field>
+        <Field>
+          <Name>Phase ID</Name>
+          <Type>Alpha character</Type>
+          <Size>1</Size>
+          <Description>The Instrument's trading phase</Description>
+        </Field>
+        <Field>
+          <Name>Instrument Status</Name>
+          <Type>Alpha character</Type>
+          <Size>1</Size>
+          <Description>The Instrument's status</Description>
+        </Field>
+        <Field>
+          <Name>Halt/Suspend Reason</Name>
+          <Type>Alpha character</Type>
+          <Size>1</Size>
+          <Description>The Reason for Halting or Suspending the Instrument</Description>
+        </Field>
+        <Field>
+          <Name>TimeStamp</Name>
+          <Type>DATETIME</Type>
+          <Size>20</Size>
+          <Format>YYYYMMDDHHMMSSdddddd</Format>
+          <Description>Time the message was created in the Trading System, as local time to the microsecond</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Market Status Message -->
+    <Message>
+      <Name>Market Status Message</Name>
+      <Dependency>Message Category</Dependency>
+      <Branch>Message Text</Branch>
+      <Code>P</Code>
+      <Category>Market Data</Category>
+      <Origin>Exchange</Origin>
+      <Description>Transmitted whenever the market changes its status</Description>
+      <Fields>
+        <Field>
+          <Name>Market ID</Name>
+          <Type>Alpha character</Type>
+          <Size>1</Size>
+          <Description>The Market's ID</Description>
+        </Field>
+        <Field>
+          <Name>Market Status</Name>
+          <Type>Alpha character</Type>
+          <Size>1</Size>
+          <Description>The Market status</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Order Message -->
+    <Message>
+      <Name>Order Message</Name>
+      <Dependency>Message Category</Dependency>
+      <Branch>Message Text</Branch>
+      <Code>Q</Code>
+      <Category>Market Data</Category>
+      <Origin>Exchange</Origin>
+      <Description>Transmitted at the beginning of the trading session for an order whose lifetime spans multiple days, when a new order is entered in the trading platform, and when an already placed order is changed. It is not transmitted for Combinations</Description>
+      <Fields>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Alpha character</Type>
+          <Size>15</Size>
+          <Description>The Instrument's fifteen character symbol</Description>
+        </Field>
+        <Field>
+          <Name>Board ID</Name>
+          <Type>Alpha character</Type>
+          <Size>1</Size>
+          <Description>The trading board under which the instrument is being traded</Description>
+        </Field>
+        <Field>
+          <Name>Order number</Name>
+          <Type>Numeric Characters</Type>
+          <Size>8</Size>
+          <Description>The order's sequence number</Description>
+        </Field>
+        <Field>
+          <Name>Order entry date</Name>
+          <Type>DATE</Type>
+          <Size>8</Size>
+          <Format>YYYYMMDD</Format>
+          <Description>The date the order entered the trading system</Description>
+        </Field>
+        <Field>
+          <Name>Order status</Name>
+          <Type>Alpha Characters</Type>
+          <Size>2</Size>
+          <Description>The status of the order</Description>
+        </Field>
+        <Field>
+          <Name>Side</Name>
+          <Type>Alpha character</Type>
+          <Size>1</Size>
+          <Description>The order's side</Description>
+        </Field>
+        <Field>
+          <Name>Volume</Name>
+          <Type>Numeric Characters</Type>
+          <Size>17</Size>
+          <Format>NNNNNNNNNNNNNNNDD</Format>
+          <Description>The order's disclosed volume</Description>
+        </Field>
+        <Field>
+          <Name>Matched Volume</Name>
+          <Type>Numeric Characters</Type>
+          <Size>17</Size>
+          <Format>NNNNNNNNNNNNNNNDD</Format>
+          <Description>The portion of the order's Volume that has been matched thus far</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>PRICE</Type>
+          <Size>9</Size>
+          <Format>NNNNNDDDD</Format>
+          <Description>The order's price</Description>
+        </Field>
+        <Field>
+          <Name>Original price type</Name>
+          <Type>Alpha character</Type>
+          <Size>1</Size>
+          <Description>The original price type</Description>
+        </Field>
+        <Field>
+          <Name>Order lifetime</Name>
+          <Type>Alpha character</Type>
+          <Size>1</Size>
+          <Description>The order's lifetime</Description>
+        </Field>
+        <Field>
+          <Name>Special conditions</Name>
+          <Type>Alpha character</Type>
+          <Size>1</Size>
+          <Description>The condition of the order if available</Description>
+        </Field>
+        <Field>
+          <Name>Condition volume</Name>
+          <Type>Numeric Characters</Type>
+          <Size>17</Size>
+          <Format>NNNNNNNNNNNNNNNDD</Format>
+          <Description>The volume pertinent to a special condition of type M or O</Description>
+        </Field>
+        <Field>
+          <Name>Order Release Date</Name>
+          <Type>DATE</Type>
+          <Size>8</Size>
+          <Format>YYYYMMDD</Format>
+          <Description>The date the order was released to the Order Book, or for orders that undergo time priority changes the date when that change occurs</Description>
+        </Field>
+        <Field>
+          <Name>Order Release Time</Name>
+          <Type>TIME</Type>
+          <Size>12</Size>
+          <Format>HHMMSSdddddd</Format>
+          <Description>The time the order was released to the Order Book, or for orders that undergo time priority changes the time at which that change occurs</Description>
+        </Field>
+        <Field>
+          <Name>Last Order Update Date</Name>
+          <Type>DATE</Type>
+          <Size>8</Size>
+          <Format>YYYYMMDD</Format>
+          <Description>The date of the last order update or modification</Description>
+        </Field>
+        <Field>
+          <Name>Order Type</Name>
+          <Type>Alpha character</Type>
+          <Size>1</Size>
+          <Description>The type of the order</Description>
+        </Field>
+        <Field>
+          <Name>TimeStamp</Name>
+          <Type>DATETIME</Type>
+          <Size>20</Size>
+          <Format>YYYYMMDDHHMMSSdddddd</Format>
+          <Description>Time the message was created in the Trading System, as local time to the microsecond</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Cancelled Order Message -->
+    <Message>
+      <Name>Cancelled Order Message</Name>
+      <Dependency>Message Category</Dependency>
+      <Branch>Message Text</Branch>
+      <Code>R</Code>
+      <Category>Market Data</Category>
+      <Origin>Exchange</Origin>
+      <Description>Transmitted whenever an order is cancelled. It is not transmitted for Combinations</Description>
+      <Fields>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Alpha character</Type>
+          <Size>15</Size>
+          <Description>The Instrument's fifteen character symbol</Description>
+        </Field>
+        <Field>
+          <Name>Board ID</Name>
+          <Type>Alpha character</Type>
+          <Size>1</Size>
+          <Description>The trading board under which the security is being traded</Description>
+        </Field>
+        <Field>
+          <Name>Order number</Name>
+          <Type>Numeric Characters</Type>
+          <Size>8</Size>
+          <Description>The order's sequence number</Description>
+        </Field>
+        <Field>
+          <Name>Order entry date</Name>
+          <Type>DATE</Type>
+          <Size>8</Size>
+          <Format>YYYYMMDD</Format>
+          <Description>The date the order entered the trading system</Description>
+        </Field>
+        <Field>
+          <Name>Side</Name>
+          <Type>Alpha character</Type>
+          <Size>1</Size>
+          <Description>The order's side</Description>
+        </Field>
+        <Field>
+          <Name>Volume</Name>
+          <Type>Numeric Characters</Type>
+          <Size>17</Size>
+          <Format>NNNNNNNNNNNNNNNDD</Format>
+          <Description>The order's disclosed volume</Description>
+        </Field>
+        <Field>
+          <Name>Matched Volume</Name>
+          <Type>Numeric Characters</Type>
+          <Size>17</Size>
+          <Format>NNNNNNNNNNNNNNNDD</Format>
+          <Description>The portion of the order's Volume that has been matched thus far</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>PRICE</Type>
+          <Size>9</Size>
+          <Format>NNNNNDDDD</Format>
+          <Description>The order's price</Description>
+        </Field>
+        <Field>
+          <Name>Original price type</Name>
+          <Type>Alpha character</Type>
+          <Size>1</Size>
+          <Description>The order's original price type</Description>
+        </Field>
+        <Field>
+          <Name>Order lifetime</Name>
+          <Type>Alpha character</Type>
+          <Size>1</Size>
+          <Description>The order's lifetime</Description>
+        </Field>
+        <Field>
+          <Name>Special conditions</Name>
+          <Type>Alpha character</Type>
+          <Size>1</Size>
+          <Description>The condition of the order if available</Description>
+        </Field>
+        <Field>
+          <Name>Condition volume</Name>
+          <Type>Numeric Characters</Type>
+          <Size>17</Size>
+          <Format>NNNNNNNNNNNNNNNDD</Format>
+          <Description>The volume pertinent to a condition of type M or O</Description>
+        </Field>
+        <Field>
+          <Name>Order Type</Name>
+          <Type>Alpha character</Type>
+          <Size>1</Size>
+          <Description>The type of the order</Description>
+        </Field>
+        <Field>
+          <Name>TimeStamp</Name>
+          <Type>DATETIME</Type>
+          <Size>20</Size>
+          <Format>YYYYMMDDHHMMSSdddddd</Format>
+          <Description>Time the message was created in the Trading System, as local time to the microsecond</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Exchange Notifications Message -->
+    <Message>
+      <Name>Exchange Notifications Message</Name>
+      <Dependency>Message Category</Dependency>
+      <Branch>Message Text</Branch>
+      <Code>S</Code>
+      <Category>Market Data</Category>
+      <Origin>Exchange</Origin>
+      <Description>Transmitted with no predefined triggering event</Description>
+      <Fields>
+        <Field>
+          <Name>Notification Headline in English</Name>
+          <Type>Alpha characters</Type>
+          <Size>72</Size>
+          <Description>The headline of the notification in the English language</Description>
+        </Field>
+        <Field>
+          <Name>Notification Headline in Local</Name>
+          <Type>Alpha characters</Type>
+          <Size>72</Size>
+          <Description>The headline of the notification in the Local language</Description>
+        </Field>
+        <Field>
+          <Name>Text Size in English</Name>
+          <Type>Numeric Characters</Type>
+          <Size>5</Size>
+          <Description>The size of the notification Text written in the English language</Description>
+        </Field>
+        <Field>
+          <Name>Text Size in Local</Name>
+          <Type>Numeric Characters</Type>
+          <Size>5</Size>
+          <Description>The size of the notification Text written in the Local language</Description>
+        </Field>
+        <Field>
+          <Name>English Notification Text</Name>
+          <Type>Alpha Characters</Type>
+          <Description>The notification Text written in the English language</Description>
+        </Field>
+        <Field>
+          <Name>Local Notification Text</Name>
+          <Type>Alpha Characters</Type>
+          <Description>The notification Text written in the Local language</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+  </Messages>
+
+  <Groups>
+
+    <!-- Quote Level -->
+    <Group>
+      <Name>Quote Level</Name>
+      <Dependency>Quote Levels</Dependency>
+      <Origin>Exchange</Origin>
+      <Description>One Bid and Ask level of the given instrument, repeated as many times as the Quote Levels field states</Description>
+      <Fields>
+        <Field>
+          <Name>Bid Price</Name>
+          <Type>PRICE</Type>
+          <Size>9</Size>
+          <Format>NNNNNDDDD</Format>
+          <Description>The best Bid price</Description>
+        </Field>
+        <Field>
+          <Name>Bid Size</Name>
+          <Type>Numeric Characters</Type>
+          <Size>17</Size>
+          <Format>NNNNNNNNNNNNNNNDD</Format>
+          <Description>The best Bid volume</Description>
+        </Field>
+        <Field>
+          <Name>Bid orders</Name>
+          <Type>Numeric characters</Type>
+          <Size>7</Size>
+          <Description>The number of orders composing the current bid level</Description>
+        </Field>
+        <Field>
+          <Name>Ask Price</Name>
+          <Type>PRICE</Type>
+          <Size>9</Size>
+          <Format>NNNNNDDDD</Format>
+          <Description>The best Ask price</Description>
+        </Field>
+        <Field>
+          <Name>Ask Size</Name>
+          <Type>Numeric Characters</Type>
+          <Size>17</Size>
+          <Format>NNNNNNNNNNNNNNNDD</Format>
+          <Description>The best Ask volume</Description>
+        </Field>
+        <Field>
+          <Name>Ask orders</Name>
+          <Type>Numeric characters</Type>
+          <Size>7</Size>
+          <Description>The number of orders composing the current ask level</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+  </Groups>
+
+  <!-- The waiver indicators are four numeric characters holding a bit mask, not a wire bitfield:
+       the document's own examples read 8 as PRIC and 24 as PRIC and SIZE, so the flags combine
+       over the decoded value, least significant bit first -->
+
+  <Bitfields>
+
+    <Bitfield>
+      <Name>Buy Waiver Indicator</Name>
+      <Size>4</Size>
+      <Description>Waiver flags for the buy side, a bit mask spelled as four numeric characters</Description>
+      <Fields>
+        <Field>
+          <Name>RFPT</Name>
+          <Bits>1</Bits>
+          <Description>Reference price waiver</Description>
+        </Field>
+        <Field>
+          <Name>NLIQ</Name>
+          <Bits>1</Bits>
+          <Description>Negotiated transaction in liquid instruments waiver</Description>
+        </Field>
+        <Field>
+          <Name>OILQ</Name>
+          <Bits>1</Bits>
+          <Description>Negotiated transaction in illiquid instruments waiver</Description>
+        </Field>
+        <Field>
+          <Name>PRIC</Name>
+          <Bits>1</Bits>
+          <Description>Negotiated transaction subject to conditions other than the current market price waiver</Description>
+        </Field>
+        <Field>
+          <Name>SIZE</Name>
+          <Bits>1</Bits>
+          <Description>Above specified size waiver</Description>
+        </Field>
+        <Field>
+          <Name>ILQD</Name>
+          <Bits>1</Bits>
+          <Description>Illiquid instrument waiver</Description>
+        </Field>
+      </Fields>
+    </Bitfield>
+
+    <Bitfield>
+      <Name>Sell Waiver Indicator</Name>
+      <Size>4</Size>
+      <Description>Waiver flags for the sell side, a bit mask spelled as four numeric characters</Description>
+      <Fields>
+        <Field>
+          <Name>RFPT</Name>
+          <Bits>1</Bits>
+          <Description>Reference price waiver</Description>
+        </Field>
+        <Field>
+          <Name>NLIQ</Name>
+          <Bits>1</Bits>
+          <Description>Negotiated transaction in liquid instruments waiver</Description>
+        </Field>
+        <Field>
+          <Name>OILQ</Name>
+          <Bits>1</Bits>
+          <Description>Negotiated transaction in illiquid instruments waiver</Description>
+        </Field>
+        <Field>
+          <Name>PRIC</Name>
+          <Bits>1</Bits>
+          <Description>Negotiated transaction subject to conditions other than the current market price waiver</Description>
+        </Field>
+        <Field>
+          <Name>SIZE</Name>
+          <Bits>1</Bits>
+          <Description>Above specified size waiver</Description>
+        </Field>
+        <Field>
+          <Name>ILQD</Name>
+          <Bits>1</Bits>
+          <Description>Illiquid instrument waiver</Description>
+        </Field>
+      </Fields>
+    </Bitfield>
+
+  </Bitfields>
+
+  <Enums>
+
+    <!-- Message Subcategory -->
+    <Enum>
+      <Name>Message Subcategory</Name>
+      <Values>
+        <Value>
+          <Data>" "</Data>
+          <Name>Generic</Name>
+          <Description>Generic, applicable mainly to category K and P messages</Description>
+        </Value>
+        <Value>
+          <Data>B</Data>
+          <Name>Bond</Name>
+          <Description>Bond</Description>
+        </Value>
+        <Value>
+          <Data>E</Data>
+          <Name>Etf</Name>
+          <Description>ETF</Description>
+        </Value>
+        <Value>
+          <Data>I</Data>
+          <Name>Stock Index</Name>
+          <Description>Stock Index</Description>
+        </Value>
+        <Value>
+          <Data>N</Data>
+          <Name>Etf Indicative Net Asset Value</Name>
+          <Description>ETF Indicative Net Asset Value (INAV)</Description>
+        </Value>
+        <Value>
+          <Data>S</Data>
+          <Name>Stock Rights</Name>
+          <Description>Stock/Rights</Description>
+        </Value>
+        <Value>
+          <Data>W</Data>
+          <Name>Warrant</Name>
+          <Description>Warrant</Description>
+        </Value>
+        <Value>
+          <Data>O</Data>
+          <Name>Option</Name>
+          <Description>Option</Description>
+        </Value>
+        <Value>
+          <Data>F</Data>
+          <Name>Future</Name>
+          <Description>Future</Description>
+        </Value>
+        <Value>
+          <Data>R</Data>
+          <Name>Repos</Name>
+          <Description>Repos</Description>
+        </Value>
+        <Value>
+          <Data>V</Data>
+          <Name>Standard Combinations</Name>
+          <Description>Standard Combinations</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Board ID -->
+    <Enum>
+      <Name>Board ID</Name>
+      <Values>
+        <Value>
+          <Data>M</Data>
+          <Name>Main Board</Name>
+          <Description>Main Board</Description>
+        </Value>
+        <Value>
+          <Data>O</Data>
+          <Name>Odd Lot Board</Name>
+          <Description>Odd Lot Board</Description>
+        </Value>
+        <Value>
+          <Data>B</Data>
+          <Name>Pre Agreed Board</Name>
+          <Description>Pre-Agreed Board</Description>
+        </Value>
+        <Value>
+          <Data>S</Data>
+          <Name>Special Terms Board</Name>
+          <Description>Special Terms (with the Hit and Take Method) Board</Description>
+        </Value>
+        <Value>
+          <Data>F</Data>
+          <Name>Forced Sales Board</Name>
+          <Description>Forced Sales (with the Hit and Take Method) Board</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Trade Type -->
+    <Enum>
+      <Name>Trade Type</Name>
+      <Values>
+        <Value>
+          <Data>N</Data>
+          <Name>New</Name>
+          <Description>NEW, on a Category A Trade Message</Description>
+        </Value>
+        <Value>
+          <Data>E</Data>
+          <Name>Edit</Name>
+          <Description>EDIT, on a Category A Trade Message</Description>
+        </Value>
+        <Value>
+          <Data>C</Data>
+          <Name>Cancel</Name>
+          <Description>CANCEL, the only value a Category I Cancelled Trade Message carries</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Trade Source -->
+    <Enum>
+      <Name>Trade Source</Name>
+      <Values>
+        <Value>
+          <Data>T</Data>
+          <Name>Trading Platform</Name>
+          <Description>Trading Platform</Description>
+        </Value>
+        <Value>
+          <Data>C</Data>
+          <Name>Clearing System</Name>
+          <Description>Clearing System</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Buy order type -->
+    <Enum>
+      <Name>Buy order type</Name>
+      <Values>
+        <Value>
+          <Data>B</Data>
+          <Name>Strategy</Name>
+          <Description>Strategy (Combo)</Description>
+        </Value>
+        <Value>
+          <Data>Q</Data>
+          <Name>Quote</Name>
+          <Description>Quote</Description>
+        </Value>
+        <Value>
+          <Data>N</Data>
+          <Name>Normal</Name>
+          <Description>Normal</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Sell order type -->
+    <Enum>
+      <Name>Sell order type</Name>
+      <Values>
+        <Value>
+          <Data>B</Data>
+          <Name>Strategy</Name>
+          <Description>Strategy (Combo)</Description>
+        </Value>
+        <Value>
+          <Data>Q</Data>
+          <Name>Quote</Name>
+          <Description>Quote</Description>
+        </Value>
+        <Value>
+          <Data>N</Data>
+          <Name>Normal</Name>
+          <Description>Normal</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Order Type -->
+    <Enum>
+      <Name>Order Type</Name>
+      <Values>
+        <Value>
+          <Data>B</Data>
+          <Name>Strategy</Name>
+          <Description>Strategy (Combo)</Description>
+        </Value>
+        <Value>
+          <Data>Q</Data>
+          <Name>Quote</Name>
+          <Description>Quote</Description>
+        </Value>
+        <Value>
+          <Data>N</Data>
+          <Name>Normal</Name>
+          <Description>Normal</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Price Flag -->
+    <Enum>
+      <Name>Price Flag</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>Projected Auction Price</Name>
+          <Description>Projected Auction price</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Auction Open Price</Name>
+          <Description>Auction Open Price</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Projected Close</Name>
+          <Description>Projected Close</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Halt/Suspend Reason -->
+    <Enum>
+      <Name>Halt/Suspend Reason</Name>
+      <Values>
+        <Value>
+          <Data>" "</Data>
+          <Name>No Reason</Name>
+          <Description>Default value, no reason</Description>
+        </Value>
+        <Value>
+          <Data>E</Data>
+          <Name>Exchange</Name>
+          <Description>Exchange</Description>
+        </Value>
+        <Value>
+          <Data>V</Data>
+          <Name>Volatility Interrupter</Name>
+          <Description>Volatility Interrupter</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Market Status -->
+    <Enum>
+      <Name>Market Status</Name>
+      <Values>
+        <Value>
+          <Data>P</Data>
+          <Name>Pre Call</Name>
+          <Description>Pre-Call</Description>
+        </Value>
+        <Value>
+          <Data>J</Data>
+          <Name>Projected Auction</Name>
+          <Description>Projected Auction</Description>
+        </Value>
+        <Value>
+          <Data>T</Data>
+          <Name>Continuous</Name>
+          <Description>Continuous / Auction Event</Description>
+        </Value>
+        <Value>
+          <Data>C</Data>
+          <Name>Closing Price Trading</Name>
+          <Description>Closing Price Trading</Description>
+        </Value>
+        <Value>
+          <Data>R</Data>
+          <Name>Run Off</Name>
+          <Description>Run Off, signalling the conclusion of all trading activity pertinent to the instruments listed under the given market</Description>
+        </Value>
+        <Value>
+          <Data>E</Data>
+          <Name>End of Day</Name>
+          <Description>End of Day</Description>
+        </Value>
+        <Value>
+          <Data>H</Data>
+          <Name>Halt</Name>
+          <Description>Halt</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Phase ID -->
+    <Enum>
+      <Name>Phase ID</Name>
+      <Values>
+        <Value>
+          <Data>" "</Data>
+          <Name>Start Phase</Name>
+          <Description>Start Phase, sent when an instrument cannot enter any of the listed trading phases</Description>
+        </Value>
+        <Value>
+          <Data>P</Data>
+          <Name>Pre Call</Name>
+          <Description>Pre-Call</Description>
+        </Value>
+        <Value>
+          <Data>T</Data>
+          <Name>Continuous</Name>
+          <Description>Continuous</Description>
+        </Value>
+        <Value>
+          <Data>A</Data>
+          <Name>Atc Orders Released</Name>
+          <Description>Phase where the ATC Orders are released in Order Book</Description>
+        </Value>
+        <Value>
+          <Data>C</Data>
+          <Name>Closing Price Trading</Name>
+          <Description>Closing Price Trading</Description>
+        </Value>
+        <Value>
+          <Data>S</Data>
+          <Name>Stop</Name>
+          <Description>Stop, which applies only to instruments traded through Call-Auctions and signals the conclusion of the Auction's opening</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Instrument Status -->
+    <Enum>
+      <Name>Instrument Status</Name>
+      <Values>
+        <Value>
+          <Data>A</Data>
+          <Name>Active</Name>
+          <Description>Active</Description>
+        </Value>
+        <Value>
+          <Data>H</Data>
+          <Name>Halt</Name>
+          <Description>Halt</Description>
+        </Value>
+        <Value>
+          <Data>S</Data>
+          <Name>Suspended</Name>
+          <Description>Suspended</Description>
+        </Value>
+        <Value>
+          <Data>R</Data>
+          <Name>Resumed</Name>
+          <Description>Resumed, the beginning of an unscheduled Pre-call period</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Order status -->
+    <Enum>
+      <Name>Order status</Name>
+      <Values>
+        <Value>
+          <Data>N</Data>
+          <Name>Not Released</Name>
+          <Description>Not Released to the order book</Description>
+        </Value>
+        <Value>
+          <Data>I</Data>
+          <Name>Inactive</Name>
+          <Description>Inactive</Description>
+        </Value>
+        <Value>
+          <Data>O</Data>
+          <Name>Open</Name>
+          <Description>Open</Description>
+        </Value>
+        <Value>
+          <Data>EP</Data>
+          <Name>Good Till Date Expired</Name>
+          <Description>Good till date expired status</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Side -->
+    <Enum>
+      <Name>Side</Name>
+      <Values>
+        <Value>
+          <Data>B</Data>
+          <Name>Buy</Name>
+          <Description>Buy</Description>
+        </Value>
+        <Value>
+          <Data>S</Data>
+          <Name>Sell</Name>
+          <Description>Sell</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Original price type -->
+    <Enum>
+      <Name>Original price type</Name>
+      <Values>
+        <Value>
+          <Data>L</Data>
+          <Name>Limit Price</Name>
+          <Description>Limit price</Description>
+        </Value>
+        <Value>
+          <Data>M</Data>
+          <Name>Market</Name>
+          <Description>Market</Description>
+        </Value>
+        <Value>
+          <Data>O</Data>
+          <Name>At The Open</Name>
+          <Description>At The Open</Description>
+        </Value>
+        <Value>
+          <Data>C</Data>
+          <Name>At The Close</Name>
+          <Description>At The Close</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Order lifetime -->
+    <Enum>
+      <Name>Order lifetime</Name>
+      <Values>
+        <Value>
+          <Data>D</Data>
+          <Name>Day</Name>
+          <Description>Day</Description>
+        </Value>
+        <Value>
+          <Data>C</Data>
+          <Name>Good Till Cancel</Name>
+          <Description>Good till cancel</Description>
+        </Value>
+        <Value>
+          <Data>E</Data>
+          <Name>Good Till Date</Name>
+          <Description>Good till date</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Special conditions -->
+    <Enum>
+      <Name>Special conditions</Name>
+      <Values>
+        <Value>
+          <Data>N</Data>
+          <Name>None</Name>
+          <Description>None</Description>
+        </Value>
+        <Value>
+          <Data>F</Data>
+          <Name>Fill Or Kill</Name>
+          <Description>Fill or kill</Description>
+        </Value>
+        <Value>
+          <Data>I</Data>
+          <Name>Immediate Or Cancel</Name>
+          <Description>Immediate or cancel</Description>
+        </Value>
+        <Value>
+          <Data>S</Data>
+          <Name>Stop Instrument</Name>
+          <Description>Stop Instrument</Description>
+        </Value>
+        <Value>
+          <Data>D</Data>
+          <Name>Stop Index</Name>
+          <Description>Stop Index</Description>
+        </Value>
+        <Value>
+          <Data>A</Data>
+          <Name>All Or None</Name>
+          <Description>All or none</Description>
+        </Value>
+        <Value>
+          <Data>M</Data>
+          <Name>Minimum Fill</Name>
+          <Description>Minimum fill</Description>
+        </Value>
+        <Value>
+          <Data>O</Data>
+          <Name>Multiple Of</Name>
+          <Description>Multiple of</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Buy ALGO flag -->
+    <Enum>
+      <Name>Buy ALGO flag</Name>
+      <Values>
+        <Value>
+          <Data>Y</Data>
+          <Name>Flag On</Name>
+          <Description>Flag On</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Sell ALGO flag -->
+    <Enum>
+      <Name>Sell ALGO flag</Name>
+      <Values>
+        <Value>
+          <Data>Y</Data>
+          <Name>Flag On</Name>
+          <Description>Flag On</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- SDIV flag -->
+    <Enum>
+      <Name>SDIV flag</Name>
+      <Values>
+        <Value>
+          <Data>Y</Data>
+          <Name>Flag On</Name>
+          <Description>Flag On</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- DUPL flag -->
+    <Enum>
+      <Name>DUPL flag</Name>
+      <Values>
+        <Value>
+          <Data>Y</Data>
+          <Name>Flag On</Name>
+          <Description>Flag On</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+  </Enums>
+
+</OmiAthexIdsPdf>

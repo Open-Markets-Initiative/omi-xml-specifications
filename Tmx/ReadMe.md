@@ -21,7 +21,7 @@
 | Tsx | QuantumFeedLevel1 | Xmt | 2.8 | private |
 | Tsx | QuantumFeedLevel1Recovery | Xmt | 2.6 | private |
 | Tsx | QuantumFeedLevel1Recovery | Xmt | 2.8 | private |
-| Tsx | QuantumFeedLevel2 | Xmt | 2.1 | private |
+| Tsx | QuantumFeedLevel2 | Xmt | 2.10 | private |
 | Tsx | QuantumFeedLevel2 | Xmt | 3.6 | private |
 | Tsx | QuantumFeedLevel2Recovery | Xmt | 3.6 | private |
 | TsxAlpha | Level1 | Qrtmd | 2.1 | private |

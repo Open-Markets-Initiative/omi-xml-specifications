@@ -5,12 +5,10 @@
 
 | Division | Protocol | Encoding | Version | Specification |
 | --- | --- | --- | --- | --- |
-| AthexDerivatives | RealTime | Ids | 5.2 | private |
-| AthexDerivatives | Relaxed | Ids | 5.2 | private |
-| AthexSecurities | RealTime | Ids | 5.2 | private |
-| AthexSecurities | Relaxed | Ids | 5.2 | private |
-
-A specification marked private is released by the venue to registered participants only. Those protocols are listed here for completeness, and nothing read out of their documents is published: no message layouts, no field names, no wording. The generated parsers in the definition repositories describe the wire format and are published as usual.
+| AthexDerivatives | RealTime | Ids | 5.2 | [files](Athex.AthexDerivatives.RealTime.Ids.v5.2/) |
+| AthexDerivatives | Relaxed | Ids | 5.2 | [files](Athex.AthexDerivatives.Relaxed.Ids.v5.2/) |
+| AthexSecurities | RealTime | Ids | 5.2 | [files](Athex.AthexSecurities.RealTime.Ids.v5.2/) |
+| AthexSecurities | Relaxed | Ids | 5.2 | [files](Athex.AthexSecurities.Relaxed.Ids.v5.2/) |
 
 
 Athex: [website](https://www.athexgroup.gr "Go to Athens Exchange Group")

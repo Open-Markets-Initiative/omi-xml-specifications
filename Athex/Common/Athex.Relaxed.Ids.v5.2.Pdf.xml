@@ -1,0 +1,1098 @@
+<OmiAthexIdsPdf>
+
+<!--
+  Athex Oasis Ids relaxed channel, version 5.2 (ATHEX OASIS IDS Market Data Feed Specification
+  5.2, Table 3-4 and chapter 5). The channel carries what is not produced directly by the Oasis
+  matching engine, dispatched by the same Message Category of the same Ids header the real time
+  channel uses, which Ids.Header.Tcp.Source.xml declares.
+
+  Two of the four categories Table 3-4 lists are transcribed, because they are the two the
+  document gives a format for:
+
+  - U, the Apa Post Trade Message of Table 5-1, and V, the Apa Pre-trade Message of Table 5-2,
+    both 699 characters, both for the Mifid II Apa transparency service.
+  - W, a Closing/Fixing Price Message, has no format anywhere in the document. Its section 5.1
+    heading and its Table 5-1 caption are both the Word error "Error! Bookmark not defined.",
+    and the section that should hold it carries the field characteristics of U and V instead.
+  - T, an OTC Message, is listed in Table 3-4 and nowhere else. No field table, no section.
+
+  Neither W nor T is authored: the document states no layout for either, and inventing one would
+  dissect bytes it never described. Both are open questions for the publisher.
+
+  The Req column marks a field required or conditionally required. A conditionally required field
+  still occupies its full width - section 5.1 states null as n spaces for an alphanumeric field
+  and n zeroes for a numeric one - so nothing here is optional on the wire, which is what makes
+  both messages a fixed 699 characters.
+
+  A {DECIMAL-n/m} writes its own decimal point and omits the fraction entirely when there is
+  none, so these fields state their own places rather than implying a fixed scale.
+
+  Three fields carry a documented value list that is deliberately not authored as a value set,
+  because the codes are narrower than the field and no enum on it could ever match:
+
+  - Underlying index name is twenty five characters holding either a four character index code
+    from the section 5.1 {INDEX} list or free text.
+  - Term of the underlying index is seven characters, three of term and four of unit.
+  - OTC Post-trade indicator is a four character bitmap of thirteen flags, which combine.
+
+  Each states its codes in its own description instead.
+-->
+
+  <Messages>
+
+    <!-- Apa Post Trade Message -->
+    <Message>
+      <Name>Apa Post Trade Message</Name>
+      <Dependency>Message Category</Dependency>
+      <Branch>Message Text</Branch>
+      <Code>U</Code>
+      <Category>Market Data</Category>
+      <Origin>Exchange</Origin>
+      <Description>Transmitted whenever a trade is reported to the Ids subsystem, for the Athex Apa post trade transparency service required by Mifid II</Description>
+      <Fields>
+        <Field>
+          <Name>Report status</Name>
+          <Type>{ALPHANUM-4}</Type>
+          <Size>4</Size>
+          <Description>Whether the report is new or a cancellation</Description>
+        </Field>
+        <Field>
+          <Name>Trading date and time</Name>
+          <Type>{DATETIME}</Type>
+          <Size>20</Size>
+          <Format>YYYYMMDDHHMMSSdddddd</Format>
+          <Description>Date and time of the trade, expressed as Utc, which may be prior to the current trading date</Description>
+        </Field>
+        <Field>
+          <Name>Trade ID Indicator</Name>
+          <Type>{INTEGER-1}</Type>
+          <Size>1</Size>
+          <Description>Which system assigned the Trade ID</Description>
+        </Field>
+        <Field>
+          <Name>Trade ID</Name>
+          <Type>{ALPHANUM-52}</Type>
+          <Size>52</Size>
+          <Description>Identifier of the trade</Description>
+        </Field>
+        <Field>
+          <Name>Venue</Name>
+          <Type>{ALPHANUM-4}</Type>
+          <Size>4</Size>
+          <Description>Market Identification Code of the Market the instrument belongs to, XOFF for over the counter or SINT for a systematic internaliser</Description>
+        </Field>
+        <Field>
+          <Name>Transaction to be cleared</Name>
+          <Type>{INTEGER-1}</Type>
+          <Size>1</Size>
+          <Description>Whether the transaction is to be cleared</Description>
+        </Field>
+        <Field>
+          <Name>Price notation</Name>
+          <Type>{ALPHANUM-4}</Type>
+          <Size>4</Size>
+          <Description>How the price is expressed</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>{DECIMAL-18/17}</Type>
+          <Size>18</Size>
+          <Description>Eighteen digits of which thirteen may be fraction digits when the price is a monetary value, ten when it is a percentage or a yield, and seventeen when it is basis points</Description>
+        </Field>
+        <Field>
+          <Name>Price Currency</Name>
+          <Type>{CURRENCYCODE_3}</Type>
+          <Size>3</Size>
+          <Description>Currency the price is expressed in. Conditionally required.</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>{DECIMAL-18/17}</Type>
+          <Size>18</Size>
+          <Description>Seventeen fraction digits when the quantity is a number of units, and five when it is a monetary or nominal value</Description>
+        </Field>
+        <Field>
+          <Name>Quantity currency</Name>
+          <Type>{CURRENCYCODE_3}</Type>
+          <Size>3</Size>
+          <Description>Currency the quantity is expressed in, and spaces when the Quantity expresses units. Conditionally required.</Description>
+        </Field>
+        <Field>
+          <Name>Notation of the quantity in measurement unit</Name>
+          <Type>{ALPHANUM-25}</Type>
+          <Size>25</Size>
+          <Description>TOCD for tons of carbon dioxide equivalent, or free text otherwise Conditionally required.</Description>
+        </Field>
+        <Field>
+          <Name>Quantity in measurement unit</Name>
+          <Type>{DECIMAL-18/17}</Type>
+          <Size>18</Size>
+          <Description>Quantity expressed in the measurement unit. Conditionally required.</Description>
+        </Field>
+        <Field>
+          <Name>Notional amount</Name>
+          <Type>{DECIMAL-18/5}</Type>
+          <Size>18</Size>
+          <Description>Notional amount of the trade. Conditionally required.</Description>
+        </Field>
+        <Field>
+          <Name>Notional currency</Name>
+          <Type>{CURRENCYCODE_3}</Type>
+          <Size>3</Size>
+          <Description>Currency the notional amount is expressed in. Conditionally required.</Description>
+        </Field>
+        <Field>
+          <Name>Instrument ID type</Name>
+          <Type>{ALPHANUM-4}</Type>
+          <Size>4</Size>
+          <Description>Whether an Isin is available for the instrument</Description>
+        </Field>
+        <Field>
+          <Name>Instrument ID</Name>
+          <Type>{ISIN}</Type>
+          <Size>12</Size>
+          <Description>Isin code of the instrument, as Iso 6166 defines it. Conditionally required.</Description>
+        </Field>
+        <Field>
+          <Name>Instrument full name</Name>
+          <Type>{ALPHANUM-350}</Type>
+          <Size>350</Size>
+          <Description>Full name of the instrument. Conditionally required.</Description>
+        </Field>
+        <Field>
+          <Name>Instrument classification</Name>
+          <Type>{CFI_CODE}</Type>
+          <Size>6</Size>
+          <Description>Iso 10962 Cfi code of the instrument</Description>
+        </Field>
+        <Field>
+          <Name>Price multiplier</Name>
+          <Type>{DECIMAL-18/17}</Type>
+          <Size>18</Size>
+          <Description>Price multiplier of the instrument. Conditionally required.</Description>
+        </Field>
+        <Field>
+          <Name>Underlying instrument code</Name>
+          <Type>{ISIN}</Type>
+          <Size>12</Size>
+          <Description>Isin code of the underlying instrument. Conditionally required.</Description>
+        </Field>
+        <Field>
+          <Name>Underlying index name</Name>
+          <Type>{ALPHANUM-25}</Type>
+          <Size>25</Size>
+          <Description>One of the index codes of section 5.1, or free text when the index name is not in that list Conditionally required.</Description>
+        </Field>
+        <Field>
+          <Name>Term of the underlying index</Name>
+          <Type>{INTEGER-3} + {ALPHANUM-4}</Type>
+          <Size>7</Size>
+          <Description>Three digits of term followed by its unit, DAYS, WEEK, MNTH or YEAR Conditionally required.</Description>
+        </Field>
+        <Field>
+          <Name>Option type</Name>
+          <Type>{ALPHANUM-4}</Type>
+          <Size>4</Size>
+          <Description>Whether the option is a put or a call. Conditionally required.</Description>
+        </Field>
+        <Field>
+          <Name>Strike price</Name>
+          <Type>{DECIMAL-18/17}</Type>
+          <Size>18</Size>
+          <Description>Thirteen fraction digits when the price is a monetary value, ten when it is a percentage or a yield, and seventeen when it is basis points Conditionally required.</Description>
+        </Field>
+        <Field>
+          <Name>Strike price currency</Name>
+          <Type>{CURRENCYCODE_3}</Type>
+          <Size>3</Size>
+          <Description>Currency the strike price is expressed in. Conditionally required.</Description>
+        </Field>
+        <Field>
+          <Name>Strike price notation</Name>
+          <Type>{ALPHANUM-4}</Type>
+          <Size>4</Size>
+          <Description>How the strike price is expressed. Conditionally required.</Description>
+        </Field>
+        <Field>
+          <Name>Option exercise style</Name>
+          <Type>{ALPHANUM-4}</Type>
+          <Size>4</Size>
+          <Description>Exercise style of the option. Conditionally required.</Description>
+        </Field>
+        <Field>
+          <Name>Maturity date</Name>
+          <Type>{DATE}</Type>
+          <Size>8</Size>
+          <Format>YYYYMMDD</Format>
+          <Description>Maturity date of the instrument. Conditionally required.</Description>
+        </Field>
+        <Field>
+          <Name>Expiry date</Name>
+          <Type>{DATE}</Type>
+          <Size>8</Size>
+          <Format>YYYYMMDD</Format>
+          <Description>Expiry date of the instrument. Conditionally required.</Description>
+        </Field>
+        <Field>
+          <Name>Delivery type</Name>
+          <Type>{ALPHANUM-4}</Type>
+          <Size>4</Size>
+          <Description>How the instrument settles. Conditionally required.</Description>
+        </Field>
+        <Field>
+          <Name>Type (emission allowance)</Name>
+          <Type>{ALPHANUM-4}</Type>
+          <Size>4</Size>
+          <Description>Type of the emission allowance. Conditionally required.</Description>
+        </Field>
+        <Field>
+          <Name>OTC Post-trade indicator</Name>
+          <Type>{INTEGER-4}</Type>
+          <Size>4</Size>
+          <Description>Bitmap of one or more flags: bit 1 BENC benchmark, bit 2 ACTX agency cross, bit 3 LRGS large in scale, bit 4 ILQD illiquid instrument, bit 5 SIZE above specified size, bit 6 CANC cancellations, bit 7 AMND amendments, bit 8 SDIV special dividend, bit 9 RPRI price improvement, bit 10 DUPL duplicative, bit 11 TNCP not contributing to price discovery process, bit 12 TPAC package, bit 13 XFPH exchange for physical Conditionally required.</Description>
+        </Field>
+        <Field>
+          <Name>Deferral Indicator</Name>
+          <Type>{INTEGER-1}</Type>
+          <Size>1</Size>
+          <Description>Whether publication of the trade is deferred</Description>
+        </Field>
+        <Field>
+          <Name>LMTF</Name>
+          <Type>{INTEGER-1}</Type>
+          <Size>1</Size>
+          <Description>Mifid II deferral flag LMTF</Description>
+        </Field>
+        <Field>
+          <Name>FULF</Name>
+          <Type>{INTEGER-1}</Type>
+          <Size>1</Size>
+          <Description>Mifid II deferral flag FULF</Description>
+        </Field>
+        <Field>
+          <Name>DATF</Name>
+          <Type>{INTEGER-1}</Type>
+          <Size>1</Size>
+          <Description>Mifid II deferral flag DATF</Description>
+        </Field>
+        <Field>
+          <Name>FULA</Name>
+          <Type>{INTEGER-1}</Type>
+          <Size>1</Size>
+          <Description>Mifid II deferral flag FULA</Description>
+        </Field>
+        <Field>
+          <Name>VOLO</Name>
+          <Type>{INTEGER-1}</Type>
+          <Size>1</Size>
+          <Description>Mifid II deferral flag VOLO</Description>
+        </Field>
+        <Field>
+          <Name>FULV</Name>
+          <Type>{INTEGER-1}</Type>
+          <Size>1</Size>
+          <Description>Mifid II deferral flag FULV</Description>
+        </Field>
+        <Field>
+          <Name>FWAF</Name>
+          <Type>{INTEGER-1}</Type>
+          <Size>1</Size>
+          <Description>Mifid II deferral flag FWAF</Description>
+        </Field>
+        <Field>
+          <Name>FULJ</Name>
+          <Type>{INTEGER-1}</Type>
+          <Size>1</Size>
+          <Description>Mifid II deferral flag FULJ</Description>
+        </Field>
+        <Field>
+          <Name>IDAF</Name>
+          <Type>{INTEGER-1}</Type>
+          <Size>1</Size>
+          <Description>Mifid II deferral flag IDAF</Description>
+        </Field>
+        <Field>
+          <Name>VOLW</Name>
+          <Type>{INTEGER-1}</Type>
+          <Size>1</Size>
+          <Description>Mifid II deferral flag VOLW</Description>
+        </Field>
+        <Field>
+          <Name>COAF</Name>
+          <Type>{INTEGER-1}</Type>
+          <Size>1</Size>
+          <Description>Mifid II deferral flag COAF</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Apa Pre Trade Message -->
+    <Message>
+      <Name>Apa Pre Trade Message</Name>
+      <Dependency>Message Category</Dependency>
+      <Branch>Message Text</Branch>
+      <Code>V</Code>
+      <Category>Market Data</Category>
+      <Origin>Exchange</Origin>
+      <Description>Transmitted whenever a quote is reported to the Ids subsystem by the Athex Apa service, for the Athex Apa pre trade transparency service</Description>
+      <Fields>
+        <Field>
+          <Name>Report Status</Name>
+          <Type>{ALPHANUM-4}</Type>
+          <Size>4</Size>
+          <Description>Whether the report is new, an amendment or a cancellation</Description>
+        </Field>
+        <Field>
+          <Name>Quote type</Name>
+          <Type>{INTEGER-1}</Type>
+          <Size>1</Size>
+          <Description>Which side of the market the quote is</Description>
+        </Field>
+        <Field>
+          <Name>Quote ID</Name>
+          <Type>{ALPHANUM-52}</Type>
+          <Size>52</Size>
+          <Description>Unique sequential number generated internally by the Member based on Instrument ID, Mic, currency and Lei</Description>
+        </Field>
+        <Field>
+          <Name>Event Time</Name>
+          <Type>{DATETIME}</Type>
+          <Size>20</Size>
+          <Format>YYYYMMDDHHMMSSdddddd</Format>
+          <Description>Time the event was processed, expressed as Utc, which may be prior to the current trading date</Description>
+        </Field>
+        <Field>
+          <Name>Quote Liquidity</Name>
+          <Type>{INTEGER-1}</Type>
+          <Size>1</Size>
+          <Description>Whether the market for the instrument is liquid</Description>
+        </Field>
+        <Field>
+          <Name>Venue MIC</Name>
+          <Type>{ALPHANUM-4}</Type>
+          <Size>4</Size>
+          <Description>Market Identification Code of the Market the instrument belongs to, as Iso 10383 defines it</Description>
+        </Field>
+        <Field>
+          <Name>Submitting entity identification code</Name>
+          <Type>{LEI}</Type>
+          <Size>20</Size>
+          <Description>Legal entity identifier of the quote submitting entity, as Iso 17442 defines it</Description>
+        </Field>
+        <Field>
+          <Name>Price notation</Name>
+          <Type>{ALPHANUM-4}</Type>
+          <Size>4</Size>
+          <Description>How the price is expressed</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>{DECIMAL-18/17}</Type>
+          <Size>18</Size>
+          <Description>Eighteen digits of which thirteen may be fraction digits when the price is a monetary value, ten when it is a percentage or a yield, and seventeen when it is basis points</Description>
+        </Field>
+        <Field>
+          <Name>Price Currency</Name>
+          <Type>{CURRENCYCODE_3}</Type>
+          <Size>3</Size>
+          <Description>Currency the price is expressed in, and spaces when the Quantity expresses units. Conditionally required.</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>{DECIMAL-18/17}</Type>
+          <Size>18</Size>
+          <Description>Seventeen fraction digits when the quantity is a number of units, and five when it is a monetary or nominal value</Description>
+        </Field>
+        <Field>
+          <Name>Quantity currency</Name>
+          <Type>{CURRENCYCODE_3}</Type>
+          <Size>3</Size>
+          <Description>Currency the quantity is expressed in. Conditionally required.</Description>
+        </Field>
+        <Field>
+          <Name>Notation of the quantity in measurement unit</Name>
+          <Type>{ALPHANUM-25}</Type>
+          <Size>25</Size>
+          <Description>TOCD for tons of carbon dioxide equivalent, or free text otherwise Conditionally required.</Description>
+        </Field>
+        <Field>
+          <Name>Quantity in measurement unit</Name>
+          <Type>{DECIMAL-18/17}</Type>
+          <Size>18</Size>
+          <Description>Quantity expressed in the measurement unit. Conditionally required.</Description>
+        </Field>
+        <Field>
+          <Name>Notional amount</Name>
+          <Type>{DECIMAL-18/5}</Type>
+          <Size>18</Size>
+          <Description>Notional amount of the quote. Conditionally required.</Description>
+        </Field>
+        <Field>
+          <Name>Notional currency</Name>
+          <Type>{CURRENCYCODE_3}</Type>
+          <Size>3</Size>
+          <Description>Currency the notional amount is expressed in. Conditionally required.</Description>
+        </Field>
+        <Field>
+          <Name>Instrument ID type</Name>
+          <Type>{ALPHANUM-4}</Type>
+          <Size>4</Size>
+          <Description>Whether an Isin is available for the instrument</Description>
+        </Field>
+        <Field>
+          <Name>Instrument ID</Name>
+          <Type>{ISIN}</Type>
+          <Size>12</Size>
+          <Description>Isin code of the instrument, as Iso 6166 defines it</Description>
+        </Field>
+        <Field>
+          <Name>Instrument full name</Name>
+          <Type>{ALPHANUM-350}</Type>
+          <Size>350</Size>
+          <Description>Full name of the instrument</Description>
+        </Field>
+        <Field>
+          <Name>Instrument classification</Name>
+          <Type>{CFI_CODE}</Type>
+          <Size>6</Size>
+          <Description>Iso 10962 Cfi code of the instrument</Description>
+        </Field>
+        <Field>
+          <Name>Price multiplier</Name>
+          <Type>{DECIMAL-18/17}</Type>
+          <Size>18</Size>
+          <Description>Price multiplier of the instrument. Conditionally required.</Description>
+        </Field>
+        <Field>
+          <Name>Underlying instrument code</Name>
+          <Type>{ISIN}</Type>
+          <Size>12</Size>
+          <Description>Isin code of the underlying instrument. Conditionally required.</Description>
+        </Field>
+        <Field>
+          <Name>Underlying index name</Name>
+          <Type>{ALPHANUM-25}</Type>
+          <Size>25</Size>
+          <Description>One of the index codes of section 5.1, or free text when the index name is not in that list Conditionally required.</Description>
+        </Field>
+        <Field>
+          <Name>Term of the underlying index</Name>
+          <Type>{INTEGER-3} + {ALPHANUM-4}</Type>
+          <Size>7</Size>
+          <Description>Three digits of term followed by its unit, DAYS, WEEK, MNTH or YEAR Conditionally required.</Description>
+        </Field>
+        <Field>
+          <Name>Option type</Name>
+          <Type>{ALPHANUM-4}</Type>
+          <Size>4</Size>
+          <Description>Whether the option is a put or a call. Conditionally required.</Description>
+        </Field>
+        <Field>
+          <Name>Strike price</Name>
+          <Type>{DECIMAL-18/17}</Type>
+          <Size>18</Size>
+          <Description>Thirteen fraction digits when the price is a monetary value, ten when it is a percentage or a yield, and seventeen when it is basis points Conditionally required.</Description>
+        </Field>
+        <Field>
+          <Name>Strike price currency</Name>
+          <Type>{CURRENCYCODE_3}</Type>
+          <Size>3</Size>
+          <Description>Currency the strike price is expressed in. Conditionally required.</Description>
+        </Field>
+        <Field>
+          <Name>Strike price notation</Name>
+          <Type>{ALPHANUM-4}</Type>
+          <Size>4</Size>
+          <Description>How the strike price is expressed. Conditionally required.</Description>
+        </Field>
+        <Field>
+          <Name>Option exercise style</Name>
+          <Type>{ALPHANUM-4}</Type>
+          <Size>4</Size>
+          <Description>Exercise style of the option. Conditionally required.</Description>
+        </Field>
+        <Field>
+          <Name>Maturity date</Name>
+          <Type>{DATE}</Type>
+          <Size>8</Size>
+          <Format>YYYYMMDD</Format>
+          <Description>Maturity date of the instrument. Conditionally required.</Description>
+        </Field>
+        <Field>
+          <Name>Expiry date</Name>
+          <Type>{DATE}</Type>
+          <Size>8</Size>
+          <Format>YYYYMMDD</Format>
+          <Description>Expiry date of the instrument. Conditionally required.</Description>
+        </Field>
+        <Field>
+          <Name>Delivery type</Name>
+          <Type>{ALPHANUM-4}</Type>
+          <Size>4</Size>
+          <Description>How the instrument settles. Conditionally required.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+  </Messages>
+
+  <Enums>
+
+    <!-- Message Subcategory -->
+    <Enum>
+      <Name>Message Subcategory</Name>
+      <Values>
+        <Value>
+          <Data>" "</Data>
+          <Name>Generic</Name>
+          <Description>Generic, applicable mainly to category K and P messages</Description>
+        </Value>
+        <Value>
+          <Data>B</Data>
+          <Name>Bond</Name>
+          <Description>Bond</Description>
+        </Value>
+        <Value>
+          <Data>E</Data>
+          <Name>Etf</Name>
+          <Description>ETF</Description>
+        </Value>
+        <Value>
+          <Data>I</Data>
+          <Name>Stock Index</Name>
+          <Description>Stock Index</Description>
+        </Value>
+        <Value>
+          <Data>N</Data>
+          <Name>Etf Indicative Net Asset Value</Name>
+          <Description>ETF Indicative Net Asset Value (INAV)</Description>
+        </Value>
+        <Value>
+          <Data>S</Data>
+          <Name>Stock Rights</Name>
+          <Description>Stock/Rights</Description>
+        </Value>
+        <Value>
+          <Data>W</Data>
+          <Name>Warrant</Name>
+          <Description>Warrant</Description>
+        </Value>
+        <Value>
+          <Data>O</Data>
+          <Name>Option</Name>
+          <Description>Option</Description>
+        </Value>
+        <Value>
+          <Data>F</Data>
+          <Name>Future</Name>
+          <Description>Future</Description>
+        </Value>
+        <Value>
+          <Data>R</Data>
+          <Name>Repos</Name>
+          <Description>Repos</Description>
+        </Value>
+        <Value>
+          <Data>V</Data>
+          <Name>Standard Combinations</Name>
+          <Description>Standard Combinations</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Report status -->
+    <Enum>
+      <Name>Report status</Name>
+      <Values>
+        <Value>
+          <Data>NEWT</Data>
+          <Name>New</Name>
+          <Description>New, on both the post trade and the pre trade message</Description>
+        </Value>
+        <Value>
+          <Data>AMND</Data>
+          <Name>Amend</Name>
+          <Description>Amend, which only the pre trade message of Table 5-2 states</Description>
+        </Value>
+        <Value>
+          <Data>CANC</Data>
+          <Name>Cancellation</Name>
+          <Description>Cancellation, on both the post trade and the pre trade message</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Trade ID Indicator -->
+    <Enum>
+      <Name>Trade ID Indicator</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Oasis Trade Id</Name>
+          <Description>OASIS Trade ID</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Other Venue Trade Id</Name>
+          <Description>Other Venue Trade ID</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Transaction to be cleared -->
+    <Enum>
+      <Name>Transaction to be cleared</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>False</Name>
+          <Description>False</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>True</Name>
+          <Description>True</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Price notation -->
+    <Enum>
+      <Name>Price notation</Name>
+      <Values>
+        <Value>
+          <Data>MONE</Data>
+          <Name>Monetary Value</Name>
+          <Description>Monetary value</Description>
+        </Value>
+        <Value>
+          <Data>PERC</Data>
+          <Name>Percentage</Name>
+          <Description>Percentage</Description>
+        </Value>
+        <Value>
+          <Data>YIEL</Data>
+          <Name>Yield</Name>
+          <Description>Yield</Description>
+        </Value>
+        <Value>
+          <Data>BAPO</Data>
+          <Name>Basis Points</Name>
+          <Description>Basis points</Description>
+        </Value>
+        <Value>
+          <Data>PNDG</Data>
+          <Name>Pending</Name>
+          <Description>Pending</Description>
+        </Value>
+        <Value>
+          <Data>NOAP</Data>
+          <Name>Not Applicable</Name>
+          <Description>Not Applicable</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Strike price notation -->
+    <Enum>
+      <Name>Strike price notation</Name>
+      <Values>
+        <Value>
+          <Data>MONE</Data>
+          <Name>Monetary Value</Name>
+          <Description>Monetary value</Description>
+        </Value>
+        <Value>
+          <Data>PERC</Data>
+          <Name>Percentage</Name>
+          <Description>Percentage</Description>
+        </Value>
+        <Value>
+          <Data>YIEL</Data>
+          <Name>Yield</Name>
+          <Description>Yield</Description>
+        </Value>
+        <Value>
+          <Data>BAPO</Data>
+          <Name>Basis Points</Name>
+          <Description>Basis points</Description>
+        </Value>
+        <Value>
+          <Data>PNDG</Data>
+          <Name>Pending</Name>
+          <Description>Pending</Description>
+        </Value>
+        <Value>
+          <Data>NOAP</Data>
+          <Name>Not Applicable</Name>
+          <Description>Not Applicable</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Instrument ID type -->
+    <Enum>
+      <Name>Instrument ID type</Name>
+      <Values>
+        <Value>
+          <Data>ISIN</Data>
+          <Name>Isin</Name>
+          <Description>Where ISIN is available</Description>
+        </Value>
+        <Value>
+          <Data>OTHR</Data>
+          <Name>Other Identifier</Name>
+          <Description>Other identifier</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Option type -->
+    <Enum>
+      <Name>Option type</Name>
+      <Values>
+        <Value>
+          <Data>PUTO</Data>
+          <Name>Put</Name>
+          <Description>Put</Description>
+        </Value>
+        <Value>
+          <Data>CALL</Data>
+          <Name>Call</Name>
+          <Description>Call</Description>
+        </Value>
+        <Value>
+          <Data>OTHR</Data>
+          <Name>Other</Name>
+          <Description>Where it cannot be determined whether it is a call or a put</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Option exercise style -->
+    <Enum>
+      <Name>Option exercise style</Name>
+      <Values>
+        <Value>
+          <Data>EURO</Data>
+          <Name>European</Name>
+          <Description>European</Description>
+        </Value>
+        <Value>
+          <Data>AMER</Data>
+          <Name>American</Name>
+          <Description>American</Description>
+        </Value>
+        <Value>
+          <Data>ASIA</Data>
+          <Name>Asian</Name>
+          <Description>Asian</Description>
+        </Value>
+        <Value>
+          <Data>BERM</Data>
+          <Name>Bermudan</Name>
+          <Description>Bermudan</Description>
+        </Value>
+        <Value>
+          <Data>OTHR</Data>
+          <Name>Other</Name>
+          <Description>Any other type</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Delivery type -->
+    <Enum>
+      <Name>Delivery type</Name>
+      <Values>
+        <Value>
+          <Data>PHYS</Data>
+          <Name>Physically Settled</Name>
+          <Description>Physically settled</Description>
+        </Value>
+        <Value>
+          <Data>CASH</Data>
+          <Name>Cash Settled</Name>
+          <Description>Cash settled</Description>
+        </Value>
+        <Value>
+          <Data>OPTL</Data>
+          <Name>Optional</Name>
+          <Description>Optional for counterparty or when determined by a third party</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Type (emission allowance) -->
+    <Enum>
+      <Name>Type (emission allowance)</Name>
+      <Values>
+        <Value>
+          <Data>EUAE</Data>
+          <Name>Eua</Name>
+          <Description>EUA</Description>
+        </Value>
+        <Value>
+          <Data>CERE</Data>
+          <Name>Cer</Name>
+          <Description>CER</Description>
+        </Value>
+        <Value>
+          <Data>ERUE</Data>
+          <Name>Eru</Name>
+          <Description>ERU</Description>
+        </Value>
+        <Value>
+          <Data>EUAA</Data>
+          <Name>Euaa</Name>
+          <Description>EUAA</Description>
+        </Value>
+        <Value>
+          <Data>OTHR</Data>
+          <Name>Other</Name>
+          <Description>Other, for derivatives only</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Quote type -->
+    <Enum>
+      <Name>Quote type</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Bid</Name>
+          <Description>Bid</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Offer</Name>
+          <Description>Offer</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Quote Liquidity -->
+    <Enum>
+      <Name>Quote Liquidity</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Liquid Market</Name>
+          <Description>Liquid market for instrument</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Illiquid Market</Name>
+          <Description>Illiquid market for instrument</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Deferral Indicator -->
+    <Enum>
+      <Name>Deferral Indicator</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>False</Name>
+          <Description>False</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>True</Name>
+          <Description>True</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- LMTF -->
+    <Enum>
+      <Name>LMTF</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>False</Name>
+          <Description>False</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>True</Name>
+          <Description>True</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- FULF -->
+    <Enum>
+      <Name>FULF</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>False</Name>
+          <Description>False</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>True</Name>
+          <Description>True</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- DATF -->
+    <Enum>
+      <Name>DATF</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>False</Name>
+          <Description>False</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>True</Name>
+          <Description>True</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- FULA -->
+    <Enum>
+      <Name>FULA</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>False</Name>
+          <Description>False</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>True</Name>
+          <Description>True</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- VOLO -->
+    <Enum>
+      <Name>VOLO</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>False</Name>
+          <Description>False</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>True</Name>
+          <Description>True</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- FULV -->
+    <Enum>
+      <Name>FULV</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>False</Name>
+          <Description>False</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>True</Name>
+          <Description>True</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- FWAF -->
+    <Enum>
+      <Name>FWAF</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>False</Name>
+          <Description>False</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>True</Name>
+          <Description>True</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- FULJ -->
+    <Enum>
+      <Name>FULJ</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>False</Name>
+          <Description>False</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>True</Name>
+          <Description>True</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- IDAF -->
+    <Enum>
+      <Name>IDAF</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>False</Name>
+          <Description>False</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>True</Name>
+          <Description>True</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- VOLW -->
+    <Enum>
+      <Name>VOLW</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>False</Name>
+          <Description>False</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>True</Name>
+          <Description>True</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- COAF -->
+    <Enum>
+      <Name>COAF</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>False</Name>
+          <Description>False</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>True</Name>
+          <Description>True</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+  </Enums>
+
+</OmiAthexIdsPdf>

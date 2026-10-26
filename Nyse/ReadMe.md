@@ -11,6 +11,7 @@
 | AmexEquities | BinaryGateway | PillarStream | 6.1 | private |
 | AmexEquities | Bqt | Xdp | 2.4.a | private |
 | AmexEquities | Bqt | Xdp | 2.4.b | private |
+| AmexEquities | Bqt | Xdp | 2.4.c | private |
 | AmexEquities | DepthFeed | Pillar | 1.6 | private |
 | AmexEquities | DepthFeed | Pillar | 1.7 | private |
 | AmexEquities | DepthFeedRefresh | Pillar | 1.6 | private |
@@ -19,6 +20,8 @@
 | AmexEquities | DepthFeedRequest | Pillar | 1.7 | private |
 | AmexEquities | DepthFeedRetransmission | Pillar | 1.6 | private |
 | AmexEquities | DepthFeedRetransmission | Pillar | 1.7 | private |
+| AmexEquities | DropCopy | Fix | 5.15 | private |
+| AmexEquities | DropCopy | Fix | 6.0 | private |
 | AmexEquities | ImbalancesFeed | Pillar | 2.2.n | private |
 | AmexEquities | ImbalancesFeed | Pillar | 2.2.o | private |
 | AmexEquities | IntegratedFeed | Pillar | 2.5.g | private |
@@ -42,6 +45,7 @@
 | AmexEquities | Trades | Pillar | 2.6 | private |
 | AmexEquities | Trades | Pillar | 2.6.a | private |
 | AmexOptions | BinaryGateway | PillarStream | 3.25 | private |
+| AmexOptions | BinaryGateway | PillarStream | 3.26 | private |
 | AmexOptions | BinaryGateway | PillarStream | 3.27 | private |
 | AmexOptions | BinaryGateway | PillarStream | 3.28 | private |
 | AmexOptions | ComplexFeed | Pillar | 1.0.h | private |
@@ -67,6 +71,7 @@
 | ArcaEquities | BinaryGateway | PillarStream | 6.1 | private |
 | ArcaEquities | Bqt | Xdp | 2.4.a | private |
 | ArcaEquities | Bqt | Xdp | 2.4.b | private |
+| ArcaEquities | Bqt | Xdp | 2.4.c | private |
 | ArcaEquities | DepthFeed | Pillar | 1.6 | private |
 | ArcaEquities | DepthFeed | Pillar | 1.7 | private |
 | ArcaEquities | DepthFeedRefresh | Pillar | 1.6 | private |
@@ -75,6 +80,8 @@
 | ArcaEquities | DepthFeedRequest | Pillar | 1.7 | private |
 | ArcaEquities | DepthFeedRetransmission | Pillar | 1.6 | private |
 | ArcaEquities | DepthFeedRetransmission | Pillar | 1.7 | private |
+| ArcaEquities | DropCopy | Fix | 5.15 | private |
+| ArcaEquities | DropCopy | Fix | 6.0 | private |
 | ArcaEquities | ImbalancesFeed | Pillar | 2.2.n | private |
 | ArcaEquities | ImbalancesFeed | Pillar | 2.2.o | private |
 | ArcaEquities | IntegratedFeed | Pillar | 2.5.g | private |
@@ -93,6 +100,7 @@
 | ArcaEquities | Trades | Pillar | 2.6 | private |
 | ArcaEquities | Trades | Pillar | 2.6.a | private |
 | ArcaOptions | BinaryGateway | PillarStream | 3.25 | private |
+| ArcaOptions | BinaryGateway | PillarStream | 3.26 | private |
 | ArcaOptions | BinaryGateway | PillarStream | 3.27 | private |
 | ArcaOptions | BinaryGateway | PillarStream | 3.28 | private |
 | ArcaOptions | ComplexFeed | Pillar | 1.0.d | private |
@@ -117,6 +125,7 @@
 | NationalEquities | BinaryGateway | PillarStream | 6.1 | private |
 | NationalEquities | Bqt | Xdp | 2.4.a | private |
 | NationalEquities | Bqt | Xdp | 2.4.b | private |
+| NationalEquities | Bqt | Xdp | 2.4.c | private |
 | NationalEquities | DepthFeed | Pillar | 1.6 | private |
 | NationalEquities | DepthFeed | Pillar | 1.7 | private |
 | NationalEquities | DepthFeedRefresh | Pillar | 1.6 | private |
@@ -125,6 +134,8 @@
 | NationalEquities | DepthFeedRequest | Pillar | 1.7 | private |
 | NationalEquities | DepthFeedRetransmission | Pillar | 1.6 | private |
 | NationalEquities | DepthFeedRetransmission | Pillar | 1.7 | private |
+| NationalEquities | DropCopy | Fix | 5.15 | private |
+| NationalEquities | DropCopy | Fix | 6.0 | private |
 | NationalEquities | IntegratedFeed | Pillar | 2.5.g | private |
 | NationalEquities | IntegratedFeed | Pillar | 2.5.h | private |
 | NationalEquities | IntegratedFeedRefresh | Pillar | 2.5.g | private |
@@ -145,6 +156,7 @@
 | NyseBonds | Trades | Abp | 1.07.a | private |
 | NyseConsolidated | Bqt | Xdp | 2.4.a | private |
 | NyseConsolidated | Bqt | Xdp | 2.4.b | private |
+| NyseConsolidated | Bqt | Xdp | 2.4.c | private |
 | NyseEquities | Algo | Fix | 1.2 | private |
 | NyseEquities | Bbo | Pillar | 2.5.b | private |
 | NyseEquities | Bbo | Pillar | 2.5.d | private |
@@ -157,6 +169,7 @@
 | NyseEquities | Bqt | Xdp | 2.1.a | private |
 | NyseEquities | Bqt | Xdp | 2.4.a | private |
 | NyseEquities | Bqt | Xdp | 2.4.b | private |
+| NyseEquities | Bqt | Xdp | 2.4.c | private |
 | NyseEquities | DepthFeed | Pillar | 1.6 | private |
 | NyseEquities | DepthFeed | Pillar | 1.7 | private |
 | NyseEquities | DepthFeedRefresh | Pillar | 1.6 | private |
@@ -165,6 +178,8 @@
 | NyseEquities | DepthFeedRequest | Pillar | 1.7 | private |
 | NyseEquities | DepthFeedRetransmission | Pillar | 1.6 | private |
 | NyseEquities | DepthFeedRetransmission | Pillar | 1.7 | private |
+| NyseEquities | DropCopy | Fix | 5.15 | private |
+| NyseEquities | DropCopy | Fix | 6.0 | private |
 | NyseEquities | FloorBroker | Fix | 2.6 | private |
 | NyseEquities | ImbalancesFeed | Pillar | 2.2.h | private |
 | NyseEquities | ImbalancesFeed | Pillar | 2.2.n | private |
@@ -196,6 +211,7 @@
 | NyseOptions | CommonClient | Pillar | 2.6 | private |
 | Options | DeepFeed | Xdp | 1.3.a | private |
 | Options | StreamProtocol | PillarStream | 1.1.6 | private |
+| Options | StreamProtocol | PillarStream | 1.1.7 | private |
 | Options | TopFeed | Xdp | 1.3.a | private |
 | TexasEquities | Bbo | Pillar | 2.5.d | private |
 | TexasEquities | BinaryGateway | PillarStream | 5.17 | private |
@@ -203,6 +219,7 @@
 | TexasEquities | BinaryGateway | PillarStream | 6.1 | private |
 | TexasEquities | Bqt | Xdp | 2.4.a | private |
 | TexasEquities | Bqt | Xdp | 2.4.b | private |
+| TexasEquities | Bqt | Xdp | 2.4.c | private |
 | TexasEquities | DepthFeed | Pillar | 1.6 | private |
 | TexasEquities | DepthFeed | Pillar | 1.7 | private |
 | TexasEquities | DepthFeedRefresh | Pillar | 1.6 | private |
@@ -211,6 +228,8 @@
 | TexasEquities | DepthFeedRequest | Pillar | 1.7 | private |
 | TexasEquities | DepthFeedRetransmission | Pillar | 1.6 | private |
 | TexasEquities | DepthFeedRetransmission | Pillar | 1.7 | private |
+| TexasEquities | DropCopy | Fix | 5.15 | private |
+| TexasEquities | DropCopy | Fix | 6.0 | private |
 | TexasEquities | ImbalancesFeed | Pillar | 2.2.n | private |
 | TexasEquities | ImbalancesFeed | Pillar | 2.2.o | private |
 | TexasEquities | IntegratedFeed | Pillar | 2.5.g | private |

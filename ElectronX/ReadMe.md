@@ -16,8 +16,8 @@
 | ElectricDerivatives | MarketData | Fix | 20260309.1 | [files](ElectronX.ElectricDerivatives.MarketData.Fix.v20260309.1/) |
 | ElectricDerivatives | MarketData | Fix | 20260406.1 | [files](ElectronX.ElectricDerivatives.MarketData.Fix.v20260406.1/) |
 | ElectricDerivatives | MarketData | Fix | 20260423.1 | [files](ElectronX.ElectricDerivatives.MarketData.Fix.v20260423.1/) |
-| ElectricDerivatives | MarketData | Fix | 20260706.1 | [files](ElectronX.ElectricDerivatives.MarketData.Fix.v20260706.1/) |
-| ElectricDerivatives | MarketData | Fix | 20260706.2 | [files](ElectronX.ElectricDerivatives.MarketData.Fix.v20260706.2/) |
+| ElectricDerivatives | MarketData | Fix | 20260706.1 | private |
+| ElectricDerivatives | MarketData | Fix | 20260706.2 | private |
 | ElectricDerivatives | MarketData | Fix | 20261015.1 | [files](ElectronX.ElectricDerivatives.MarketData.Fix.v20261015.1/) |
 | ElectricDerivatives | OrderEntry | Fix | 0.1 | private |
 | ElectricDerivatives | OrderEntry | Fix | 20251208.1 | [files](ElectronX.ElectricDerivatives.OrderEntry.Fix.v20251208.1/) |
@@ -29,8 +29,8 @@
 | ElectricDerivatives | OrderEntry | Fix | 20260309.1 | [files](ElectronX.ElectricDerivatives.OrderEntry.Fix.v20260309.1/) |
 | ElectricDerivatives | OrderEntry | Fix | 20260406.1 | [files](ElectronX.ElectricDerivatives.OrderEntry.Fix.v20260406.1/) |
 | ElectricDerivatives | OrderEntry | Fix | 20260423.1 | [files](ElectronX.ElectricDerivatives.OrderEntry.Fix.v20260423.1/) |
-| ElectricDerivatives | OrderEntry | Fix | 20260706.1 | [files](ElectronX.ElectricDerivatives.OrderEntry.Fix.v20260706.1/) |
-| ElectricDerivatives | OrderEntry | Fix | 20260706.2 | [files](ElectronX.ElectricDerivatives.OrderEntry.Fix.v20260706.2/) |
+| ElectricDerivatives | OrderEntry | Fix | 20260706.1 | private |
+| ElectricDerivatives | OrderEntry | Fix | 20260706.2 | private |
 | ElectricDerivatives | OrderEntry | Fix | 20261015.1 | [files](ElectronX.ElectricDerivatives.OrderEntry.Fix.v20261015.1/) |
 
 A specification marked private is released by the venue to registered participants only. Those protocols are listed here for completeness, and nothing read out of their documents is published: no message layouts, no field names, no wording. The generated parsers in the definition repositories describe the wire format and are published as usual.

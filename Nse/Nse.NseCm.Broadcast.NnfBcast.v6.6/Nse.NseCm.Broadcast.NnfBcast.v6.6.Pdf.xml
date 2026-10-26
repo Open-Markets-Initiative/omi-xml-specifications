@@ -1,0 +1,3361 @@
+<OmiNnfPdf>
+
+  <!--
+  Nse Capital Market broadcast circuit, chapter 7 of the Capital Market Trading System Protocol
+  for Non-Neat Front End, version 6.6. The interactive Virtual Circuit side of the same document
+  is Nse.NseCm.OrderEntry.Nnf.v6.6; this is the one way Udp side behind the Bcast Header.
+
+  Framing is shared with the Futures and Options broadcast and lives in
+  Nse.NnfBcast.Udp.v1.0.Source.xml. The forty byte BCAST_HEADER of table 3 is byte identical
+  between the two documents, so no field of it is repeated here.
+
+  Six transaction codes are Lzo compressed on this circuit: 7201, 18703, 7208, 7214, 7215 and
+  7210. Those packets are currently modelled as an opaque block sized by Compression Length, as
+  on the Futures and Options side. Uncompressed packets decode fully.
+
+  A structure that the document gives several transaction codes is authored once per code, so
+  the dissector labels each event by its own name rather than by the shared table caption.
+  That applies to the twelve market status codes of table 35, to the two security status codes
+  of table 31, and to the two turnover codes of table 32.
+
+  Two structure names carry two different layouts in this document and are separated here:
+  MARKETWATCHBROADCAST is 106 bytes under 7201 and 40 bytes under 7215, the latter authored as
+  CA_MARKETWATCHBROADCAST; INDICES is 71 bytes under 7207 and 7216 and 25 bytes under 7203, the
+  latter authored as INDUSTRY_INDICES. Both follow the naming the Futures and Options spec uses
+  for the same problem.
+
+  Bits are listed least significant first over the whole container, which is each table's Big
+  Endian listing read in reverse. Consecutive Reserved runs are collapsed into one.
+  -->
+
+  <Messages>
+
+    <!-- Broadcast Journal Vct Message -->
+    <Message>
+      <Name>Broadcast Journal Vct Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Message Payload</Branch>
+      <Code>6501</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Carries a general message broadcast to the trading terminals</Description>
+      <Fields>
+        <Field>
+          <Name>BranchNumber</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Branch number of the trader or broker.</Description>
+        </Field>
+        <Field>
+          <Name>BrokerNumber</Name>
+          <Type>CHAR</Type>
+          <Size>5</Size>
+          <Description>Trading Member Id of the broker.</Description>
+        </Field>
+        <Field>
+          <Name>ActionCode</Name>
+          <Type>CHAR</Type>
+          <Size>3</Size>
+          <Description>Indicates the action taken.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>CHAR</Type>
+          <Size>4</Size>
+          <Description>Reserved.</Description>
+        </Field>
+        <Field>
+          <Name>BROADCAST DESTINATION</Name>
+          <Type>STRUCT</Type>
+          <Size>2</Size>
+          <Description>Destination the message is intended for.</Description>
+        </Field>
+        <Field>
+          <Name>BroadcastMessageLength</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Length of the broadcast message.</Description>
+        </Field>
+        <Field>
+          <Name>BroadcastMessage</Name>
+          <Type>CHAR</Type>
+          <Size>240</Size>
+          <Description>Contents of the broadcast message.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Security Master Change Message -->
+    <Message>
+      <Name>Security Master Change Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Message Payload</Branch>
+      <Code>18720</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Sent whenever a parameter of any security is changed</Description>
+      <Fields>
+        <Field>
+          <Name>Token</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Token number of the security being updated.</Description>
+        </Field>
+        <Field>
+          <Name>SEC_INFO</Name>
+          <Type>STRUCT</Type>
+          <Size>12</Size>
+          <Description>Symbol and series of the security.</Description>
+        </Field>
+        <Field>
+          <Name>InstrumentType</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Instrument type of the security.</Description>
+        </Field>
+        <Field>
+          <Name>PermittedToTrade</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Whether the security is permitted to trade.</Description>
+        </Field>
+        <Field>
+          <Name>IssuedCapital</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Issue size of the security.</Description>
+        </Field>
+        <Field>
+          <Name>SettlementType</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Settlement type.</Description>
+        </Field>
+        <Field>
+          <Name>FreezePercent</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Volume freeze percent with respect to issued capital, interpreted as freeze percent divided by 10000.</Description>
+        </Field>
+        <Field>
+          <Name>CreditRating</Name>
+          <Type>CHAR</Type>
+          <Size>19</Size>
+          <Description>Daily price range of the security.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Reserved.</Description>
+        </Field>
+        <Field>
+          <Name>SECURITY ELIGIBILITY PER MARKET</Name>
+          <Type>STRUCT</Type>
+          <Size>24</Size>
+          <Description>Eligibility and status of the security in each market.</Description>
+        </Field>
+        <Field>
+          <Name>SurvInd</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Indicator for a security in Surveillance Measure.</Description>
+        </Field>
+        <Field>
+          <Name>IssueStartDate</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Date of issue of the security.</Description>
+        </Field>
+        <Field>
+          <Name>InterestPaymentDate</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Interest payment date of the issue.</Description>
+        </Field>
+        <Field>
+          <Name>IssueMaturityDate</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Maturity date.</Description>
+        </Field>
+        <Field>
+          <Name>BoardLotQuantity</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Regular lot size.</Description>
+        </Field>
+        <Field>
+          <Name>TickSize</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Tick size or minimum spread size.</Description>
+        </Field>
+        <Field>
+          <Name>Name</Name>
+          <Type>CHAR</Type>
+          <Size>25</Size>
+          <Description>Security name.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Reserved.</Description>
+        </Field>
+        <Field>
+          <Name>ListingDate</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Date of listing.</Description>
+        </Field>
+        <Field>
+          <Name>ExpulsionDate</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Date of expulsion.</Description>
+        </Field>
+        <Field>
+          <Name>ReAdmissionDate</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Date of readmission.</Description>
+        </Field>
+        <Field>
+          <Name>RecordDate</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Date of record changed.</Description>
+        </Field>
+        <Field>
+          <Name>ExpiryDate</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Last date of trading before any corporate action.</Description>
+        </Field>
+        <Field>
+          <Name>NoDeliveryStartDate</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Date from when physical delivery of share certificates is stopped for book closure.</Description>
+        </Field>
+        <Field>
+          <Name>NoDeliveryEndDate</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Date from when physical delivery of share certificates starts after book closure.</Description>
+        </Field>
+        <Field>
+          <Name>ELIGIBLITY INDICATORS</Name>
+          <Type>STRUCT</Type>
+          <Size>2</Size>
+          <Description>Order attributes allowed on this security.</Description>
+        </Field>
+        <Field>
+          <Name>BookClosureStartDate</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Date when the record books in the company for shareholder names starts.</Description>
+        </Field>
+        <Field>
+          <Name>BookClosureEndDate</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Date when the record books in the company for shareholder names ends.</Description>
+        </Field>
+        <Field>
+          <Name>PURPOSE</Name>
+          <Type>STRUCT</Type>
+          <Size>2</Size>
+          <Description>Corporate action flags.</Description>
+        </Field>
+        <Field>
+          <Name>LocalUpdateDateTime</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Local database update date and time.</Description>
+        </Field>
+        <Field>
+          <Name>DeleteFlag</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Whether the security is deleted.</Description>
+        </Field>
+        <Field>
+          <Name>Remark</Name>
+          <Type>CHAR</Type>
+          <Size>25</Size>
+          <Description>Remarks.</Description>
+        </Field>
+        <Field>
+          <Name>FaceValue</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Face value of the security.</Description>
+        </Field>
+        <Field>
+          <Name>ISINNumber</Name>
+          <Type>CHAR</Type>
+          <Size>12</Size>
+          <Description>ISIN number of the security.</Description>
+        </Field>
+        <Field>
+          <Name>MktMakerSpread</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Spread value of the security, used by a market maker to place two way quotes.</Description>
+        </Field>
+        <Field>
+          <Name>MktMakerMinQty</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Minimum quantity for the security, used by a market maker for a market maker order.</Description>
+        </Field>
+        <Field>
+          <Name>CallAuction1Flag</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Whether the security participates in Call Auction 1.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Participant Master Change Message -->
+    <Message>
+      <Name>Participant Master Change Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Message Payload</Branch>
+      <Code>7306</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Sent whenever there is any participant change</Description>
+      <Fields>
+        <Field>
+          <Name>ParticipantId</Name>
+          <Type>CHAR</Type>
+          <Size>12</Size>
+          <Description>Participant Id.</Description>
+        </Field>
+        <Field>
+          <Name>ParticipantName</Name>
+          <Type>CHAR</Type>
+          <Size>25</Size>
+          <Description>Name of the participant that is changed.</Description>
+        </Field>
+        <Field>
+          <Name>ParticipantStatus</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Status of the participant which is changed.</Description>
+        </Field>
+        <Field>
+          <Name>ParticipantUpdateDateTime</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Time when the participant information was changed.</Description>
+        </Field>
+        <Field>
+          <Name>DeleteFlag</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Whether the participant is deleted.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Reserved.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Security Status Change Message -->
+    <Message>
+      <Name>Security Status Change Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Message Payload</Branch>
+      <Code>18130</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Sent whenever the status of any security changes</Description>
+      <Fields>
+        <Field>
+          <Name>NumberOfRecords</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Number of records of the structure TOKEN AND ELIGIBILITY.</Description>
+        </Field>
+        <Field>
+          <Name>TOKEN AND ELIGIBILITY</Name>
+          <Type>STRUCT</Type>
+          <Size>400</Size>
+          <Description>Token and per market status of each security that changed.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Security Status Change Preopen Message -->
+    <Message>
+      <Name>Security Status Change Preopen Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Message Payload</Branch>
+      <Code>18707</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Sent whenever the status of any security changes during the preopen session</Description>
+      <Fields>
+        <Field>
+          <Name>NumberOfRecords</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Number of records of the structure TOKEN AND ELIGIBILITY.</Description>
+        </Field>
+        <Field>
+          <Name>TOKEN AND ELIGIBILITY</Name>
+          <Type>STRUCT</Type>
+          <Size>400</Size>
+          <Description>Token and per market status of each security that changed.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Turnover Exceeded Message -->
+    <Message>
+      <Name>Turnover Exceeded Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Message Payload</Branch>
+      <Code>9010</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Sent when a broker turnover is about to exceed or has already exceeded the limit, deactivating the broker</Description>
+      <Fields>
+        <Field>
+          <Name>BrokerCode</Name>
+          <Type>CHAR</Type>
+          <Size>5</Size>
+          <Description>Broker code who is about to exceed or has already exceeded the turnover limit.</Description>
+        </Field>
+        <Field>
+          <Name>CounterBroker Code</Name>
+          <Type>CHAR</Type>
+          <Size>5</Size>
+          <Description>Not in use.</Description>
+        </Field>
+        <Field>
+          <Name>WarningType</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>One if the turnover limit is about to be exceeded, two if it is exceeded and the broker is deactivated.</Description>
+        </Field>
+        <Field>
+          <Name>SEC_INFO</Name>
+          <Type>STRUCT</Type>
+          <Size>12</Size>
+          <Description>Symbol and series of the security.</Description>
+        </Field>
+        <Field>
+          <Name>TradeNumber</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Trade number in which the broker has last traded.</Description>
+        </Field>
+        <Field>
+          <Name>TradePrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Price of the trade.</Description>
+        </Field>
+        <Field>
+          <Name>TradeVolume</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Trade quantity of the trade.</Description>
+        </Field>
+        <Field>
+          <Name>Final</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Whether it is the final auction trade.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Broker Reactivated Message -->
+    <Message>
+      <Name>Broker Reactivated Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Message Payload</Branch>
+      <Code>9011</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Sent when a broker is reactivated after being deactivated</Description>
+      <Fields>
+        <Field>
+          <Name>BrokerCode</Name>
+          <Type>CHAR</Type>
+          <Size>5</Size>
+          <Description>Broker code who is about to exceed or has already exceeded the turnover limit.</Description>
+        </Field>
+        <Field>
+          <Name>CounterBroker Code</Name>
+          <Type>CHAR</Type>
+          <Size>5</Size>
+          <Description>Not in use.</Description>
+        </Field>
+        <Field>
+          <Name>WarningType</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>One if the turnover limit is about to be exceeded, two if it is exceeded and the broker is deactivated.</Description>
+        </Field>
+        <Field>
+          <Name>SEC_INFO</Name>
+          <Type>STRUCT</Type>
+          <Size>12</Size>
+          <Description>Symbol and series of the security.</Description>
+        </Field>
+        <Field>
+          <Name>TradeNumber</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Trade number in which the broker has last traded.</Description>
+        </Field>
+        <Field>
+          <Name>TradePrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Price of the trade.</Description>
+        </Field>
+        <Field>
+          <Name>TradeVolume</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Trade quantity of the trade.</Description>
+        </Field>
+        <Field>
+          <Name>Final</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Whether it is the final auction trade.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Auction Inquiry Message -->
+    <Message>
+      <Name>Auction Inquiry Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Message Payload</Branch>
+      <Code>18700</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Sent whenever there is any auction related activity, including a change in the auction market by order</Description>
+      <Fields>
+        <Field>
+          <Name>ST_AUCTION_INQ_INFO</Name>
+          <Type>STRUCT</Type>
+          <Size>36</Size>
+          <Description>Auction activity for one security.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Auction Status Change Message -->
+    <Message>
+      <Name>Auction Status Change Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Message Payload</Branch>
+      <Code>6581</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Sent when the status of an auction changes</Description>
+      <Fields>
+        <Field>
+          <Name>SEC_INFO</Name>
+          <Type>STRUCT</Type>
+          <Size>12</Size>
+          <Description>Symbol and series of the security.</Description>
+        </Field>
+        <Field>
+          <Name>AuctionNumber</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Auction number.</Description>
+        </Field>
+        <Field>
+          <Name>AuctionStatus</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Status of the auction.</Description>
+        </Field>
+        <Field>
+          <Name>ActionCode</Name>
+          <Type>CHAR</Type>
+          <Size>3</Size>
+          <Description>Action code indicating the action taken.</Description>
+        </Field>
+        <Field>
+          <Name>BROADCAST DESTINATION</Name>
+          <Type>STRUCT</Type>
+          <Size>2</Size>
+          <Description>Destination the message is intended for.</Description>
+        </Field>
+        <Field>
+          <Name>BroadcastMessageLength</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Length of the broadcast message.</Description>
+        </Field>
+        <Field>
+          <Name>BroadcastMessage</Name>
+          <Type>CHAR</Type>
+          <Size>240</Size>
+          <Description>Contents of the broadcast message.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Preopen Shutdown Message -->
+    <Message>
+      <Name>Preopen Shutdown Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Message Payload</Branch>
+      <Code>6531</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Sent when the market is preopened.</Description>
+      <Fields>
+        <Field>
+          <Name>SEC_INFO</Name>
+          <Type>STRUCT</Type>
+          <Size>12</Size>
+          <Description>Symbol and series of the security.</Description>
+        </Field>
+        <Field>
+          <Name>MarketType</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Type of market.</Description>
+        </Field>
+        <Field>
+          <Name>BROADCAST DESTINATION</Name>
+          <Type>STRUCT</Type>
+          <Size>2</Size>
+          <Description>Destination the message is intended for.</Description>
+        </Field>
+        <Field>
+          <Name>BroadcastMessageLength</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Length of the broadcast message.</Description>
+        </Field>
+        <Field>
+          <Name>BroadcastMessage</Name>
+          <Type>CHAR</Type>
+          <Size>240</Size>
+          <Description>Contents of the broadcast message.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Preopen Market Order Restricted Message -->
+    <Message>
+      <Name>Preopen Market Order Restricted Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Message Payload</Branch>
+      <Code>6664</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Sent when market orders restriction starts during the preopen session.</Description>
+      <Fields>
+        <Field>
+          <Name>SEC_INFO</Name>
+          <Type>STRUCT</Type>
+          <Size>12</Size>
+          <Description>Symbol and series of the security.</Description>
+        </Field>
+        <Field>
+          <Name>MarketType</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Type of market.</Description>
+        </Field>
+        <Field>
+          <Name>BROADCAST DESTINATION</Name>
+          <Type>STRUCT</Type>
+          <Size>2</Size>
+          <Description>Destination the message is intended for.</Description>
+        </Field>
+        <Field>
+          <Name>BroadcastMessageLength</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Length of the broadcast message.</Description>
+        </Field>
+        <Field>
+          <Name>BroadcastMessage</Name>
+          <Type>CHAR</Type>
+          <Size>240</Size>
+          <Description>Contents of the broadcast message.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Normal Market Preopen Ended Message -->
+    <Message>
+      <Name>Normal Market Preopen Ended Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Message Payload</Branch>
+      <Code>6571</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Sent when the preopen period ends.</Description>
+      <Fields>
+        <Field>
+          <Name>SEC_INFO</Name>
+          <Type>STRUCT</Type>
+          <Size>12</Size>
+          <Description>Symbol and series of the security.</Description>
+        </Field>
+        <Field>
+          <Name>MarketType</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Type of market.</Description>
+        </Field>
+        <Field>
+          <Name>BROADCAST DESTINATION</Name>
+          <Type>STRUCT</Type>
+          <Size>2</Size>
+          <Description>Destination the message is intended for.</Description>
+        </Field>
+        <Field>
+          <Name>BroadcastMessageLength</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Length of the broadcast message.</Description>
+        </Field>
+        <Field>
+          <Name>BroadcastMessage</Name>
+          <Type>CHAR</Type>
+          <Size>240</Size>
+          <Description>Contents of the broadcast message.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Market Open Message -->
+    <Message>
+      <Name>Market Open Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Message Payload</Branch>
+      <Code>6511</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Sent when the market is opened.</Description>
+      <Fields>
+        <Field>
+          <Name>SEC_INFO</Name>
+          <Type>STRUCT</Type>
+          <Size>12</Size>
+          <Description>Symbol and series of the security.</Description>
+        </Field>
+        <Field>
+          <Name>MarketType</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Type of market.</Description>
+        </Field>
+        <Field>
+          <Name>BROADCAST DESTINATION</Name>
+          <Type>STRUCT</Type>
+          <Size>2</Size>
+          <Description>Destination the message is intended for.</Description>
+        </Field>
+        <Field>
+          <Name>BroadcastMessageLength</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Length of the broadcast message.</Description>
+        </Field>
+        <Field>
+          <Name>BroadcastMessage</Name>
+          <Type>CHAR</Type>
+          <Size>240</Size>
+          <Description>Contents of the broadcast message.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Cts Close For Cas Message -->
+    <Message>
+      <Name>Cts Close For Cas Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Message Payload</Branch>
+      <Code>6651</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Sent when the normal market has closed for securities participating in the closing auction session.</Description>
+      <Fields>
+        <Field>
+          <Name>SEC_INFO</Name>
+          <Type>STRUCT</Type>
+          <Size>12</Size>
+          <Description>Symbol and series of the security.</Description>
+        </Field>
+        <Field>
+          <Name>MarketType</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Type of market.</Description>
+        </Field>
+        <Field>
+          <Name>BROADCAST DESTINATION</Name>
+          <Type>STRUCT</Type>
+          <Size>2</Size>
+          <Description>Destination the message is intended for.</Description>
+        </Field>
+        <Field>
+          <Name>BroadcastMessageLength</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Length of the broadcast message.</Description>
+        </Field>
+        <Field>
+          <Name>BroadcastMessage</Name>
+          <Type>CHAR</Type>
+          <Size>240</Size>
+          <Description>Contents of the broadcast message.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Revised Price Band Completed Message -->
+    <Message>
+      <Name>Revised Price Band Completed Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Message Payload</Branch>
+      <Code>6652</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Sent when the price band of securities is revised for the Closing Auction Session.</Description>
+      <Fields>
+        <Field>
+          <Name>SEC_INFO</Name>
+          <Type>STRUCT</Type>
+          <Size>12</Size>
+          <Description>Symbol and series of the security.</Description>
+        </Field>
+        <Field>
+          <Name>MarketType</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Type of market.</Description>
+        </Field>
+        <Field>
+          <Name>BROADCAST DESTINATION</Name>
+          <Type>STRUCT</Type>
+          <Size>2</Size>
+          <Description>Destination the message is intended for.</Description>
+        </Field>
+        <Field>
+          <Name>BroadcastMessageLength</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Length of the broadcast message.</Description>
+        </Field>
+        <Field>
+          <Name>BroadcastMessage</Name>
+          <Type>CHAR</Type>
+          <Size>240</Size>
+          <Description>Contents of the broadcast message.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Cas Start Message -->
+    <Message>
+      <Name>Cas Start Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Message Payload</Branch>
+      <Code>6653</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Sent when the closing auction session has started.</Description>
+      <Fields>
+        <Field>
+          <Name>SEC_INFO</Name>
+          <Type>STRUCT</Type>
+          <Size>12</Size>
+          <Description>Symbol and series of the security.</Description>
+        </Field>
+        <Field>
+          <Name>MarketType</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Type of market.</Description>
+        </Field>
+        <Field>
+          <Name>BROADCAST DESTINATION</Name>
+          <Type>STRUCT</Type>
+          <Size>2</Size>
+          <Description>Destination the message is intended for.</Description>
+        </Field>
+        <Field>
+          <Name>BroadcastMessageLength</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Length of the broadcast message.</Description>
+        </Field>
+        <Field>
+          <Name>BroadcastMessage</Name>
+          <Type>CHAR</Type>
+          <Size>240</Size>
+          <Description>Contents of the broadcast message.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Market Order Restricted Message -->
+    <Message>
+      <Name>Market Order Restricted Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Message Payload</Branch>
+      <Code>6654</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Sent when market orders restriction starts during the closing auction session.</Description>
+      <Fields>
+        <Field>
+          <Name>SEC_INFO</Name>
+          <Type>STRUCT</Type>
+          <Size>12</Size>
+          <Description>Symbol and series of the security.</Description>
+        </Field>
+        <Field>
+          <Name>MarketType</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Type of market.</Description>
+        </Field>
+        <Field>
+          <Name>BROADCAST DESTINATION</Name>
+          <Type>STRUCT</Type>
+          <Size>2</Size>
+          <Description>Destination the message is intended for.</Description>
+        </Field>
+        <Field>
+          <Name>BroadcastMessageLength</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Length of the broadcast message.</Description>
+        </Field>
+        <Field>
+          <Name>BroadcastMessage</Name>
+          <Type>CHAR</Type>
+          <Size>240</Size>
+          <Description>Contents of the broadcast message.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Cas End Message -->
+    <Message>
+      <Name>Cas End Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Message Payload</Branch>
+      <Code>6655</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Sent when the closing auction session has ended.</Description>
+      <Fields>
+        <Field>
+          <Name>SEC_INFO</Name>
+          <Type>STRUCT</Type>
+          <Size>12</Size>
+          <Description>Symbol and series of the security.</Description>
+        </Field>
+        <Field>
+          <Name>MarketType</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Type of market.</Description>
+        </Field>
+        <Field>
+          <Name>BROADCAST DESTINATION</Name>
+          <Type>STRUCT</Type>
+          <Size>2</Size>
+          <Description>Destination the message is intended for.</Description>
+        </Field>
+        <Field>
+          <Name>BroadcastMessageLength</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Length of the broadcast message.</Description>
+        </Field>
+        <Field>
+          <Name>BroadcastMessage</Name>
+          <Type>CHAR</Type>
+          <Size>240</Size>
+          <Description>Contents of the broadcast message.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Market Close Message -->
+    <Message>
+      <Name>Market Close Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Message Payload</Branch>
+      <Code>6521</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Sent when the market is closed.</Description>
+      <Fields>
+        <Field>
+          <Name>SEC_INFO</Name>
+          <Type>STRUCT</Type>
+          <Size>12</Size>
+          <Description>Symbol and series of the security.</Description>
+        </Field>
+        <Field>
+          <Name>MarketType</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Type of market.</Description>
+        </Field>
+        <Field>
+          <Name>BROADCAST DESTINATION</Name>
+          <Type>STRUCT</Type>
+          <Size>2</Size>
+          <Description>Destination the message is intended for.</Description>
+        </Field>
+        <Field>
+          <Name>BroadcastMessageLength</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Length of the broadcast message.</Description>
+        </Field>
+        <Field>
+          <Name>BroadcastMessage</Name>
+          <Type>CHAR</Type>
+          <Size>240</Size>
+          <Description>Contents of the broadcast message.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Closing Start Message -->
+    <Message>
+      <Name>Closing Start Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Message Payload</Branch>
+      <Code>6583</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Sent when the closing session is opened.</Description>
+      <Fields>
+        <Field>
+          <Name>SEC_INFO</Name>
+          <Type>STRUCT</Type>
+          <Size>12</Size>
+          <Description>Symbol and series of the security.</Description>
+        </Field>
+        <Field>
+          <Name>MarketType</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Type of market.</Description>
+        </Field>
+        <Field>
+          <Name>BROADCAST DESTINATION</Name>
+          <Type>STRUCT</Type>
+          <Size>2</Size>
+          <Description>Destination the message is intended for.</Description>
+        </Field>
+        <Field>
+          <Name>BroadcastMessageLength</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Length of the broadcast message.</Description>
+        </Field>
+        <Field>
+          <Name>BroadcastMessage</Name>
+          <Type>CHAR</Type>
+          <Size>240</Size>
+          <Description>Contents of the broadcast message.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Closing End Message -->
+    <Message>
+      <Name>Closing End Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Message Payload</Branch>
+      <Code>6584</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Sent when the closing session is closed.</Description>
+      <Fields>
+        <Field>
+          <Name>SEC_INFO</Name>
+          <Type>STRUCT</Type>
+          <Size>12</Size>
+          <Description>Symbol and series of the security.</Description>
+        </Field>
+        <Field>
+          <Name>MarketType</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Type of market.</Description>
+        </Field>
+        <Field>
+          <Name>BROADCAST DESTINATION</Name>
+          <Type>STRUCT</Type>
+          <Size>2</Size>
+          <Description>Destination the message is intended for.</Description>
+        </Field>
+        <Field>
+          <Name>BroadcastMessageLength</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Length of the broadcast message.</Description>
+        </Field>
+        <Field>
+          <Name>BroadcastMessage</Name>
+          <Type>CHAR</Type>
+          <Size>240</Size>
+          <Description>Contents of the broadcast message.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Symbol Status Change Action Message -->
+    <Message>
+      <Name>Symbol Status Change Action Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Message Payload</Branch>
+      <Code>7764</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Carries a security level trading or market status change</Description>
+      <Fields>
+        <Field>
+          <Name>SEC_INFO</Name>
+          <Type>STRUCT</Type>
+          <Size>12</Size>
+          <Description>Symbol and series of the security.</Description>
+        </Field>
+        <Field>
+          <Name>MarketType</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Type of market.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Reserved.</Description>
+        </Field>
+        <Field>
+          <Name>ActionCode</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Action code indicating the status the security moved to.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Ticker And Market Index Message -->
+    <Message>
+      <Name>Ticker And Market Index Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Message Payload</Branch>
+      <Code>18703</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Carries ticker and market index information</Description>
+      <Fields>
+        <Field>
+          <Name>NumberOfRecords</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Number of times, to a maximum of 28, the structure TICKER INDEX INFORMATION is repeated.</Description>
+        </Field>
+        <Field>
+          <Name>TICKER INDEX INFORMATION</Name>
+          <Type>STRUCT</Type>
+          <Size>504</Size>
+          <Description>Ticker and index records.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Market By Order And Market By Price Message -->
+    <Message>
+      <Name>Market By Order And Market By Price Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Message Payload</Branch>
+      <Code>7200</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Carries the best buy orders and the best sell orders of a security</Description>
+      <Fields>
+        <Field>
+          <Name>INTERACTIVE MBO DATA</Name>
+          <Type>STRUCT</Type>
+          <Size>240</Size>
+          <Description>Market by order data for the security.</Description>
+        </Field>
+        <Field>
+          <Name>MBP INFORMATION</Name>
+          <Type>STRUCT</Type>
+          <Size>160</Size>
+          <Description>Five best buy prices followed by five best sell prices from the order book.</Description>
+        </Field>
+        <Field>
+          <Name>BbTotalBuyFlag</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Whether there is a buyback or market maker order on the buy side.</Description>
+        </Field>
+        <Field>
+          <Name>BbTotalSellFlag</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Currently set to zero.</Description>
+        </Field>
+        <Field>
+          <Name>TotalBuyQuantity</Name>
+          <Type>LONG LONG</Type>
+          <Size>8</Size>
+          <Description>Total quantity of buy orders in the security.</Description>
+        </Field>
+        <Field>
+          <Name>TotalSellQuantity</Name>
+          <Type>LONG LONG</Type>
+          <Size>8</Size>
+          <Description>Total quantity of sell orders in the security.</Description>
+        </Field>
+        <Field>
+          <Name>MBO MBP INDICATOR</Name>
+          <Type>STRUCT</Type>
+          <Size>2</Size>
+          <Description>Flags indicating buy, sell and whether the latest trade is less or greater than the previous one.</Description>
+        </Field>
+        <Field>
+          <Name>ClosingPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Closing price of the security.</Description>
+        </Field>
+        <Field>
+          <Name>OpenPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Open price of the security.</Description>
+        </Field>
+        <Field>
+          <Name>HighPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Highest trade price.</Description>
+        </Field>
+        <Field>
+          <Name>LowPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Lowest trade price.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>CHAR</Type>
+          <Size>4</Size>
+          <Description>Reserved.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Only Market By Price Message -->
+    <Message>
+      <Name>Only Market By Price Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Message Payload</Branch>
+      <Code>7208</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Carries the best buy and sell prices of a security without the order level detail</Description>
+      <Fields>
+        <Field>
+          <Name>NoOfRecords</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Number of securities sent.</Description>
+        </Field>
+        <Field>
+          <Name>INTERACTIVE ONLY MBP DATA</Name>
+          <Type>STRUCT</Type>
+          <Size>524</Size>
+          <Description>Market by price data per security.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Market Watch Round Robin Message -->
+    <Message>
+      <Name>Market Watch Round Robin Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Message Payload</Branch>
+      <Code>7201</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Carries the best buy and sell order, their quantities and the last trade price</Description>
+      <Fields>
+        <Field>
+          <Name>NumberOfRecords</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Number of times the structure MARKETWATCHBROADCAST is repeated.</Description>
+        </Field>
+        <Field>
+          <Name>MARKETWATCHBROADCAST</Name>
+          <Type>STRUCT</Type>
+          <Size>424</Size>
+          <Description>Market watch records.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Call Auction Market By Price Message -->
+    <Message>
+      <Name>Call Auction Market By Price Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Message Payload</Branch>
+      <Code>7214</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Carries Call Auction 2 market data during the preopen session</Description>
+      <Fields>
+        <Field>
+          <Name>NoOfRecords</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Number of securities sent.</Description>
+        </Field>
+        <Field>
+          <Name>INTERACTIVE CALL AUCTION MBP DATA</Name>
+          <Type>STRUCT</Type>
+          <Size>496</Size>
+          <Description>Call auction market by price data per security.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Call Auction Market Watch Message -->
+    <Message>
+      <Name>Call Auction Market Watch Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Message Payload</Branch>
+      <Code>7215</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Carries the market watch data for the Call Auction market</Description>
+      <Fields>
+        <Field>
+          <Name>NoOfRecords</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Number of times the structure MARKETWATCHBROADCAST is repeated.</Description>
+        </Field>
+        <Field>
+          <Name>CA_MARKETWATCHBROADCAST</Name>
+          <Type>STRUCT</Type>
+          <Size>440</Size>
+          <Description>Call auction market watch records.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Security Open Price Message -->
+    <Message>
+      <Name>Security Open Price Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Message Payload</Branch>
+      <Code>6013</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Carries the open price of a security when the market opens. The document states this transaction code is not sent by the exchange</Description>
+      <Fields>
+        <Field>
+          <Name>SEC_INFO</Name>
+          <Type>STRUCT</Type>
+          <Size>12</Size>
+          <Description>Symbol and series of the security.</Description>
+        </Field>
+        <Field>
+          <Name>Token</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Unique number given to a particular symbol series combination.</Description>
+        </Field>
+        <Field>
+          <Name>OpeningPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Open price of the security.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Circuit Check Message -->
+    <Message>
+      <Name>Circuit Check Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Message Payload</Branch>
+      <Code>6541</Code>
+      <Category>Session</Category>
+      <Origin>Exchange</Origin>
+      <Description>Pulse sent when there has been no data on the broadcast circuit for a stipulated period, carrying no body beyond the header</Description>
+      <Fields>
+      </Fields>
+    </Message>
+
+    <!-- Indices Message -->
+    <Message>
+      <Name>Indices Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Message Payload</Branch>
+      <Code>7207</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Carries the multiple index broadcast</Description>
+      <Fields>
+        <Field>
+          <Name>NumberOfRecords</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Number of indices currently supported by the system, and so the number of records filled.</Description>
+        </Field>
+        <Field>
+          <Name>INDICES</Name>
+          <Type>STRUCT</Type>
+          <Size>426</Size>
+          <Description>Index records.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Indicative Indices Message -->
+    <Message>
+      <Name>Indicative Indices Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Message Payload</Branch>
+      <Code>8207</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Carries the multiple indicative index broadcast, starting half an hour before market close</Description>
+      <Fields>
+        <Field>
+          <Name>NumberOfRecords</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Number of indicative indices currently supported by the system, and so the number of records filled.</Description>
+        </Field>
+        <Field>
+          <Name>INDICATIVE INDICES</Name>
+          <Type>STRUCT</Type>
+          <Size>426</Size>
+          <Description>Indicative index records.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Indices Vix Message -->
+    <Message>
+      <Name>Indices Vix Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Message Payload</Branch>
+      <Code>7216</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Carries the multiple index broadcast for India VIX</Description>
+      <Fields>
+        <Field>
+          <Name>NumberOfRecords</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Number of indices currently supported by the system, and so the number of records filled.</Description>
+        </Field>
+        <Field>
+          <Name>INDICES</Name>
+          <Type>STRUCT</Type>
+          <Size>426</Size>
+          <Description>Index records.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Industry Indices Message -->
+    <Message>
+      <Name>Industry Indices Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Message Payload</Branch>
+      <Code>7203</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Carries the index values of seventeen industry indices with their names</Description>
+      <Fields>
+        <Field>
+          <Name>NumberOfRecords</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Number of indices currently supported by the system, and so the number of records filled.</Description>
+        </Field>
+        <Field>
+          <Name>INDUSTRY_INDICES</Name>
+          <Type>STRUCT</Type>
+          <Size>425</Size>
+          <Description>Industry index records.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Buy Back Message -->
+    <Message>
+      <Name>Buy Back Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Message Payload</Branch>
+      <Code>18708</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Carries the buyback information running on that day, broadcast every hour from market open until market close</Description>
+      <Fields>
+        <Field>
+          <Name>NumberOfRecords</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Number of times the structure BUYBACKDATA is repeated.</Description>
+        </Field>
+        <Field>
+          <Name>BUYBACKDATA</Name>
+          <Type>STRUCT</Type>
+          <Size>384</Size>
+          <Description>Buyback records.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Call Auction Order Cancel Update Message -->
+    <Message>
+      <Name>Call Auction Order Cancel Update Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Message Payload</Branch>
+      <Code>7210</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Carries order cancellation statistics during the Special Preopen Session order collection period</Description>
+      <Fields>
+        <Field>
+          <Name>NoOfRecords</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Number of securities sent.</Description>
+        </Field>
+        <Field>
+          <Name>INTERACTIVE ORD CXL DETAILS</Name>
+          <Type>STRUCT</Type>
+          <Size>448</Size>
+          <Description>Order cancellation records.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Cas Reference Price Message -->
+    <Message>
+      <Name>Cas Reference Price Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Message Payload</Branch>
+      <Code>7338</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Sent for CAS enabled securities at the conclusion of the continuous trading session and before the CAS session starts</Description>
+      <Fields>
+        <Field>
+          <Name>NumberOfRecords</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Number of records of the structure TOKEN_AND_REFPRICE.</Description>
+        </Field>
+        <Field>
+          <Name>TOKEN AND REFPRICE</Name>
+          <Type>STRUCT</Type>
+          <Size>400</Size>
+          <Description>Token and reference price records.</Description>
+        </Field>
+      </Fields>
+    </Message>
+  </Messages>
+
+  <Bitfields>
+
+    <!-- BROADCAST DESTINATION -->
+    <Bitfield>
+      <Name>BROADCAST DESTINATION</Name>
+      <Description>Destination the broadcast is intended for</Description>
+      <Fields>
+        <Field>
+          <Name>Reserved 1-15</Name>
+          <Bits>15</Bits>
+          <Type>BIT</Type>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>TraderWs</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Destined for the trader workstation</Description>
+        </Field>
+      </Fields>
+    </Bitfield>
+
+    <!-- Security Eligibility Flags -->
+    <Bitfield>
+      <Name>Security Eligibility Flags</Name>
+      <Description>Whether the security is eligible in this market</Description>
+      <Fields>
+        <Field>
+          <Name>Reserved 1-7</Name>
+          <Bits>7</Bits>
+          <Type>BIT</Type>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>Eligibility</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Security is allowed to trade in this market</Description>
+        </Field>
+      </Fields>
+    </Bitfield>
+
+    <!-- ELIGIBLITY INDICATORS -->
+    <Bitfield>
+      <Name>ELIGIBLITY INDICATORS</Name>
+      <Description>Order attributes allowed on this security</Description>
+      <Fields>
+        <Field>
+          <Name>Reserved 1-13</Name>
+          <Bits>13</Bits>
+          <Type>BIT</Type>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>MinimumFill</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Minimum Fill attribute is allowed in orders of this security</Description>
+        </Field>
+        <Field>
+          <Name>AON</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>All Or None attribute is allowed in orders of this security</Description>
+        </Field>
+        <Field>
+          <Name>ParticipateInMarketIndex</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Security participates in the market index</Description>
+        </Field>
+      </Fields>
+    </Bitfield>
+
+    <!-- PURPOSE -->
+    <Bitfield>
+      <Name>PURPOSE</Name>
+      <Description>Corporate action the security update carries</Description>
+      <Fields>
+        <Field>
+          <Name>Reserved 1-10</Name>
+          <Bits>10</Bits>
+          <Type>BIT</Type>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>EGM</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Extraordinary General Meeting</Description>
+        </Field>
+        <Field>
+          <Name>AGM</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Annual General Meeting</Description>
+        </Field>
+        <Field>
+          <Name>Interest</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Interest</Description>
+        </Field>
+        <Field>
+          <Name>Bonus</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Bonus</Description>
+        </Field>
+        <Field>
+          <Name>Rights</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Rights</Description>
+        </Field>
+        <Field>
+          <Name>Dividend</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Dividend</Description>
+        </Field>
+      </Fields>
+    </Bitfield>
+
+    <!-- MBO MBP INDICATOR -->
+    <Bitfield>
+      <Name>MBO MBP INDICATOR</Name>
+      <Description>Flags indicating buy, sell and whether the latest trade is less or greater than the previous one</Description>
+      <Fields>
+        <Field>
+          <Name>Reserved 1-12</Name>
+          <Bits>12</Bits>
+          <Type>BIT</Type>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>Sell</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Sell side</Description>
+        </Field>
+        <Field>
+          <Name>Buy</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Buy side</Description>
+        </Field>
+        <Field>
+          <Name>LastTradeLess</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Latest trade is less than the immediately previous last traded price</Description>
+        </Field>
+        <Field>
+          <Name>LastTradeMore</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Latest trade is greater than the immediately previous last traded price</Description>
+        </Field>
+      </Fields>
+    </Bitfield>
+
+    <!-- MBP INDICATOR -->
+    <Bitfield>
+      <Name>MBP INDICATOR</Name>
+      <Description>Flags indicating buy, sell and whether the latest trade is less or greater than the previous one</Description>
+      <Fields>
+        <Field>
+          <Name>Reserved 1-12</Name>
+          <Bits>12</Bits>
+          <Type>BIT</Type>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>Sell</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Sell side</Description>
+        </Field>
+        <Field>
+          <Name>Buy</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Buy side</Description>
+        </Field>
+        <Field>
+          <Name>LastTradeLess</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Latest trade is less than the immediately previous last traded price</Description>
+        </Field>
+        <Field>
+          <Name>LastTradeMore</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Latest trade is greater than the immediately previous last traded price</Description>
+        </Field>
+      </Fields>
+    </Bitfield>
+
+    <!-- ST MBO MBP TERMS -->
+    <Bitfield>
+      <Name>ST MBO MBP TERMS</Name>
+      <Description>Order terms carried with a market by order record</Description>
+      <Fields>
+        <Field>
+          <Name>Reserved 1-14</Name>
+          <Bits>14</Bits>
+          <Type>BIT</Type>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>Aon</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>All Or None order</Description>
+        </Field>
+        <Field>
+          <Name>Mf</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Minimum Fill order</Description>
+        </Field>
+      </Fields>
+    </Bitfield>
+  </Bitfields>
+
+  <Structs>
+
+    <!-- SEC_INFO -->
+    <Struct>
+      <Name>SEC_INFO</Name>
+      <Description>Symbol and series of a security</Description>
+      <Fields>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Symbol of the security.</Description>
+        </Field>
+        <Field>
+          <Name>Series</Name>
+          <Type>CHAR</Type>
+          <Size>2</Size>
+          <Description>Series of the security.</Description>
+        </Field>
+      </Fields>
+    </Struct>
+
+    <!-- SECURITY ELIGIBILITY PER MARKET -->
+    <Struct>
+      <Name>SECURITY ELIGIBILITY PER MARKET</Name>
+      <Description>Eligibility and status of the security in one market</Description>
+      <Fields>
+        <Field>
+          <Name>Security Eligibility Flags</Name>
+          <Type>BITFIELD</Type>
+          <Size>1</Size>
+          <Description>Eligibility flags.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Reserved.</Description>
+        </Field>
+        <Field>
+          <Name>Status</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Status of the security in this market.</Description>
+        </Field>
+      </Fields>
+    </Struct>
+
+    <!-- TOKEN AND ELIGIBILITY -->
+    <Struct>
+      <Name>TOKEN AND ELIGIBILITY</Name>
+      <Description>Token and per market status of one security</Description>
+      <Fields>
+        <Field>
+          <Name>Token</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Token number of the security which has been changed.</Description>
+        </Field>
+        <Field>
+          <Name>SECURITY STATUS PER MARKET</Name>
+          <Type>STRUCT</Type>
+          <Size>12</Size>
+          <Description>Status of the security in each market.</Description>
+        </Field>
+      </Fields>
+    </Struct>
+
+    <!-- SECURITY STATUS PER MARKET -->
+    <Struct>
+      <Name>SECURITY STATUS PER MARKET</Name>
+      <Description>Status of the security in one market</Description>
+      <Fields>
+        <Field>
+          <Name>Status</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>New status of the security.</Description>
+        </Field>
+      </Fields>
+    </Struct>
+
+    <!-- ST_AUCTION_INQ_INFO -->
+    <Struct>
+      <Name>ST_AUCTION_INQ_INFO</Name>
+      <Description>Auction activity for one security</Description>
+      <Fields>
+        <Field>
+          <Name>Token</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Token number of the security in which the auction is started.</Description>
+        </Field>
+        <Field>
+          <Name>AuctionNumber</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Number of the auction.</Description>
+        </Field>
+        <Field>
+          <Name>AuctionStatus</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Status of the auction.</Description>
+        </Field>
+        <Field>
+          <Name>InitiatorType</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Whether the auction is initiated by trader or control.</Description>
+        </Field>
+        <Field>
+          <Name>TotalBuyQty</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Total buy quantity for the auction.</Description>
+        </Field>
+        <Field>
+          <Name>BestBuyPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Best buy price, the highest price for a buy auction.</Description>
+        </Field>
+        <Field>
+          <Name>TotalSellQty</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Total sell quantity for the auction.</Description>
+        </Field>
+        <Field>
+          <Name>BestSellPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Best sell price, the lowest price for a sell auction.</Description>
+        </Field>
+        <Field>
+          <Name>AuctionPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Price at which the auction trade has taken place.</Description>
+        </Field>
+        <Field>
+          <Name>AuctionQty</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Quantity of securities that have been auctioned.</Description>
+        </Field>
+        <Field>
+          <Name>SettlementPeriod</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Period by which settlement between the parties should take place.</Description>
+        </Field>
+      </Fields>
+    </Struct>
+
+    <!-- TICKER INDEX INFORMATION -->
+    <Struct>
+      <Name>TICKER INDEX INFORMATION</Name>
+      <Description>One ticker or index record</Description>
+      <Fields>
+        <Field>
+          <Name>Token</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Token number given to a particular symbol series combination.</Description>
+        </Field>
+        <Field>
+          <Name>MarketType</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Market type.</Description>
+        </Field>
+        <Field>
+          <Name>FillPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Price at which the order has been traded.</Description>
+        </Field>
+        <Field>
+          <Name>FillVolume</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Quantity of security traded.</Description>
+        </Field>
+        <Field>
+          <Name>MarketIndexValue</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Value of the market index.</Description>
+        </Field>
+      </Fields>
+    </Struct>
+
+    <!-- INTERACTIVE MBO DATA -->
+    <Struct>
+      <Name>INTERACTIVE MBO DATA</Name>
+      <Description>Market by order data for one security</Description>
+      <Fields>
+        <Field>
+          <Name>Token</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Token number given to a particular symbol series combination.</Description>
+        </Field>
+        <Field>
+          <Name>BookType</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Book type of the security.</Description>
+        </Field>
+        <Field>
+          <Name>TradingStatus</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Trading status of the security.</Description>
+        </Field>
+        <Field>
+          <Name>VolumeTradedToday</Name>
+          <Type>LONG LONG</Type>
+          <Size>8</Size>
+          <Description>Total quantity of the security traded on the current day.</Description>
+        </Field>
+        <Field>
+          <Name>LastTradedPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Price at which the latest trade in the security has taken place.</Description>
+        </Field>
+        <Field>
+          <Name>NetChangeIndicator</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Direction of the change of the order price from the last traded price.</Description>
+        </Field>
+        <Field>
+          <Name>Filler</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Filler.</Description>
+        </Field>
+        <Field>
+          <Name>NetPriceChangeFromClosingPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Net change between the order price and the last traded price.</Description>
+        </Field>
+        <Field>
+          <Name>LastTradeQuantity</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Quantity at which the last trade took place in the security.</Description>
+        </Field>
+        <Field>
+          <Name>LastTradeTime</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Time when the last trade took place in the security.</Description>
+        </Field>
+        <Field>
+          <Name>AverageTradePrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Average price of all the trades in the security.</Description>
+        </Field>
+        <Field>
+          <Name>AuctionNumber</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Auction number, to a maximum of 9999, otherwise zero.</Description>
+        </Field>
+        <Field>
+          <Name>AuctionStatus</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Status of the auction.</Description>
+        </Field>
+        <Field>
+          <Name>InitiatorType</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Initiator type, control or trader.</Description>
+        </Field>
+        <Field>
+          <Name>InitiatorPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Price of the security of the initiator auction order, otherwise zero.</Description>
+        </Field>
+        <Field>
+          <Name>InitiatorQuantity</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Quantity of the security of the initiator auction order, otherwise zero.</Description>
+        </Field>
+        <Field>
+          <Name>AuctionPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Price at which the auction in the security takes place, otherwise zero.</Description>
+        </Field>
+        <Field>
+          <Name>AuctionQuantity</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Quantity at which the auction in the security takes place, otherwise zero.</Description>
+        </Field>
+        <Field>
+          <Name>MBO INFORMATION</Name>
+          <Type>STRUCT</Type>
+          <Size>180</Size>
+          <Description>Five best buy orders followed by five best sell orders from the order book.</Description>
+        </Field>
+      </Fields>
+    </Struct>
+
+    <!-- MBO INFORMATION -->
+    <Struct>
+      <Name>MBO INFORMATION</Name>
+      <Description>One market by order record</Description>
+      <Fields>
+        <Field>
+          <Name>TraderId</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Trader Id.</Description>
+        </Field>
+        <Field>
+          <Name>Qty</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Quantity at the order.</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Price of the order.</Description>
+        </Field>
+        <Field>
+          <Name>ST MBO MBP TERMS</Name>
+          <Type>STRUCT</Type>
+          <Size>2</Size>
+          <Description>Order terms.</Description>
+        </Field>
+        <Field>
+          <Name>MinFillQty</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Minimum fill quantity.</Description>
+        </Field>
+      </Fields>
+    </Struct>
+
+    <!-- MBP INFORMATION -->
+    <Struct>
+      <Name>MBP INFORMATION</Name>
+      <Description>One market by price record</Description>
+      <Fields>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>LONG LONG</Type>
+          <Size>8</Size>
+          <Description>Quantity at the price point.</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Price point in the market by price array.</Description>
+        </Field>
+        <Field>
+          <Name>NumberOfOrders</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Number of orders at the price point.</Description>
+        </Field>
+        <Field>
+          <Name>BbBuySellFlag</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Whether there is a buyback or market maker order on the buy or sell side at the price point.</Description>
+        </Field>
+      </Fields>
+    </Struct>
+
+    <!-- INTERACTIVE ONLY MBP DATA -->
+    <Struct>
+      <Name>INTERACTIVE ONLY MBP DATA</Name>
+      <Description>Market by price data for one security</Description>
+      <Fields>
+        <Field>
+          <Name>Token</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Token number given to a particular symbol series combination.</Description>
+        </Field>
+        <Field>
+          <Name>BookType</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Book type of the security.</Description>
+        </Field>
+        <Field>
+          <Name>TradingStatus</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Trading status of the security.</Description>
+        </Field>
+        <Field>
+          <Name>VolumeTradedToday</Name>
+          <Type>LONG LONG</Type>
+          <Size>8</Size>
+          <Description>Total quantity of the security traded on the current day.</Description>
+        </Field>
+        <Field>
+          <Name>LastTradedPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Price at which the latest trade in the security has taken place.</Description>
+        </Field>
+        <Field>
+          <Name>NetChangeIndicator</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Direction of the change of the order price from the last traded price.</Description>
+        </Field>
+        <Field>
+          <Name>Filler</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Filler.</Description>
+        </Field>
+        <Field>
+          <Name>NetPriceChangeFromClosingPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Net change between the order price and the last traded price.</Description>
+        </Field>
+        <Field>
+          <Name>LastTradeQuantity</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Quantity at which the last trade took place in the security.</Description>
+        </Field>
+        <Field>
+          <Name>LastTradeTime</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Time when the last trade took place in the security.</Description>
+        </Field>
+        <Field>
+          <Name>AverageTradePrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Average price of all the trades in the security.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>CHAR</Type>
+          <Size>14</Size>
+          <Description>Reserved.</Description>
+        </Field>
+        <Field>
+          <Name>IndicativeImbalanceQty</Name>
+          <Type>LONG LONG</Type>
+          <Size>8</Size>
+          <Description>Indicative imbalance quantity.</Description>
+        </Field>
+        <Field>
+          <Name>MBP INFORMATION</Name>
+          <Type>STRUCT</Type>
+          <Size>160</Size>
+          <Description>Five best buy prices followed by five best sell prices from the order book.</Description>
+        </Field>
+        <Field>
+          <Name>BbTotalBuyFlag</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Whether there is a buyback or market maker order on the buy side.</Description>
+        </Field>
+        <Field>
+          <Name>BbTotalSellFlag</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Currently set to zero.</Description>
+        </Field>
+        <Field>
+          <Name>TotalBuyQuantity</Name>
+          <Type>LONG LONG</Type>
+          <Size>8</Size>
+          <Description>Total quantity of buy orders in the security.</Description>
+        </Field>
+        <Field>
+          <Name>TotalSellQuantity</Name>
+          <Type>LONG LONG</Type>
+          <Size>8</Size>
+          <Description>Total quantity of sell orders in the security.</Description>
+        </Field>
+        <Field>
+          <Name>MBP INDICATOR</Name>
+          <Type>STRUCT</Type>
+          <Size>2</Size>
+          <Description>Flags indicating buy, sell and whether the latest trade is less or greater than the previous one.</Description>
+        </Field>
+        <Field>
+          <Name>ClosingPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Closing price of the security.</Description>
+        </Field>
+        <Field>
+          <Name>OpenPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Open price of the security.</Description>
+        </Field>
+        <Field>
+          <Name>HighPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Highest trade price.</Description>
+        </Field>
+        <Field>
+          <Name>LowPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Lowest trade price.</Description>
+        </Field>
+        <Field>
+          <Name>IndicativeClosePrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Indicative close price.</Description>
+        </Field>
+      </Fields>
+    </Struct>
+
+    <!-- MARKETWATCHBROADCAST -->
+    <Struct>
+      <Name>MARKETWATCHBROADCAST</Name>
+      <Description>Market watch record for one security</Description>
+      <Fields>
+        <Field>
+          <Name>Token</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Token number given to a particular symbol series combination.</Description>
+        </Field>
+        <Field>
+          <Name>MARKET WISE INFORMATION</Name>
+          <Type>STRUCT</Type>
+          <Size>102</Size>
+          <Description>Market watch information for each market.</Description>
+        </Field>
+      </Fields>
+    </Struct>
+
+    <!-- MARKET WISE INFORMATION -->
+    <Struct>
+      <Name>MARKET WISE INFORMATION</Name>
+      <Description>Market watch information for one market</Description>
+      <Fields>
+        <Field>
+          <Name>MBO MBP INDICATOR</Name>
+          <Type>STRUCT</Type>
+          <Size>2</Size>
+          <Description>Flags indicating buy, sell and whether the last trade is less or greater than the previous one.</Description>
+        </Field>
+        <Field>
+          <Name>BuyVolume</Name>
+          <Type>LONG LONG</Type>
+          <Size>8</Size>
+          <Description>Quantity of the best buy order.</Description>
+        </Field>
+        <Field>
+          <Name>BuyPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Price of the best buy order.</Description>
+        </Field>
+        <Field>
+          <Name>SellVolume</Name>
+          <Type>LONG LONG</Type>
+          <Size>8</Size>
+          <Description>Quantity of the best sell order.</Description>
+        </Field>
+        <Field>
+          <Name>SellPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Price of the best sell order.</Description>
+        </Field>
+        <Field>
+          <Name>LastTradePrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Latest trade price of the security.</Description>
+        </Field>
+        <Field>
+          <Name>LastTradeTime</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Latest trade time of the security.</Description>
+        </Field>
+      </Fields>
+    </Struct>
+
+    <!-- INTERACTIVE CALL AUCTION MBP DATA -->
+    <Struct>
+      <Name>INTERACTIVE CALL AUCTION MBP DATA</Name>
+      <Description>Call auction market by price data for one security</Description>
+      <Fields>
+        <Field>
+          <Name>Token</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Token number given to a particular symbol series combination.</Description>
+        </Field>
+        <Field>
+          <Name>BookType</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Book type of the security.</Description>
+        </Field>
+        <Field>
+          <Name>TradingStatus</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Trading status of the security.</Description>
+        </Field>
+        <Field>
+          <Name>VolumeTradedToday</Name>
+          <Type>LONG LONG</Type>
+          <Size>8</Size>
+          <Description>Total quantity of the security traded on the current day.</Description>
+        </Field>
+        <Field>
+          <Name>IndicativeTradedQty</Name>
+          <Type>LONG LONG</Type>
+          <Size>8</Size>
+          <Description>Indicative traded quantity.</Description>
+        </Field>
+        <Field>
+          <Name>LastTradedPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Price at which the latest trade in the security has taken place.</Description>
+        </Field>
+        <Field>
+          <Name>NetChangeIndicator</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Direction of the change of the order price from the last traded price.</Description>
+        </Field>
+        <Field>
+          <Name>Filler</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Filler.</Description>
+        </Field>
+        <Field>
+          <Name>NetPriceChangeFromClosingPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Net change between the order price and the last traded price.</Description>
+        </Field>
+        <Field>
+          <Name>LastTradeQuantity</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Quantity at which the last trade took place in the security.</Description>
+        </Field>
+        <Field>
+          <Name>LastTradeTime</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Time when the last trade took place in the security.</Description>
+        </Field>
+        <Field>
+          <Name>AverageTradePrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Average price of all the trades in the security.</Description>
+        </Field>
+        <Field>
+          <Name>FirstOpenPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>First open price.</Description>
+        </Field>
+        <Field>
+          <Name>MBP INFORMATION</Name>
+          <Type>STRUCT</Type>
+          <Size>160</Size>
+          <Description>Five best buy prices followed by five best sell prices from the order book.</Description>
+        </Field>
+        <Field>
+          <Name>BbTotalBuyFlag</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Whether there is a buyback or market maker order on the buy side.</Description>
+        </Field>
+        <Field>
+          <Name>BbTotalSellFlag</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Currently set to zero.</Description>
+        </Field>
+        <Field>
+          <Name>TotalBuyQuantity</Name>
+          <Type>LONG LONG</Type>
+          <Size>8</Size>
+          <Description>Total quantity of buy orders in the security.</Description>
+        </Field>
+        <Field>
+          <Name>TotalSellQuantity</Name>
+          <Type>LONG LONG</Type>
+          <Size>8</Size>
+          <Description>Total quantity of sell orders in the security.</Description>
+        </Field>
+        <Field>
+          <Name>MBP INDICATOR</Name>
+          <Type>STRUCT</Type>
+          <Size>2</Size>
+          <Description>Flags indicating buy, sell and whether the latest trade is less or greater than the previous one.</Description>
+        </Field>
+        <Field>
+          <Name>ClosingPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Closing price of the security.</Description>
+        </Field>
+        <Field>
+          <Name>OpenPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Open price of the security.</Description>
+        </Field>
+        <Field>
+          <Name>HighPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Highest trade price.</Description>
+        </Field>
+        <Field>
+          <Name>LowPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Lowest trade price.</Description>
+        </Field>
+      </Fields>
+    </Struct>
+
+    <!-- CA_MARKETWATCHBROADCAST -->
+    <Struct>
+      <Name>CA_MARKETWATCHBROADCAST</Name>
+      <Description>Call auction market watch record for one security</Description>
+      <Fields>
+        <Field>
+          <Name>Token</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Token number given to a particular symbol series combination.</Description>
+        </Field>
+        <Field>
+          <Name>Mkt Type</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Market type, five for Call Auction 1 and six for Call Auction 2.</Description>
+        </Field>
+        <Field>
+          <Name>MBO MBP INDICATOR</Name>
+          <Type>STRUCT</Type>
+          <Size>2</Size>
+          <Description>Flags indicating buy, sell and whether the last trade is less or greater than the previous one.</Description>
+        </Field>
+        <Field>
+          <Name>BuyVolume</Name>
+          <Type>LONG LONG</Type>
+          <Size>8</Size>
+          <Description>Quantity of the best buy order.</Description>
+        </Field>
+        <Field>
+          <Name>BuyPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Price of the best buy order.</Description>
+        </Field>
+        <Field>
+          <Name>SellVolume</Name>
+          <Type>LONG LONG</Type>
+          <Size>8</Size>
+          <Description>Quantity of the best sell order.</Description>
+        </Field>
+        <Field>
+          <Name>SellPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Price of the best sell order.</Description>
+        </Field>
+        <Field>
+          <Name>LastTradePrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Latest trade price of the security.</Description>
+        </Field>
+        <Field>
+          <Name>LastTradeTime</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Latest trade time of the security.</Description>
+        </Field>
+      </Fields>
+    </Struct>
+
+    <!-- INDICES -->
+    <Struct>
+      <Name>INDICES</Name>
+      <Description>One index record</Description>
+      <Fields>
+        <Field>
+          <Name>IndexName</Name>
+          <Type>CHAR</Type>
+          <Size>21</Size>
+          <Description>Name of the index.</Description>
+        </Field>
+        <Field>
+          <Name>IndexValue</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Online market index value at that instance of broadcast.</Description>
+        </Field>
+        <Field>
+          <Name>HighIndexValue</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Day highest index value at the time of broadcast.</Description>
+        </Field>
+        <Field>
+          <Name>LowIndexValue</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Day lowest index value at the time of broadcast.</Description>
+        </Field>
+        <Field>
+          <Name>OpeningIndex</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Opening index value at the time of market open.</Description>
+        </Field>
+        <Field>
+          <Name>ClosingIndex</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Previous day closing index while the market is open.</Description>
+        </Field>
+        <Field>
+          <Name>PercentChange</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Percent change in the current index with respect to yesterday closing index.</Description>
+        </Field>
+        <Field>
+          <Name>YearlyHigh</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Highest index in the year.</Description>
+        </Field>
+        <Field>
+          <Name>YearlyLow</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Lowest index in the year.</Description>
+        </Field>
+        <Field>
+          <Name>NoOfUpmoves</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Number of times the index has moved up with respect to the previous index.</Description>
+        </Field>
+        <Field>
+          <Name>NoOfDownmoves</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Number of times the index has moved down with respect to the previous index.</Description>
+        </Field>
+        <Field>
+          <Name>MarketCapitalisation</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Market capitalisation of securities participating in the index.</Description>
+        </Field>
+        <Field>
+          <Name>NetChangeIndicator</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Direction of the current index against the previous index.</Description>
+        </Field>
+        <Field>
+          <Name>FILLER</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Filler.</Description>
+        </Field>
+      </Fields>
+    </Struct>
+
+    <!-- INDICATIVE INDICES -->
+    <Struct>
+      <Name>INDICATIVE INDICES</Name>
+      <Description>One indicative index record</Description>
+      <Fields>
+        <Field>
+          <Name>IndexName</Name>
+          <Type>CHAR</Type>
+          <Size>21</Size>
+          <Description>Name of the indicative index.</Description>
+        </Field>
+        <Field>
+          <Name>IndicativeCloseValue</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Indicative index close value.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Reserved.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Reserved.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Reserved.</Description>
+        </Field>
+        <Field>
+          <Name>ClosingIndex</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Zero while the market is open, the closing value of the index afterwards.</Description>
+        </Field>
+        <Field>
+          <Name>PercentChange</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Difference between the indicative closing value and the previous day closing value, in percent.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Reserved.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Reserved.</Description>
+        </Field>
+        <Field>
+          <Name>Change</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Absolute difference between the indicative closing value and the previous day closing value.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Reserved.</Description>
+        </Field>
+        <Field>
+          <Name>MarketCapitalization</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Market capitalisation of securities participating during the indicative close session.</Description>
+        </Field>
+        <Field>
+          <Name>NetChange Indicator</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Direction of the current index against the previous indicative close index.</Description>
+        </Field>
+        <Field>
+          <Name>FILLER</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Filler.</Description>
+        </Field>
+      </Fields>
+    </Struct>
+
+    <!-- INDUSTRY_INDICES -->
+    <Struct>
+      <Name>INDUSTRY_INDICES</Name>
+      <Description>One industry index record</Description>
+      <Fields>
+        <Field>
+          <Name>Industry Name</Name>
+          <Type>CHAR</Type>
+          <Size>21</Size>
+          <Description>Name of the index.</Description>
+        </Field>
+        <Field>
+          <Name>IndexValue</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Online market index value at that instance of broadcast.</Description>
+        </Field>
+      </Fields>
+    </Struct>
+
+    <!-- BUYBACKDATA -->
+    <Struct>
+      <Name>BUYBACKDATA</Name>
+      <Description>One buyback record</Description>
+      <Fields>
+        <Field>
+          <Name>Token</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Unique number given to a particular symbol series combination.</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Symbol of the security.</Description>
+        </Field>
+        <Field>
+          <Name>Series</Name>
+          <Type>CHAR</Type>
+          <Size>2</Size>
+          <Description>Series of the security.</Description>
+        </Field>
+        <Field>
+          <Name>PdayCumVol</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Previous day cumulative volume.</Description>
+        </Field>
+        <Field>
+          <Name>PdayHighPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Previous day high price.</Description>
+        </Field>
+        <Field>
+          <Name>PdayLowPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Previous day low price.</Description>
+        </Field>
+        <Field>
+          <Name>PdayWtAvg</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Previous day weighted average price.</Description>
+        </Field>
+        <Field>
+          <Name>CdayCumVol</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Current day cumulative volume.</Description>
+        </Field>
+        <Field>
+          <Name>CdayHighPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Current day high price.</Description>
+        </Field>
+        <Field>
+          <Name>CdayLowPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Current day low price.</Description>
+        </Field>
+        <Field>
+          <Name>CdayWtAvg</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Current day weighted average price.</Description>
+        </Field>
+        <Field>
+          <Name>StartDate</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Start date of the buyback period.</Description>
+        </Field>
+        <Field>
+          <Name>EndDate</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>End date of the buyback period.</Description>
+        </Field>
+      </Fields>
+    </Struct>
+
+    <!-- INTERACTIVE ORD CXL DETAILS -->
+    <Struct>
+      <Name>INTERACTIVE ORD CXL DETAILS</Name>
+      <Description>Order cancellation statistics for one security</Description>
+      <Fields>
+        <Field>
+          <Name>Token</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Token number given to a particular symbol series combination.</Description>
+        </Field>
+        <Field>
+          <Name>Filler</Name>
+          <Type>CHAR</Type>
+          <Size>4</Size>
+          <Description>Filler.</Description>
+        </Field>
+        <Field>
+          <Name>BuyOrdCxlCount</Name>
+          <Type>LONG LONG</Type>
+          <Size>8</Size>
+          <Description>Total count of buy orders cancelled for the security during the session.</Description>
+        </Field>
+        <Field>
+          <Name>BuyOrdCxlVol</Name>
+          <Type>LONG LONG</Type>
+          <Size>8</Size>
+          <Description>Total quantity of buy orders cancelled for the security during the session.</Description>
+        </Field>
+        <Field>
+          <Name>SellOrdCxlCount</Name>
+          <Type>LONG LONG</Type>
+          <Size>8</Size>
+          <Description>Total count of sell orders cancelled for the security during the session.</Description>
+        </Field>
+        <Field>
+          <Name>SellOrdCxlVol</Name>
+          <Type>LONG LONG</Type>
+          <Size>8</Size>
+          <Description>Total quantity of sell orders cancelled for the security during the session.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>CHAR</Type>
+          <Size>16</Size>
+          <Description>Reserved.</Description>
+        </Field>
+      </Fields>
+    </Struct>
+
+    <!-- TOKEN AND REFPRICE -->
+    <Struct>
+      <Name>TOKEN AND REFPRICE</Name>
+      <Description>Reference price for one security</Description>
+      <Fields>
+        <Field>
+          <Name>SEC_INFO</Name>
+          <Type>STRUCT</Type>
+          <Size>12</Size>
+          <Description>Symbol and series of the security.</Description>
+        </Field>
+        <Field>
+          <Name>Token</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Token number of the security for which the reference price is sent.</Description>
+        </Field>
+        <Field>
+          <Name>ReferencePrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Reference price of the security.</Description>
+        </Field>
+      </Fields>
+    </Struct>
+  </Structs>
+
+  <Enums>
+
+    <!-- InstrumentType -->
+    <Enum>
+      <Name>InstrumentType</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>Equities</Name>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Preference Shares</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Debentures</Name>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Warrants</Name>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>Miscellaneous</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- PermittedToTrade -->
+    <Enum>
+      <Name>PermittedToTrade</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>Listed but not permitted to trade</Name>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Permitted to trade</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Bse listed</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- SettlementType -->
+    <Enum>
+      <Name>SettlementType</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>T Plus Zero Settlement</Name>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>T Plus One Settlement</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- ParticipantStatus -->
+    <Enum>
+      <Name>ParticipantStatus</Name>
+      <Values>
+        <Value>
+          <Data>S</Data>
+          <Name>Suspended</Name>
+        </Value>
+        <Value>
+          <Data>A</Data>
+          <Name>Active</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Status -->
+    <Enum>
+      <Name>Status</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Preopen</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Open</Name>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Suspended</Name>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>Preopen Extended</Name>
+        </Value>
+        <Value>
+          <Data>6</Data>
+          <Name>Price Discovery</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- WarningType -->
+    <Enum>
+      <Name>WarningType</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Turnover limit about to be exceeded</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Turnover limit exceeded and the broker deactivated</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- MarketType -->
+    <Enum>
+      <Name>MarketType</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Normal</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Odd Lot</Name>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Spot</Name>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>Auction</Name>
+        </Value>
+        <Value>
+          <Data>5</Data>
+          <Name>Call Auction One</Name>
+        </Value>
+        <Value>
+          <Data>6</Data>
+          <Name>Call Auction Two</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Mkt Type -->
+    <Enum>
+      <Name>Mkt Type</Name>
+      <Values>
+        <Value>
+          <Data>5</Data>
+          <Name>Call Auction One</Name>
+        </Value>
+        <Value>
+          <Data>6</Data>
+          <Name>Call Auction Two</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- TradingStatus -->
+    <Enum>
+      <Name>TradingStatus</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Preopen</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Open</Name>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Suspended</Name>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>Preopen Extended</Name>
+        </Value>
+        <Value>
+          <Data>6</Data>
+          <Name>Price Discovery</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- NetChangeIndicator -->
+    <Enum>
+      <Name>NetChangeIndicator</Name>
+      <Values>
+        <Value>
+          <Data>+</Data>
+          <Name>Increase</Name>
+        </Value>
+        <Value>
+          <Data>-</Data>
+          <Name>Decrease</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- BbBuySellFlag -->
+    <Enum>
+      <Name>BbBuySellFlag</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>No buyback order and no market maker order</Name>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Buyback order</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Market maker order</Name>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Buyback order and market maker order</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- BbTotalBuyFlag -->
+    <Enum>
+      <Name>BbTotalBuyFlag</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>No buyback order and no market maker order</Name>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Buyback order</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Market maker order</Name>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Buyback order and market maker order</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- BbTotalSellFlag -->
+    <Enum>
+      <Name>BbTotalSellFlag</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>No buyback order and no market maker order</Name>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Buyback order</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Market maker order</Name>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Buyback order and market maker order</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- ActionCode -->
+    <Enum>
+      <Name>ActionCode</Name>
+      <Values>
+        <Value>
+          <Data>6531</Data>
+          <Name>Security preopened</Name>
+        </Value>
+        <Value>
+          <Data>6571</Data>
+          <Name>Security preopen period ended</Name>
+        </Value>
+        <Value>
+          <Data>6511</Data>
+          <Name>Security opened</Name>
+        </Value>
+        <Value>
+          <Data>6521</Data>
+          <Name>Security closed</Name>
+        </Value>
+        <Value>
+          <Data>6583</Data>
+          <Name>Security closing session opened</Name>
+        </Value>
+        <Value>
+          <Data>6584</Data>
+          <Name>Security closing session closed</Name>
+        </Value>
+        <Value>
+          <Data>6651</Data>
+          <Name>Normal market closed for securities participating in the closing auction session</Name>
+        </Value>
+        <Value>
+          <Data>6652</Data>
+          <Name>Price band of securities revised for the Closing Auction Session</Name>
+        </Value>
+        <Value>
+          <Data>6653</Data>
+          <Name>Closing auction session started</Name>
+        </Value>
+        <Value>
+          <Data>6654</Data>
+          <Name>Market orders restricted for the closing auction session</Name>
+        </Value>
+        <Value>
+          <Data>6655</Data>
+          <Name>Closing auction session ended</Name>
+        </Value>
+      </Values>
+    </Enum>
+  </Enums>
+
+</OmiNnfPdf>

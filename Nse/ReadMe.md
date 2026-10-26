@@ -18,6 +18,7 @@
 | NseCd | Snapshot | Binary | 6.9 | [files](Nse.NseCd.Snapshot.Binary.v6.9/) |
 | NseCd | Snapshot | Binary | 7.0 | [files](Nse.NseCd.Snapshot.Binary.v7.0/) |
 | NseCd | Snapshot | Binary | 7.1 | [files](Nse.NseCd.Snapshot.Binary.v7.1/) |
+| NseCm | Broadcast | NnfBcast | 6.6 | [files](Nse.NseCm.Broadcast.NnfBcast.v6.6/) |
 | NseCm | Mtbt | Binary | 6.8 | [files](Nse.NseCm.Mtbt.Binary.v6.8/) |
 | NseCm | Mtbt | Binary | 6.9 | [files](Nse.NseCm.Mtbt.Binary.v6.9/) |
 | NseCm | Mtbt | Binary | 7.0 | [files](Nse.NseCm.Mtbt.Binary.v7.0/) |
