@@ -5,11 +5,9 @@
 
 | Protocol | Encoding | Version | Specification |
 | --- | --- | --- | --- |
-| Esp | Cbp | 9 | private |
-| Now | Cbp | 10 | private |
-| OrderService | Cbp | 26 | private |
-
-A specification marked private is released by the venue to registered participants only. Those protocols are listed here for completeness, and nothing read out of their documents is published: no message layouts, no field names, no wording. The generated parsers in the definition repositories describe the wire format and are published as usual.
+| Esp | Cbp | 9 | [files](Currenex.CurrenexForex.Esp.Cbp.v9/) |
+| Now | Cbp | 10 | [files](Currenex.CurrenexForex.Now.Cbp.v10/) |
+| OrderService | Cbp | 26 | [files](Currenex.CurrenexForex.OrderService.Cbp.v26/) |
 
 
 Currenex: [website](https://currenex.com "Go to Currenex")

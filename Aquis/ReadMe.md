@@ -17,6 +17,7 @@
 | TcpHeader | Atp | 1.0 | [files](Aquis.AquisEquities.TcpHeader.Atp.v1.0/) |
 | TcpHeader | Atp | 2.0 | [files](Aquis.AquisEquities.TcpHeader.Atp.v2.0/) |
 | TradingProtocol | Atp | 4.0 | [files](Aquis.AquisEquities.TradingProtocol.Atp.v4.0/) |
+| TradingProtocol | Atp | 4.5 | [files](Aquis.AquisEquities.TradingProtocol.Atp.v4.5/) |
 | UdpHeader | Amd | 1.0 | [files](Aquis.AquisEquities.UdpHeader.Amd.v1.0/) |
 
 

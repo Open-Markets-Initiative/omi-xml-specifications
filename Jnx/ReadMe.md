@@ -8,6 +8,7 @@
 | JnxBonds | DropCopy | Fix | 2.02 | [files](Jnx.JnxBonds.DropCopy.Fix.v2.02/) |
 | JnxBonds | OrderEntry | Fix | 2.00 | [files](Jnx.JnxBonds.OrderEntry.Fix.v2.00/) |
 | JnxBonds | Pts | Itch | 1.2 | [files](Jnx.JnxBonds.Pts.Itch.v1.2/) |
+| JnxBonds | Pts | Itch | 2.02 | [files](Jnx.JnxBonds.Pts.Itch.v2.02/) |
 | JnxBonds | Pts | Ouch | 1.4 | [files](Jnx.JnxBonds.Pts.Ouch.v1.4/) |
 | JnxBonds | Pts | Ouch | 2.01 | [files](Jnx.JnxBonds.Pts.Ouch.v2.01/) |
 | JnxEquities | DropCopy | Fix | 2.03 | [files](Jnx.JnxEquities.DropCopy.Fix.v2.03/) |

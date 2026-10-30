@@ -1,0 +1,3016 @@
+<OmiNnfPdf>
+
+<!--
+  Nse Capital Market drop copy v3.0: seven structures over twenty five transaction codes.
+  Message bodies only - the twenty two byte packet header, the twenty four byte Request Message
+  Header, the two byte Response Message Header and the fourteen byte Message Header are all
+  framing and live in Nse.NnfDc.Tcp.v1.0.Source.xml.
+
+  Where the Futures and Options document of the same version differs: there are no spread, two
+  leg or three leg structures and no give up confirmations, so Trade Confirmation stops at
+  Settlor at 130 bytes rather than 146; Order Response names the slots F&amp;O leaves Reserved
+  (Competitor Period, Solicitor Period, Auction Number, Filler, Settlement Type) and carries no
+  Reference Id, at 126 bytes rather than 130; Gr Response carries one sixteen byte
+  Cryptographic IV rather than a static and dynamic pair plus an additional key, at 1114 bytes
+  rather than 1126; Order Flags has a second Reserved bit where F&amp;O has BOC; Book Types are
+  not marked "(Not used)"; and there is no Dc Sign Off.
+
+  Trade Confirmation reprints the two offset errors of the F&amp;O document and the arithmetic is
+  followed: RemainingVolume at 38 where it is 36, and Price at 54 where it is 44. The struct
+  table also spells DiclosedVolRemaining where its own description table says
+  DisclosedVolRemaining.
+
+  Table 2.1 gives INT as four bytes and LONG as eight, which is not the interactive
+  specification's vocabulary, where LONG is four.
+
+  The document numbers no Table 2.6 and no Table 5.3.
+-->
+
+  <Messages>
+
+    <!-- Gr Request Message -->
+    <Message>
+      <Name>Gr Request Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Client Message Payload</Branch>
+      <Code>2400</Code>
+      <Category>Administrative</Category>
+      <Origin>Firm</Origin>
+      <Description>Asks the gateway router for the member's partition list. Carries the Request Message Header alone, with Partition Id sent as zero</Description>
+    </Message>
+
+    <!-- Gr Response Message -->
+    <Message>
+      <Name>Gr Response Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Server Message Payload</Branch>
+      <Code>2401</Code>
+      <Category>Administrative</Category>
+      <Origin>Exchange</Origin>
+      <Description>Returns the addresses of every partition the member must connect to, together with the session key and the cryptographic material for those connections</Description>
+      <Fields>
+        <Field>
+          <Name>MessageIndicator</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Whether a further response follows: zero for an interim message, one for the last</Description>
+        </Field>
+        <Field>
+          <Name>PartitionCount</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Count of partition details present in this message</Description>
+        </Field>
+        <Field>
+          <Name>IP_DETAILS_PARTITION_WISE</Name>
+          <Type>CHAR</Type>
+          <Size>1040</Size>
+          <Description>Array of up to forty partition addresses, each an IP address, port and partition Id</Description>
+        </Field>
+        <Field>
+          <Name>SessionKey</Name>
+          <Type>CHAR</Type>
+          <Size>8</Size>
+          <Description>Session Key for the validated session</Description>
+        </Field>
+        <Field>
+          <Name>CryptographicKey</Name>
+          <Type>CHAR</Type>
+          <Size>32</Size>
+          <Description>Cryptographic key for encrypting and decrypting every message to the allocated gateway server</Description>
+        </Field>
+        <Field>
+          <Name>CryptographicIV</Name>
+          <Type>CHAR</Type>
+          <Size>16</Size>
+          <Description>Cryptographic Initialization Vector for encrypting and decrypting every message to the allocated gateway server</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Gr Secure User Registration Request Message -->
+    <Message>
+      <Name>Gr Secure User Registration Request Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Client Message Payload</Branch>
+      <Code>23008</Code>
+      <Category>Administrative</Category>
+      <Origin>Firm</Origin>
+      <Description>Declares to an allocated gateway server that the member application is using encryption. Sent unencrypted as the first message on each partition connection, carrying the Request Message Header alone</Description>
+    </Message>
+
+    <!-- Gr Secure User Registration Response Message -->
+    <Message>
+      <Name>Gr Secure User Registration Response Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Server Message Payload</Branch>
+      <Code>23009</Code>
+      <Category>Administrative</Category>
+      <Origin>Exchange</Origin>
+      <Description>Acknowledges the registration. Carries the Message Header alone, whose Error Code terminates the connection when set</Description>
+    </Message>
+
+    <!-- Heartbeat Message -->
+    <Message>
+      <Name>Heartbeat Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Client Message Payload</Branch>
+      <Code>23506</Code>
+      <Category>Administrative</Category>
+      <Origin>Firm</Origin>
+      <Description>Keeps the connection alive, sent after thirty seconds of inactivity. The host disconnects the socket after two missed in succession. Carries the Request Message Header alone</Description>
+    </Message>
+
+    <!-- Dc Signon In Message -->
+    <Message>
+      <Name>Dc Signon In Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Client Message Payload</Branch>
+      <Code>2500</Code>
+      <Category>Administrative</Category>
+      <Origin>Firm</Origin>
+      <Description>Logs the member on to a partition of the drop copy service</Description>
+      <Fields>
+        <Field>
+          <Name>Password</Name>
+          <Type>CHAR</Type>
+          <Size>8</Size>
+          <Description>Password entered by the user, blank padded when shorter than eight characters</Description>
+        </Field>
+        <Field>
+          <Name>SessionKey</Name>
+          <Type>CHAR</Type>
+          <Size>8</Size>
+          <Description>Session Key as received in GR_RESPONSE</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Dc Signon Out Message -->
+    <Message>
+      <Name>Dc Signon Out Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Server Message Payload</Branch>
+      <Code>2501</Code>
+      <Category>Administrative</Category>
+      <Origin>Exchange</Origin>
+      <Description>Confirms the logon, or terminates the connection when Error Code is set</Description>
+      <Fields>
+        <Field>
+          <Name>UserId</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>User Id of the user</Description>
+        </Field>
+        <Field>
+          <Name>PartitionID</Name>
+          <Type>CHAR</Type>
+          <Size>6</Size>
+          <Description>Partition or stream the packet is sent from</Description>
+        </Field>
+        <Field>
+          <Name>ConcurrentLoginId</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Concurrent login number of the user for which the user has logged in</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Dc Trd Subscription Request Message -->
+    <Message>
+      <Name>Dc Trd Subscription Request Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Client Message Payload</Branch>
+      <Code>8000</Code>
+      <Category>Administrative</Category>
+      <Origin>Firm</Origin>
+      <Description>Subscribes to the trade only drop copy on this partition from the named sequence number</Description>
+      <Fields>
+        <Field>
+          <Name>SequenceNumber</Name>
+          <Type>LONG LONG</Type>
+          <Size>8</Size>
+          <Description>Last sequence number received by the user, zero to retrieve from the beginning of the trading day</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Dc Ont Subscription Request Message -->
+    <Message>
+      <Name>Dc Ont Subscription Request Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Client Message Payload</Branch>
+      <Code>9000</Code>
+      <Category>Administrative</Category>
+      <Origin>Firm</Origin>
+      <Description>Subscribes to the order and trade drop copy on this partition from the named sequence number</Description>
+      <Fields>
+        <Field>
+          <Name>SequenceNumber</Name>
+          <Type>LONG LONG</Type>
+          <Size>8</Size>
+          <Description>Last sequence number received by the user, zero to retrieve from the beginning of the trading day</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Dc Error Response Trade Message -->
+    <Message>
+      <Name>Dc Error Response Trade Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Server Message Payload</Branch>
+      <Code>8006</Code>
+      <Category>Administrative</Category>
+      <Origin>Exchange</Origin>
+      <Description>Rejects a trade only request, the reason given in the Error Code of the Message Header</Description>
+      <Fields>
+        <Field>
+          <Name>Error Message</Name>
+          <Type>CHAR</Type>
+          <Size>128</Size>
+          <Description>The error message describing the error received</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Dc Error Response Order Message -->
+    <Message>
+      <Name>Dc Error Response Order Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Server Message Payload</Branch>
+      <Code>9006</Code>
+      <Category>Administrative</Category>
+      <Origin>Exchange</Origin>
+      <Description>Rejects an order and trade request, the reason given in the Error Code of the Message Header</Description>
+      <Fields>
+        <Field>
+          <Name>Error Message</Name>
+          <Type>CHAR</Type>
+          <Size>128</Size>
+          <Description>The error message describing the error received</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Trade Confirmation Message -->
+    <Message>
+      <Name>Trade Confirmation Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Server Message Payload</Branch>
+      <Code>2222</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Confirms a trade</Description>
+      <Fields>
+        <Field>
+          <Name>OrderNumber</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Order number of the trader's order taking part in the trade</Description>
+        </Field>
+        <Field>
+          <Name>TraderNumber</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Trader or user Id</Description>
+        </Field>
+        <Field>
+          <Name>BuySell</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Whether the order taking part is a buy or a sell</Description>
+        </Field>
+        <Field>
+          <Name>OriginalVolume</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Original traded volume</Description>
+        </Field>
+        <Field>
+          <Name>DisclosedVolume</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Quantity to be disclosed to the market</Description>
+        </Field>
+        <Field>
+          <Name>RemainingVolume</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Volume remaining after the trade</Description>
+        </Field>
+        <Field>
+          <Name>DisclosedVolRemaining</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Disclosed volume remaining after the trade</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Order price</Description>
+        </Field>
+        <Field>
+          <Name>ST_ORDER_FLAGS</Name>
+          <Type>STRUCT</Type>
+          <Size>2</Size>
+          <Description>Terms attached to the order</Description>
+        </Field>
+        <Field>
+          <Name>FillNumber</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Trade number</Description>
+        </Field>
+        <Field>
+          <Name>FillQty</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Traded volume</Description>
+        </Field>
+        <Field>
+          <Name>FillPrice</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Price at which the order traded</Description>
+        </Field>
+        <Field>
+          <Name>Token</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Security identifier</Description>
+        </Field>
+        <Field>
+          <Name>BookType</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Book type the order belongs to</Description>
+        </Field>
+        <Field>
+          <Name>ProClient</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Whether the order is a client, broker or warehousing order</Description>
+        </Field>
+        <Field>
+          <Name>Algo ID</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Algo Id issued by the exchange, zero for a non algo order</Description>
+        </Field>
+        <Field>
+          <Name>ActivityTimeInNanos</Name>
+          <Type>LONG</Type>
+          <Size>8</Size>
+          <Format>Nanoseconds</Format>
+          <Description>Activity time in nanoseconds</Description>
+        </Field>
+        <Field>
+          <Name>NNFField</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Fifteen digit unique identifier for the product, populated only on Trade Confirmation</Description>
+        </Field>
+        <Field>
+          <Name>Segment</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Business segment the trade belongs to</Description>
+        </Field>
+        <Field>
+          <Name>BrokerId</Name>
+          <Type>CHAR</Type>
+          <Size>5</Size>
+          <Description>Trading Member Id</Description>
+        </Field>
+        <Field>
+          <Name>Filler</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Filler</Description>
+        </Field>
+        <Field>
+          <Name>PAN</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Permanent Account Number</Description>
+        </Field>
+        <Field>
+          <Name>AccountNumber</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Account Number or client code</Description>
+        </Field>
+        <Field>
+          <Name>Settlor</Name>
+          <Type>CHAR</Type>
+          <Size>12</Size>
+          <Description>Participant responsible for settling the trade through the custodian, defaulting to the Broker Code</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Trade Cancel Confirm Message -->
+    <Message>
+      <Name>Trade Cancel Confirm Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Server Message Payload</Branch>
+      <Code>2282</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Confirms the cancellation of a trade</Description>
+      <Fields>
+        <Field>
+          <Name>OrderNumber</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Order number of the trader's order taking part in the trade</Description>
+        </Field>
+        <Field>
+          <Name>TraderNumber</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Trader or user Id</Description>
+        </Field>
+        <Field>
+          <Name>BuySell</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Whether the order taking part is a buy or a sell</Description>
+        </Field>
+        <Field>
+          <Name>OriginalVolume</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Original traded volume</Description>
+        </Field>
+        <Field>
+          <Name>DisclosedVolume</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Quantity to be disclosed to the market</Description>
+        </Field>
+        <Field>
+          <Name>RemainingVolume</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Volume remaining after the trade</Description>
+        </Field>
+        <Field>
+          <Name>DisclosedVolRemaining</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Disclosed volume remaining after the trade</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Order price</Description>
+        </Field>
+        <Field>
+          <Name>ST_ORDER_FLAGS</Name>
+          <Type>STRUCT</Type>
+          <Size>2</Size>
+          <Description>Terms attached to the order</Description>
+        </Field>
+        <Field>
+          <Name>FillNumber</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Trade number</Description>
+        </Field>
+        <Field>
+          <Name>FillQty</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Traded volume</Description>
+        </Field>
+        <Field>
+          <Name>FillPrice</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Price at which the order traded</Description>
+        </Field>
+        <Field>
+          <Name>Token</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Security identifier</Description>
+        </Field>
+        <Field>
+          <Name>BookType</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Book type the order belongs to</Description>
+        </Field>
+        <Field>
+          <Name>ProClient</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Whether the order is a client, broker or warehousing order</Description>
+        </Field>
+        <Field>
+          <Name>Algo ID</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Algo Id issued by the exchange, zero for a non algo order</Description>
+        </Field>
+        <Field>
+          <Name>ActivityTimeInNanos</Name>
+          <Type>LONG</Type>
+          <Size>8</Size>
+          <Format>Nanoseconds</Format>
+          <Description>Activity time in nanoseconds</Description>
+        </Field>
+        <Field>
+          <Name>NNFField</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Fifteen digit unique identifier for the product, populated only on Trade Confirmation</Description>
+        </Field>
+        <Field>
+          <Name>Segment</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Business segment the trade belongs to</Description>
+        </Field>
+        <Field>
+          <Name>BrokerId</Name>
+          <Type>CHAR</Type>
+          <Size>5</Size>
+          <Description>Trading Member Id</Description>
+        </Field>
+        <Field>
+          <Name>Filler</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Filler</Description>
+        </Field>
+        <Field>
+          <Name>PAN</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Permanent Account Number</Description>
+        </Field>
+        <Field>
+          <Name>AccountNumber</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Account Number or client code</Description>
+        </Field>
+        <Field>
+          <Name>Settlor</Name>
+          <Type>CHAR</Type>
+          <Size>12</Size>
+          <Description>Participant responsible for settling the trade through the custodian, defaulting to the Broker Code</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Trade Cancel Reject Message -->
+    <Message>
+      <Name>Trade Cancel Reject Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Server Message Payload</Branch>
+      <Code>2286</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Rejects a trade cancellation</Description>
+      <Fields>
+        <Field>
+          <Name>OrderNumber</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Order number of the trader's order taking part in the trade</Description>
+        </Field>
+        <Field>
+          <Name>TraderNumber</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Trader or user Id</Description>
+        </Field>
+        <Field>
+          <Name>BuySell</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Whether the order taking part is a buy or a sell</Description>
+        </Field>
+        <Field>
+          <Name>OriginalVolume</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Original traded volume</Description>
+        </Field>
+        <Field>
+          <Name>DisclosedVolume</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Quantity to be disclosed to the market</Description>
+        </Field>
+        <Field>
+          <Name>RemainingVolume</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Volume remaining after the trade</Description>
+        </Field>
+        <Field>
+          <Name>DisclosedVolRemaining</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Disclosed volume remaining after the trade</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Order price</Description>
+        </Field>
+        <Field>
+          <Name>ST_ORDER_FLAGS</Name>
+          <Type>STRUCT</Type>
+          <Size>2</Size>
+          <Description>Terms attached to the order</Description>
+        </Field>
+        <Field>
+          <Name>FillNumber</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Trade number</Description>
+        </Field>
+        <Field>
+          <Name>FillQty</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Traded volume</Description>
+        </Field>
+        <Field>
+          <Name>FillPrice</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Price at which the order traded</Description>
+        </Field>
+        <Field>
+          <Name>Token</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Security identifier</Description>
+        </Field>
+        <Field>
+          <Name>BookType</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Book type the order belongs to</Description>
+        </Field>
+        <Field>
+          <Name>ProClient</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Whether the order is a client, broker or warehousing order</Description>
+        </Field>
+        <Field>
+          <Name>Algo ID</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Algo Id issued by the exchange, zero for a non algo order</Description>
+        </Field>
+        <Field>
+          <Name>ActivityTimeInNanos</Name>
+          <Type>LONG</Type>
+          <Size>8</Size>
+          <Format>Nanoseconds</Format>
+          <Description>Activity time in nanoseconds</Description>
+        </Field>
+        <Field>
+          <Name>NNFField</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Fifteen digit unique identifier for the product, populated only on Trade Confirmation</Description>
+        </Field>
+        <Field>
+          <Name>Segment</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Business segment the trade belongs to</Description>
+        </Field>
+        <Field>
+          <Name>BrokerId</Name>
+          <Type>CHAR</Type>
+          <Size>5</Size>
+          <Description>Trading Member Id</Description>
+        </Field>
+        <Field>
+          <Name>Filler</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Filler</Description>
+        </Field>
+        <Field>
+          <Name>PAN</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Permanent Account Number</Description>
+        </Field>
+        <Field>
+          <Name>AccountNumber</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Account Number or client code</Description>
+        </Field>
+        <Field>
+          <Name>Settlor</Name>
+          <Type>CHAR</Type>
+          <Size>12</Size>
+          <Description>Participant responsible for settling the trade through the custodian, defaulting to the Broker Code</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Trade Modify Confirm Message -->
+    <Message>
+      <Name>Trade Modify Confirm Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Server Message Payload</Branch>
+      <Code>2287</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Confirms the modification of a trade</Description>
+      <Fields>
+        <Field>
+          <Name>OrderNumber</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Order number of the trader's order taking part in the trade</Description>
+        </Field>
+        <Field>
+          <Name>TraderNumber</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Trader or user Id</Description>
+        </Field>
+        <Field>
+          <Name>BuySell</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Whether the order taking part is a buy or a sell</Description>
+        </Field>
+        <Field>
+          <Name>OriginalVolume</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Original traded volume</Description>
+        </Field>
+        <Field>
+          <Name>DisclosedVolume</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Quantity to be disclosed to the market</Description>
+        </Field>
+        <Field>
+          <Name>RemainingVolume</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Volume remaining after the trade</Description>
+        </Field>
+        <Field>
+          <Name>DisclosedVolRemaining</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Disclosed volume remaining after the trade</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Order price</Description>
+        </Field>
+        <Field>
+          <Name>ST_ORDER_FLAGS</Name>
+          <Type>STRUCT</Type>
+          <Size>2</Size>
+          <Description>Terms attached to the order</Description>
+        </Field>
+        <Field>
+          <Name>FillNumber</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Trade number</Description>
+        </Field>
+        <Field>
+          <Name>FillQty</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Traded volume</Description>
+        </Field>
+        <Field>
+          <Name>FillPrice</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Price at which the order traded</Description>
+        </Field>
+        <Field>
+          <Name>Token</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Security identifier</Description>
+        </Field>
+        <Field>
+          <Name>BookType</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Book type the order belongs to</Description>
+        </Field>
+        <Field>
+          <Name>ProClient</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Whether the order is a client, broker or warehousing order</Description>
+        </Field>
+        <Field>
+          <Name>Algo ID</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Algo Id issued by the exchange, zero for a non algo order</Description>
+        </Field>
+        <Field>
+          <Name>ActivityTimeInNanos</Name>
+          <Type>LONG</Type>
+          <Size>8</Size>
+          <Format>Nanoseconds</Format>
+          <Description>Activity time in nanoseconds</Description>
+        </Field>
+        <Field>
+          <Name>NNFField</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Fifteen digit unique identifier for the product, populated only on Trade Confirmation</Description>
+        </Field>
+        <Field>
+          <Name>Segment</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Business segment the trade belongs to</Description>
+        </Field>
+        <Field>
+          <Name>BrokerId</Name>
+          <Type>CHAR</Type>
+          <Size>5</Size>
+          <Description>Trading Member Id</Description>
+        </Field>
+        <Field>
+          <Name>Filler</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Filler</Description>
+        </Field>
+        <Field>
+          <Name>PAN</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Permanent Account Number</Description>
+        </Field>
+        <Field>
+          <Name>AccountNumber</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Account Number or client code</Description>
+        </Field>
+        <Field>
+          <Name>Settlor</Name>
+          <Type>CHAR</Type>
+          <Size>12</Size>
+          <Description>Participant responsible for settling the trade through the custodian, defaulting to the Broker Code</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Price Confirmation Message -->
+    <Message>
+      <Name>Price Confirmation Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Server Message Payload</Branch>
+      <Code>2012</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Confirms the price of an order</Description>
+      <Fields>
+        <Field>
+          <Name>ReasonCode</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Reason code for the order request rejection or the order being frozen</Description>
+        </Field>
+        <Field>
+          <Name>Token</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Instrument or token identifier</Description>
+        </Field>
+        <Field>
+          <Name>OrderNumber</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Order number assigned to the order, two digits of stream number then a fourteen digit sequence</Description>
+        </Field>
+        <Field>
+          <Name>BookType</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Type of order</Description>
+        </Field>
+        <Field>
+          <Name>BuySell</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Whether the order is a buy or a sell</Description>
+        </Field>
+        <Field>
+          <Name>DisclosedVolume</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Quantity to be disclosed to the market</Description>
+        </Field>
+        <Field>
+          <Name>DisclosedVolRemaining</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Disclosed volume remaining from the original disclosed volume after trades</Description>
+        </Field>
+        <Field>
+          <Name>TotalVolRemaining</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Total quantity remaining from the original quantity after trades</Description>
+        </Field>
+        <Field>
+          <Name>Volume</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Quantity of the order placed</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Price at which the order is placed, zero for a market order</Description>
+        </Field>
+        <Field>
+          <Name>TriggerPrice</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Price at which a stop loss order is triggered and brought to the market</Description>
+        </Field>
+        <Field>
+          <Name>ST_ORDER_FLAGS</Name>
+          <Type>STRUCT</Type>
+          <Size>2</Size>
+          <Description>Terms attached to the order</Description>
+        </Field>
+        <Field>
+          <Name>TraderId</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Id of the user on whose behalf the order is modified or cancelled</Description>
+        </Field>
+        <Field>
+          <Name>NNFField</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Fifteen digit unique identifier for the product</Description>
+        </Field>
+        <Field>
+          <Name>AlgoID</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Algo Id issued by the exchange, zero for a non algo order</Description>
+        </Field>
+        <Field>
+          <Name>ActivityTimeInNanos</Name>
+          <Type>LONG</Type>
+          <Size>8</Size>
+          <Format>Nanoseconds</Format>
+          <Description>Timestamp of the activity in nanoseconds</Description>
+        </Field>
+        <Field>
+          <Name>CompetitorPeriod</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Competitor time set by the exchange at the time of initiation</Description>
+        </Field>
+        <Field>
+          <Name>SolicitorPeriod</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Solicitor time set by the exchange at the time of initiation</Description>
+        </Field>
+        <Field>
+          <Name>AuctionNumber</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Auction number, available when the initiation of an auction is broadcast and zero for other books</Description>
+        </Field>
+        <Field>
+          <Name>Suspended</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Whether the security is suspended</Description>
+        </Field>
+        <Field>
+          <Name>Filler</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Filler</Description>
+        </Field>
+        <Field>
+          <Name>PAN</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Permanent Account Number, or PAN_EXEMPT</Description>
+        </Field>
+        <Field>
+          <Name>Segment</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Business segment the order belongs to</Description>
+        </Field>
+        <Field>
+          <Name>ParticipantType</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Initiator, competitor or solicitor order</Description>
+        </Field>
+        <Field>
+          <Name>AccountNumber</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Trader account number, or the broker code for a broker's own order</Description>
+        </Field>
+        <Field>
+          <Name>ProClient</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Whether the order is a client, broker or warehousing order</Description>
+        </Field>
+        <Field>
+          <Name>SettlementType</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Settlement type of the order</Description>
+        </Field>
+        <Field>
+          <Name>Settlor</Name>
+          <Type>CHAR</Type>
+          <Size>12</Size>
+          <Description>Participant responsible for settling the trades through the custodian, defaulting to the Broker Code</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Order Mod Reject Message -->
+    <Message>
+      <Name>Order Mod Reject Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Server Message Payload</Branch>
+      <Code>2042</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Rejects an order modification</Description>
+      <Fields>
+        <Field>
+          <Name>ReasonCode</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Reason code for the order request rejection or the order being frozen</Description>
+        </Field>
+        <Field>
+          <Name>Token</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Instrument or token identifier</Description>
+        </Field>
+        <Field>
+          <Name>OrderNumber</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Order number assigned to the order, two digits of stream number then a fourteen digit sequence</Description>
+        </Field>
+        <Field>
+          <Name>BookType</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Type of order</Description>
+        </Field>
+        <Field>
+          <Name>BuySell</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Whether the order is a buy or a sell</Description>
+        </Field>
+        <Field>
+          <Name>DisclosedVolume</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Quantity to be disclosed to the market</Description>
+        </Field>
+        <Field>
+          <Name>DisclosedVolRemaining</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Disclosed volume remaining from the original disclosed volume after trades</Description>
+        </Field>
+        <Field>
+          <Name>TotalVolRemaining</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Total quantity remaining from the original quantity after trades</Description>
+        </Field>
+        <Field>
+          <Name>Volume</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Quantity of the order placed</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Price at which the order is placed, zero for a market order</Description>
+        </Field>
+        <Field>
+          <Name>TriggerPrice</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Price at which a stop loss order is triggered and brought to the market</Description>
+        </Field>
+        <Field>
+          <Name>ST_ORDER_FLAGS</Name>
+          <Type>STRUCT</Type>
+          <Size>2</Size>
+          <Description>Terms attached to the order</Description>
+        </Field>
+        <Field>
+          <Name>TraderId</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Id of the user on whose behalf the order is modified or cancelled</Description>
+        </Field>
+        <Field>
+          <Name>NNFField</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Fifteen digit unique identifier for the product</Description>
+        </Field>
+        <Field>
+          <Name>AlgoID</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Algo Id issued by the exchange, zero for a non algo order</Description>
+        </Field>
+        <Field>
+          <Name>ActivityTimeInNanos</Name>
+          <Type>LONG</Type>
+          <Size>8</Size>
+          <Format>Nanoseconds</Format>
+          <Description>Timestamp of the activity in nanoseconds</Description>
+        </Field>
+        <Field>
+          <Name>CompetitorPeriod</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Competitor time set by the exchange at the time of initiation</Description>
+        </Field>
+        <Field>
+          <Name>SolicitorPeriod</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Solicitor time set by the exchange at the time of initiation</Description>
+        </Field>
+        <Field>
+          <Name>AuctionNumber</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Auction number, available when the initiation of an auction is broadcast and zero for other books</Description>
+        </Field>
+        <Field>
+          <Name>Suspended</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Whether the security is suspended</Description>
+        </Field>
+        <Field>
+          <Name>Filler</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Filler</Description>
+        </Field>
+        <Field>
+          <Name>PAN</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Permanent Account Number, or PAN_EXEMPT</Description>
+        </Field>
+        <Field>
+          <Name>Segment</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Business segment the order belongs to</Description>
+        </Field>
+        <Field>
+          <Name>ParticipantType</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Initiator, competitor or solicitor order</Description>
+        </Field>
+        <Field>
+          <Name>AccountNumber</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Trader account number, or the broker code for a broker's own order</Description>
+        </Field>
+        <Field>
+          <Name>ProClient</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Whether the order is a client, broker or warehousing order</Description>
+        </Field>
+        <Field>
+          <Name>SettlementType</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Settlement type of the order</Description>
+        </Field>
+        <Field>
+          <Name>Settlor</Name>
+          <Type>CHAR</Type>
+          <Size>12</Size>
+          <Description>Participant responsible for settling the trades through the custodian, defaulting to the Broker Code</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Order Cancel Reject Message -->
+    <Message>
+      <Name>Order Cancel Reject Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Server Message Payload</Branch>
+      <Code>2072</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Rejects an order cancellation</Description>
+      <Fields>
+        <Field>
+          <Name>ReasonCode</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Reason code for the order request rejection or the order being frozen</Description>
+        </Field>
+        <Field>
+          <Name>Token</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Instrument or token identifier</Description>
+        </Field>
+        <Field>
+          <Name>OrderNumber</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Order number assigned to the order, two digits of stream number then a fourteen digit sequence</Description>
+        </Field>
+        <Field>
+          <Name>BookType</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Type of order</Description>
+        </Field>
+        <Field>
+          <Name>BuySell</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Whether the order is a buy or a sell</Description>
+        </Field>
+        <Field>
+          <Name>DisclosedVolume</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Quantity to be disclosed to the market</Description>
+        </Field>
+        <Field>
+          <Name>DisclosedVolRemaining</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Disclosed volume remaining from the original disclosed volume after trades</Description>
+        </Field>
+        <Field>
+          <Name>TotalVolRemaining</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Total quantity remaining from the original quantity after trades</Description>
+        </Field>
+        <Field>
+          <Name>Volume</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Quantity of the order placed</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Price at which the order is placed, zero for a market order</Description>
+        </Field>
+        <Field>
+          <Name>TriggerPrice</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Price at which a stop loss order is triggered and brought to the market</Description>
+        </Field>
+        <Field>
+          <Name>ST_ORDER_FLAGS</Name>
+          <Type>STRUCT</Type>
+          <Size>2</Size>
+          <Description>Terms attached to the order</Description>
+        </Field>
+        <Field>
+          <Name>TraderId</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Id of the user on whose behalf the order is modified or cancelled</Description>
+        </Field>
+        <Field>
+          <Name>NNFField</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Fifteen digit unique identifier for the product</Description>
+        </Field>
+        <Field>
+          <Name>AlgoID</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Algo Id issued by the exchange, zero for a non algo order</Description>
+        </Field>
+        <Field>
+          <Name>ActivityTimeInNanos</Name>
+          <Type>LONG</Type>
+          <Size>8</Size>
+          <Format>Nanoseconds</Format>
+          <Description>Timestamp of the activity in nanoseconds</Description>
+        </Field>
+        <Field>
+          <Name>CompetitorPeriod</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Competitor time set by the exchange at the time of initiation</Description>
+        </Field>
+        <Field>
+          <Name>SolicitorPeriod</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Solicitor time set by the exchange at the time of initiation</Description>
+        </Field>
+        <Field>
+          <Name>AuctionNumber</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Auction number, available when the initiation of an auction is broadcast and zero for other books</Description>
+        </Field>
+        <Field>
+          <Name>Suspended</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Whether the security is suspended</Description>
+        </Field>
+        <Field>
+          <Name>Filler</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Filler</Description>
+        </Field>
+        <Field>
+          <Name>PAN</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Permanent Account Number, or PAN_EXEMPT</Description>
+        </Field>
+        <Field>
+          <Name>Segment</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Business segment the order belongs to</Description>
+        </Field>
+        <Field>
+          <Name>ParticipantType</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Initiator, competitor or solicitor order</Description>
+        </Field>
+        <Field>
+          <Name>AccountNumber</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Trader account number, or the broker code for a broker's own order</Description>
+        </Field>
+        <Field>
+          <Name>ProClient</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Whether the order is a client, broker or warehousing order</Description>
+        </Field>
+        <Field>
+          <Name>SettlementType</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Settlement type of the order</Description>
+        </Field>
+        <Field>
+          <Name>Settlor</Name>
+          <Type>CHAR</Type>
+          <Size>12</Size>
+          <Description>Participant responsible for settling the trades through the custodian, defaulting to the Broker Code</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Order Confirmation Message -->
+    <Message>
+      <Name>Order Confirmation Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Server Message Payload</Branch>
+      <Code>2073</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Confirms an order</Description>
+      <Fields>
+        <Field>
+          <Name>ReasonCode</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Reason code for the order request rejection or the order being frozen</Description>
+        </Field>
+        <Field>
+          <Name>Token</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Instrument or token identifier</Description>
+        </Field>
+        <Field>
+          <Name>OrderNumber</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Order number assigned to the order, two digits of stream number then a fourteen digit sequence</Description>
+        </Field>
+        <Field>
+          <Name>BookType</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Type of order</Description>
+        </Field>
+        <Field>
+          <Name>BuySell</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Whether the order is a buy or a sell</Description>
+        </Field>
+        <Field>
+          <Name>DisclosedVolume</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Quantity to be disclosed to the market</Description>
+        </Field>
+        <Field>
+          <Name>DisclosedVolRemaining</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Disclosed volume remaining from the original disclosed volume after trades</Description>
+        </Field>
+        <Field>
+          <Name>TotalVolRemaining</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Total quantity remaining from the original quantity after trades</Description>
+        </Field>
+        <Field>
+          <Name>Volume</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Quantity of the order placed</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Price at which the order is placed, zero for a market order</Description>
+        </Field>
+        <Field>
+          <Name>TriggerPrice</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Price at which a stop loss order is triggered and brought to the market</Description>
+        </Field>
+        <Field>
+          <Name>ST_ORDER_FLAGS</Name>
+          <Type>STRUCT</Type>
+          <Size>2</Size>
+          <Description>Terms attached to the order</Description>
+        </Field>
+        <Field>
+          <Name>TraderId</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Id of the user on whose behalf the order is modified or cancelled</Description>
+        </Field>
+        <Field>
+          <Name>NNFField</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Fifteen digit unique identifier for the product</Description>
+        </Field>
+        <Field>
+          <Name>AlgoID</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Algo Id issued by the exchange, zero for a non algo order</Description>
+        </Field>
+        <Field>
+          <Name>ActivityTimeInNanos</Name>
+          <Type>LONG</Type>
+          <Size>8</Size>
+          <Format>Nanoseconds</Format>
+          <Description>Timestamp of the activity in nanoseconds</Description>
+        </Field>
+        <Field>
+          <Name>CompetitorPeriod</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Competitor time set by the exchange at the time of initiation</Description>
+        </Field>
+        <Field>
+          <Name>SolicitorPeriod</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Solicitor time set by the exchange at the time of initiation</Description>
+        </Field>
+        <Field>
+          <Name>AuctionNumber</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Auction number, available when the initiation of an auction is broadcast and zero for other books</Description>
+        </Field>
+        <Field>
+          <Name>Suspended</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Whether the security is suspended</Description>
+        </Field>
+        <Field>
+          <Name>Filler</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Filler</Description>
+        </Field>
+        <Field>
+          <Name>PAN</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Permanent Account Number, or PAN_EXEMPT</Description>
+        </Field>
+        <Field>
+          <Name>Segment</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Business segment the order belongs to</Description>
+        </Field>
+        <Field>
+          <Name>ParticipantType</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Initiator, competitor or solicitor order</Description>
+        </Field>
+        <Field>
+          <Name>AccountNumber</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Trader account number, or the broker code for a broker's own order</Description>
+        </Field>
+        <Field>
+          <Name>ProClient</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Whether the order is a client, broker or warehousing order</Description>
+        </Field>
+        <Field>
+          <Name>SettlementType</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Settlement type of the order</Description>
+        </Field>
+        <Field>
+          <Name>Settlor</Name>
+          <Type>CHAR</Type>
+          <Size>12</Size>
+          <Description>Participant responsible for settling the trades through the custodian, defaulting to the Broker Code</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Order Mod Confirmation Message -->
+    <Message>
+      <Name>Order Mod Confirmation Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Server Message Payload</Branch>
+      <Code>2074</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Confirms an order modification</Description>
+      <Fields>
+        <Field>
+          <Name>ReasonCode</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Reason code for the order request rejection or the order being frozen</Description>
+        </Field>
+        <Field>
+          <Name>Token</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Instrument or token identifier</Description>
+        </Field>
+        <Field>
+          <Name>OrderNumber</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Order number assigned to the order, two digits of stream number then a fourteen digit sequence</Description>
+        </Field>
+        <Field>
+          <Name>BookType</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Type of order</Description>
+        </Field>
+        <Field>
+          <Name>BuySell</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Whether the order is a buy or a sell</Description>
+        </Field>
+        <Field>
+          <Name>DisclosedVolume</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Quantity to be disclosed to the market</Description>
+        </Field>
+        <Field>
+          <Name>DisclosedVolRemaining</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Disclosed volume remaining from the original disclosed volume after trades</Description>
+        </Field>
+        <Field>
+          <Name>TotalVolRemaining</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Total quantity remaining from the original quantity after trades</Description>
+        </Field>
+        <Field>
+          <Name>Volume</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Quantity of the order placed</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Price at which the order is placed, zero for a market order</Description>
+        </Field>
+        <Field>
+          <Name>TriggerPrice</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Price at which a stop loss order is triggered and brought to the market</Description>
+        </Field>
+        <Field>
+          <Name>ST_ORDER_FLAGS</Name>
+          <Type>STRUCT</Type>
+          <Size>2</Size>
+          <Description>Terms attached to the order</Description>
+        </Field>
+        <Field>
+          <Name>TraderId</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Id of the user on whose behalf the order is modified or cancelled</Description>
+        </Field>
+        <Field>
+          <Name>NNFField</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Fifteen digit unique identifier for the product</Description>
+        </Field>
+        <Field>
+          <Name>AlgoID</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Algo Id issued by the exchange, zero for a non algo order</Description>
+        </Field>
+        <Field>
+          <Name>ActivityTimeInNanos</Name>
+          <Type>LONG</Type>
+          <Size>8</Size>
+          <Format>Nanoseconds</Format>
+          <Description>Timestamp of the activity in nanoseconds</Description>
+        </Field>
+        <Field>
+          <Name>CompetitorPeriod</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Competitor time set by the exchange at the time of initiation</Description>
+        </Field>
+        <Field>
+          <Name>SolicitorPeriod</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Solicitor time set by the exchange at the time of initiation</Description>
+        </Field>
+        <Field>
+          <Name>AuctionNumber</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Auction number, available when the initiation of an auction is broadcast and zero for other books</Description>
+        </Field>
+        <Field>
+          <Name>Suspended</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Whether the security is suspended</Description>
+        </Field>
+        <Field>
+          <Name>Filler</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Filler</Description>
+        </Field>
+        <Field>
+          <Name>PAN</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Permanent Account Number, or PAN_EXEMPT</Description>
+        </Field>
+        <Field>
+          <Name>Segment</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Business segment the order belongs to</Description>
+        </Field>
+        <Field>
+          <Name>ParticipantType</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Initiator, competitor or solicitor order</Description>
+        </Field>
+        <Field>
+          <Name>AccountNumber</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Trader account number, or the broker code for a broker's own order</Description>
+        </Field>
+        <Field>
+          <Name>ProClient</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Whether the order is a client, broker or warehousing order</Description>
+        </Field>
+        <Field>
+          <Name>SettlementType</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Settlement type of the order</Description>
+        </Field>
+        <Field>
+          <Name>Settlor</Name>
+          <Type>CHAR</Type>
+          <Size>12</Size>
+          <Description>Participant responsible for settling the trades through the custodian, defaulting to the Broker Code</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Order Cancel Confirmation Message -->
+    <Message>
+      <Name>Order Cancel Confirmation Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Server Message Payload</Branch>
+      <Code>2075</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Confirms an order cancellation</Description>
+      <Fields>
+        <Field>
+          <Name>ReasonCode</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Reason code for the order request rejection or the order being frozen</Description>
+        </Field>
+        <Field>
+          <Name>Token</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Instrument or token identifier</Description>
+        </Field>
+        <Field>
+          <Name>OrderNumber</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Order number assigned to the order, two digits of stream number then a fourteen digit sequence</Description>
+        </Field>
+        <Field>
+          <Name>BookType</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Type of order</Description>
+        </Field>
+        <Field>
+          <Name>BuySell</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Whether the order is a buy or a sell</Description>
+        </Field>
+        <Field>
+          <Name>DisclosedVolume</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Quantity to be disclosed to the market</Description>
+        </Field>
+        <Field>
+          <Name>DisclosedVolRemaining</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Disclosed volume remaining from the original disclosed volume after trades</Description>
+        </Field>
+        <Field>
+          <Name>TotalVolRemaining</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Total quantity remaining from the original quantity after trades</Description>
+        </Field>
+        <Field>
+          <Name>Volume</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Quantity of the order placed</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Price at which the order is placed, zero for a market order</Description>
+        </Field>
+        <Field>
+          <Name>TriggerPrice</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Price at which a stop loss order is triggered and brought to the market</Description>
+        </Field>
+        <Field>
+          <Name>ST_ORDER_FLAGS</Name>
+          <Type>STRUCT</Type>
+          <Size>2</Size>
+          <Description>Terms attached to the order</Description>
+        </Field>
+        <Field>
+          <Name>TraderId</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Id of the user on whose behalf the order is modified or cancelled</Description>
+        </Field>
+        <Field>
+          <Name>NNFField</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Fifteen digit unique identifier for the product</Description>
+        </Field>
+        <Field>
+          <Name>AlgoID</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Algo Id issued by the exchange, zero for a non algo order</Description>
+        </Field>
+        <Field>
+          <Name>ActivityTimeInNanos</Name>
+          <Type>LONG</Type>
+          <Size>8</Size>
+          <Format>Nanoseconds</Format>
+          <Description>Timestamp of the activity in nanoseconds</Description>
+        </Field>
+        <Field>
+          <Name>CompetitorPeriod</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Competitor time set by the exchange at the time of initiation</Description>
+        </Field>
+        <Field>
+          <Name>SolicitorPeriod</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Solicitor time set by the exchange at the time of initiation</Description>
+        </Field>
+        <Field>
+          <Name>AuctionNumber</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Auction number, available when the initiation of an auction is broadcast and zero for other books</Description>
+        </Field>
+        <Field>
+          <Name>Suspended</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Whether the security is suspended</Description>
+        </Field>
+        <Field>
+          <Name>Filler</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Filler</Description>
+        </Field>
+        <Field>
+          <Name>PAN</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Permanent Account Number, or PAN_EXEMPT</Description>
+        </Field>
+        <Field>
+          <Name>Segment</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Business segment the order belongs to</Description>
+        </Field>
+        <Field>
+          <Name>ParticipantType</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Initiator, competitor or solicitor order</Description>
+        </Field>
+        <Field>
+          <Name>AccountNumber</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Trader account number, or the broker code for a broker's own order</Description>
+        </Field>
+        <Field>
+          <Name>ProClient</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Whether the order is a client, broker or warehousing order</Description>
+        </Field>
+        <Field>
+          <Name>SettlementType</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Settlement type of the order</Description>
+        </Field>
+        <Field>
+          <Name>Settlor</Name>
+          <Type>CHAR</Type>
+          <Size>12</Size>
+          <Description>Participant responsible for settling the trades through the custodian, defaulting to the Broker Code</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Freeze To Control Message -->
+    <Message>
+      <Name>Freeze To Control Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Server Message Payload</Branch>
+      <Code>2170</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Reports an order frozen and referred to Nse Control</Description>
+      <Fields>
+        <Field>
+          <Name>ReasonCode</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Reason code for the order request rejection or the order being frozen</Description>
+        </Field>
+        <Field>
+          <Name>Token</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Instrument or token identifier</Description>
+        </Field>
+        <Field>
+          <Name>OrderNumber</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Order number assigned to the order, two digits of stream number then a fourteen digit sequence</Description>
+        </Field>
+        <Field>
+          <Name>BookType</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Type of order</Description>
+        </Field>
+        <Field>
+          <Name>BuySell</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Whether the order is a buy or a sell</Description>
+        </Field>
+        <Field>
+          <Name>DisclosedVolume</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Quantity to be disclosed to the market</Description>
+        </Field>
+        <Field>
+          <Name>DisclosedVolRemaining</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Disclosed volume remaining from the original disclosed volume after trades</Description>
+        </Field>
+        <Field>
+          <Name>TotalVolRemaining</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Total quantity remaining from the original quantity after trades</Description>
+        </Field>
+        <Field>
+          <Name>Volume</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Quantity of the order placed</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Price at which the order is placed, zero for a market order</Description>
+        </Field>
+        <Field>
+          <Name>TriggerPrice</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Price at which a stop loss order is triggered and brought to the market</Description>
+        </Field>
+        <Field>
+          <Name>ST_ORDER_FLAGS</Name>
+          <Type>STRUCT</Type>
+          <Size>2</Size>
+          <Description>Terms attached to the order</Description>
+        </Field>
+        <Field>
+          <Name>TraderId</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Id of the user on whose behalf the order is modified or cancelled</Description>
+        </Field>
+        <Field>
+          <Name>NNFField</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Fifteen digit unique identifier for the product</Description>
+        </Field>
+        <Field>
+          <Name>AlgoID</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Algo Id issued by the exchange, zero for a non algo order</Description>
+        </Field>
+        <Field>
+          <Name>ActivityTimeInNanos</Name>
+          <Type>LONG</Type>
+          <Size>8</Size>
+          <Format>Nanoseconds</Format>
+          <Description>Timestamp of the activity in nanoseconds</Description>
+        </Field>
+        <Field>
+          <Name>CompetitorPeriod</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Competitor time set by the exchange at the time of initiation</Description>
+        </Field>
+        <Field>
+          <Name>SolicitorPeriod</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Solicitor time set by the exchange at the time of initiation</Description>
+        </Field>
+        <Field>
+          <Name>AuctionNumber</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Auction number, available when the initiation of an auction is broadcast and zero for other books</Description>
+        </Field>
+        <Field>
+          <Name>Suspended</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Whether the security is suspended</Description>
+        </Field>
+        <Field>
+          <Name>Filler</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Filler</Description>
+        </Field>
+        <Field>
+          <Name>PAN</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Permanent Account Number, or PAN_EXEMPT</Description>
+        </Field>
+        <Field>
+          <Name>Segment</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Business segment the order belongs to</Description>
+        </Field>
+        <Field>
+          <Name>ParticipantType</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Initiator, competitor or solicitor order</Description>
+        </Field>
+        <Field>
+          <Name>AccountNumber</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Trader account number, or the broker code for a broker's own order</Description>
+        </Field>
+        <Field>
+          <Name>ProClient</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Whether the order is a client, broker or warehousing order</Description>
+        </Field>
+        <Field>
+          <Name>SettlementType</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Settlement type of the order</Description>
+        </Field>
+        <Field>
+          <Name>Settlor</Name>
+          <Type>CHAR</Type>
+          <Size>12</Size>
+          <Description>Participant responsible for settling the trades through the custodian, defaulting to the Broker Code</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- On Stop Notification Message -->
+    <Message>
+      <Name>On Stop Notification Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Server Message Payload</Branch>
+      <Code>2212</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Reports a stop loss order triggered and brought to the market</Description>
+      <Fields>
+        <Field>
+          <Name>ReasonCode</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Reason code for the order request rejection or the order being frozen</Description>
+        </Field>
+        <Field>
+          <Name>Token</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Instrument or token identifier</Description>
+        </Field>
+        <Field>
+          <Name>OrderNumber</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Order number assigned to the order, two digits of stream number then a fourteen digit sequence</Description>
+        </Field>
+        <Field>
+          <Name>BookType</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Type of order</Description>
+        </Field>
+        <Field>
+          <Name>BuySell</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Whether the order is a buy or a sell</Description>
+        </Field>
+        <Field>
+          <Name>DisclosedVolume</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Quantity to be disclosed to the market</Description>
+        </Field>
+        <Field>
+          <Name>DisclosedVolRemaining</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Disclosed volume remaining from the original disclosed volume after trades</Description>
+        </Field>
+        <Field>
+          <Name>TotalVolRemaining</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Total quantity remaining from the original quantity after trades</Description>
+        </Field>
+        <Field>
+          <Name>Volume</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Quantity of the order placed</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Price at which the order is placed, zero for a market order</Description>
+        </Field>
+        <Field>
+          <Name>TriggerPrice</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Price at which a stop loss order is triggered and brought to the market</Description>
+        </Field>
+        <Field>
+          <Name>ST_ORDER_FLAGS</Name>
+          <Type>STRUCT</Type>
+          <Size>2</Size>
+          <Description>Terms attached to the order</Description>
+        </Field>
+        <Field>
+          <Name>TraderId</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Id of the user on whose behalf the order is modified or cancelled</Description>
+        </Field>
+        <Field>
+          <Name>NNFField</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Fifteen digit unique identifier for the product</Description>
+        </Field>
+        <Field>
+          <Name>AlgoID</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Algo Id issued by the exchange, zero for a non algo order</Description>
+        </Field>
+        <Field>
+          <Name>ActivityTimeInNanos</Name>
+          <Type>LONG</Type>
+          <Size>8</Size>
+          <Format>Nanoseconds</Format>
+          <Description>Timestamp of the activity in nanoseconds</Description>
+        </Field>
+        <Field>
+          <Name>CompetitorPeriod</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Competitor time set by the exchange at the time of initiation</Description>
+        </Field>
+        <Field>
+          <Name>SolicitorPeriod</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Solicitor time set by the exchange at the time of initiation</Description>
+        </Field>
+        <Field>
+          <Name>AuctionNumber</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Auction number, available when the initiation of an auction is broadcast and zero for other books</Description>
+        </Field>
+        <Field>
+          <Name>Suspended</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Whether the security is suspended</Description>
+        </Field>
+        <Field>
+          <Name>Filler</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Filler</Description>
+        </Field>
+        <Field>
+          <Name>PAN</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Permanent Account Number, or PAN_EXEMPT</Description>
+        </Field>
+        <Field>
+          <Name>Segment</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Business segment the order belongs to</Description>
+        </Field>
+        <Field>
+          <Name>ParticipantType</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Initiator, competitor or solicitor order</Description>
+        </Field>
+        <Field>
+          <Name>AccountNumber</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Trader account number, or the broker code for a broker's own order</Description>
+        </Field>
+        <Field>
+          <Name>ProClient</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Whether the order is a client, broker or warehousing order</Description>
+        </Field>
+        <Field>
+          <Name>SettlementType</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Settlement type of the order</Description>
+        </Field>
+        <Field>
+          <Name>Settlor</Name>
+          <Type>CHAR</Type>
+          <Size>12</Size>
+          <Description>Participant responsible for settling the trades through the custodian, defaulting to the Broker Code</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Order Error Message -->
+    <Message>
+      <Name>Order Error Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Server Message Payload</Branch>
+      <Code>2231</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Reports an error on an order</Description>
+      <Fields>
+        <Field>
+          <Name>ReasonCode</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Reason code for the order request rejection or the order being frozen</Description>
+        </Field>
+        <Field>
+          <Name>Token</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Instrument or token identifier</Description>
+        </Field>
+        <Field>
+          <Name>OrderNumber</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Order number assigned to the order, two digits of stream number then a fourteen digit sequence</Description>
+        </Field>
+        <Field>
+          <Name>BookType</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Type of order</Description>
+        </Field>
+        <Field>
+          <Name>BuySell</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Whether the order is a buy or a sell</Description>
+        </Field>
+        <Field>
+          <Name>DisclosedVolume</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Quantity to be disclosed to the market</Description>
+        </Field>
+        <Field>
+          <Name>DisclosedVolRemaining</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Disclosed volume remaining from the original disclosed volume after trades</Description>
+        </Field>
+        <Field>
+          <Name>TotalVolRemaining</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Total quantity remaining from the original quantity after trades</Description>
+        </Field>
+        <Field>
+          <Name>Volume</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Quantity of the order placed</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Price at which the order is placed, zero for a market order</Description>
+        </Field>
+        <Field>
+          <Name>TriggerPrice</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Price at which a stop loss order is triggered and brought to the market</Description>
+        </Field>
+        <Field>
+          <Name>ST_ORDER_FLAGS</Name>
+          <Type>STRUCT</Type>
+          <Size>2</Size>
+          <Description>Terms attached to the order</Description>
+        </Field>
+        <Field>
+          <Name>TraderId</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Id of the user on whose behalf the order is modified or cancelled</Description>
+        </Field>
+        <Field>
+          <Name>NNFField</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Fifteen digit unique identifier for the product</Description>
+        </Field>
+        <Field>
+          <Name>AlgoID</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Algo Id issued by the exchange, zero for a non algo order</Description>
+        </Field>
+        <Field>
+          <Name>ActivityTimeInNanos</Name>
+          <Type>LONG</Type>
+          <Size>8</Size>
+          <Format>Nanoseconds</Format>
+          <Description>Timestamp of the activity in nanoseconds</Description>
+        </Field>
+        <Field>
+          <Name>CompetitorPeriod</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Competitor time set by the exchange at the time of initiation</Description>
+        </Field>
+        <Field>
+          <Name>SolicitorPeriod</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Solicitor time set by the exchange at the time of initiation</Description>
+        </Field>
+        <Field>
+          <Name>AuctionNumber</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Auction number, available when the initiation of an auction is broadcast and zero for other books</Description>
+        </Field>
+        <Field>
+          <Name>Suspended</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Whether the security is suspended</Description>
+        </Field>
+        <Field>
+          <Name>Filler</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Filler</Description>
+        </Field>
+        <Field>
+          <Name>PAN</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Permanent Account Number, or PAN_EXEMPT</Description>
+        </Field>
+        <Field>
+          <Name>Segment</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Business segment the order belongs to</Description>
+        </Field>
+        <Field>
+          <Name>ParticipantType</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Initiator, competitor or solicitor order</Description>
+        </Field>
+        <Field>
+          <Name>AccountNumber</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Trader account number, or the broker code for a broker's own order</Description>
+        </Field>
+        <Field>
+          <Name>ProClient</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Whether the order is a client, broker or warehousing order</Description>
+        </Field>
+        <Field>
+          <Name>SettlementType</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Settlement type of the order</Description>
+        </Field>
+        <Field>
+          <Name>Settlor</Name>
+          <Type>CHAR</Type>
+          <Size>12</Size>
+          <Description>Participant responsible for settling the trades through the custodian, defaulting to the Broker Code</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Batch Order Cancel Message -->
+    <Message>
+      <Name>Batch Order Cancel Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Server Message Payload</Branch>
+      <Code>9002</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Reports an order cancelled in a batch cancellation</Description>
+      <Fields>
+        <Field>
+          <Name>ReasonCode</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Reason code for the order request rejection or the order being frozen</Description>
+        </Field>
+        <Field>
+          <Name>Token</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Instrument or token identifier</Description>
+        </Field>
+        <Field>
+          <Name>OrderNumber</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Order number assigned to the order, two digits of stream number then a fourteen digit sequence</Description>
+        </Field>
+        <Field>
+          <Name>BookType</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Type of order</Description>
+        </Field>
+        <Field>
+          <Name>BuySell</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Whether the order is a buy or a sell</Description>
+        </Field>
+        <Field>
+          <Name>DisclosedVolume</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Quantity to be disclosed to the market</Description>
+        </Field>
+        <Field>
+          <Name>DisclosedVolRemaining</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Disclosed volume remaining from the original disclosed volume after trades</Description>
+        </Field>
+        <Field>
+          <Name>TotalVolRemaining</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Total quantity remaining from the original quantity after trades</Description>
+        </Field>
+        <Field>
+          <Name>Volume</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Quantity of the order placed</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Price at which the order is placed, zero for a market order</Description>
+        </Field>
+        <Field>
+          <Name>TriggerPrice</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Price at which a stop loss order is triggered and brought to the market</Description>
+        </Field>
+        <Field>
+          <Name>ST_ORDER_FLAGS</Name>
+          <Type>STRUCT</Type>
+          <Size>2</Size>
+          <Description>Terms attached to the order</Description>
+        </Field>
+        <Field>
+          <Name>TraderId</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Id of the user on whose behalf the order is modified or cancelled</Description>
+        </Field>
+        <Field>
+          <Name>NNFField</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Fifteen digit unique identifier for the product</Description>
+        </Field>
+        <Field>
+          <Name>AlgoID</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Algo Id issued by the exchange, zero for a non algo order</Description>
+        </Field>
+        <Field>
+          <Name>ActivityTimeInNanos</Name>
+          <Type>LONG</Type>
+          <Size>8</Size>
+          <Format>Nanoseconds</Format>
+          <Description>Timestamp of the activity in nanoseconds</Description>
+        </Field>
+        <Field>
+          <Name>CompetitorPeriod</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Competitor time set by the exchange at the time of initiation</Description>
+        </Field>
+        <Field>
+          <Name>SolicitorPeriod</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Solicitor time set by the exchange at the time of initiation</Description>
+        </Field>
+        <Field>
+          <Name>AuctionNumber</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Auction number, available when the initiation of an auction is broadcast and zero for other books</Description>
+        </Field>
+        <Field>
+          <Name>Suspended</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Whether the security is suspended</Description>
+        </Field>
+        <Field>
+          <Name>Filler</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Filler</Description>
+        </Field>
+        <Field>
+          <Name>PAN</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Permanent Account Number, or PAN_EXEMPT</Description>
+        </Field>
+        <Field>
+          <Name>Segment</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Business segment the order belongs to</Description>
+        </Field>
+        <Field>
+          <Name>ParticipantType</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Initiator, competitor or solicitor order</Description>
+        </Field>
+        <Field>
+          <Name>AccountNumber</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Trader account number, or the broker code for a broker's own order</Description>
+        </Field>
+        <Field>
+          <Name>ProClient</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Whether the order is a client, broker or warehousing order</Description>
+        </Field>
+        <Field>
+          <Name>SettlementType</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Settlement type of the order</Description>
+        </Field>
+        <Field>
+          <Name>Settlor</Name>
+          <Type>CHAR</Type>
+          <Size>12</Size>
+          <Description>Participant responsible for settling the trades through the custodian, defaulting to the Broker Code</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+  </Messages>
+
+  <Structs>
+
+    <!-- IP_DETAILS_PARTITION_WISE -->
+    <Struct>
+      <Name>IP_DETAILS_PARTITION_WISE</Name>
+      <Description>Address of one drop copy gateway partition</Description>
+      <Fields>
+        <Field>
+          <Name>IPAddress</Name>
+          <Type>CHAR</Type>
+          <Size>16</Size>
+          <Description>IP address of the drop copy gateway</Description>
+        </Field>
+        <Field>
+          <Name>Port</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Port of the drop copy gateway</Description>
+        </Field>
+        <Field>
+          <Name>PartitionID</Name>
+          <Type>CHAR</Type>
+          <Size>6</Size>
+          <Description>Partition Id for which data is received on this address</Description>
+        </Field>
+      </Fields>
+    </Struct>
+
+  </Structs>
+
+  <Bitfields>
+
+    <!--
+    ST_ORDER_FLAGS is printed twice in the specification, once For Big Endian Machines and once
+    For Small Endian Machines. Those are two C declarations of the same bytes. Bits are listed
+    here least significant first over the whole two byte container, which is the Big Endian
+    listing read in reverse.
+    -->
+
+    <!-- ST_ORDER_FLAGS -->
+    <Bitfield>
+      <Name>ST_ORDER_FLAGS</Name>
+      <Description>Terms attached to the order</Description>
+      <Fields>
+        <Field>
+          <Name>MatchedInd</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Order has been matched</Description>
+        </Field>
+        <Field>
+          <Name>Traded</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Order has traded</Description>
+        </Field>
+        <Field>
+          <Name>Modified</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Order has been modified</Description>
+        </Field>
+        <Field>
+          <Name>Frozen</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Order is frozen for Nse Control to release</Description>
+        </Field>
+        <Field>
+          <Name>Preopen</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Set for a trade in the call auction 2 market, and zero for a normal market trade or a pre open carried forward order</Description>
+        </Field>
+        <Field>
+          <Name>Order Flags Reserved 5</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Reserved. Named by its position in the container because this structure carries two Reserved bits that are not adjacent</Description>
+        </Field>
+        <Field>
+          <Name>STPC</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Self trade prevention check</Description>
+        </Field>
+        <Field>
+          <Name>Order Flags Reserved 7</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Reserved. Named by its position in the container because this structure carries two Reserved bits that are not adjacent</Description>
+        </Field>
+        <Field>
+          <Name>ATO</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>At the opening order</Description>
+        </Field>
+        <Field>
+          <Name>Mkt</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Market order</Description>
+        </Field>
+        <Field>
+          <Name>OnStop</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Stop loss order, triggered on its trigger price</Description>
+        </Field>
+        <Field>
+          <Name>Day</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Day order</Description>
+        </Field>
+        <Field>
+          <Name>GTC</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Good till cancelled order</Description>
+        </Field>
+        <Field>
+          <Name>IOC</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Immediate or cancel order</Description>
+        </Field>
+        <Field>
+          <Name>AON</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>All or none order</Description>
+        </Field>
+        <Field>
+          <Name>MF</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Minimum fill order</Description>
+        </Field>
+      </Fields>
+    </Bitfield>
+
+  </Bitfields>
+
+  <Enums>
+
+    <!-- BuySell -->
+    <Enum>
+      <Name>BuySell</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Buy Order</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Sell Order</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- BookType -->
+    <Enum>
+      <Name>BookType</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Regular Lot Order</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Special Terms Order</Name>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Stop Loss Order</Name>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>Negotiated Order</Name>
+        </Value>
+        <Value>
+          <Data>5</Data>
+          <Name>Odd Lot Order</Name>
+        </Value>
+        <Value>
+          <Data>6</Data>
+          <Name>Spot Order</Name>
+        </Value>
+        <Value>
+          <Data>7</Data>
+          <Name>Auction Order</Name>
+        </Value>
+        <Value>
+          <Data>11</Data>
+          <Name>Call Auction1</Name>
+        </Value>
+        <Value>
+          <Data>12</Data>
+          <Name>Call Auction2</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- ProClient -->
+    <Enum>
+      <Name>ProClient</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Client's Order</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Broker's Order</Name>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>Warehousing Order</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Segment -->
+    <Enum>
+      <Name>Segment</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Equity Derivatives (F&amp;O)</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Currency Derivatives</Name>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Capital Markets (Cash Equity)</Name>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>SLBM Markets</Name>
+        </Value>
+        <Value>
+          <Data>5</Data>
+          <Name>Commodity Derivatives</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- MessageIndicator -->
+    <Enum>
+      <Name>MessageIndicator</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>Interim Message</Name>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Last Message</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- ParticipantType -->
+    <Enum>
+      <Name>ParticipantType</Name>
+      <Values>
+        <Value>
+          <Data>I</Data>
+          <Name>Initiator</Name>
+        </Value>
+        <Value>
+          <Data>C</Data>
+          <Name>Competitor Order</Name>
+        </Value>
+        <Value>
+          <Data>S</Data>
+          <Name>Solicitor Order</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- SettlementType -->
+    <Enum>
+      <Name>SettlementType</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>T + 0 Settlement</Name>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>T + 1 Settlement</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>T + 2 Settlement</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+  </Enums>
+
+</OmiNnfPdf>

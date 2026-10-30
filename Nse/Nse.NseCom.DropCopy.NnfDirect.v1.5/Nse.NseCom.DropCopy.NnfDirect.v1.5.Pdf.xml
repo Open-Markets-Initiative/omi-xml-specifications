@@ -1,0 +1,2166 @@
+<OmiNnfPdf>
+
+<!--
+  Nse Commodity Derivatives drop copy v1.5: the earlier generation of the Protocol for Drop Copy
+  Service. Message bodies only - the twenty two byte packet header and the forty byte Message
+  Header are framing and live in Nse.Nnf.DirectTcp.v1.0.Source.xml, which this encoding shares
+  with the direct interface.
+
+  Three arithmetic gaps in the document are closed by transcribing the padding the offset
+  column implies. Trade Confirmation jumps a byte before Token and again before New Volume,
+  which is the pack(2) alignment chapter 2 guideline four describes, so Reserved 131 and
+  Reserved 167 are named for their offsets as the interactive specification names them.
+  Giveup Response lists 121 bytes against a declared 122, the odd length being padded to an
+  even one by the same guideline, so Reserved 121 closes it.
+
+  Error Response is not transcribed as a message. The document gives it a layout but no
+  transaction code of its own: chapter 4 states it arrives under Sign On Out (2301) with a
+  non zero Error Code, so it cannot be told from a successful logon by transaction code alone.
+  Its own declared length disagrees with its fields as well, 180 against the 182 its Message
+  Header, 14 byte Reserved and 128 byte Error Message occupy.
+
+  Gtd is not the same field in the two legacy segments. The Currency document calls it "the
+  number of days for a GTD Order"; the Commodity document calls it "the date till when the GTD
+  order would be retained ... an absolute date, which should be in number of seconds since
+  midnight of January 1, 1980". So it is a bare day count in one and a Dos epoch clock in the
+  other, and carrying either wording across would be wrong.
+
+  Table 2.1 gives LONG as four bytes here, not the eight of the version 3 documents, and adds
+  UINT at two bytes unsigned, which no field table uses.
+-->
+
+  <Messages>
+
+    <!-- Signon In Message -->
+    <Message>
+      <Name>Signon In Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Client Message Payload</Branch>
+      <Code>2300</Code>
+      <Category>Administrative</Category>
+      <Origin>Firm</Origin>
+      <Description>Logs the user on to the drop copy feed</Description>
+      <Fields>
+        <Field>
+          <Name>UserId</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>User Id of the user</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>CHAR</Type>
+          <Size>8</Size>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>Password</Name>
+          <Type>CHAR</Type>
+          <Size>8</Size>
+          <Description>Password entered by the user; alphabet, numbers and special characters are allowed</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>CHAR</Type>
+          <Size>8</Size>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>CHAR</Type>
+          <Size>38</Size>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>BrokerId</Name>
+          <Type>CHAR</Type>
+          <Size>5</Size>
+          <Description>Trading member Id</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>CHAR</Type>
+          <Size>119</Size>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>CHAR</Type>
+          <Size>16</Size>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>CHAR</Type>
+          <Size>16</Size>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>CHAR</Type>
+          <Size>16</Size>
+          <Description>Reserved</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Sign On Out Message -->
+    <Message>
+      <Name>Sign On Out Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Server Message Payload</Branch>
+      <Code>2301</Code>
+      <Category>Administrative</Category>
+      <Origin>Exchange</Origin>
+      <Description>Confirms the logon. Alpha Char carries the number of streams the drop copy feed is sent from, one download request being needed per stream. On an error the same transaction code carries the Error Response layout instead, distinguished only by a non zero Error Code</Description>
+      <Fields>
+        <Field>
+          <Name>UserId</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>User Id of the user</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>CHAR</Type>
+          <Size>8</Size>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>Password</Name>
+          <Type>CHAR</Type>
+          <Size>8</Size>
+          <Description>Password entered by the user; alphabet, numbers and special characters are allowed</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>CHAR</Type>
+          <Size>8</Size>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>CHAR</Type>
+          <Size>38</Size>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>BrokerId</Name>
+          <Type>CHAR</Type>
+          <Size>5</Size>
+          <Description>Trading member Id</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>CHAR</Type>
+          <Size>119</Size>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>CHAR</Type>
+          <Size>16</Size>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>CHAR</Type>
+          <Size>16</Size>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>CHAR</Type>
+          <Size>16</Size>
+          <Description>Reserved</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Heartbeat Message -->
+    <Message>
+      <Name>Heartbeat Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Client Message Payload</Branch>
+      <Code>23506</Code>
+      <Category>Administrative</Category>
+      <Origin>Firm</Origin>
+      <Description>Keeps the connection alive during periods of inactivity. Carries the Message Header alone</Description>
+    </Message>
+
+    <!-- Dc Download Request Message -->
+    <Message>
+      <Name>Dc Download Request Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Client Message Payload</Branch>
+      <Code>8000</Code>
+      <Category>Administrative</Category>
+      <Origin>Firm</Origin>
+      <Description>Requests the trade download for one stream, named in the first byte of Alpha Char, from the time given in Sequence Number</Description>
+      <Fields>
+        <Field>
+          <Name>SequenceNumber</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Time the last message was received by the user, taken from Time Stamp 1 of the last trade confirmation; zero to retrieve from the beginning of the trading day</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Trade Confirmation Message -->
+    <Message>
+      <Name>Trade Confirmation Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Server Message Payload</Branch>
+      <Code>2222</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Confirms a trade</Description>
+      <Fields>
+        <Field>
+          <Name>ResponseOrderNumber</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Order number of the order taking part in the trade</Description>
+        </Field>
+        <Field>
+          <Name>BrokerId</Name>
+          <Type>CHAR</Type>
+          <Size>5</Size>
+          <Description>Trading member Id</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>TraderNum</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Trader or user Id</Description>
+        </Field>
+        <Field>
+          <Name>AccountNum</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Account number or client code</Description>
+        </Field>
+        <Field>
+          <Name>BuySell</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Whether the order taking part is a buy or a sell</Description>
+        </Field>
+        <Field>
+          <Name>OriginalVol</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Original traded volume</Description>
+        </Field>
+        <Field>
+          <Name>DisclosedVol</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Quantity disclosed to the market</Description>
+        </Field>
+        <Field>
+          <Name>RemainingVol</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Volume remaining after the trade</Description>
+        </Field>
+        <Field>
+          <Name>DisclosedVolRemaining</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Disclosed volume remaining after the trade</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Order price</Description>
+        </Field>
+        <Field>
+          <Name>ST_ORDER_FLAGS</Name>
+          <Type>STRUCT</Type>
+          <Size>2</Size>
+          <Description>Terms attached to the order</Description>
+        </Field>
+        <Field>
+          <Name>Gtd</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Date until when the GTD order is retained in the system, as an absolute date in seconds from midnight 1 January 1980, and no later than the contract's expiry date</Description>
+        </Field>
+        <Field>
+          <Name>FillNumber</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Trade number</Description>
+        </Field>
+        <Field>
+          <Name>FillQty</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Traded volume</Description>
+        </Field>
+        <Field>
+          <Name>FillPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Price at which the order traded, to be divided by 100 to get the price in rupees</Description>
+        </Field>
+        <Field>
+          <Name>VolFilledToday</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Quantity traded today</Description>
+        </Field>
+        <Field>
+          <Name>ActivityType</Name>
+          <Type>CHAR</Type>
+          <Size>2</Size>
+          <Description>Type of activity being confirmed</Description>
+        </Field>
+        <Field>
+          <Name>ActivityTime</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Time the activity occurred</Description>
+        </Field>
+        <Field>
+          <Name>OpOrderNumber</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Order number on the counter party side</Description>
+        </Field>
+        <Field>
+          <Name>OpBrokerId</Name>
+          <Type>CHAR</Type>
+          <Size>5</Size>
+          <Description>Trading member Id of the counter party</Description>
+        </Field>
+        <Field>
+          <Name>Reserved 131</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Padding, the specification lists no field at this offset</Description>
+        </Field>
+        <Field>
+          <Name>Token</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Token number of the contract</Description>
+        </Field>
+        <Field>
+          <Name>CONTRACT_DESC</Name>
+          <Type>STRUCT</Type>
+          <Size>28</Size>
+          <Description>Contract the trade is for</Description>
+        </Field>
+        <Field>
+          <Name>OpenClose</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Whether the trade opens or closes a position</Description>
+        </Field>
+        <Field>
+          <Name>OldOpenClose</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Previous open or close indicator</Description>
+        </Field>
+        <Field>
+          <Name>BookType</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Book the order belongs to</Description>
+        </Field>
+        <Field>
+          <Name>Reserved 167</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Padding, the specification lists no field at this offset</Description>
+        </Field>
+        <Field>
+          <Name>NewVolume</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Revised volume</Description>
+        </Field>
+        <Field>
+          <Name>OldAccountNumber</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Previous account number</Description>
+        </Field>
+        <Field>
+          <Name>Participant</Name>
+          <Type>CHAR</Type>
+          <Size>12</Size>
+          <Description>Participant's name</Description>
+        </Field>
+        <Field>
+          <Name>OldParticipant</Name>
+          <Type>CHAR</Type>
+          <Size>12</Size>
+          <Description>Previous participant's name</Description>
+        </Field>
+        <Field>
+          <Name>ADDITIONAL_ORDER_FLAGS</Name>
+          <Type>STRUCT</Type>
+          <Size>1</Size>
+          <Description>Further terms attached to the order</Description>
+        </Field>
+        <Field>
+          <Name>ReservedFiller</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>GiveUpTrade</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Whether the trade is a give up</Description>
+        </Field>
+        <Field>
+          <Name>ReservedFiller2</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>PAN</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Permanent Account Number</Description>
+        </Field>
+        <Field>
+          <Name>OldPAN</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Previous Permanent Account Number</Description>
+        </Field>
+        <Field>
+          <Name>Algo ID</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Algo Id issued by the exchange, zero for a non algo order</Description>
+        </Field>
+        <Field>
+          <Name>Reserved filler</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>LastActivityReference</Name>
+          <Type>LONG LONG</Type>
+          <Size>8</Size>
+          <Description>Unique value for the activity, currently in nanoseconds</Description>
+        </Field>
+        <Field>
+          <Name>NnfField</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Fifteen digit unique identifier for the product</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>CHAR</Type>
+          <Size>44</Size>
+          <Description>Reserved</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Trade Cancel Confirm Message -->
+    <Message>
+      <Name>Trade Cancel Confirm Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Server Message Payload</Branch>
+      <Code>2282</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Confirms the cancellation of a trade</Description>
+      <Fields>
+        <Field>
+          <Name>ResponseOrderNumber</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Order number of the order taking part in the trade</Description>
+        </Field>
+        <Field>
+          <Name>BrokerId</Name>
+          <Type>CHAR</Type>
+          <Size>5</Size>
+          <Description>Trading member Id</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>TraderNum</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Trader or user Id</Description>
+        </Field>
+        <Field>
+          <Name>AccountNum</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Account number or client code</Description>
+        </Field>
+        <Field>
+          <Name>BuySell</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Whether the order taking part is a buy or a sell</Description>
+        </Field>
+        <Field>
+          <Name>OriginalVol</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Original traded volume</Description>
+        </Field>
+        <Field>
+          <Name>DisclosedVol</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Quantity disclosed to the market</Description>
+        </Field>
+        <Field>
+          <Name>RemainingVol</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Volume remaining after the trade</Description>
+        </Field>
+        <Field>
+          <Name>DisclosedVolRemaining</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Disclosed volume remaining after the trade</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Order price</Description>
+        </Field>
+        <Field>
+          <Name>ST_ORDER_FLAGS</Name>
+          <Type>STRUCT</Type>
+          <Size>2</Size>
+          <Description>Terms attached to the order</Description>
+        </Field>
+        <Field>
+          <Name>Gtd</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Date until when the GTD order is retained in the system, as an absolute date in seconds from midnight 1 January 1980, and no later than the contract's expiry date</Description>
+        </Field>
+        <Field>
+          <Name>FillNumber</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Trade number</Description>
+        </Field>
+        <Field>
+          <Name>FillQty</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Traded volume</Description>
+        </Field>
+        <Field>
+          <Name>FillPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Price at which the order traded, to be divided by 100 to get the price in rupees</Description>
+        </Field>
+        <Field>
+          <Name>VolFilledToday</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Quantity traded today</Description>
+        </Field>
+        <Field>
+          <Name>ActivityType</Name>
+          <Type>CHAR</Type>
+          <Size>2</Size>
+          <Description>Type of activity being confirmed</Description>
+        </Field>
+        <Field>
+          <Name>ActivityTime</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Time the activity occurred</Description>
+        </Field>
+        <Field>
+          <Name>OpOrderNumber</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Order number on the counter party side</Description>
+        </Field>
+        <Field>
+          <Name>OpBrokerId</Name>
+          <Type>CHAR</Type>
+          <Size>5</Size>
+          <Description>Trading member Id of the counter party</Description>
+        </Field>
+        <Field>
+          <Name>Reserved 131</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Padding, the specification lists no field at this offset</Description>
+        </Field>
+        <Field>
+          <Name>Token</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Token number of the contract</Description>
+        </Field>
+        <Field>
+          <Name>CONTRACT_DESC</Name>
+          <Type>STRUCT</Type>
+          <Size>28</Size>
+          <Description>Contract the trade is for</Description>
+        </Field>
+        <Field>
+          <Name>OpenClose</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Whether the trade opens or closes a position</Description>
+        </Field>
+        <Field>
+          <Name>OldOpenClose</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Previous open or close indicator</Description>
+        </Field>
+        <Field>
+          <Name>BookType</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Book the order belongs to</Description>
+        </Field>
+        <Field>
+          <Name>Reserved 167</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Padding, the specification lists no field at this offset</Description>
+        </Field>
+        <Field>
+          <Name>NewVolume</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Revised volume</Description>
+        </Field>
+        <Field>
+          <Name>OldAccountNumber</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Previous account number</Description>
+        </Field>
+        <Field>
+          <Name>Participant</Name>
+          <Type>CHAR</Type>
+          <Size>12</Size>
+          <Description>Participant's name</Description>
+        </Field>
+        <Field>
+          <Name>OldParticipant</Name>
+          <Type>CHAR</Type>
+          <Size>12</Size>
+          <Description>Previous participant's name</Description>
+        </Field>
+        <Field>
+          <Name>ADDITIONAL_ORDER_FLAGS</Name>
+          <Type>STRUCT</Type>
+          <Size>1</Size>
+          <Description>Further terms attached to the order</Description>
+        </Field>
+        <Field>
+          <Name>ReservedFiller</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>GiveUpTrade</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Whether the trade is a give up</Description>
+        </Field>
+        <Field>
+          <Name>ReservedFiller2</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>PAN</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Permanent Account Number</Description>
+        </Field>
+        <Field>
+          <Name>OldPAN</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Previous Permanent Account Number</Description>
+        </Field>
+        <Field>
+          <Name>Algo ID</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Algo Id issued by the exchange, zero for a non algo order</Description>
+        </Field>
+        <Field>
+          <Name>Reserved filler</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>LastActivityReference</Name>
+          <Type>LONG LONG</Type>
+          <Size>8</Size>
+          <Description>Unique value for the activity, currently in nanoseconds</Description>
+        </Field>
+        <Field>
+          <Name>NnfField</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Fifteen digit unique identifier for the product</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>CHAR</Type>
+          <Size>44</Size>
+          <Description>Reserved</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Trade Cancel Reject Message -->
+    <Message>
+      <Name>Trade Cancel Reject Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Server Message Payload</Branch>
+      <Code>2286</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Rejects a trade cancellation</Description>
+      <Fields>
+        <Field>
+          <Name>ResponseOrderNumber</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Order number of the order taking part in the trade</Description>
+        </Field>
+        <Field>
+          <Name>BrokerId</Name>
+          <Type>CHAR</Type>
+          <Size>5</Size>
+          <Description>Trading member Id</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>TraderNum</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Trader or user Id</Description>
+        </Field>
+        <Field>
+          <Name>AccountNum</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Account number or client code</Description>
+        </Field>
+        <Field>
+          <Name>BuySell</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Whether the order taking part is a buy or a sell</Description>
+        </Field>
+        <Field>
+          <Name>OriginalVol</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Original traded volume</Description>
+        </Field>
+        <Field>
+          <Name>DisclosedVol</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Quantity disclosed to the market</Description>
+        </Field>
+        <Field>
+          <Name>RemainingVol</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Volume remaining after the trade</Description>
+        </Field>
+        <Field>
+          <Name>DisclosedVolRemaining</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Disclosed volume remaining after the trade</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Order price</Description>
+        </Field>
+        <Field>
+          <Name>ST_ORDER_FLAGS</Name>
+          <Type>STRUCT</Type>
+          <Size>2</Size>
+          <Description>Terms attached to the order</Description>
+        </Field>
+        <Field>
+          <Name>Gtd</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Date until when the GTD order is retained in the system, as an absolute date in seconds from midnight 1 January 1980, and no later than the contract's expiry date</Description>
+        </Field>
+        <Field>
+          <Name>FillNumber</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Trade number</Description>
+        </Field>
+        <Field>
+          <Name>FillQty</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Traded volume</Description>
+        </Field>
+        <Field>
+          <Name>FillPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Price at which the order traded, to be divided by 100 to get the price in rupees</Description>
+        </Field>
+        <Field>
+          <Name>VolFilledToday</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Quantity traded today</Description>
+        </Field>
+        <Field>
+          <Name>ActivityType</Name>
+          <Type>CHAR</Type>
+          <Size>2</Size>
+          <Description>Type of activity being confirmed</Description>
+        </Field>
+        <Field>
+          <Name>ActivityTime</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Time the activity occurred</Description>
+        </Field>
+        <Field>
+          <Name>OpOrderNumber</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Order number on the counter party side</Description>
+        </Field>
+        <Field>
+          <Name>OpBrokerId</Name>
+          <Type>CHAR</Type>
+          <Size>5</Size>
+          <Description>Trading member Id of the counter party</Description>
+        </Field>
+        <Field>
+          <Name>Reserved 131</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Padding, the specification lists no field at this offset</Description>
+        </Field>
+        <Field>
+          <Name>Token</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Token number of the contract</Description>
+        </Field>
+        <Field>
+          <Name>CONTRACT_DESC</Name>
+          <Type>STRUCT</Type>
+          <Size>28</Size>
+          <Description>Contract the trade is for</Description>
+        </Field>
+        <Field>
+          <Name>OpenClose</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Whether the trade opens or closes a position</Description>
+        </Field>
+        <Field>
+          <Name>OldOpenClose</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Previous open or close indicator</Description>
+        </Field>
+        <Field>
+          <Name>BookType</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Book the order belongs to</Description>
+        </Field>
+        <Field>
+          <Name>Reserved 167</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Padding, the specification lists no field at this offset</Description>
+        </Field>
+        <Field>
+          <Name>NewVolume</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Revised volume</Description>
+        </Field>
+        <Field>
+          <Name>OldAccountNumber</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Previous account number</Description>
+        </Field>
+        <Field>
+          <Name>Participant</Name>
+          <Type>CHAR</Type>
+          <Size>12</Size>
+          <Description>Participant's name</Description>
+        </Field>
+        <Field>
+          <Name>OldParticipant</Name>
+          <Type>CHAR</Type>
+          <Size>12</Size>
+          <Description>Previous participant's name</Description>
+        </Field>
+        <Field>
+          <Name>ADDITIONAL_ORDER_FLAGS</Name>
+          <Type>STRUCT</Type>
+          <Size>1</Size>
+          <Description>Further terms attached to the order</Description>
+        </Field>
+        <Field>
+          <Name>ReservedFiller</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>GiveUpTrade</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Whether the trade is a give up</Description>
+        </Field>
+        <Field>
+          <Name>ReservedFiller2</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>PAN</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Permanent Account Number</Description>
+        </Field>
+        <Field>
+          <Name>OldPAN</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Previous Permanent Account Number</Description>
+        </Field>
+        <Field>
+          <Name>Algo ID</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Algo Id issued by the exchange, zero for a non algo order</Description>
+        </Field>
+        <Field>
+          <Name>Reserved filler</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>LastActivityReference</Name>
+          <Type>LONG LONG</Type>
+          <Size>8</Size>
+          <Description>Unique value for the activity, currently in nanoseconds</Description>
+        </Field>
+        <Field>
+          <Name>NnfField</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Fifteen digit unique identifier for the product</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>CHAR</Type>
+          <Size>44</Size>
+          <Description>Reserved</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Trade Modify Confirm Message -->
+    <Message>
+      <Name>Trade Modify Confirm Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Server Message Payload</Branch>
+      <Code>2287</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Confirms the modification of a trade</Description>
+      <Fields>
+        <Field>
+          <Name>ResponseOrderNumber</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Order number of the order taking part in the trade</Description>
+        </Field>
+        <Field>
+          <Name>BrokerId</Name>
+          <Type>CHAR</Type>
+          <Size>5</Size>
+          <Description>Trading member Id</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>TraderNum</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Trader or user Id</Description>
+        </Field>
+        <Field>
+          <Name>AccountNum</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Account number or client code</Description>
+        </Field>
+        <Field>
+          <Name>BuySell</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Whether the order taking part is a buy or a sell</Description>
+        </Field>
+        <Field>
+          <Name>OriginalVol</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Original traded volume</Description>
+        </Field>
+        <Field>
+          <Name>DisclosedVol</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Quantity disclosed to the market</Description>
+        </Field>
+        <Field>
+          <Name>RemainingVol</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Volume remaining after the trade</Description>
+        </Field>
+        <Field>
+          <Name>DisclosedVolRemaining</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Disclosed volume remaining after the trade</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Order price</Description>
+        </Field>
+        <Field>
+          <Name>ST_ORDER_FLAGS</Name>
+          <Type>STRUCT</Type>
+          <Size>2</Size>
+          <Description>Terms attached to the order</Description>
+        </Field>
+        <Field>
+          <Name>Gtd</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Date until when the GTD order is retained in the system, as an absolute date in seconds from midnight 1 January 1980, and no later than the contract's expiry date</Description>
+        </Field>
+        <Field>
+          <Name>FillNumber</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Trade number</Description>
+        </Field>
+        <Field>
+          <Name>FillQty</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Traded volume</Description>
+        </Field>
+        <Field>
+          <Name>FillPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Price at which the order traded, to be divided by 100 to get the price in rupees</Description>
+        </Field>
+        <Field>
+          <Name>VolFilledToday</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Quantity traded today</Description>
+        </Field>
+        <Field>
+          <Name>ActivityType</Name>
+          <Type>CHAR</Type>
+          <Size>2</Size>
+          <Description>Type of activity being confirmed</Description>
+        </Field>
+        <Field>
+          <Name>ActivityTime</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Time the activity occurred</Description>
+        </Field>
+        <Field>
+          <Name>OpOrderNumber</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Order number on the counter party side</Description>
+        </Field>
+        <Field>
+          <Name>OpBrokerId</Name>
+          <Type>CHAR</Type>
+          <Size>5</Size>
+          <Description>Trading member Id of the counter party</Description>
+        </Field>
+        <Field>
+          <Name>Reserved 131</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Padding, the specification lists no field at this offset</Description>
+        </Field>
+        <Field>
+          <Name>Token</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Token number of the contract</Description>
+        </Field>
+        <Field>
+          <Name>CONTRACT_DESC</Name>
+          <Type>STRUCT</Type>
+          <Size>28</Size>
+          <Description>Contract the trade is for</Description>
+        </Field>
+        <Field>
+          <Name>OpenClose</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Whether the trade opens or closes a position</Description>
+        </Field>
+        <Field>
+          <Name>OldOpenClose</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Previous open or close indicator</Description>
+        </Field>
+        <Field>
+          <Name>BookType</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Book the order belongs to</Description>
+        </Field>
+        <Field>
+          <Name>Reserved 167</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Padding, the specification lists no field at this offset</Description>
+        </Field>
+        <Field>
+          <Name>NewVolume</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Revised volume</Description>
+        </Field>
+        <Field>
+          <Name>OldAccountNumber</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Previous account number</Description>
+        </Field>
+        <Field>
+          <Name>Participant</Name>
+          <Type>CHAR</Type>
+          <Size>12</Size>
+          <Description>Participant's name</Description>
+        </Field>
+        <Field>
+          <Name>OldParticipant</Name>
+          <Type>CHAR</Type>
+          <Size>12</Size>
+          <Description>Previous participant's name</Description>
+        </Field>
+        <Field>
+          <Name>ADDITIONAL_ORDER_FLAGS</Name>
+          <Type>STRUCT</Type>
+          <Size>1</Size>
+          <Description>Further terms attached to the order</Description>
+        </Field>
+        <Field>
+          <Name>ReservedFiller</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>GiveUpTrade</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Whether the trade is a give up</Description>
+        </Field>
+        <Field>
+          <Name>ReservedFiller2</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>PAN</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Permanent Account Number</Description>
+        </Field>
+        <Field>
+          <Name>OldPAN</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Previous Permanent Account Number</Description>
+        </Field>
+        <Field>
+          <Name>Algo ID</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Algo Id issued by the exchange, zero for a non algo order</Description>
+        </Field>
+        <Field>
+          <Name>Reserved filler</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>LastActivityReference</Name>
+          <Type>LONG LONG</Type>
+          <Size>8</Size>
+          <Description>Unique value for the activity, currently in nanoseconds</Description>
+        </Field>
+        <Field>
+          <Name>NnfField</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Fifteen digit unique identifier for the product</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>CHAR</Type>
+          <Size>44</Size>
+          <Description>Reserved</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Trade Modify Reject Message -->
+    <Message>
+      <Name>Trade Modify Reject Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Server Message Payload</Branch>
+      <Code>2288</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Rejects a trade modification</Description>
+      <Fields>
+        <Field>
+          <Name>ResponseOrderNumber</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Order number of the order taking part in the trade</Description>
+        </Field>
+        <Field>
+          <Name>BrokerId</Name>
+          <Type>CHAR</Type>
+          <Size>5</Size>
+          <Description>Trading member Id</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>TraderNum</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Trader or user Id</Description>
+        </Field>
+        <Field>
+          <Name>AccountNum</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Account number or client code</Description>
+        </Field>
+        <Field>
+          <Name>BuySell</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Whether the order taking part is a buy or a sell</Description>
+        </Field>
+        <Field>
+          <Name>OriginalVol</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Original traded volume</Description>
+        </Field>
+        <Field>
+          <Name>DisclosedVol</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Quantity disclosed to the market</Description>
+        </Field>
+        <Field>
+          <Name>RemainingVol</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Volume remaining after the trade</Description>
+        </Field>
+        <Field>
+          <Name>DisclosedVolRemaining</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Disclosed volume remaining after the trade</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Order price</Description>
+        </Field>
+        <Field>
+          <Name>ST_ORDER_FLAGS</Name>
+          <Type>STRUCT</Type>
+          <Size>2</Size>
+          <Description>Terms attached to the order</Description>
+        </Field>
+        <Field>
+          <Name>Gtd</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Date until when the GTD order is retained in the system, as an absolute date in seconds from midnight 1 January 1980, and no later than the contract's expiry date</Description>
+        </Field>
+        <Field>
+          <Name>FillNumber</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Trade number</Description>
+        </Field>
+        <Field>
+          <Name>FillQty</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Traded volume</Description>
+        </Field>
+        <Field>
+          <Name>FillPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Price at which the order traded, to be divided by 100 to get the price in rupees</Description>
+        </Field>
+        <Field>
+          <Name>VolFilledToday</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Quantity traded today</Description>
+        </Field>
+        <Field>
+          <Name>ActivityType</Name>
+          <Type>CHAR</Type>
+          <Size>2</Size>
+          <Description>Type of activity being confirmed</Description>
+        </Field>
+        <Field>
+          <Name>ActivityTime</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Time the activity occurred</Description>
+        </Field>
+        <Field>
+          <Name>OpOrderNumber</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Order number on the counter party side</Description>
+        </Field>
+        <Field>
+          <Name>OpBrokerId</Name>
+          <Type>CHAR</Type>
+          <Size>5</Size>
+          <Description>Trading member Id of the counter party</Description>
+        </Field>
+        <Field>
+          <Name>Reserved 131</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Padding, the specification lists no field at this offset</Description>
+        </Field>
+        <Field>
+          <Name>Token</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Token number of the contract</Description>
+        </Field>
+        <Field>
+          <Name>CONTRACT_DESC</Name>
+          <Type>STRUCT</Type>
+          <Size>28</Size>
+          <Description>Contract the trade is for</Description>
+        </Field>
+        <Field>
+          <Name>OpenClose</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Whether the trade opens or closes a position</Description>
+        </Field>
+        <Field>
+          <Name>OldOpenClose</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Previous open or close indicator</Description>
+        </Field>
+        <Field>
+          <Name>BookType</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Book the order belongs to</Description>
+        </Field>
+        <Field>
+          <Name>Reserved 167</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Padding, the specification lists no field at this offset</Description>
+        </Field>
+        <Field>
+          <Name>NewVolume</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Revised volume</Description>
+        </Field>
+        <Field>
+          <Name>OldAccountNumber</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Previous account number</Description>
+        </Field>
+        <Field>
+          <Name>Participant</Name>
+          <Type>CHAR</Type>
+          <Size>12</Size>
+          <Description>Participant's name</Description>
+        </Field>
+        <Field>
+          <Name>OldParticipant</Name>
+          <Type>CHAR</Type>
+          <Size>12</Size>
+          <Description>Previous participant's name</Description>
+        </Field>
+        <Field>
+          <Name>ADDITIONAL_ORDER_FLAGS</Name>
+          <Type>STRUCT</Type>
+          <Size>1</Size>
+          <Description>Further terms attached to the order</Description>
+        </Field>
+        <Field>
+          <Name>ReservedFiller</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>GiveUpTrade</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Whether the trade is a give up</Description>
+        </Field>
+        <Field>
+          <Name>ReservedFiller2</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>PAN</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Permanent Account Number</Description>
+        </Field>
+        <Field>
+          <Name>OldPAN</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Previous Permanent Account Number</Description>
+        </Field>
+        <Field>
+          <Name>Algo ID</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Algo Id issued by the exchange, zero for a non algo order</Description>
+        </Field>
+        <Field>
+          <Name>Reserved filler</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>LastActivityReference</Name>
+          <Type>LONG LONG</Type>
+          <Size>8</Size>
+          <Description>Unique value for the activity, currently in nanoseconds</Description>
+        </Field>
+        <Field>
+          <Name>NnfField</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Fifteen digit unique identifier for the product</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>CHAR</Type>
+          <Size>44</Size>
+          <Description>Reserved</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Giveup App Confirm Tm Message -->
+    <Message>
+      <Name>Giveup App Confirm Tm Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Server Message Payload</Branch>
+      <Code>4506</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Approves a give up</Description>
+      <Fields>
+        <Field>
+          <Name>ReasonCode</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Reason code for the give up packet</Description>
+        </Field>
+        <Field>
+          <Name>OrderNumber</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Order number of the order</Description>
+        </Field>
+        <Field>
+          <Name>FillNumber</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Trade number</Description>
+        </Field>
+        <Field>
+          <Name>InstrumentName</Name>
+          <Type>CHAR</Type>
+          <Size>6</Size>
+          <Description>Instrument name of the contract</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Symbol of the underlying</Description>
+        </Field>
+        <Field>
+          <Name>ExpiryDate</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Expiry date of the contract</Description>
+        </Field>
+        <Field>
+          <Name>StrikePrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Valid strike for an options contract, and -1 for a futures contract</Description>
+        </Field>
+        <Field>
+          <Name>OptionType</Name>
+          <Type>CHAR</Type>
+          <Size>2</Size>
+          <Description>Option type identifier</Description>
+        </Field>
+        <Field>
+          <Name>CALevel</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Corporate action level</Description>
+        </Field>
+        <Field>
+          <Name>FillVolume</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Traded volume</Description>
+        </Field>
+        <Field>
+          <Name>FillPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Price at which the order traded</Description>
+        </Field>
+        <Field>
+          <Name>BrokerId</Name>
+          <Type>CHAR</Type>
+          <Size>5</Size>
+          <Description>Trading member Id</Description>
+        </Field>
+        <Field>
+          <Name>Filler</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Filler</Description>
+        </Field>
+        <Field>
+          <Name>BuySell</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Whether the order is a buy or a sell</Description>
+        </Field>
+        <Field>
+          <Name>BookType</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Book the order belongs to</Description>
+        </Field>
+        <Field>
+          <Name>LastModifiedDateTime</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Time the order was last modified</Description>
+        </Field>
+        <Field>
+          <Name>InitiatedByControl</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Whether the give up was initiated by Nse Control</Description>
+        </Field>
+        <Field>
+          <Name>OpenClose</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Whether the trade opens or closes a position</Description>
+        </Field>
+        <Field>
+          <Name>ReservedFiller</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>Participant</Name>
+          <Type>CHAR</Type>
+          <Size>12</Size>
+          <Description>Participant's name</Description>
+        </Field>
+        <Field>
+          <Name>GiveupFlag</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Give up flag</Description>
+        </Field>
+        <Field>
+          <Name>Deleted</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Whether the give up was deleted</Description>
+        </Field>
+        <Field>
+          <Name>Reserved 121</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Padding to an even structure length, as chapter 2 guideline four requires</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Giveup Rej Confirm Tm Message -->
+    <Message>
+      <Name>Giveup Rej Confirm Tm Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Server Message Payload</Branch>
+      <Code>4507</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Rejects a give up</Description>
+      <Fields>
+        <Field>
+          <Name>ReasonCode</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Reason code for the give up packet</Description>
+        </Field>
+        <Field>
+          <Name>OrderNumber</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Order number of the order</Description>
+        </Field>
+        <Field>
+          <Name>FillNumber</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Trade number</Description>
+        </Field>
+        <Field>
+          <Name>InstrumentName</Name>
+          <Type>CHAR</Type>
+          <Size>6</Size>
+          <Description>Instrument name of the contract</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Symbol of the underlying</Description>
+        </Field>
+        <Field>
+          <Name>ExpiryDate</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Expiry date of the contract</Description>
+        </Field>
+        <Field>
+          <Name>StrikePrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Valid strike for an options contract, and -1 for a futures contract</Description>
+        </Field>
+        <Field>
+          <Name>OptionType</Name>
+          <Type>CHAR</Type>
+          <Size>2</Size>
+          <Description>Option type identifier</Description>
+        </Field>
+        <Field>
+          <Name>CALevel</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Corporate action level</Description>
+        </Field>
+        <Field>
+          <Name>FillVolume</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Traded volume</Description>
+        </Field>
+        <Field>
+          <Name>FillPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Price at which the order traded</Description>
+        </Field>
+        <Field>
+          <Name>BrokerId</Name>
+          <Type>CHAR</Type>
+          <Size>5</Size>
+          <Description>Trading member Id</Description>
+        </Field>
+        <Field>
+          <Name>Filler</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Filler</Description>
+        </Field>
+        <Field>
+          <Name>BuySell</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Whether the order is a buy or a sell</Description>
+        </Field>
+        <Field>
+          <Name>BookType</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Book the order belongs to</Description>
+        </Field>
+        <Field>
+          <Name>LastModifiedDateTime</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Time the order was last modified</Description>
+        </Field>
+        <Field>
+          <Name>InitiatedByControl</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Whether the give up was initiated by Nse Control</Description>
+        </Field>
+        <Field>
+          <Name>OpenClose</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Whether the trade opens or closes a position</Description>
+        </Field>
+        <Field>
+          <Name>ReservedFiller</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>Participant</Name>
+          <Type>CHAR</Type>
+          <Size>12</Size>
+          <Description>Participant's name</Description>
+        </Field>
+        <Field>
+          <Name>GiveupFlag</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Give up flag</Description>
+        </Field>
+        <Field>
+          <Name>Deleted</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Whether the give up was deleted</Description>
+        </Field>
+        <Field>
+          <Name>Reserved 121</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Padding to an even structure length, as chapter 2 guideline four requires</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+  </Messages>
+
+  <Structs>
+
+    <!-- CONTRACT_DESC -->
+    <!-- Table 2.3 names this structure CONTRACT_INFO; Trade Confirmation names the field
+         CONTRACT_DESC, which is the name a struct declaration has to carry. -->
+    <Struct>
+      <Name>CONTRACT_DESC</Name>
+      <Description>Contract the trade is for</Description>
+      <Fields>
+        <Field>
+          <Name>InstrumentName</Name>
+          <Type>CHAR</Type>
+          <Size>6</Size>
+          <Description>Instrument name of the contract</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Symbol of the underlying</Description>
+        </Field>
+        <Field>
+          <Name>ExpiryDate</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Expiry date of the contract</Description>
+        </Field>
+        <Field>
+          <Name>StrikePrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Valid strike for an options contract, and -1 for a futures contract</Description>
+        </Field>
+        <Field>
+          <Name>OptionType</Name>
+          <Type>CHAR</Type>
+          <Size>2</Size>
+          <Description>Option type identifier</Description>
+        </Field>
+        <Field>
+          <Name>CALevel</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Corporate Action Level, which should be zero</Description>
+        </Field>
+      </Fields>
+    </Struct>
+
+  </Structs>
+
+  <Bitfields>
+
+    <!--
+    ST_ORDER_FLAGS and ADDITIONAL_ORDER_FLAGS are each printed twice, once For Small Endian
+    Machines and once For Big Endian Machines. Those are two C declarations of the same bytes.
+    Bits are listed here least significant first over the whole container, which is the Big
+    Endian listing read in reverse.
+    -->
+
+    <!-- ST_ORDER_FLAGS -->
+    <Bitfield>
+      <Name>ST_ORDER_FLAGS</Name>
+      <Description>Terms attached to the order</Description>
+      <Fields>
+        <Field>
+          <Name>Reserved 1-3</Name>
+          <Bits>3</Bits>
+          <Type>BIT</Type>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>Frozen</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Order is frozen for Nse Control to release</Description>
+        </Field>
+        <Field>
+          <Name>Modified</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Order has been modified</Description>
+        </Field>
+        <Field>
+          <Name>Traded</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Order has traded</Description>
+        </Field>
+        <Field>
+          <Name>MatchedInd</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Order has been matched</Description>
+        </Field>
+        <Field>
+          <Name>MF</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Minimum fill order</Description>
+        </Field>
+        <Field>
+          <Name>AON</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>All or none order</Description>
+        </Field>
+        <Field>
+          <Name>IOC</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Immediate or cancel order</Description>
+        </Field>
+        <Field>
+          <Name>GTC</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Good till cancelled order</Description>
+        </Field>
+        <Field>
+          <Name>Day</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Day order</Description>
+        </Field>
+        <Field>
+          <Name>MIT</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Market if touched order</Description>
+        </Field>
+        <Field>
+          <Name>SL</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Stop loss order</Description>
+        </Field>
+        <Field>
+          <Name>Market</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Market order</Description>
+        </Field>
+        <Field>
+          <Name>ATO</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>At the opening order</Description>
+        </Field>
+      </Fields>
+    </Bitfield>
+
+    <!-- ADDITIONAL_ORDER_FLAGS -->
+    <Bitfield>
+      <Name>ADDITIONAL_ORDER_FLAGS</Name>
+      <Description>Further terms attached to the order</Description>
+      <Fields>
+        <Field>
+          <Name>Additional Order Flags Reserved 1</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>COL</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Collateral order</Description>
+        </Field>
+        <Field>
+          <Name>Additional Order Flags Reserved 3-8</Name>
+          <Bits>6</Bits>
+          <Type>BIT</Type>
+          <Description>Reserved</Description>
+        </Field>
+      </Fields>
+    </Bitfield>
+
+  </Bitfields>
+
+  <Enums>
+
+    <!-- BuySell -->
+    <Enum>
+      <Name>BuySell</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Buy Order</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Sell Order</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- BookType -->
+    <Enum>
+      <Name>BookType</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Regular lot order</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Special terms order</Name>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Stop loss / MIT order</Name>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>Negotiated order (Not used)</Name>
+        </Value>
+        <Value>
+          <Data>5</Data>
+          <Name>Odd lot order (Not used)</Name>
+        </Value>
+        <Value>
+          <Data>6</Data>
+          <Name>Spot order (Not used)</Name>
+        </Value>
+        <Value>
+          <Data>7</Data>
+          <Name>Auction order (Not used)</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- OptionType -->
+    <Enum>
+      <Name>OptionType</Name>
+      <Values>
+        <Value>
+          <Data>CE</Data>
+          <Name>Call Option</Name>
+        </Value>
+        <Value>
+          <Data>PE</Data>
+          <Name>Put Option</Name>
+        </Value>
+        <Value>
+          <Data>XX</Data>
+          <Name>Futures Contract</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- OpenClose -->
+    <Enum>
+      <Name>OpenClose</Name>
+      <Values>
+        <Value>
+          <Data>O</Data>
+          <Name>Open</Name>
+        </Value>
+        <Value>
+          <Data>C</Data>
+          <Name>Close</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- ActivityType -->
+    <Enum>
+      <Name>ActivityType</Name>
+      <Values>
+        <Value>
+          <Data>B</Data>
+          <Name>Buy</Name>
+        </Value>
+        <Value>
+          <Data>S</Data>
+          <Name>Sell</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+  </Enums>
+
+</OmiNnfPdf>

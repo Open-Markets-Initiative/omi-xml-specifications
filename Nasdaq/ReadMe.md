@@ -113,7 +113,7 @@
 | NordicEquities | OrderEntry | Ouch | 5.01.14 | [files](Nasdaq.NordicEquities.OrderEntry.Ouch.v5.01.14/) |
 | NordicEquities | OrderEntry | Ouch | 5.02.11 | [files](Nasdaq.NordicEquities.OrderEntry.Ouch.v5.02.11/) |
 | NordicEquities | OrderEntry | Ouch | 5.02.6 | [files](Nasdaq.NordicEquities.OrderEntry.Ouch.v5.02.6/) |
-| NordicEquities | RiskControl | Binary | 1.00.1 | [files](Nasdaq.NordicEquities.RiskControl.Binary.v1.00.1/) |
+| NordicEquities | RiskControl | Prm | 1.00.1 | [files](Nasdaq.NordicEquities.RiskControl.Prm.v1.00.1/) |
 | NordicEquities | TotalView | Glimpse | 3.00.1 | [files](Nasdaq.NordicEquities.TotalView.Glimpse.v3.00.1/) |
 | NordicEquities | TotalView | Itch | 3.04.5 | [files](Nasdaq.NordicEquities.TotalView.Itch.v3.04.5/) |
 | NordicEquities | TotalView | Itch | 3.04.6 | [files](Nasdaq.NordicEquities.TotalView.Itch.v3.04.6/) |
@@ -303,6 +303,7 @@
 | Utdf | Output | Utp | 3.0.c | [files](Nasdaq.Utdf.Output.Utp.v3.0.c/) |
 | Utp | Input | Utp | 4.0 | [files](Nasdaq.Utp.Input.Utp.v4.0/) |
 | Utp | Snapshot | Utp | 3.0 | [files](Nasdaq.Utp.Snapshot.Utp.v3.0/) |
+| Utp | Snapshot | Utp | 5.0 | [files](Nasdaq.Utp.Snapshot.Utp.v5.0/) |
 
 A specification marked private is released by the venue to registered participants only. Those protocols are listed here for completeness, and nothing read out of their documents is published: no message layouts, no field names, no wording. The generated parsers in the definition repositories describe the wire format and are published as usual.
 

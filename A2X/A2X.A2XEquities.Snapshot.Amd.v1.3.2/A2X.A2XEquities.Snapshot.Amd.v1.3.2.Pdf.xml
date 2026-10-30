@@ -5,34 +5,36 @@
     <!-- Heartbeat Message -->
     <Message>
       <Name>Heartbeat Message</Name>
-      <Description>The Heartbeat message carries no data</Description>
       <Branch>Payload</Branch>
       <Dependency>Msg Type</Dependency>
-      <Category>Continuous</Category>
       <Code>1</Code>
+      <Category>Administrative</Category>
+      <Origin>Exchange</Origin>
+      <Description>The Heartbeat message carries no data; it is simply a message header with msgType of 1.</Description>
       <Fields/>
     </Message>
 
     <!-- Snapshot Start Message -->
     <Message>
       <Name>Snapshot Start Message</Name>
-      <Description>A Snapshot Start message is published as the first message in a snapshot to identify the continous stream</Description>
       <Branch>Payload</Branch>
       <Dependency>Msg Type</Dependency>
-      <Category></Category>
       <Code>10</Code>
+      <Category>Snapshot</Category>
+      <Origin>Exchange</Origin>
+      <Description>A Snapshot Start message is published as the first message in a snapshot to identify the sequence number in the continuous stream that this snapshot relates to.</Description>
       <Fields>
         <Field>
           <Name>streamSeqNo</Name>
           <Type>u32</Type>
           <Size>4</Size>
-          <Description>The sequence number of the last message</Description>
+          <Description>The sequence number of the last message in the continuous stream which relates to this snapshot</Description>
         </Field>
         <Field>
           <Name>securityCount</Name>
           <Type>u16</Type>
           <Size>2</Size>
-          <Description>Number of securities reported in this</Description>
+          <Description>Number of securities reported in this snapshot</Description>
         </Field>
         <Field>
           <Name>timestamp</Name>
@@ -46,11 +48,12 @@
     <!-- Book Status Message -->
     <Message>
       <Name>Book Status Message</Name>
-      <Description>A Book Status message is published to report the trading and market status of each security and the number of open orders on the order book for the security at the time of the snapshot</Description>
       <Branch>Payload</Branch>
       <Dependency>Msg Type</Dependency>
-      <Category></Category>
       <Code>11</Code>
+      <Category>Snapshot</Category>
+      <Origin>Exchange</Origin>
+      <Description>A Book Status message is published to report the trading and market status of each security and the number of open orders on the order book for the security at the time of the snapshot.</Description>
       <Fields>
         <Field>
           <Name>securityId</Name>
@@ -62,31 +65,31 @@
           <Name>tradingStatus</Name>
           <Type>u8</Type>
           <Size>1</Size>
-          <Description>Trading Status</Description>
+          <Description>See Section 3.4.8 (Security Status message)</Description>
         </Field>
         <Field>
           <Name>marketFlags</Name>
           <Type>bitfield</Type>
           <Size>1</Size>
-          <Description>market flags</Description>
+          <Description>See Section 3.4.8 (Security Status message)</Description>
         </Field>
         <Field>
           <Name>entries</Name>
           <Type>u16</Type>
           <Size>2</Size>
-          <Description>Number of open orders in the book for this</Description>
+          <Description>Number of open orders in the book for this security</Description>
         </Field>
         <Field>
           <Name>closingBuyQty</Name>
           <Type>u32</Type>
           <Size>4</Size>
-          <Description>Total order quantity on the buy side during</Description>
+          <Description>Total order quantity on the buy side during the closing market, otherwise set to 0 (see note 3.4.9)</Description>
         </Field>
         <Field>
           <Name>closingSellQty</Name>
           <Type>u32</Type>
           <Size>4</Size>
-          <Description>Total order quantity on the sell side during</Description>
+          <Description>Total order quantity on the sell side during the closing market, otherwise set to 0 (see note 3.4.9)</Description>
         </Field>
         <Field>
           <Name>indicativePrice</Name>
@@ -100,17 +103,24 @@
     <!-- Book Entry Message -->
     <Message>
       <Name>Book Entry Message</Name>
-      <Description>An appropriate number of Book Entry messages is published after each Book Status message to provide details of each order and allow the book to be built</Description>
       <Branch>Payload</Branch>
       <Dependency>Msg Type</Dependency>
-      <Category></Category>
       <Code>12</Code>
+      <Category>Snapshot</Category>
+      <Origin>Exchange</Origin>
+      <Description>An appropriate number of Book Entry messages is published after each Book Status message to provide details of each order and allow the book to be built.</Description>
       <Fields>
         <Field>
           <Name>securityId</Name>
           <Type>u16</Type>
           <Size>2</Size>
           <Description>Numeric identifier of the relevant security</Description>
+        </Field>
+        <Field>
+          <Name>side</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>1 = Buy Order, 2 = Sell Order</Description>
         </Field>
         <Field>
           <Name>quantity</Name>
@@ -133,20 +143,27 @@
       </Fields>
     </Message>
 
-    <!-- Market at Close Book Entry Message -->
+    <!-- Mac Book Entry Message -->
     <Message>
-      <Name>Market at Close Book Entry Message</Name>
-      <Description>A2X will publish the volume of the 5 best bid and offer orders per security in chronological order</Description>
+      <Name>Mac Book Entry Message</Name>
       <Branch>Payload</Branch>
       <Dependency>Msg Type</Dependency>
-      <Category></Category>
       <Code>18</Code>
+      <Category>Snapshot</Category>
+      <Origin>Exchange</Origin>
+      <Description>During the MaC phase, A2X will publish the volume of the 5 best bid and offer orders per security in chronological order using the MaC Book Entry Message.</Description>
       <Fields>
         <Field>
           <Name>securityId</Name>
           <Type>u16</Type>
           <Size>2</Size>
           <Description>Numeric identifier of the relevant security</Description>
+        </Field>
+        <Field>
+          <Name>side</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>1 = Buy Order, 2 = Sell Order</Description>
         </Field>
         <Field>
           <Name>quantity</Name>
@@ -173,30 +190,30 @@
 
   <Bitfields>
 
-    <!-- Market Flags -->
+    <!-- marketFlags -->
     <Bitfield>
-      <Name>Market Flags</Name>
-      <Description>Market Flagss</Description>
+      <Name>marketFlags</Name>
+      <Description>Market flags</Description>
       <Fields>
+        <Field>
+          <Name>trading</Name>
+          <Bits>1</Bits>
+          <Description>0 = Continuous Trading Closed, 1 = Continuous Trading Open</Description>
+        </Field>
+        <Field>
+          <Name>macOpen</Name>
+          <Bits>1</Bits>
+          <Description>0 = MaC is Closed, 1 = MaC is Open</Description>
+        </Field>
+        <Field>
+          <Name>macRun</Name>
+          <Bits>1</Bits>
+          <Description>0 = MaC is not locked down, 1 = MaC is locked down</Description>
+        </Field>
         <Field>
           <Name>Unused</Name>
           <Bits>5</Bits>
-          <Description>Reserved for future use</Description>
-        </Field>
-        <Field>
-          <Name>Mac Run</Name>
-          <Bits>1</Bits>
-          <Description>Locked</Description>
-        </Field>
-        <Field>
-          <Name>Mac Open</Name>
-          <Bits>1</Bits>
-          <Description>Open</Description>
-        </Field>
-        <Field>
-          <Name>Trading</Name>
-          <Bits>1</Bits>
-          <Description>Continuous Trading</Description>
+          <Description>Reserved</Description>
         </Field>
       </Fields>
     </Bitfield>
@@ -205,9 +222,9 @@
 
   <Enums>
 
-    <!-- Side -->
+    <!-- side -->
     <Enum>
-      <Name>Side</Name>
+      <Name>side</Name>
       <Values>
         <Value>
           <Data>1</Data>
@@ -216,6 +233,84 @@
         <Value>
           <Data>2</Data>
           <Name>Sell Order</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- tradingStatus -->
+    <Enum>
+      <Name>tradingStatus</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Active</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Halted</Name>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Suspended</Name>
+        </Value>
+        <Value>
+          <Data>8</Data>
+          <Name>Aod Start</Name>
+          <Description>AoD Start</Description>
+        </Value>
+        <Value>
+          <Data>24</Data>
+          <Name>Aod End</Name>
+          <Description>AoD End</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- trading -->
+    <Enum>
+      <Name>trading</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>Continuous Trading Closed</Name>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Continuous Trading Open</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- macOpen -->
+    <Enum>
+      <Name>macOpen</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>Mac Is Closed</Name>
+          <Description>MaC is Closed</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Mac Is Open</Name>
+          <Description>MaC is Open</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- macRun -->
+    <Enum>
+      <Name>macRun</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>Mac Is Not Locked Down</Name>
+          <Description>MaC is not locked down</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Mac Is Locked Down</Name>
+          <Description>MaC is locked down</Description>
         </Value>
       </Values>
     </Enum>

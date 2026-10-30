@@ -14,6 +14,8 @@
 | BoxOptions | SolaMulticast | Hsvf | 1.5 | [files](Box.BoxOptions.SolaMulticast.Hsvf.v1.5/) |
 | BoxOptions | SolaMulticast | Hsvf | 1.8 | [files](Box.BoxOptions.SolaMulticast.Hsvf.v1.8/) |
 | BoxOptions | SolaMulticast | Hsvf | 1.9 | [files](Box.BoxOptions.SolaMulticast.Hsvf.v1.9/) |
+| BoxOptions | SolaMulticast | Hsvf | 2.1 | [files](Box.BoxOptions.SolaMulticast.Hsvf.v2.1/) |
+| BoxOptions | SolaMulticast | Hsvf | 2.2 | [files](Box.BoxOptions.SolaMulticast.Hsvf.v2.2/) |
 | BoxOptions | SolaOrderEntry | Sail | 2.25 | [files](Box.BoxOptions.SolaOrderEntry.Sail.v2.25/) |
 | BoxOptions | SolaTradeReporting | Atr | 4.5 | [files](Box.BoxOptions.SolaTradeReporting.Atr.v4.5/) |
 | BoxOptions | SolaUnicast | Hsvf | 4.5.1 | [files](Box.BoxOptions.SolaUnicast.Hsvf.v4.5.1/) |
