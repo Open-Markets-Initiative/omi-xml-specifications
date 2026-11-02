@@ -1,0 +1,1668 @@
+<OmiFixPdf>
+
+  <!-- Standard FIX 4.2 Message Header (sections 3.1 and 3.2: union of fields A2X expects on inbound and includes on outbound messages) -->
+
+  <Header>
+    <Fields>
+      <Field>
+        <Tag>8</Tag>
+        <Name>BeginString</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+        <Description>FIX 4.2. Always unencrypted, must be the first field in the message.</Description>
+      </Field>
+      <Field>
+        <Tag>9</Tag>
+        <Name>BodyLength</Name>
+        <Required>Y</Required>
+        <Type>Length</Type>
+        <Fixed>Y</Fixed>
+        <Description>Always unencrypted, must be the second field in the message.</Description>
+      </Field>
+      <Field>
+        <Tag>35</Tag>
+        <Name>MsgType</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+        <Description>Always unencrypted, must be the third field in the message.</Description>
+      </Field>
+      <Field>
+        <Tag>34</Tag>
+        <Name>MsgSeqNum</Name>
+        <Required>Y</Required>
+        <Type>SeqNum</Type>
+        <Description>Message sequence number for today's trading session.</Description>
+      </Field>
+      <Field>
+        <Tag>43</Tag>
+        <Name>PossDupFlag</Name>
+        <Required>N</Required>
+        <Type>Boolean</Type>
+        <Description>Set to Y on retransmitted messages (e.g. following a Resend Request).</Description>
+      </Field>
+      <Field>
+        <Tag>49</Tag>
+        <Name>SenderCompID</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Description>ID of sending firm (inbound) / ID representing A2X (outbound), as agreed with A2X. Case-sensitive, maximum 16 characters.</Description>
+      </Field>
+      <Field>
+        <Tag>52</Tag>
+        <Name>SendingTime</Name>
+        <Required>Y</Required>
+        <Type>UTCTimestamp</Type>
+        <Description>Time of message transmission in UTC.</Description>
+      </Field>
+      <Field>
+        <Tag>56</Tag>
+        <Name>TargetCompID</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Description>ID representing A2X (inbound) / ID of counterparty firm (outbound), as agreed. Case-sensitive, maximum 16 characters.</Description>
+      </Field>
+      <Field>
+        <Tag>97</Tag>
+        <Name>PossResend</Name>
+        <Required>N</Required>
+        <Type>Boolean</Type>
+        <Description>Inbound only. Set to Y to indicate that the message may contain information sent under another sequence number. A2X processes Order cancel messages flagged as possible re-sends under a new sequence number, but will not process Order entry or Order modification (cancel/replace) messages flagged as re-sent. N = Original transmission, Y = Possible resend. A2X does not use PossResend on outbound messages.</Description>
+      </Field>
+      <Field>
+        <Tag>115</Tag>
+        <Name>OnBehalfOfCompID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Description>Inbound only. ID representing the trading Member, as agreed with A2X, for service bureau connections.</Description>
+      </Field>
+      <Field>
+        <Tag>122</Tag>
+        <Name>OrigSendingTime</Name>
+        <Required>N</Required>
+        <Type>UTCTimestamp</Type>
+        <Description>For retransmitted messages (PossDupFlag = Y), the time in UTC that the message was initially sent. If not available, set to the same value as SendingTime.</Description>
+      </Field>
+      <Field>
+        <Tag>128</Tag>
+        <Name>DeliverToCompID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Description>Outbound only. The value originally sent to A2X as the OnBehalfOfCompID if received from a service bureau.</Description>
+      </Field>
+    </Fields>
+  </Header>
+
+  <!-- Standard FIX 4.2 Message Trailer -->
+
+  <Trailer>
+    <Fields>
+      <Field>
+        <Tag>10</Tag>
+        <Name>CheckSum</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+        <Description>Three-byte, simple checksum. Always the last field in the message.</Description>
+      </Field>
+    </Fields>
+  </Trailer>
+
+  <Messages>
+
+    <!-- Heartbeat (0) -->
+    <Message>
+      <Name>Heartbeat</Name>
+      <MsgType>0</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Description>Sent if no other messages have been sent for the agreed heartbeat interval (HeartBtInt). When sent in response to a Test Request it echoes back the TestReqID.</Description>
+      <Fields>
+        <Field>
+          <Tag>112</Tag>
+          <Name>TestReqID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Echoed back when the Heartbeat is sent in response to a Test Request.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Test Request (1) -->
+    <Message>
+      <Name>TestRequest</Name>
+      <MsgType>1</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Description>Sent to test the connection and the responsiveness of the counterparty application when no messages have been received for HeartBtInt + 1 seconds. The expected response is a Heartbeat echoing the TestReqID.</Description>
+      <Fields>
+        <Field>
+          <Tag>112</Tag>
+          <Name>TestReqID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Identifier to be echoed back in the responding Heartbeat.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Resend Request (2) -->
+    <Message>
+      <Name>ResendRequest</Name>
+      <MsgType>2</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Description>Initiates message recovery for missed messages after a detected sequence gap. May be for a set range of messages or open ended by setting EndSeqNo = 0. A Resend Request is processed even if received with a high sequence number.</Description>
+      <Fields>
+        <Field>
+          <Tag>7</Tag>
+          <Name>BeginSeqNo</Name>
+          <Required>Y</Required>
+          <Type>SeqNum</Type>
+          <Description>Sequence number of the first message in the range to be resent.</Description>
+        </Field>
+        <Field>
+          <Tag>16</Tag>
+          <Name>EndSeqNo</Name>
+          <Required>Y</Required>
+          <Type>SeqNum</Type>
+          <Description>Sequence number of the last message in the range to be resent. Set to 0 for an open-ended request.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Reject (3) -->
+    <Message>
+      <Name>Reject</Name>
+      <MsgType>3</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Description>Session level reject used to respond to messages that break the session protocol or contain missing or incorrect fields. Used rarely; where possible A2X responds with application level rejects (OrderCancelReject or ExecutionReport with OrdStatus Rejected).</Description>
+      <Fields>
+        <Field>
+          <Tag>45</Tag>
+          <Name>RefSeqNum</Name>
+          <Required>Y</Required>
+          <Type>SeqNum</Type>
+          <Description>MsgSeqNum of the rejected message.</Description>
+        </Field>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Reason for the reject.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Sequence Reset (4) -->
+    <Message>
+      <Name>SequenceReset</Name>
+      <MsgType>4</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Description>Used in Gap Fill mode (GapFillFlag = Y) to cover consecutive administrative messages during message recovery. All retransmitted messages are sent with PossDupFlag = Y.</Description>
+      <Fields>
+        <Field>
+          <Tag>123</Tag>
+          <Name>GapFillFlag</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>Y indicates a Gap Fill in lieu of resending administrative messages.</Description>
+        </Field>
+        <Field>
+          <Tag>36</Tag>
+          <Name>NewSeqNo</Name>
+          <Required>Y</Required>
+          <Type>SeqNum</Type>
+          <Description>New sequence number.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Logout (5) -->
+    <Message>
+      <Name>Logout</Name>
+      <MsgType>5</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Description>Sent by either side to end the FIX session. The initiator continues to process messages until it receives a Logout in response, then may terminate the connection. Under normal circumstances A2X issues a Logout only prior to the end-of-day maintenance window.</Description>
+      <Fields>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Optional free text reason for the logout.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Logon (A) -->
+    <Message>
+      <Name>Logon</Name>
+      <MsgType>A</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Description>First message A2X expects to receive after the TCP/IP connection is established. SenderCompID and TargetCompID are validated against the expected trading configuration; if validation fails the connection is terminated without any message. A2X responds with a Logon echoing the requested heartbeat interval, then handles any message recovery.</Description>
+      <Fields>
+        <Field>
+          <Tag>98</Tag>
+          <Name>EncryptMethod</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Encryption is not used; the session is always unencrypted.</Description>
+        </Field>
+        <Field>
+          <Tag>108</Tag>
+          <Name>HeartBtInt</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Heartbeat interval in seconds. Should be set to a value between 5 and 120 seconds, as required by the counterparty.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- OrderSingle (D), section 5.1 -->
+    <Message>
+      <Name>OrderSingle</Name>
+      <MsgType>D</MsgType>
+      <Category>app</Category>
+      <Origin>Client</Origin>
+      <Description>A2X supports the FIX New Order Single message for order entry.</Description>
+      <Fields>
+        <Field>
+          <Tag>1</Tag>
+          <Name>Account</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Optional account field to specify House or Client Account for use with clearing CCP. If not supplied, A2X will assume House. ‘H’ = House account. ‘C’ = default client account, pre-agreed with the CCP. ‘C:123456’ = specific client account, where ‘123456’ is the required client account ID. Values must be pre-loaded on the A2X systems, any client specified values can be sent with a maximum length of 16 characters.</Description>
+        </Field>
+        <Field>
+          <Tag>11</Tag>
+          <Name>ClOrdID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Unique for each Order on this session for the trading day. Maximum length 20 characters. Note that for performance reasons A2X only validates that ClOrdID is unique, rejecting any duplicates, against currently open orders.</Description>
+        </Field>
+        <Field>
+          <Tag>15</Tag>
+          <Name>Currency</Name>
+          <Required>N</Required>
+          <Type>Currency</Type>
+          <Description>Required if ISIN is used to identify the security, IDSource (22) = 4 (ISIN). ZAC = South African Cents</Description>
+        </Field>
+        <Field>
+          <Tag>18</Tag>
+          <Name>ExecInst</Name>
+          <Required>N</Required>
+          <Type>MultipleValueString</Type>
+          <Description>Instructions for order handling. Required for AoD orders where OrderAttribute (27010) = 4. Values supported by A2X: M = Midpoint peg (pegged to midpoint of PBBO)</Description>
+        </Field>
+        <Field>
+          <Tag>21</Tag>
+          <Name>HandlInst</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>Only acceptable value (and default if not supplied): 1 = Automated execution order, private, no Broker intervention</Description>
+        </Field>
+        <Field>
+          <Tag>22</Tag>
+          <Name>IDSource</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Security identifier. 4 = ISIN, 5 = RIC</Description>
+        </Field>
+        <Field>
+          <Tag>38</Tag>
+          <Name>OrderQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>Number of shares</Description>
+        </Field>
+        <Field>
+          <Tag>40</Tag>
+          <Name>OrdType</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Order type. 2 = Limit, 5 = Market at Close. OrderAttribute (27010) is only valid where OrdType (40) = 2. It selects the book and the order’s behaviour within limit orders (Post-Only, POCR, AoD, Restricted) — the order remains a limit order. An order with OrdType (40) = 5 and OrderAttribute (27010) supplied will be rejected.</Description>
+        </Field>
+        <Field>
+          <Tag>44</Tag>
+          <Name>Price</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Limit price, required for limit orders. Not supported on MaC orders.</Description>
+        </Field>
+        <Field>
+          <Tag>47</Tag>
+          <Name>OrderCapacity</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>By default, if not supplied, orders are accepted as Principal. A = Agency, P = Principal</Description>
+        </Field>
+        <Field>
+          <Tag>48</Tag>
+          <Name>SecurityID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>If using alternative symbology, RIC or ISIN depending on the value of IDSource (22)</Description>
+        </Field>
+        <Field>
+          <Tag>54</Tag>
+          <Name>Side</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Side of order. 1 = Buy, 2 = Sell</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>A2X security - Uniform code. Not required if alternative symbology used.</Description>
+        </Field>
+        <Field>
+          <Tag>59</Tag>
+          <Name>TimeInForce</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>Default, if not supplied, is Day. 0 = Day, 3 = Immediate or Cancel (IOC), 4 = Fill or Kill (FOK), 6 = Good Till Date – will expire at time in ExpireTime (126) field; date must be today’s date, 8 = Good For Auction (GFA). Only Day (59=0) orders are valid for Market at Close (MaC). Auction on Demand (AoD): previously GFA-only; now Day (59=0), GFA (59=8) and IOC (59=3) orders are all valid for the AoD. GFA orders remain only valid for the AoD. IOC orders will be treated as Accept-Or-Cancel (AoC) when OrderAttribute (27010) = 3 or 4.</Description>
+        </Field>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>Y</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Time this order entry request was initiated by the trading Member</Description>
+        </Field>
+        <Field>
+          <Tag>110</Tag>
+          <Name>MinQty</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Minimum quantity (shares) of an order to be executed. Only valid when OrderAttribute (27010) = 3 or 4.</Description>
+        </Field>
+        <Field>
+          <Tag>111</Tag>
+          <Name>MaxFloor</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Display quantity for an iceberg order. The remainder of the order quantity is held in reserve and is not visible. The display quantity of all orders at a given price level will be traded first and then the hidden quantity. When the display quantity has been fully traded it is refreshed from the reserve.</Description>
+        </Field>
+        <Field>
+          <Tag>126</Tag>
+          <Name>ExpireTime</Name>
+          <Required>N</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Date/time in UTC of order expiry for a Good Til Date order, with TimeInForce (59) = 6. Date must be today’s date.</Description>
+        </Field>
+        <Field>
+          <Tag>207</Tag>
+          <Name>SecurityExchange</Name>
+          <Required>N</Required>
+          <Type>Exchange</Type>
+          <Description>Required if ISIN is used to identify the security, IDSource (22) = 4 (ISIN). XJSE = JSE (Johannesburg), 4AXE = Cape Town Exchange</Description>
+        </Field>
+        <Field>
+          <Tag>27010</Tag>
+          <Name>OrderAttribute</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Values supported when OrdType (40) = 2: 0 = Continuous Limit Order Book Regular Order (default), 1 = Continuous Limit Order Book Post-Only Order, 2 = Continuous Limit Order Book POCR Order, 3 = Auction on Demand Limit Order, 4 = Auction on Demand Limit (Pegged/Limit) Order, 5 = Continuous Limit Order Book Restricted Order**, 6 = Continuous Limit Order Book Restricted CR Order**. ** when TIF = Day (59=0), the order will inherit PO/POCR behaviour. When TIF = IOC (59=3) / FOK (59=4) the order will inherit IOC/FOK behaviour.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- ExecutionReport (8), section 5.2. The table is printed flat; as in v2.0 the rows it
+         says are only provided on trade reports, solicited cancel or replace responses, rejects
+         and restatements are branched on ExecType (150). DeliverToCompID (128), printed in the
+         table, is the header field. -->
+    <Message>
+      <Name>ExecutionReport</Name>
+      <MsgType>8</MsgType>
+      <Category>app</Category>
+      <Origin>Exchange</Origin>
+      <Description>A2X uses the FIX Execution Report message to accept or to reject a New Order Single, and to accept an Order Cancel Request or an Order Cancel/Replace Request. Trade reports, and any subsequent trade busts, are also sent using the Execution Report.</Description>
+      <Fields>
+        <Field>
+          <Tag>1</Tag>
+          <Name>Account</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Account is returned for Order Acknowledgements, Trade Acknowledgements and Rejects if provided on the original New Order Single message.</Description>
+        </Field>
+        <Field>
+          <Tag>6</Tag>
+          <Name>AvgPx</Name>
+          <Required>Y</Required>
+          <Type>Price</Type>
+          <Description>Average price of quantity so far traded on this order (zero if no trade)</Description>
+        </Field>
+        <Field>
+          <Tag>11</Tag>
+          <Name>ClOrdID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>The current ClOrdID identifier of the order, or the ClOrdID of the request that is being accepted</Description>
+        </Field>
+        <Field>
+          <Tag>14</Tag>
+          <Name>CumQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>Cumulative quantity so far traded on this order (zero if no trade)</Description>
+        </Field>
+        <Field>
+          <Tag>15</Tag>
+          <Name>Currency</Name>
+          <Required>N</Required>
+          <Type>Currency</Type>
+          <Description>As provided on the original order. ZAC = South African Cents</Description>
+        </Field>
+        <Field>
+          <Tag>17</Tag>
+          <Name>ExecID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Unique id for the trading day for this Execution Report.</Description>
+        </Field>
+        <Field>
+          <Tag>18</Tag>
+          <Name>ExecInst</Name>
+          <Required>N</Required>
+          <Type>MultipleValueString</Type>
+          <Description>Returned when supplied on the original order.</Description>
+        </Field>
+        <Field>
+          <Tag>19</Tag>
+          <Name>ExecRefID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Sent for a trade bust (ExecTransType = 1) to identify the earlier Execution Report for the trade</Description>
+        </Field>
+        <Field>
+          <Tag>20</Tag>
+          <Name>ExecTransType</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Identifies transaction type. 0 = New (for order related messages and trade reports), 1 = Cancel (for a trade bust)</Description>
+        </Field>
+        <Field>
+          <Tag>22</Tag>
+          <Name>IDSource</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>As provided on the original order. 4 = ISIN, 5 = RIC</Description>
+        </Field>
+        <Field>
+          <Tag>31</Tag>
+          <Name>LastPx</Name>
+          <Required>Y</Required>
+          <Type>Price</Type>
+          <Description>Price of this trade (zero if not a trade)</Description>
+        </Field>
+        <Field>
+          <Tag>32</Tag>
+          <Name>LastShares</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>Quantity of this trade (zero if not a trade)</Description>
+        </Field>
+        <Field>
+          <Tag>37</Tag>
+          <Name>OrderID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>A2X order reference number</Description>
+        </Field>
+        <Field>
+          <Tag>38</Tag>
+          <Name>OrderQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>Quantity of the order</Description>
+        </Field>
+        <Field>
+          <Tag>39</Tag>
+          <Name>OrdStatus</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Status of the order. 0 = New, 1 = Partially filled, 2 = Filled, 4 = Canceled, 5 = Replaced, 8 = Rejected, C = Expired</Description>
+        </Field>
+        <Field>
+          <Tag>40</Tag>
+          <Name>OrdType</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>As provided on the original order.</Description>
+        </Field>
+        <Field>
+          <Tag>44</Tag>
+          <Name>Price</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Limit price, if provided on the original order</Description>
+        </Field>
+        <Field>
+          <Tag>47</Tag>
+          <Name>OrderCapacity</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>As provided on the original order, or as provided on a modified MaC order</Description>
+        </Field>
+        <Field>
+          <Tag>48</Tag>
+          <Name>SecurityID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>As provided on the original order</Description>
+        </Field>
+        <Field>
+          <Tag>54</Tag>
+          <Name>Side</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>As provided on the original order</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Uniform symbology code for the security.</Description>
+        </Field>
+        <Field>
+          <Tag>59</Tag>
+          <Name>TimeInForce</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>As provided on the original order</Description>
+        </Field>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>Y</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Time of this event in UTC</Description>
+        </Field>
+        <Field>
+          <Tag>110</Tag>
+          <Name>MinQty</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>As provided on the original order</Description>
+        </Field>
+        <Field>
+          <Tag>111</Tag>
+          <Name>MaxFloor</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Display quantity applicable to an iceberg order.</Description>
+        </Field>
+        <Field>
+          <Tag>126</Tag>
+          <Name>ExpireTime</Name>
+          <Required>N</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>As provided on the original order</Description>
+        </Field>
+        <Field>
+          <Tag>150</Tag>
+          <Name>ExecType</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Reason for this report. 0 = New, 1 = Partially filled, 2 = Filled, 4 = Cancelled, 5 = Replaced, 8 = Rejected, C = Expired, D = Restated</Description>
+        </Field>
+        <Field>
+          <Tag>151</Tag>
+          <Name>LeavesQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>Quantity still open for execution</Description>
+        </Field>
+        <Field>
+          <Tag>207</Tag>
+          <Name>SecurityExchange</Name>
+          <Required>N</Required>
+          <Type>Exchange</Type>
+          <Description>As provided on the original order</Description>
+        </Field>
+        <Branch>
+          <Name>New</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>0</Value>
+          <Fields></Fields>
+        </Branch>
+        <Branch>
+          <Name>Partial Fill</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>1</Value>
+          <Fields>
+            <Field>
+              <Tag>30</Tag>
+              <Name>LastMkt</Name>
+              <Required>N</Required>
+              <Type>Exchange</Type>
+              <Description>Market of execution for last fill, or an indication of the market where an order was routed. A2XX = A2X Market Trade (continuous, MaC and AoD executions).</Description>
+            </Field>
+            <Field>
+              <Tag>375</Tag>
+              <Name>ContraBroker</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Only provided on trade reports, the identifier of the CCP unless a CCP-suppressed ‘self-trade’ where the value is set to ‘SELF’</Description>
+            </Field>
+            <Field>
+              <Tag>382</Tag>
+              <Name>NoContraBrokers</Name>
+              <Required>N</Required>
+              <Type>NumInGroup</Type>
+              <Description>Only provided on trade reports, if present value will = 1</Description>
+            </Field>
+            <Field>
+              <Tag>851</Tag>
+              <Name>LastLiquidityInd</Name>
+              <Required>N</Required>
+              <Type>Int</Type>
+              <Description>FIX 4.4 Tag for trade liquidity indicator. Only provided on trade reports. 1 = Added Liquidity, 2 = Removed Liquidity, 4 = Auction (For AoD and MaC trades)</Description>
+            </Field>
+          </Fields>
+        </Branch>
+        <Branch>
+          <Name>Fill</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>2</Value>
+          <Fields>
+            <Field>
+              <Tag>30</Tag>
+              <Name>LastMkt</Name>
+              <Required>N</Required>
+              <Type>Exchange</Type>
+              <Description>Market of execution for last fill, or an indication of the market where an order was routed. A2XX = A2X Market Trade (continuous, MaC and AoD executions).</Description>
+            </Field>
+            <Field>
+              <Tag>375</Tag>
+              <Name>ContraBroker</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>Only provided on trade reports, the identifier of the CCP unless a CCP-suppressed ‘self-trade’ where the value is set to ‘SELF’</Description>
+            </Field>
+            <Field>
+              <Tag>382</Tag>
+              <Name>NoContraBrokers</Name>
+              <Required>N</Required>
+              <Type>NumInGroup</Type>
+              <Description>Only provided on trade reports, if present value will = 1</Description>
+            </Field>
+            <Field>
+              <Tag>851</Tag>
+              <Name>LastLiquidityInd</Name>
+              <Required>N</Required>
+              <Type>Int</Type>
+              <Description>FIX 4.4 Tag for trade liquidity indicator. Only provided on trade reports. 1 = Added Liquidity, 2 = Removed Liquidity, 4 = Auction (For AoD and MaC trades)</Description>
+            </Field>
+          </Fields>
+        </Branch>
+        <Branch>
+          <Name>Cancelled</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>4</Value>
+          <Fields>
+            <Field>
+              <Tag>41</Tag>
+              <Name>OrigClOrdID</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>ClOrdId of the order that is being cancelled or replaced (for solicited cancel or replace responses only)</Description>
+            </Field>
+            <Field>
+              <Tag>58</Tag>
+              <Name>Text</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>To provide error text in case of a reject message, or a cancellation reason if a resting order is force cancelled</Description>
+            </Field>
+          </Fields>
+        </Branch>
+        <Branch>
+          <Name>Replaced</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>5</Value>
+          <Fields>
+            <Field>
+              <Tag>41</Tag>
+              <Name>OrigClOrdID</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>ClOrdId of the order that is being cancelled or replaced (for solicited cancel or replace responses only)</Description>
+            </Field>
+          </Fields>
+        </Branch>
+        <Branch>
+          <Name>Rejected</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>8</Value>
+          <Fields>
+            <Field>
+              <Tag>58</Tag>
+              <Name>Text</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>To provide error text in case of a reject message, or a cancellation reason if a resting order is force cancelled</Description>
+            </Field>
+          </Fields>
+        </Branch>
+        <Branch>
+          <Name>Expired</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>C</Value>
+          <Fields></Fields>
+        </Branch>
+        <Branch>
+          <Name>Restated</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>D</Value>
+          <Fields>
+            <Field>
+              <Tag>198</Tag>
+              <Name>SecondaryOrderID</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Description>The A2X market data order id for tracking purposes, sent on a restatement message after the refresh of displayed quantity for an iceberg order</Description>
+            </Field>
+            <Field>
+              <Tag>378</Tag>
+              <Name>ExecRestatementReason</Name>
+              <Required>N</Required>
+              <Type>Int</Type>
+              <Description>Only provided on Restatement for iceberg or MaC orders: 4 = Broker option – indicates iceberg order has refreshed, or MaC order has fully matched, 5 = Partial reduction of order quantity (exchange initiated partial cancel) – indicates MaC order has partially matched</Description>
+            </Field>
+          </Fields>
+        </Branch>
+      </Fields>
+    </Message>
+
+    <!-- OrderCancelReplaceRequest (G), section 5.3 -->
+    <Message>
+      <Name>OrderCancelReplaceRequest</Name>
+      <MsgType>G</MsgType>
+      <Category>app</Category>
+      <Origin>Client</Origin>
+      <Description>A2X supports the FIX Order Cancel/Replace message for order modification as detailed below. It may be used to modify the limit price of an order and/or to increase or decrease the order quantity. For MaC orders, the Order Capacity (47) can be modified up to the point when the trade is published. For iceberg orders, the display quantity may be modified using MaxFloor (111). If the field is not sent, the original display quantity will be reused and will be applied to the modified order. Note that A2X does not support the modification of a regular limit order into an iceberg order. A2X does not support the re-opening of a fully filled order by increasing order quantity or the sending of "Pending Replace" messages.</Description>
+      <Fields>
+        <Field>
+          <Tag>11</Tag>
+          <Name>ClOrdID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Unique identifier for the replacement order on this session for the trading day. Maximum length 20 characters.</Description>
+        </Field>
+        <Field>
+          <Tag>15</Tag>
+          <Name>Currency</Name>
+          <Required>N</Required>
+          <Type>Currency</Type>
+          <Description>As provided on the original order</Description>
+        </Field>
+        <Field>
+          <Tag>18</Tag>
+          <Name>ExecInst</Name>
+          <Required>N</Required>
+          <Type>MultipleValueString</Type>
+          <Description>Instructions for order handling. Required for AoD orders where OrderAttribute (27010) = 4. Values supported by A2X: M = Midpoint peg (pegged to midpoint of PBBO)</Description>
+        </Field>
+        <Field>
+          <Tag>22</Tag>
+          <Name>IDSource</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>As provided on the original order</Description>
+        </Field>
+        <Field>
+          <Tag>38</Tag>
+          <Name>OrderQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>New total order quantity (number of shares)</Description>
+        </Field>
+        <Field>
+          <Tag>40</Tag>
+          <Name>OrdType</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>As provided on the original order</Description>
+        </Field>
+        <Field>
+          <Tag>41</Tag>
+          <Name>OrigClOrdID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Identifier for the original or last modified version of the order</Description>
+        </Field>
+        <Field>
+          <Tag>44</Tag>
+          <Name>Price</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>New limit price, required for limit orders.</Description>
+        </Field>
+        <Field>
+          <Tag>47</Tag>
+          <Name>OrderCapacity</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>Values supported by A2X: A = Agency, P = Principal</Description>
+        </Field>
+        <Field>
+          <Tag>48</Tag>
+          <Name>SecurityID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>As provided on the original order.</Description>
+        </Field>
+        <Field>
+          <Tag>54</Tag>
+          <Name>Side</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>As provided on the original order.</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>As provided on the original order</Description>
+        </Field>
+        <Field>
+          <Tag>59</Tag>
+          <Name>TimeInForce</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>As sent on the original order, this field cannot be modified.</Description>
+        </Field>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>Y</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Time this order modification request was initiated by the trading Member</Description>
+        </Field>
+        <Field>
+          <Tag>110</Tag>
+          <Name>MinQty</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>New minimum quantity (shares) of an order to be executed. Only valid for AoD orders where OrderAttribute (27010) = 3 or 4.</Description>
+        </Field>
+        <Field>
+          <Tag>111</Tag>
+          <Name>MaxFloor</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Display quantity for an iceberg order. The remainder of the order quantity is held in reserve and is not visible. The display quantity of all orders at a given price level will be traded first and then the hidden quantity. When the display quantity has been fully traded it is refreshed from the reserve.</Description>
+        </Field>
+        <Field>
+          <!-- The table's + marks 27010 "optional for modifies, defaults to original order". Its values
+               differ from New Order Single's, which the root Values carry. -->
+          <Tag>27010</Tag>
+          <Name>OrderAttribute</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Optional for modifies, defaults to original order. 0 = No constraint, regular order (default if tag not supplied), 1 = Post-Only Order, 2 = POCR, 4 = Restricted Order, 5 = Restricted CR Order. Note: the value set for tag 27010 on Order Cancel/Replace Request differs from that used on New Order Single.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- OrderCancelRequest (F), section 5.4 -->
+    <Message>
+      <Name>OrderCancelRequest</Name>
+      <MsgType>F</MsgType>
+      <Category>app</Category>
+      <Origin>Client</Origin>
+      <Description>A2X supports the FIX Order Cancel Request message to fully cancel an open order or the balance on a partially traded order.</Description>
+      <Fields>
+        <Field>
+          <Tag>11</Tag>
+          <Name>ClOrdID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Unique identifier of the cancel request. Maximum length 20 characters.</Description>
+        </Field>
+        <Field>
+          <Tag>15</Tag>
+          <Name>Currency</Name>
+          <Required>N</Required>
+          <Type>Currency</Type>
+          <Description>As provided on the original order. ZAC = South African Cents</Description>
+        </Field>
+        <Field>
+          <Tag>22</Tag>
+          <Name>IDSource</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>As provided on the original order. 4 = ISIN, 5 = RIC</Description>
+        </Field>
+        <Field>
+          <Tag>41</Tag>
+          <Name>OrigClOrdID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Identifier for the original or last modified version of the order.</Description>
+        </Field>
+        <Field>
+          <Tag>48</Tag>
+          <Name>SecurityID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>As provided on the original order</Description>
+        </Field>
+        <Field>
+          <Tag>54</Tag>
+          <Name>Side</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>As provided on the original order. 1 = Buy, 2 = Sell</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>As provided on the original order.</Description>
+        </Field>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>Y</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Time this order cancel request was initiated by the trading Member</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- OrderCancelReject (9), section 5.5 -->
+    <Message>
+      <Name>OrderCancelReject</Name>
+      <MsgType>9</MsgType>
+      <Category>app</Category>
+      <Origin>Exchange</Origin>
+      <Description>A2X rejects an Order Cancel Request or an Order Cancel/Replace Request that it cannot act upon with a FIX Order Cancel Reject message.</Description>
+      <Fields>
+        <Field>
+          <Tag>11</Tag>
+          <Name>ClOrdID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>The ClOrdID of the request that is being rejected</Description>
+        </Field>
+        <Field>
+          <Tag>37</Tag>
+          <Name>OrderID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>A2X order reference number. If an unknown order, value will be 0</Description>
+        </Field>
+        <Field>
+          <Tag>39</Tag>
+          <Name>OrdStatus</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Status of the order that failed to be cancelled or replaced. If an unknown order, value will be set to 8 (Rejected). 0 = New, 1 = Partially filled, 2 = Filled, 4 = Canceled, 5 = Replaced, 8 = Rejected</Description>
+        </Field>
+        <Field>
+          <Tag>41</Tag>
+          <Name>OrigClOrdID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>The ClOrdID that could not be cancelled or replaced</Description>
+        </Field>
+        <Field>
+          <Tag>44</Tag>
+          <Name>Price</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Limit price, if provided on the original order</Description>
+        </Field>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>To provide a reason for the reject</Description>
+        </Field>
+        <Field>
+          <Tag>434</Tag>
+          <Name>CxlRejResponseTo</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>The type of request that this is a response to. 1 = Order Cancel Request, 2 = Order Cancel/Replace Request</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- TradeCaptureReport (AE), section 5.6. The rows marked * are the NoSides (552) repeating group;
+         tag 32 is printed LastQty here and LastShares on the Execution Report. -->
+    <Message>
+      <Name>TradeCaptureReport</Name>
+      <MsgType>AE</MsgType>
+      <Category>app</Category>
+      <Origin>Client</Origin>
+      <Description>A2X uses the Trade Capture Report message from later versions of the FIX specification (specifically 4.4) as an extension to our existing FIX 4.2 ports for the purposes of allowing members to submit negotiated trades to the exchange. Trade Capture Report messages are used by members to submit a trade which conforms to either of the following standards: A Large in Scale (LIS) cross where both legs of the trade must be considered large in scale compared with normal market size if it is equal to or larger than the minimum size of order specified per security. A Negotiated Benchmark Cross trade between either an A2X member and their client or two clients of a member where both legs of the cross must be pre-agreed, priced to an appropriate VWAP or TWAP benchmark. A price-validated Cross Trade, validated against the PBBO or the APBBO. A Matched Principal Trade (MP) where both legs must have a capacity of Principal (P) set.</Description>
+      <Fields>
+        <Field>
+          <Tag>15</Tag>
+          <Name>Currency</Name>
+          <Required>N</Required>
+          <Type>Currency</Type>
+          <Description>Required if ISIN is used to identify the security, IDSource (22) = 4 (ISIN). Values accepted: ZAC = South African Cents</Description>
+        </Field>
+        <Field>
+          <Tag>22</Tag>
+          <Name>IDSource</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Values supported by A2X: 4 = ISIN, 5 = RIC. Please refer to Section 2.3 (Note on Symbology)</Description>
+        </Field>
+        <Field>
+          <Tag>31</Tag>
+          <Name>LastPx</Name>
+          <Required>Y</Required>
+          <Type>Price</Type>
+          <Description>Price of the trade</Description>
+        </Field>
+        <Field>
+          <Tag>32</Tag>
+          <Name>LastQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>Quantity of the trade (field name aligned to LastQty; previously referred to as LastShares)</Description>
+        </Field>
+        <Field>
+          <Tag>48</Tag>
+          <Name>SecurityID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>If using alternative symbology, RIC (primary or A2X) or ISIN depending on the value of IDSource (22)</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Uniform symbology code for the security (not required if alternative symbology is used)</Description>
+        </Field>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>Y</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Time the transaction represented by this TCR occurred (expressed in UTC)</Description>
+        </Field>
+        <Field>
+          <Tag>75</Tag>
+          <Name>TradeDate</Name>
+          <Required>Y</Required>
+          <Type>LocalMktDate</Type>
+          <Description>Date of trade referenced in this message in YYYYMMDD format. Acceptable values are for current day only.</Description>
+        </Field>
+        <Field>
+          <Tag>207</Tag>
+          <Name>SecurityExchange</Name>
+          <Required>N</Required>
+          <Type>Exchange</Type>
+          <Description>Required if ISIN is used to identify the security, IDSource (22) = 4 (ISIN). XJSE = JSE (Johannesburg), 4AXE = Cape Town Exchange</Description>
+        </Field>
+        <Group>
+          <Name>NoSides</Name>
+          <Required>N</Required>
+        </Group>
+        <Field>
+          <Tag>571</Tag>
+          <Name>TradeReportID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Unique identifier for the Trade Capture Report</Description>
+        </Field>
+        <Field>
+          <Tag>828</Tag>
+          <Name>TrdType</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Trade type indicating: 1 = Block Trade (default if not supplied, LIS_CROSS), 11 = Cross Trade, price validated against PBBO, 12 = Cross Trade, price validated against APBBO</Description>
+        </Field>
+        <Field>
+          <Tag>829</Tag>
+          <Name>TrdSubType</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Further definition to tag 828 as required: 0 = Block Trade (LS), 2 = Negotiated Benchmark Cross (NBC), 4 = Matched Principal Trade (MP), 6 = Cross trade for clearing. Self-trade suppression for clearing at the session level takes precedence if the value in tag 829 is 0, 2, 4 or 6 (See Section 2.4).</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- TradeCaptureReportAck (AR), section 5.7. DeliverToCompID (128), printed in the table, is the
+         header field. The NoSides rows are the group the Trade Capture Report defines. -->
+    <Message>
+      <Name>TradeCaptureReportAck</Name>
+      <MsgType>AR</MsgType>
+      <Category>app</Category>
+      <Origin>Exchange</Origin>
+      <Description>In response to a member submitted Trade Capture Report, A2X will send the member back the following acknowledgement.</Description>
+      <Fields>
+        <Field>
+          <Tag>15</Tag>
+          <Name>Currency</Name>
+          <Required>N</Required>
+          <Type>Currency</Type>
+          <Description>Copied from the incoming TradeCaptureReport. ZAC = South African Cents</Description>
+        </Field>
+        <Field>
+          <Tag>17</Tag>
+          <Name>ExecID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Unique ID for the trading day for this Trade Capture Report (previously referred to as TrdMatchID)</Description>
+        </Field>
+        <Field>
+          <Tag>22</Tag>
+          <Name>IDSource</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Copied from the incoming TradeCaptureReport. 4 = ISIN, 5 = RIC</Description>
+        </Field>
+        <Field>
+          <Tag>31</Tag>
+          <Name>LastPx</Name>
+          <Required>Y</Required>
+          <Type>Price</Type>
+          <Description>Copied from the incoming TradeCaptureReport</Description>
+        </Field>
+        <Field>
+          <Tag>32</Tag>
+          <Name>LastQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>Copied from the incoming TradeCaptureReport (field name aligned to LastQty; previously referred to as LastShares)</Description>
+        </Field>
+        <Field>
+          <Tag>48</Tag>
+          <Name>SecurityID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Copied from the incoming TradeCaptureReport</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Copied from the incoming TradeCaptureReport</Description>
+        </Field>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>To provide error text in case of a reject message</Description>
+        </Field>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>Y</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Copied from the incoming TradeCaptureReport</Description>
+        </Field>
+        <Field>
+          <Tag>75</Tag>
+          <Name>TradeDate</Name>
+          <Required>Y</Required>
+          <Type>LocalMktDate</Type>
+          <Description>Copied from the incoming TradeCaptureReport</Description>
+        </Field>
+        <Field>
+          <Tag>150</Tag>
+          <Name>ExecType</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>TCR status: F = Trade, 8 = Rejected</Description>
+        </Field>
+        <Field>
+          <Tag>207</Tag>
+          <Name>SecurityExchange</Name>
+          <Required>N</Required>
+          <Type>Exchange</Type>
+          <Description>Copied from the incoming TradeCaptureReport. XJSE = JSE (Johannesburg)</Description>
+        </Field>
+        <Group>
+          <Name>NoSides</Name>
+          <Required>N</Required>
+        </Group>
+        <Field>
+          <Tag>571</Tag>
+          <Name>TradeReportID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Copied from the incoming TradeCaptureReport</Description>
+        </Field>
+        <Field>
+          <Tag>828</Tag>
+          <Name>TrdType</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Copied from the incoming TradeCaptureReport</Description>
+        </Field>
+        <Field>
+          <Tag>829</Tag>
+          <Name>TrdSubType</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Copied from the incoming TradeCaptureReport</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+  </Messages>
+
+  <Groups>
+
+    <!-- NoSides (552): "Number of Side repeating group instances (maximum number of sides is 2)". The
+         Side, OrderID, Account and OrderCapacity rows are printed with * under it (5.6). The
+         acknowledgement (5.7) prints the same rows "Copied from the incoming TradeCaptureReport", with
+         Side required. -->
+    <Group>
+      <Name>NoSides</Name>
+      <AnchorTag>552</AnchorTag>
+      <Fields>
+        <Field>
+          <Tag>54</Tag>
+          <Name>Side</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>Required when NoSides (552) is greater than 0. Values supported by A2X: 1 = Buy, 2 = Sell</Description>
+        </Field>
+        <Field>
+          <Tag>37</Tag>
+          <Name>OrderID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Unique identifier for each chain of orders. Value must be greater than 1.</Description>
+        </Field>
+        <Field>
+          <Tag>1</Tag>
+          <Name>Account</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Optional account field to specify House or Client Account for use with clearing CCP. If not supplied, A2X will assume ‘House’. Values need to be pre-loaded on the trading platform.</Description>
+        </Field>
+        <Field>
+          <!-- Printed OrderCapacity, the name tag 47 carries on the order messages; named SideOrderCapacity so each tag keeps one name -->
+          <Tag>528</Tag>
+          <Name>SideOrderCapacity</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>The capacity for this side of the trade. Values supported by A2X: A = Agency, P = Principal</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+  </Groups>
+
+  <Values>
+
+    <!-- BeginString (8) static. Source: "FIX 4.2 (Always unencrypted, must be the first field in the message)" -->
+    <Value>
+      <Type>BeginString</Type>
+      <Enum>FIX.4.2</Enum>
+      <Kind>Static</Kind>
+      <Description>FIX 4.2</Description>
+    </Value>
+
+    <!-- Currency (15) -->
+    <Value>
+      <Type>Currency</Type>
+      <Enum>ZAC</Enum>
+      <Description>South African Cents</Description>
+    </Value>
+
+    <!-- ExecInst (18) -->
+    <Value>
+      <Type>ExecInst</Type>
+      <Enum>M</Enum>
+      <Description>Midpoint peg (pegged to midpoint of PBBO)</Description>
+    </Value>
+
+    <!-- ExecTransType (20) -->
+    <Value>
+      <Type>ExecTransType</Type>
+      <Enum>0</Enum>
+      <Description>New (for order related messages and trade reports)</Description>
+    </Value>
+    <Value>
+      <Type>ExecTransType</Type>
+      <Enum>1</Enum>
+      <Description>Cancel (for a trade bust)</Description>
+    </Value>
+
+    <!-- HandlInst (21) -->
+    <Value>
+      <Type>HandlInst</Type>
+      <Enum>1</Enum>
+      <Description>Automated execution order, private, no Broker intervention</Description>
+    </Value>
+
+    <!-- IDSource (22) -->
+    <Value>
+      <Type>IDSource</Type>
+      <Enum>4</Enum>
+      <Description>ISIN</Description>
+    </Value>
+    <Value>
+      <Type>IDSource</Type>
+      <Enum>5</Enum>
+      <Description>RIC</Description>
+    </Value>
+
+    <!-- LastMkt (30) -->
+    <Value>
+      <Type>LastMkt</Type>
+      <Enum>A2XX</Enum>
+      <Description>A2X Market Trade (continuous, MaC and AoD executions)</Description>
+    </Value>
+
+    <!-- OrdStatus (39) -->
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>0</Enum>
+      <Description>New</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>1</Enum>
+      <Description>Partially filled</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>2</Enum>
+      <Description>Filled</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>4</Enum>
+      <Description>Canceled</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>5</Enum>
+      <Description>Replaced</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>8</Enum>
+      <Description>Rejected</Description>
+    </Value>
+    <Value>
+      <Type>OrdStatus</Type>
+      <Enum>C</Enum>
+      <Description>Expired</Description>
+    </Value>
+
+    <!-- OrdType (40) -->
+    <Value>
+      <Type>OrdType</Type>
+      <Enum>2</Enum>
+      <Description>Limit</Description>
+    </Value>
+    <Value>
+      <Type>OrdType</Type>
+      <Enum>5</Enum>
+      <Description>Market at Close</Description>
+    </Value>
+
+    <!-- OrderCapacity (47) -->
+    <Value>
+      <Type>OrderCapacity</Type>
+      <Enum>A</Enum>
+      <Description>Agency</Description>
+    </Value>
+    <Value>
+      <Type>OrderCapacity</Type>
+      <Enum>P</Enum>
+      <Description>Principal</Description>
+    </Value>
+
+    <!-- SideOrderCapacity (528) -->
+    <Value>
+      <Type>SideOrderCapacity</Type>
+      <Enum>A</Enum>
+      <Description>Agency</Description>
+    </Value>
+    <Value>
+      <Type>SideOrderCapacity</Type>
+      <Enum>P</Enum>
+      <Description>Principal</Description>
+    </Value>
+
+    <!-- Side (54) -->
+    <Value>
+      <Type>Side</Type>
+      <Enum>1</Enum>
+      <Description>Buy</Description>
+    </Value>
+    <Value>
+      <Type>Side</Type>
+      <Enum>2</Enum>
+      <Description>Sell</Description>
+    </Value>
+
+    <!-- TimeInForce (59) -->
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>0</Enum>
+      <Description>Day</Description>
+    </Value>
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>3</Enum>
+      <Description>Immediate or Cancel (IOC)</Description>
+    </Value>
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>4</Enum>
+      <Description>Fill or Kill (FOK)</Description>
+    </Value>
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>6</Enum>
+      <Description>Good Till Date</Description>
+    </Value>
+    <Value>
+      <Type>TimeInForce</Type>
+      <Enum>8</Enum>
+      <Description>Good For Auction (GFA)</Description>
+    </Value>
+
+    <!-- ExecType (150): the Execution Report's values, and F from the Trade Capture Report Acknowledgement -->
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>0</Enum>
+      <Description>New</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>1</Enum>
+      <Description>Partially filled</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>2</Enum>
+      <Description>Filled</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>4</Enum>
+      <Description>Cancelled</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>5</Enum>
+      <Description>Replaced</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>8</Enum>
+      <Description>Rejected</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>C</Enum>
+      <Description>Expired</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>D</Enum>
+      <Description>Restated</Description>
+    </Value>
+    <Value>
+      <Type>ExecType</Type>
+      <Enum>F</Enum>
+      <Description>Trade</Description>
+    </Value>
+
+    <!-- SecurityExchange (207) -->
+    <Value>
+      <Type>SecurityExchange</Type>
+      <Enum>XJSE</Enum>
+      <Description>JSE (Johannesburg)</Description>
+    </Value>
+    <Value>
+      <Type>SecurityExchange</Type>
+      <Enum>4AXE</Enum>
+      <Description>Cape Town Exchange</Description>
+    </Value>
+
+    <!-- ExecRestatementReason (378) -->
+    <Value>
+      <Type>ExecRestatementReason</Type>
+      <Enum>4</Enum>
+      <Description>Broker option – indicates iceberg order has refreshed, or MaC order has fully matched</Description>
+    </Value>
+    <Value>
+      <Type>ExecRestatementReason</Type>
+      <Enum>5</Enum>
+      <Description>Partial reduction of order quantity (exchange initiated partial cancel) – indicates MaC order has partially matched</Description>
+    </Value>
+
+    <!-- CxlRejResponseTo (434) -->
+    <Value>
+      <Type>CxlRejResponseTo</Type>
+      <Enum>1</Enum>
+      <Description>Order Cancel Request</Description>
+    </Value>
+    <Value>
+      <Type>CxlRejResponseTo</Type>
+      <Enum>2</Enum>
+      <Description>Order Cancel/Replace Request</Description>
+    </Value>
+
+    <!-- TrdType (828) -->
+    <Value>
+      <Type>TrdType</Type>
+      <Enum>1</Enum>
+      <Description>Block Trade (default if not supplied, LIS_CROSS)</Description>
+    </Value>
+    <Value>
+      <Type>TrdType</Type>
+      <Enum>11</Enum>
+      <Description>Cross Trade, price validated against PBBO</Description>
+    </Value>
+    <Value>
+      <Type>TrdType</Type>
+      <Enum>12</Enum>
+      <Description>Cross Trade, price validated against APBBO</Description>
+    </Value>
+
+    <!-- TrdSubType (829) -->
+    <Value>
+      <Type>TrdSubType</Type>
+      <Enum>0</Enum>
+      <Description>Block Trade (LS)</Description>
+    </Value>
+    <Value>
+      <Type>TrdSubType</Type>
+      <Enum>2</Enum>
+      <Description>Negotiated Benchmark Cross (NBC)</Description>
+    </Value>
+    <Value>
+      <Type>TrdSubType</Type>
+      <Enum>4</Enum>
+      <Description>Matched Principal Trade (MP)</Description>
+    </Value>
+    <Value>
+      <Type>TrdSubType</Type>
+      <Enum>6</Enum>
+      <Description>Cross trade for clearing</Description>
+    </Value>
+
+    <!-- LastLiquidityInd (851) -->
+    <Value>
+      <Type>LastLiquidityInd</Type>
+      <Enum>1</Enum>
+      <Description>Added Liquidity</Description>
+    </Value>
+    <Value>
+      <Type>LastLiquidityInd</Type>
+      <Enum>2</Enum>
+      <Description>Removed Liquidity</Description>
+    </Value>
+    <Value>
+      <Type>LastLiquidityInd</Type>
+      <Enum>4</Enum>
+      <Description>Auction (For AoD and MaC trades)</Description>
+    </Value>
+
+    <!-- OrderAttribute (27010): New Order Single's values (5.1). Order Cancel/Replace Request (5.3) prints its
+         own, which its field description carries: 0 = No constraint, regular order, 1 = Post-Only Order,
+         2 = POCR, 4 = Restricted Order, 5 = Restricted CR Order. -->
+    <Value>
+      <Type>OrderAttribute</Type>
+      <Enum>0</Enum>
+      <Description>Continuous Limit Order Book Regular Order (default)</Description>
+    </Value>
+    <Value>
+      <Type>OrderAttribute</Type>
+      <Enum>1</Enum>
+      <Description>Continuous Limit Order Book Post-Only Order</Description>
+    </Value>
+    <Value>
+      <Type>OrderAttribute</Type>
+      <Enum>2</Enum>
+      <Description>Continuous Limit Order Book POCR Order</Description>
+    </Value>
+    <Value>
+      <Type>OrderAttribute</Type>
+      <Enum>3</Enum>
+      <Description>Auction on Demand Limit Order</Description>
+    </Value>
+    <Value>
+      <Type>OrderAttribute</Type>
+      <Enum>4</Enum>
+      <Description>Auction on Demand Limit (Pegged/Limit) Order</Description>
+    </Value>
+    <Value>
+      <Type>OrderAttribute</Type>
+      <Enum>5</Enum>
+      <Description>Continuous Limit Order Book Restricted Order</Description>
+    </Value>
+    <Value>
+      <Type>OrderAttribute</Type>
+      <Enum>6</Enum>
+      <Description>Continuous Limit Order Book Restricted CR Order</Description>
+    </Value>
+
+  </Values>
+
+</OmiFixPdf>

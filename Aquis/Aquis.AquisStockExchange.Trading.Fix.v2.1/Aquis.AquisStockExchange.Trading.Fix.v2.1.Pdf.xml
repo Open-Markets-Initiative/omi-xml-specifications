@@ -1,0 +1,1359 @@
+<OmiFixPdf>
+
+  <Header>
+    <Fields>
+      <Field>
+        <Tag>8</Tag>
+        <Name>BeginString</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+        <Description>FIX 4.4 (Always unencrypted, must be first field in message)</Description>
+      </Field>
+      <Field>
+        <Tag>9</Tag>
+        <Name>BodyLength</Name>
+        <Required>Y</Required>
+        <Type>Length</Type>
+        <Fixed>Y</Fixed>
+        <Description>(Always unencrypted, must be second field in message)</Description>
+      </Field>
+      <Field>
+        <Tag>35</Tag>
+        <Name>MsgType</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+        <Description>(Always unencrypted, must be third field in message)</Description>
+      </Field>
+      <Field>
+        <Tag>34</Tag>
+        <Name>MsgSeqNum</Name>
+        <Required>Y</Required>
+        <Type>SeqNum</Type>
+        <Description>Message sequence number (inbound to Aquis) for today's trading session</Description>
+      </Field>
+      <Field>
+        <Tag>43</Tag>
+        <Name>PossDupFlag</Name>
+        <Required>N</Required>
+        <Type>Boolean</Type>
+        <Description>Set to Y on retransmitted messages (e.g. following a Resend Request)</Description>
+      </Field>
+      <Field>
+        <Tag>49</Tag>
+        <Name>SenderCompID</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Description>ID of sending firm, as agreed with Aquis</Description>
+      </Field>
+      <Field>
+        <Tag>52</Tag>
+        <Name>SendingTime</Name>
+        <Required>Y</Required>
+        <Type>UTCTimestamp</Type>
+        <Description>Time of message transmission in UTC</Description>
+      </Field>
+      <Field>
+        <Tag>56</Tag>
+        <Name>TargetCompID</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Description>ID representing AQSE, as agreed</Description>
+      </Field>
+      <Field>
+        <Tag>97</Tag>
+        <Name>PossResend</Name>
+        <Required>N</Required>
+        <Type>Boolean</Type>
+        <Description>Set to Y to indicate that message may contain information that has been sent under another sequence number.</Description>
+      </Field>
+      <Field>
+        <Tag>122</Tag>
+        <Name>OrigSendingTime</Name>
+        <Required>N</Required>
+        <Type>UTCTimestamp</Type>
+        <Description>For retransmitted messages (PossDupFlag = Y), the time in UTC that the message was initially sent. If not available, then set to same value as SendingTime</Description>
+      </Field>
+    </Fields>
+  </Header>
+
+  <Trailer>
+    <Fields>
+      <Field>
+        <Tag>10</Tag>
+        <Name>CheckSum</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Fixed>Y</Fixed>
+        <Description>Aquis expects and supports only the mandatory CheckSum (10) as the last field in each message</Description>
+      </Field>
+    </Fields>
+  </Trailer>
+
+  <Messages>
+
+    <!-- Logon (4.2) prints its fields; HeartBtInt is printed HeartbtInt, renamed by the declaration's edits -->
+    <Message>
+      <Name>Logon</Name>
+      <MsgType>A</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>98</Tag>
+          <Name>EncryptMethod</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Always unencrypted. Supported value: 0</Description>
+        </Field>
+        <Field>
+          <Tag>108</Tag>
+          <Name>HeartbtInt</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Same value used by both sides.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- 4.1 lists the session messages; "The structure of these messages corresponds to the standard FIX 4.4 protocol", so their fields are FIX 4.4's -->
+    <Message>
+      <Name>Heartbeat</Name>
+      <MsgType>0</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>112</Tag>
+          <Name>TestReqID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+        </Field>
+      </Fields>
+    </Message>
+
+    <Message>
+      <Name>Test Request</Name>
+      <MsgType>1</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>112</Tag>
+          <Name>TestReqID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+        </Field>
+      </Fields>
+    </Message>
+
+    <Message>
+      <Name>Resend Request</Name>
+      <MsgType>2</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>7</Tag>
+          <Name>BeginSeqNo</Name>
+          <Required>Y</Required>
+          <Type>SeqNum</Type>
+        </Field>
+        <Field>
+          <Tag>16</Tag>
+          <Name>EndSeqNo</Name>
+          <Required>Y</Required>
+          <Type>SeqNum</Type>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Reject is Outbound ONLY (4.1): AQSE uses it "to respond to messages that break the session protocol or contain missing or incorrect fields" (4.4) -->
+    <Message>
+      <Name>Reject</Name>
+      <MsgType>3</MsgType>
+      <Category>admin</Category>
+      <Origin>Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>45</Tag>
+          <Name>RefSeqNum</Name>
+          <Required>Y</Required>
+          <Type>SeqNum</Type>
+        </Field>
+        <Field>
+          <Tag>371</Tag>
+          <Name>RefTagID</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+        </Field>
+        <Field>
+          <Tag>372</Tag>
+          <Name>RefMsgType</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+        </Field>
+        <Field>
+          <Tag>373</Tag>
+          <Name>SessionRejectReason</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+        </Field>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+        </Field>
+      </Fields>
+    </Message>
+
+    <Message>
+      <Name>Sequence Reset</Name>
+      <MsgType>4</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>123</Tag>
+          <Name>GapFillFlag</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+        </Field>
+        <Field>
+          <Tag>36</Tag>
+          <Name>NewSeqNo</Name>
+          <Required>Y</Required>
+          <Type>SeqNum</Type>
+        </Field>
+      </Fields>
+    </Message>
+
+    <Message>
+      <Name>Logout</Name>
+      <MsgType>5</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Trade Capture Report (6.2). TransactTime is printed "p60" and the Side tag "5:q :q4*": tag 60 and tag 54. SecondaryTradeReportRefID wraps across three lines -->
+    <Message>
+      <Name>Trade Capture Report</Name>
+      <MsgType>AE</MsgType>
+      <Category>app</Category>
+      <Origin>Client</Origin>
+      <Fields>
+        <Field>
+          <Tag>571</Tag>
+          <Name>TradeReportID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>User-generated reference for the transaction. This must be unique within at the least the last five business days and a maximum of 30 characters.</Description>
+        </Field>
+        <Field>
+          <Tag>487</Tag>
+          <Name>TradeReportTransType</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Identifies Trade Report message transaction type. Values supported by Aquis: 0 = New, 1 = Cancel, 2 = Replace</Description>
+        </Field>
+        <Field>
+          <Tag>828</Tag>
+          <Name>TrdType</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Type of trade. Aquis supported values: 0 = Regular Trade (O), 38 = Large in Scale (L), 101 = Negotiated Trade in Liquid Financial Instruments, 102 = Negotiated Trade in Illiquid Financial Instruments, 103 = Negotiated Trade Subject to Conditions Other Than the Current Market Price. Absence of TrdType defaults to a Regular Trade.</Description>
+        </Field>
+        <Field>
+          <Tag>829</Tag>
+          <Name>TrdSubType</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Further qualification to the trade type. Aquis supported values: 15 = B (Broker to broker trade), 18 = M (Market maker to market maker trade), 22 = P (Portfolio trade), 26 = R (Riskless principal trade), 37 = X (Cross trade)</Description>
+        </Field>
+        <Field>
+          <Tag>830</Tag>
+          <Name>TrdTypeBenchRef</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Aquis supported values: 0 = No Benchmark or Reference Price Trade, 1 = Benchmark Trade, 2 = Reference Price Trade</Description>
+        </Field>
+        <Group>
+          <Name>NoTradePriceConditions</Name>
+          <Required>N</Required>
+        </Group>
+        <Field>
+          <Tag>1134</Tag>
+          <Name>ReportedPxDiff</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>Indicator to report a price that is different from the current market price. Aquis supported values: Y = Yes, N = No. If set to Y and no price conditions have been set, then the TradePriceCondition (5998) will default to D.</Description>
+        </Field>
+        <Field>
+          <Tag>881</Tag>
+          <Name>SecondaryTradeReportRefID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>When amending/cancelling a Trade Report, set to the SecondaryTradeReportID (818) that was returned in the original TradeCaptureReportAck.</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Not validated as the ISIN is used to identify the security. Set to [N/A].</Description>
+        </Field>
+        <Field>
+          <Tag>48</Tag>
+          <Name>SecurityID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>The ISIN of the security being referenced.</Description>
+        </Field>
+        <Field>
+          <Tag>22</Tag>
+          <Name>SecurityIDSource</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>4 = ISIN. Note this is the only acceptable value (default if not supplied).</Description>
+        </Field>
+        <Field>
+          <Tag>32</Tag>
+          <Name>LastQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>The number of shares agreed to be traded.</Description>
+        </Field>
+        <Field>
+          <Tag>31</Tag>
+          <Name>LastPx</Name>
+          <Required>Y</Required>
+          <Type>Price</Type>
+          <Description>The price at which the trade was agreed, denominated in the currency specified in the board TradingSessionID (336).</Description>
+        </Field>
+        <Field>
+          <Tag>75</Tag>
+          <Name>TradeDate</Name>
+          <Required>Y</Required>
+          <Type>LocalMktDate</Type>
+          <Description>Aquis ignore this field. Date information is retrieved from TransactTime (60).</Description>
+        </Field>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>Y</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Date and time when the transaction occurred.</Description>
+        </Field>
+        <Field>
+          <Tag>64</Tag>
+          <Name>SettlDate</Name>
+          <Required>N</Required>
+          <Type>LocalMktDate</Type>
+          <Description>The date on which the trade is agreed to settle; For equities, this is the settlement date. For CFDs, this is the contract expiry/optional if open-ended contract.</Description>
+        </Field>
+        <Field>
+          <Tag>1390</Tag>
+          <Name>TradePublishIndicator</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Immediate trade publication indicator. Aquis supported values: 1 = Publish immediately. Please refer to 6.2 for the Deferred Publication section.</Description>
+        </Field>
+        <Group>
+          <Name>NoSide</Name>
+          <Required>Y</Required>
+        </Group>
+      </Fields>
+    </Message>
+
+    <!-- Trade Capture Report Acknowledgement (6.3) -->
+    <Message>
+      <Name>Trade Capture Report Ack</Name>
+      <MsgType>AR</MsgType>
+      <Category>app</Category>
+      <Origin>Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>571</Tag>
+          <Name>TradeReportID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>User-generated unique identifier for the Trade Capture Report.</Description>
+        </Field>
+        <Field>
+          <Tag>487</Tag>
+          <Name>TradeReportTransType</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Identifies Trade Report message transaction type. Values sent by Aquis: 0 = New, 1 = Cancel, 2 = Replace</Description>
+        </Field>
+        <Field>
+          <Tag>828</Tag>
+          <Name>TrdType</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Type of trade. Values sent by Aquis: 0 = Regular Trade (O), 101 = Negotiated Trade in Liquid Financial Instruments, 102 = Negotiated Trade in Illiquid Financial Instruments, 103 = Negotiated Trade Subject to Conditions Other than the Current Market Price</Description>
+        </Field>
+        <Field>
+          <Tag>829</Tag>
+          <Name>TrdSubType</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Further qualification to the trade type. Values sent by Aquis: 15 = B, 18 = M, 22 = P, 26 = R, 37 = X</Description>
+        </Field>
+        <Field>
+          <Tag>830</Tag>
+          <Name>TrdTypeBenchRef</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Values sent by Aquis: 0 = No Benchmark or Reference Price Trade, 1 = Benchmark Trade, 2 = Reference Price Trade</Description>
+        </Field>
+        <Field>
+          <Tag>939</Tag>
+          <Name>TrdRptStatus</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Status of Trade Report. 0 = Accepted, 1 = Rejected</Description>
+        </Field>
+        <Field>
+          <Tag>751</Tag>
+          <Name>TradeReportRejectReason</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Reason for the rejection of Trade Report. 2 = Unknown Instrument, 4 = Invalid Trade Type, 99 = Other, 100 = Duplicate TradeReportID (571)</Description>
+        </Field>
+        <Field>
+          <Tag>818</Tag>
+          <Name>SecondaryTradeReportID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Aquis defined Trade Report ID.</Description>
+        </Field>
+        <Field>
+          <Tag>48</Tag>
+          <Name>SecurityID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>The ISIN of the security being referenced.</Description>
+        </Field>
+        <Field>
+          <Tag>22</Tag>
+          <Name>SecurityIDSource</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>4 = ISIN</Description>
+        </Field>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>N</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Time ACK was issued by the matching engine, trading system or counterparty.</Description>
+        </Field>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>This field is returned when the Trade Capture Report message is rejected.</Description>
+        </Field>
+        <Field>
+          <Tag>336</Tag>
+          <Name>TradingSessionID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Echoed back from the Trade Capture Report.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Mass Quote (6.4.1): * marks the quote set group, the second mark (printed as a box) the quote entry group within it -->
+    <Message>
+      <Name>Mass Quote</Name>
+      <MsgType>i</MsgType>
+      <Category>app</Category>
+      <Origin>Client</Origin>
+      <Fields>
+        <Field>
+          <Tag>117</Tag>
+          <Name>QuoteID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>The QuoteID is required to identify the Mass Quote and will be used as a reference on the response Mass Quote Acknowledgement message. The field will be prepended to the QuoteEntryID as the internal reference. Maximum length 50 characters.</Description>
+        </Field>
+        <Field>
+          <Tag>301</Tag>
+          <Name>QuoteResponseLevel</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>1 = Acknowledge rejected quotes only. If omitted, the quotes will be acknowledged. If this field is provided, only errors will be acknowledged.</Description>
+        </Field>
+        <Group>
+          <Name>NoQuoteSets</Name>
+          <Required>Y</Required>
+        </Group>
+      </Fields>
+    </Message>
+
+    <!-- Mass Quote Acknowledgement (6.4.2): its quote sets and entries are those of the Mass Quote, sent with every field optional, the entries adding QuoteEntryStatus and QuoteEntryRejectReason -->
+    <Message>
+      <Name>Mass Quote Acknowledgement</Name>
+      <MsgType>b</MsgType>
+      <Category>app</Category>
+      <Origin>Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>117</Tag>
+          <Name>QuoteID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Required when Acknowledgement is in response to a Quote message.</Description>
+        </Field>
+        <Field>
+          <Tag>297</Tag>
+          <Name>QuoteStatus</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Status of the Mass Quote Acknowledgement. Values sent by Aquis: 0 = Accepted, 5 = Rejected, 100 = Partially Accepted</Description>
+        </Field>
+        <Field>
+          <Tag>300</Tag>
+          <Name>QuoteRejectReason</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Reason quote was rejected. Value sent by Aquis: 99 = Other</Description>
+        </Field>
+        <Field>
+          <Tag>301</Tag>
+          <Name>QuoteResponseLevel</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Level of Response requested from the receiver of the Quote messages. Echoed back to the counterparty. 1 = Acknowledge rejected quotes only</Description>
+        </Field>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Description of error message if failed</Description>
+        </Field>
+        <Group>
+          <Name>NoQuoteSets</Name>
+          <Required>N</Required>
+        </Group>
+      </Fields>
+    </Message>
+
+    <!-- Quote Cancel (6.4.3). Its NoQuoteEntries (295) is "Required when 298=1"; the entries are Symbol, SecurityID and SecurityIDSource -->
+    <Message>
+      <Name>Quote Cancel</Name>
+      <MsgType>Z</MsgType>
+      <Category>app</Category>
+      <Origin>Client</Origin>
+      <Fields>
+        <Field>
+          <Tag>117</Tag>
+          <Name>QuoteID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Unique identifier for quote</Description>
+        </Field>
+        <Field>
+          <Tag>298</Tag>
+          <Name>QuoteCancelType</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Identifies the type of Quote Cancel request. Aquis supported values: 1 = Cancel for Symbol, 4 = Cancel All Quotes. This will cancel all active quotes on the specified board.</Description>
+        </Field>
+        <Field>
+          <Tag>336</Tag>
+          <Name>TradingSessionID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>The identifier of the board to which the trade report is being submitted.</Description>
+        </Field>
+        <Group>
+          <Name>NoQuoteEntries</Name>
+          <Required>N</Required>
+        </Group>
+      </Fields>
+    </Message>
+
+    <!-- Quote Status Report (6.4.4) -->
+    <Message>
+      <Name>Quote Status Report</Name>
+      <MsgType>AI</MsgType>
+      <Category>app</Category>
+      <Origin>Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>117</Tag>
+          <Name>QuoteID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Unique identifier for quote</Description>
+        </Field>
+        <Field>
+          <Tag>336</Tag>
+          <Name>TradingSessionID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>The identifier of the board to which the trade report is being submitted.</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>This field is not validated as Aquis use ISIN's to identify the security.</Description>
+        </Field>
+        <Field>
+          <Tag>48</Tag>
+          <Name>SecurityID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>The ISIN of the security being referenced.</Description>
+        </Field>
+        <Field>
+          <Tag>22</Tag>
+          <Name>SecurityIDSource</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>This field must always be set to the IDSource for ISIN. 4 = ISIN</Description>
+        </Field>
+        <Field>
+          <Tag>54</Tag>
+          <Name>Side</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>This field is not used.</Description>
+        </Field>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>N</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Time of execution/ order execution (expressed in UTC)</Description>
+        </Field>
+        <Field>
+          <Tag>297</Tag>
+          <Name>QuoteStatus</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Values sent by Aquis: 0 = Accepted, 5 = Rejected</Description>
+        </Field>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Description of error message if failed.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+  </Messages>
+
+  <Groups>
+
+    <!-- NoTradePriceConditions (5997): "The number of trade price conditions. Not required if ReportedPxDiff (1134) = Y." TradePriceCondition (5998*) is its repeating field (5.1) -->
+    <Group>
+      <Name>NoTradePriceConditions</Name>
+      <AnchorTag>5997</AnchorTag>
+      <Fields>
+        <Field>
+          <Tag>5998</Tag>
+          <Name>TradePriceCondition</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Indicates the condition under which the bargain was struck. Aquis supported values: 0 = CD, 1 = CR, 2 = XD, 3 = XR, 4 = CC, 5 = CP, 6 = XC, 7 = XP, 8 = CS, 9 = CB, 10 = SP, 11 = XB, 12 = GD. If no price condition has been provided but the ReportedPxDiff (1134) has been set to Y, then the price condition will default to D trade price condition. This means the trade is subject to conditions other than the current market price.</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+    <!-- NoSide (552), printed for NoSides: "Indicates number of Side (54) repeating group instances. Aquis supported values: 1 = One side". Side, OrderID, NoPartyIDs, OrderCapacity and TradingSessionID are printed with * under it -->
+    <Group>
+      <Name>NoSide</Name>
+      <AnchorTag>552</AnchorTag>
+      <Fields>
+        <Field>
+          <Tag>54</Tag>
+          <Name>Side</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>1 = Buy, 2 = Sell</Description>
+        </Field>
+        <Field>
+          <Tag>37</Tag>
+          <Name>OrderID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Set to [N/A].</Description>
+        </Field>
+        <Group>
+          <Name>NoPartyIDs</Name>
+          <Required>Y</Required>
+        </Group>
+        <Field>
+          <Tag>528</Tag>
+          <Name>OrderCapacity</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>The capacity in which the reporting member is trading. Aquis supported values: A = Agency, P = Principal</Description>
+        </Field>
+        <Field>
+          <Tag>336</Tag>
+          <Name>TradingSessionID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>The identifier of the board to which the trade report is being submitted. Aquis supported values: EUR/ISDX-exl, USD/ISDX-exl, EUR/ISDX-exn, GBX/ISDX-exl, USD/ISDX-exn, GBX/ISDX-exn, GBP/ISDX-exl, SEK/ISDX-exn, GBP/ISDX-exn, CHF/ISDX-exl, NOK/ISDX-exl</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+    <!-- NoPartyIDs (453*): "Indicates number of PartyID (448), PartyIDSource (447) and PartyRole (452) repeating group instances. When reporting a trade, set to a value of 2" - the counterparty, then the venue (5.3) -->
+    <Group>
+      <Name>NoPartyIDs</Name>
+      <AnchorTag>453</AnchorTag>
+      <Fields>
+        <Field>
+          <Tag>448</Tag>
+          <Name>PartyID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Used to identify the source of PartyID. Required if PartyIDSource (447) is specified. Required if NoPartyIDs (453) &gt; 0. Please refer to 5.3 for the Parties Block section.</Description>
+        </Field>
+        <Field>
+          <Tag>447</Tag>
+          <Name>PartyIDSource</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Used to identify class or source of the PartyID (448). Aquis supported values: B = BIC, G = MIC. Required if PartyID (448) is specified. Please refer to 5.3 for the Parties Block section.</Description>
+        </Field>
+        <Field>
+          <Tag>452</Tag>
+          <Name>PartyRole</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Identifies the type of PartyID (448) e.g. Executing Broker. Aquis supported values: 17 = Contra Firm, 73 = Executing Venue, 63 = Systematic Internaliser. Required if NoPartyIDs (453) &gt; 0. Please refer to 5.3 for the Parties Block section.</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+    <!-- NoQuoteSets (296*): "Aquis supports 1 quote set. Set value to 1." Mass Quote Acknowledgement prints the same set fields as optional -->
+    <Group>
+      <Name>NoQuoteSets</Name>
+      <AnchorTag>296</AnchorTag>
+      <Fields>
+        <Field>
+          <Tag>302</Tag>
+          <Name>QuoteSetID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Unique identifier for the quote set. Maximum length 16 characters. This field is not validated by Aquis.</Description>
+        </Field>
+        <Field>
+          <Tag>304</Tag>
+          <Name>TotNoQuoteEntries</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Total number of quotes for the quote set across all messages.</Description>
+        </Field>
+        <Field>
+          <Tag>893</Tag>
+          <Name>LastFragment</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>Aquis supported values: N = Message is continued, Y = Last message</Description>
+        </Field>
+        <Group>
+          <Name>NoQuoteEntries</Name>
+          <Required>Y</Required>
+        </Group>
+      </Fields>
+    </Group>
+
+    <!-- NoQuoteEntries (295*): "The number of quote entries for the QuoteSet repeating group". Mass Quote (6.4.1) prints QuoteEntryID through TradingSessionID; the Acknowledgement (6.4.2) the same, optional, then QuoteEntryStatus and QuoteEntryRejectReason; Quote Cancel (6.4.3) Symbol, SecurityID and SecurityIDSource. One group per anchor tag, so it holds every printed entry field, each required as Mass Quote prints it -->
+    <Group>
+      <Name>NoQuoteEntries</Name>
+      <AnchorTag>295</AnchorTag>
+      <Fields>
+        <Field>
+          <Tag>299</Tag>
+          <Name>QuoteEntryID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>This field is not validated by Aquis.</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>This field is not validated as Aquis use ISIN's to identify the security.</Description>
+        </Field>
+        <Field>
+          <Tag>48</Tag>
+          <Name>SecurityID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>The ISIN of the security being referenced.</Description>
+        </Field>
+        <Field>
+          <Tag>22</Tag>
+          <Name>SecurityIDSource</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>This field must always be set to the IDSource for ISIN. 4 = ISIN</Description>
+        </Field>
+        <Field>
+          <Tag>132</Tag>
+          <Name>BidPx</Name>
+          <Required>Y</Required>
+          <Type>Price</Type>
+          <Description>Price of the available bid quantity</Description>
+        </Field>
+        <Field>
+          <Tag>133</Tag>
+          <Name>OfferPx</Name>
+          <Required>Y</Required>
+          <Type>Price</Type>
+          <Description>Price of the available offer quantity</Description>
+        </Field>
+        <Field>
+          <Tag>134</Tag>
+          <Name>BidSize</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>Number of bid shares available</Description>
+        </Field>
+        <Field>
+          <Tag>135</Tag>
+          <Name>OfferSize</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>Number of offer shares available</Description>
+        </Field>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>N</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Time of execution/ order execution (expressed in UTC)</Description>
+        </Field>
+        <Field>
+          <Tag>336</Tag>
+          <Name>TradingSessionID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>The identifier of the board to which the trade report is being submitted. Aquis supported values: EUR/ISDX-exl, USD/ISDX-exl, EUR/ISDX-exn, GBX/ISDX-exl, USD/ISDX-exn, GBX/ISDX-exn, GBP/ISDX-exl, SEK/ISDX-exn, GBP/ISDX-exn, CHF/ISDX-exl, NOK/ISDX-exl</Description>
+        </Field>
+        <Field>
+          <Tag>1167</Tag>
+          <Name>QuoteEntryStatus</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Values sent by Aquis: 0 = Accepted, 5 = Rejected, 100 = Bid Rejected, Ask Accepted, 101 = Ask Rejected, Bid Accepted</Description>
+        </Field>
+        <Field>
+          <Tag>368</Tag>
+          <Name>QuoteEntryRejectReason</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>Values sent by Aquis: 1 = Unknown Security ID, 2 = Exchange Closed, 4 = Too late to enter, 8 = Invalid Price, 9 = Not Authorised, 99 = Other, 112 = Invalid Quantity, 115 = Invalid due to market maker protection, 116 = Security Suspended, 117 = Security Withdrawn</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+  </Groups>
+
+  <Values>
+
+    <!-- BeginString (8) static. Source: "FIX 4.4 (Always unencrypted, must be first field in message)" -->
+    <Value>
+      <Type>BeginString</Type>
+      <Enum>FIX.4.4</Enum>
+      <Kind>Static</Kind>
+      <Description>FIX 4.4</Description>
+    </Value>
+
+    <!-- EncryptMethod (98): "Always unencrypted. Supported value: 0" -->
+    <Value>
+      <Type>EncryptMethod</Type>
+      <Enum>0</Enum>
+      <Description>None</Description>
+    </Value>
+
+    <!-- TradeReportTransType (487) -->
+    <Value>
+      <Type>TradeReportTransType</Type>
+      <Enum>0</Enum>
+      <Description>New</Description>
+    </Value>
+    <Value>
+      <Type>TradeReportTransType</Type>
+      <Enum>1</Enum>
+      <Description>Cancel</Description>
+    </Value>
+    <Value>
+      <Type>TradeReportTransType</Type>
+      <Enum>2</Enum>
+      <Description>Replace</Description>
+    </Value>
+
+    <!-- TrdType (828): the Trade Capture Report's values; the Acknowledgement sends all but 38 -->
+    <Value>
+      <Type>TrdType</Type>
+      <Enum>0</Enum>
+      <Description>Regular Trade (O)</Description>
+    </Value>
+    <Value>
+      <Type>TrdType</Type>
+      <Enum>38</Enum>
+      <Description>Large in Scale (L)</Description>
+    </Value>
+    <Value>
+      <Type>TrdType</Type>
+      <Enum>101</Enum>
+      <Description>Negotiated Trade in Liquid Financial Instruments</Description>
+    </Value>
+    <Value>
+      <Type>TrdType</Type>
+      <Enum>102</Enum>
+      <Description>Negotiated Trade in Illiquid Financial Instruments</Description>
+    </Value>
+    <Value>
+      <Type>TrdType</Type>
+      <Enum>103</Enum>
+      <Description>Negotiated Trade Subject to Conditions Other Than the Current Market Price</Description>
+    </Value>
+
+    <!-- TrdSubType (829) -->
+    <Value>
+      <Type>TrdSubType</Type>
+      <Enum>15</Enum>
+      <Description>B (Broker to broker trade)</Description>
+    </Value>
+    <Value>
+      <Type>TrdSubType</Type>
+      <Enum>18</Enum>
+      <Description>M (Market maker to market maker trade)</Description>
+    </Value>
+    <Value>
+      <Type>TrdSubType</Type>
+      <Enum>22</Enum>
+      <Description>P (Portfolio trade)</Description>
+    </Value>
+    <Value>
+      <Type>TrdSubType</Type>
+      <Enum>26</Enum>
+      <Description>R (Riskless principal trade)</Description>
+    </Value>
+    <Value>
+      <Type>TrdSubType</Type>
+      <Enum>37</Enum>
+      <Description>X (Cross trade)</Description>
+    </Value>
+
+    <!-- TrdTypeBenchRef (830) -->
+    <Value>
+      <Type>TrdTypeBenchRef</Type>
+      <Enum>0</Enum>
+      <Description>No Benchmark or Reference Price Trade</Description>
+    </Value>
+    <Value>
+      <Type>TrdTypeBenchRef</Type>
+      <Enum>1</Enum>
+      <Description>Benchmark Trade</Description>
+    </Value>
+    <Value>
+      <Type>TrdTypeBenchRef</Type>
+      <Enum>2</Enum>
+      <Description>Reference Price Trade</Description>
+    </Value>
+
+    <!-- TradePriceCondition (5998): the mnemonics 6.2 prints, described by the 5.1 table -->
+    <Value>
+      <Type>TradePriceCondition</Type>
+      <Enum>0</Enum>
+      <Description>CD - Special cum dividend</Description>
+    </Value>
+    <Value>
+      <Type>TradePriceCondition</Type>
+      <Enum>1</Enum>
+      <Description>CR - Special cum rights</Description>
+    </Value>
+    <Value>
+      <Type>TradePriceCondition</Type>
+      <Enum>2</Enum>
+      <Description>XD - Special ex dividend</Description>
+    </Value>
+    <Value>
+      <Type>TradePriceCondition</Type>
+      <Enum>3</Enum>
+      <Description>XR - Special ex rights</Description>
+    </Value>
+    <Value>
+      <Type>TradePriceCondition</Type>
+      <Enum>4</Enum>
+      <Description>CC - Special cum coupon</Description>
+    </Value>
+    <Value>
+      <Type>TradePriceCondition</Type>
+      <Enum>5</Enum>
+      <Description>CP - Special cum capital repayments</Description>
+    </Value>
+    <Value>
+      <Type>TradePriceCondition</Type>
+      <Enum>6</Enum>
+      <Description>XC - Special ex coupon</Description>
+    </Value>
+    <Value>
+      <Type>TradePriceCondition</Type>
+      <Enum>7</Enum>
+      <Description>XP - Special ex capital repayments</Description>
+    </Value>
+    <Value>
+      <Type>TradePriceCondition</Type>
+      <Enum>8</Enum>
+      <Description>CS - Cash settlement</Description>
+    </Value>
+    <Value>
+      <Type>TradePriceCondition</Type>
+      <Enum>9</Enum>
+      <Description>CB - Special cum bonus</Description>
+    </Value>
+    <Value>
+      <Type>TradePriceCondition</Type>
+      <Enum>10</Enum>
+      <Description>SP - Special price</Description>
+    </Value>
+    <Value>
+      <Type>TradePriceCondition</Type>
+      <Enum>11</Enum>
+      <Description>XB - Special excluding bonus</Description>
+    </Value>
+    <Value>
+      <Type>TradePriceCondition</Type>
+      <Enum>12</Enum>
+      <Description>GD - Special guaranteed delivery</Description>
+    </Value>
+
+    <!-- ReportedPxDiff (1134) -->
+    <Value>
+      <Type>ReportedPxDiff</Type>
+      <Enum>Y</Enum>
+      <Description>Yes</Description>
+    </Value>
+    <Value>
+      <Type>ReportedPxDiff</Type>
+      <Enum>N</Enum>
+      <Description>No</Description>
+    </Value>
+
+    <!-- SecurityIDSource (22): "Note this is the only acceptable value" -->
+    <Value>
+      <Type>SecurityIDSource</Type>
+      <Enum>4</Enum>
+      <Description>ISIN</Description>
+    </Value>
+
+    <!-- TradePublishIndicator (1390) -->
+    <Value>
+      <Type>TradePublishIndicator</Type>
+      <Enum>1</Enum>
+      <Description>Publish immediately</Description>
+    </Value>
+
+    <!-- NoSide (552) -->
+    <Value>
+      <Type>NoSide</Type>
+      <Enum>1</Enum>
+      <Description>One side</Description>
+    </Value>
+
+    <!-- Side (54) -->
+    <Value>
+      <Type>Side</Type>
+      <Enum>1</Enum>
+      <Description>Buy</Description>
+    </Value>
+    <Value>
+      <Type>Side</Type>
+      <Enum>2</Enum>
+      <Description>Sell</Description>
+    </Value>
+
+    <!-- PartyIDSource (447) -->
+    <Value>
+      <Type>PartyIDSource</Type>
+      <Enum>B</Enum>
+      <Description>BIC</Description>
+    </Value>
+    <Value>
+      <Type>PartyIDSource</Type>
+      <Enum>G</Enum>
+      <Description>MIC</Description>
+    </Value>
+
+    <!-- PartyRole (452) -->
+    <Value>
+      <Type>PartyRole</Type>
+      <Enum>17</Enum>
+      <Description>Contra Firm</Description>
+    </Value>
+    <Value>
+      <Type>PartyRole</Type>
+      <Enum>73</Enum>
+      <Description>Executing Venue</Description>
+    </Value>
+    <Value>
+      <Type>PartyRole</Type>
+      <Enum>63</Enum>
+      <Description>Systematic Internaliser</Description>
+    </Value>
+
+    <!-- OrderCapacity (528) -->
+    <Value>
+      <Type>OrderCapacity</Type>
+      <Enum>A</Enum>
+      <Description>Agency</Description>
+    </Value>
+    <Value>
+      <Type>OrderCapacity</Type>
+      <Enum>P</Enum>
+      <Description>Principal</Description>
+    </Value>
+
+    <!-- TradingSessionID (336): the boards AQSE supports (4.5: currency or GBX, ISDX, ex, l for liquid or n for non-liquid by CESR) -->
+    <Value>
+      <Type>TradingSessionID</Type>
+      <Enum>EUR/ISDX-exl</Enum>
+      <Description>EUR/ISDX-exl</Description>
+    </Value>
+    <Value>
+      <Type>TradingSessionID</Type>
+      <Enum>USD/ISDX-exl</Enum>
+      <Description>USD/ISDX-exl</Description>
+    </Value>
+    <Value>
+      <Type>TradingSessionID</Type>
+      <Enum>EUR/ISDX-exn</Enum>
+      <Description>EUR/ISDX-exn</Description>
+    </Value>
+    <Value>
+      <Type>TradingSessionID</Type>
+      <Enum>GBX/ISDX-exl</Enum>
+      <Description>GBX/ISDX-exl</Description>
+    </Value>
+    <Value>
+      <Type>TradingSessionID</Type>
+      <Enum>USD/ISDX-exn</Enum>
+      <Description>USD/ISDX-exn</Description>
+    </Value>
+    <Value>
+      <Type>TradingSessionID</Type>
+      <Enum>GBX/ISDX-exn</Enum>
+      <Description>GBX/ISDX-exn</Description>
+    </Value>
+    <Value>
+      <Type>TradingSessionID</Type>
+      <Enum>GBP/ISDX-exl</Enum>
+      <Description>GBP/ISDX-exl</Description>
+    </Value>
+    <Value>
+      <Type>TradingSessionID</Type>
+      <Enum>SEK/ISDX-exn</Enum>
+      <Description>SEK/ISDX-exn</Description>
+    </Value>
+    <Value>
+      <Type>TradingSessionID</Type>
+      <Enum>GBP/ISDX-exn</Enum>
+      <Description>GBP/ISDX-exn</Description>
+    </Value>
+    <Value>
+      <Type>TradingSessionID</Type>
+      <Enum>CHF/ISDX-exl</Enum>
+      <Description>CHF/ISDX-exl</Description>
+    </Value>
+    <Value>
+      <Type>TradingSessionID</Type>
+      <Enum>NOK/ISDX-exl</Enum>
+      <Description>NOK/ISDX-exl</Description>
+    </Value>
+
+    <!-- TrdRptStatus (939) -->
+    <Value>
+      <Type>TrdRptStatus</Type>
+      <Enum>0</Enum>
+      <Description>Accepted</Description>
+    </Value>
+    <Value>
+      <Type>TrdRptStatus</Type>
+      <Enum>1</Enum>
+      <Description>Rejected</Description>
+    </Value>
+
+    <!-- TradeReportRejectReason (751) -->
+    <Value>
+      <Type>TradeReportRejectReason</Type>
+      <Enum>2</Enum>
+      <Description>Unknown Instrument</Description>
+    </Value>
+    <Value>
+      <Type>TradeReportRejectReason</Type>
+      <Enum>4</Enum>
+      <Description>Invalid Trade Type</Description>
+    </Value>
+    <Value>
+      <Type>TradeReportRejectReason</Type>
+      <Enum>99</Enum>
+      <Description>Other</Description>
+    </Value>
+    <Value>
+      <Type>TradeReportRejectReason</Type>
+      <Enum>100</Enum>
+      <Description>Duplicate TradeReportID (571)</Description>
+    </Value>
+
+    <!-- QuoteResponseLevel (301) -->
+    <Value>
+      <Type>QuoteResponseLevel</Type>
+      <Enum>1</Enum>
+      <Description>Acknowledge rejected quotes only</Description>
+    </Value>
+
+    <!-- LastFragment (893) -->
+    <Value>
+      <Type>LastFragment</Type>
+      <Enum>N</Enum>
+      <Description>Message is continued</Description>
+    </Value>
+    <Value>
+      <Type>LastFragment</Type>
+      <Enum>Y</Enum>
+      <Description>Last message</Description>
+    </Value>
+
+    <!-- QuoteStatus (297): the Mass Quote Acknowledgement's values; the Quote Status Report sends 0 and 5 -->
+    <Value>
+      <Type>QuoteStatus</Type>
+      <Enum>0</Enum>
+      <Description>Accepted</Description>
+    </Value>
+    <Value>
+      <Type>QuoteStatus</Type>
+      <Enum>5</Enum>
+      <Description>Rejected</Description>
+    </Value>
+    <Value>
+      <Type>QuoteStatus</Type>
+      <Enum>100</Enum>
+      <Description>Partially Accepted</Description>
+    </Value>
+
+    <!-- QuoteRejectReason (300) -->
+    <Value>
+      <Type>QuoteRejectReason</Type>
+      <Enum>99</Enum>
+      <Description>Other</Description>
+    </Value>
+
+    <!-- QuoteEntryStatus (1167) -->
+    <Value>
+      <Type>QuoteEntryStatus</Type>
+      <Enum>0</Enum>
+      <Description>Accepted</Description>
+    </Value>
+    <Value>
+      <Type>QuoteEntryStatus</Type>
+      <Enum>5</Enum>
+      <Description>Rejected</Description>
+    </Value>
+    <Value>
+      <Type>QuoteEntryStatus</Type>
+      <Enum>100</Enum>
+      <Description>Bid Rejected, Ask Accepted</Description>
+    </Value>
+    <Value>
+      <Type>QuoteEntryStatus</Type>
+      <Enum>101</Enum>
+      <Description>Ask Rejected, Bid Accepted</Description>
+    </Value>
+
+    <!-- QuoteEntryRejectReason (368) -->
+    <Value>
+      <Type>QuoteEntryRejectReason</Type>
+      <Enum>1</Enum>
+      <Description>Unknown Security ID</Description>
+    </Value>
+    <Value>
+      <Type>QuoteEntryRejectReason</Type>
+      <Enum>2</Enum>
+      <Description>Exchange Closed</Description>
+    </Value>
+    <Value>
+      <Type>QuoteEntryRejectReason</Type>
+      <Enum>4</Enum>
+      <Description>Too late to enter</Description>
+    </Value>
+    <Value>
+      <Type>QuoteEntryRejectReason</Type>
+      <Enum>8</Enum>
+      <Description>Invalid Price</Description>
+    </Value>
+    <Value>
+      <Type>QuoteEntryRejectReason</Type>
+      <Enum>9</Enum>
+      <Description>Not Authorised</Description>
+    </Value>
+    <Value>
+      <Type>QuoteEntryRejectReason</Type>
+      <Enum>99</Enum>
+      <Description>Other</Description>
+    </Value>
+    <Value>
+      <Type>QuoteEntryRejectReason</Type>
+      <Enum>112</Enum>
+      <Description>Invalid Quantity</Description>
+    </Value>
+    <Value>
+      <Type>QuoteEntryRejectReason</Type>
+      <Enum>115</Enum>
+      <Description>Invalid due to market maker protection</Description>
+    </Value>
+    <Value>
+      <Type>QuoteEntryRejectReason</Type>
+      <Enum>116</Enum>
+      <Description>Security Suspended</Description>
+    </Value>
+    <Value>
+      <Type>QuoteEntryRejectReason</Type>
+      <Enum>117</Enum>
+      <Description>Security Withdrawn</Description>
+    </Value>
+
+    <!-- QuoteCancelType (298) -->
+    <Value>
+      <Type>QuoteCancelType</Type>
+      <Enum>1</Enum>
+      <Description>Cancel for Symbol</Description>
+    </Value>
+    <Value>
+      <Type>QuoteCancelType</Type>
+      <Enum>4</Enum>
+      <Description>Cancel All Quotes</Description>
+    </Value>
+
+  </Values>
+
+</OmiFixPdf>

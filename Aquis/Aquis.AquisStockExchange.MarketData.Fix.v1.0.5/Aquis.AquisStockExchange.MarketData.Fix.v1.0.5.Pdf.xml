@@ -1,0 +1,1414 @@
+<OmiFixPdf Fix="FIX.4.4">
+
+  <!--
+  Aquis Stock Exchange FIX Market Data Technical Specification, Quotes &amp; Trade Capture Reports, v1.0.5
+  (April 2024). The tables print Tag, Field Name, Req'd and Comments, with no type column: each field takes
+  its FIX 4.4 type from the FIX 4.4 dictionary the declaration composes (Fix.Version), the protocol the
+  document says the feeds use (1). Tags the FIX 4.4 dictionary does not define (1134, 5997, 5998, 20311 and
+  the MMT tags 6001 - 6050) state no type, as printed. The header and trailer are FIX 4.4's (Fix.Headers)
+  -->
+
+  <Messages>
+
+    <!-- The document prints no session messages; it states the feeds use the FIX 4.4 protocol (1), so the session messages are FIX 4.4's, as AQSE's FIX 4.4 Trading Specification prints them for the same venue -->
+    <Message>
+      <Name>Logon</Name>
+      <MsgType>A</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>98</Tag>
+          <Name>EncryptMethod</Name>
+          <Required>Y</Required>
+        </Field>
+        <Field>
+          <Tag>108</Tag>
+          <Name>HeartBtInt</Name>
+          <Required>Y</Required>
+        </Field>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>Heartbeat</Name>
+      <MsgType>0</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>112</Tag>
+          <Name>TestReqID</Name>
+          <Required>N</Required>
+        </Field>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>Test Request</Name>
+      <MsgType>1</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>112</Tag>
+          <Name>TestReqID</Name>
+          <Required>Y</Required>
+        </Field>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>Resend Request</Name>
+      <MsgType>2</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>7</Tag>
+          <Name>BeginSeqNo</Name>
+          <Required>Y</Required>
+        </Field>
+        <Field>
+          <Tag>16</Tag>
+          <Name>EndSeqNo</Name>
+          <Required>Y</Required>
+        </Field>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>Reject</Name>
+      <MsgType>3</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>45</Tag>
+          <Name>RefSeqNum</Name>
+          <Required>Y</Required>
+        </Field>
+        <Field>
+          <Tag>371</Tag>
+          <Name>RefTagID</Name>
+          <Required>N</Required>
+        </Field>
+        <Field>
+          <Tag>372</Tag>
+          <Name>RefMsgType</Name>
+          <Required>N</Required>
+        </Field>
+        <Field>
+          <Tag>373</Tag>
+          <Name>SessionRejectReason</Name>
+          <Required>N</Required>
+        </Field>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+        </Field>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>Sequence Reset</Name>
+      <MsgType>4</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>123</Tag>
+          <Name>GapFillFlag</Name>
+          <Required>N</Required>
+        </Field>
+        <Field>
+          <Tag>36</Tag>
+          <Name>NewSeqNo</Name>
+          <Required>Y</Required>
+        </Field>
+      </Fields>
+    </Message>
+    <Message>
+      <Name>Logout</Name>
+      <MsgType>5</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Market Data Request (3.1.1). SubscriptionRequestType (263) wraps across three lines -->
+    <Message>
+      <Name>Market Data Request</Name>
+      <MsgType>V</MsgType>
+      <Category>app</Category>
+      <Origin>Client</Origin>
+      <Description>To request Market Data Feed messages, Members must send a Market Data Request message.</Description>
+      <Fields>
+        <Field>
+          <Tag>262</Tag>
+          <Name>MDReqID</Name>
+          <Required>Y</Required>
+          <Description>Unique identifier. This value is not interpreted by the platform when unsubscribing. The list of securities/boards is used to determine which subscriptions to cancel.</Description>
+        </Field>
+        <Field>
+          <Tag>263</Tag>
+          <Name>SubscriptionRequestType</Name>
+          <Required>Y</Required>
+          <Description>Indicates to the other party what type of response is expected. A snapshot request only asks for current information. A subscribe request asks for updates as the status changes. Unsubscribe will cancel any future update messages from the counter party. AQSE supported values: 0 = Snapshot, 1 = Snapshot and Updates (Subscribe), 2 = Unsubscribe</Description>
+        </Field>
+        <Field>
+          <Tag>264</Tag>
+          <Name>MarketDepth</Name>
+          <Required>Y</Required>
+          <Description>1</Description>
+        </Field>
+        <Group>
+          <Name>NoMDEntryTypes</Name>
+          <Required>Y</Required>
+        </Group>
+        <Group>
+          <Name>NoRelatedSym</Name>
+          <Required>Y</Required>
+        </Group>
+      </Fields>
+    </Message>
+
+    <!-- Market Data Request Reject (3.1.2) -->
+    <Message>
+      <Name>Market Data Request Reject</Name>
+      <MsgType>Y</MsgType>
+      <Category>app</Category>
+      <Origin>Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>262</Tag>
+          <Name>MDReqID</Name>
+          <Required>Y</Required>
+          <Description>The ID of the associated Market Data Request message.</Description>
+        </Field>
+        <Field>
+          <Tag>281</Tag>
+          <Name>MDReqRejReason</Name>
+          <Required>N</Required>
+          <Description>Reason for rejection.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Market Data Request Snapshot Full Refresh (3.1.3), the Market Data Snapshot Full Refresh (W) -->
+    <Message>
+      <Name>Market Data Snapshot Full Refresh</Name>
+      <MsgType>W</MsgType>
+      <Category>app</Category>
+      <Origin>Exchange</Origin>
+      <Description>One Market Data Request Snapshot Full Refresh message is sent for each security on each board.</Description>
+      <Fields>
+        <Field>
+          <Tag>262</Tag>
+          <Name>MDReqID</Name>
+          <Required>Y</Required>
+          <Description>ID of the associated Market Data Request message.</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>Y</Required>
+          <Description>Will always be set to [N/A].</Description>
+        </Field>
+        <Field>
+          <Tag>48</Tag>
+          <Name>SecurityID</Name>
+          <Required>Y</Required>
+          <Description>The ISIN of the security being referenced.</Description>
+        </Field>
+        <Field>
+          <Tag>22</Tag>
+          <Name>SecurityIDSource</Name>
+          <Required>Y</Required>
+          <Description>The field must always be set to the IDSource for ISIN. 4 = ISIN</Description>
+        </Field>
+        <Field>
+          <Tag>336</Tag>
+          <Name>TradingSessionID</Name>
+          <Required>Y</Required>
+          <Description>AQSE supported values: EUR/ISDX-exl, USD/ISDX-exl, EUR/ISDX-exn, GBX/ISDX-exl, USD/ISDX-exn, GBX/ISDX-exn, GBP/ISDX-exl, SEK/ISDX-exn, GBP/ISDX-exn, CHF/ISDX-exl, NOK/ISDX-exl</Description>
+        </Field>
+        <Group>
+          <Name>NoMDEntries</Name>
+          <Required>Y</Required>
+        </Group>
+      </Fields>
+    </Message>
+
+    <!-- Market Data Incremental Refresh (3.1.4) -->
+    <Message>
+      <Name>Market Data Incremental Refresh</Name>
+      <MsgType>X</MsgType>
+      <Category>app</Category>
+      <Origin>Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>262</Tag>
+          <Name>MDReqID</Name>
+          <Required>Y</Required>
+          <Description>ID of the associated Market Data Request message.</Description>
+        </Field>
+        <Group>
+          <Name>NoMDEntriesIncremental</Name>
+          <Required>Y</Required>
+        </Group>
+      </Fields>
+    </Message>
+
+    <!-- Trade Capture Report Request (3.2.1). SubscriptionRequestType (263) wraps as "SubscriptionReques tType" -->
+    <Message>
+      <Name>Trade Capture Report Request</Name>
+      <MsgType>AD</MsgType>
+      <Category>app</Category>
+      <Origin>Client</Origin>
+      <Description>The Trade Capture Report Request message should be used to subscribe/unsubscribe to AQSE Trade Reports.</Description>
+      <Fields>
+        <Field>
+          <Tag>568</Tag>
+          <Name>TradeRequestID</Name>
+          <Required>Y</Required>
+          <Description>Identifier for the trade request.</Description>
+        </Field>
+        <Field>
+          <Tag>569</Tag>
+          <Name>TradeRequestType</Name>
+          <Required>Y</Required>
+          <Description>AQSE supported values: 0 = All trades</Description>
+        </Field>
+        <Field>
+          <Tag>263</Tag>
+          <Name>SubscriptionRequestType</Name>
+          <Required>N</Required>
+          <Description>Used to subscribe/unsubscribe to Trade Capture Reports. 1 = Snapshot + Updates, default if not supplied, 2 = Unsubscribe</Description>
+        </Field>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Description>This field is not validated by AQSE.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Trade Capture Report Request Acknowledgement (3.2.2). Its field names wrap across lines ("TradeRequestResul t", "TradeRequestStatu s") -->
+    <Message>
+      <Name>Trade Capture Report Request Ack</Name>
+      <MsgType>AQ</MsgType>
+      <Category>app</Category>
+      <Origin>Exchange</Origin>
+      <Description>The Trade Capture Report Request Acknowledgement message is sent back as an acknowledgement to the Trade Capture Report Request message. This message indicates the acceptance or rejection of the Trade Capture Report Request.</Description>
+      <Fields>
+        <Field>
+          <Tag>568</Tag>
+          <Name>TradeRequestID</Name>
+          <Required>Y</Required>
+          <Description>Identifier for the trade request.</Description>
+        </Field>
+        <Field>
+          <Tag>569</Tag>
+          <Name>TradeRequestType</Name>
+          <Required>Y</Required>
+          <Description>AQSE supported values: 0 = All trades</Description>
+        </Field>
+        <Field>
+          <Tag>263</Tag>
+          <Name>SubscriptionRequestType</Name>
+          <Required>N</Required>
+          <Description>Used to subscribe/unsubscribe to Trade Capture Reports. 1 = Snapshot + Updates, 2 = Unsubscribe</Description>
+        </Field>
+        <Field>
+          <Tag>749</Tag>
+          <Name>TradeRequestResult</Name>
+          <Required>Y</Required>
+          <Description>Result of Trade Request. 0 = Successful, 99 = Other</Description>
+        </Field>
+        <Field>
+          <Tag>750</Tag>
+          <Name>TradeRequestStatus</Name>
+          <Required>Y</Required>
+          <Description>Status of Trade Request. 0 = Accepted, 2 = Rejected</Description>
+        </Field>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Description>Description of error message.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Trade Capture Report (3.2.3). Its field names wrap across lines ("SecondaryTradeRep ortID", "TradeReportTransTy pe", "NoTradePriceConditi ons"). The MMT flags (6001 - 6050) are the tags "Trade Capture Report messages are accompanied with", printed in their own table after the message's (3.2.3): Tag, Description, Comments, no Req'd column, so each is optional. The message prints neither a Required column for them nor a place, so they follow the message's own fields -->
+    <Message>
+      <Name>Trade Capture Report</Name>
+      <MsgType>AE</MsgType>
+      <Category>app</Category>
+      <Origin>Exchange</Origin>
+      <Description>The Trade Capture Report outbound message is sent after a successful Trade Capture Report Request Acknowledgement has been sent.</Description>
+      <Fields>
+        <Field>
+          <Tag>571</Tag>
+          <Name>TradeReportID</Name>
+          <Required>Y</Required>
+          <Description>Transaction Reference from the submitted inbound Trade Capture Report. Populated with AQSE ID (818) if receiving party is not part of submitters participant group. For cancels a C will be appended to the original.</Description>
+        </Field>
+        <Field>
+          <Tag>818</Tag>
+          <Name>SecondaryTradeReportID</Name>
+          <Required>N</Required>
+          <Description>The AQSE trade number that was generated from the submitted inbound trade capture report. Not returned on cancels.</Description>
+        </Field>
+        <Field>
+          <Tag>881</Tag>
+          <Name>SecondaryTradeReportRefID</Name>
+          <Required>N</Required>
+          <Description>When amending/cancelling a Trade Report, it is the AQSE generated identifier for the trade being amended.</Description>
+        </Field>
+        <Field>
+          <Tag>487</Tag>
+          <Name>TradeReportTransType</Name>
+          <Required>Y</Required>
+          <Description>Identifies Trade Report message transaction type. 0 = New, 1 = Cancel, 2 = Replace</Description>
+        </Field>
+        <Field>
+          <Tag>568</Tag>
+          <Name>TradeRequestID</Name>
+          <Required>N</Required>
+          <Description>The TradeRequestID from the original Trade Capture Report Request message. Only populated if being sent to the originating Market Maker.</Description>
+        </Field>
+        <Field>
+          <Tag>828</Tag>
+          <Name>TrdType</Name>
+          <Required>Y</Required>
+          <Description>Type of trade. AQSE supported values: 0 = Regular Trade (O), 38 = Large in Scale (L), 101 = Negotiated Trade in Liquid Financial Instruments, 102 = Negotiated Trade in Illiquid Financial Instruments, 103 = Negotiated Trade Subject to Conditions Other Than the Current Market Price</Description>
+        </Field>
+        <Field>
+          <Tag>829</Tag>
+          <Name>TrdSubType</Name>
+          <Required>Y</Required>
+          <Description>Further qualification to the trade type. AQSE supported values: 15 = B, 18 = M, 22 = P, 26 = R, 37 = X</Description>
+        </Field>
+        <Field>
+          <Tag>830</Tag>
+          <Name>TrdTypeBenchRef</Name>
+          <Required>N</Required>
+          <Description>AQSE supported values: 0 = No Benchmark or Reference Price Trade (-), 1 = Benchmark Trade (B), 2 = Reference Price Trade (S)</Description>
+        </Field>
+        <Group>
+          <Name>NoTradePriceConditions</Name>
+          <Required>N</Required>
+        </Group>
+        <Field>
+          <Tag>1134</Tag>
+          <Name>ReportedPxDiff</Name>
+          <Required>N</Required>
+          <Description>If there is a reported price difference and TrdType (828) and TrdSubType (829) are not provided, then set Trade Conditions = D.</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>N</Required>
+          <Description>Will always be set to [N/A].</Description>
+        </Field>
+        <Field>
+          <Tag>48</Tag>
+          <Name>SecurityID</Name>
+          <Required>Y</Required>
+          <Description>The ISIN of the security being referenced.</Description>
+        </Field>
+        <Field>
+          <Tag>22</Tag>
+          <Name>SecurityIDSource</Name>
+          <Required>Y</Required>
+          <Description>This field will be always set to the IDSource for ISIN. 4 = ISIN</Description>
+        </Field>
+        <Field>
+          <Tag>32</Tag>
+          <Name>LastQty</Name>
+          <Required>Y</Required>
+          <Description>The number of shares agreed to be traded.</Description>
+        </Field>
+        <Field>
+          <Tag>31</Tag>
+          <Name>LastPx</Name>
+          <Required>Y</Required>
+          <Description>The price at which the trade was agreed in the currency specified in the board TradingSessionID (336).</Description>
+        </Field>
+        <Field>
+          <Tag>75</Tag>
+          <Name>TradeDate</Name>
+          <Required>Y</Required>
+          <Description>Date and time of when the transaction represented by the Trade Capture Report occurred.</Description>
+        </Field>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>N</Required>
+          <Description>Date and time of when the transaction represented by the Trade Capture Report occurred.</Description>
+        </Field>
+        <Field>
+          <Tag>64</Tag>
+          <Name>SettlDate</Name>
+          <Required>N</Required>
+          <Description>The date on which the trade is agreed to settle.</Description>
+        </Field>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>Y</Required>
+          <Description>Populated to pass the trade source name. Only populated if being sent to the originating Market Maker.</Description>
+        </Field>
+        <Group>
+          <Name>NoSides</Name>
+          <Required>Y</Required>
+        </Group>
+        <Field>
+          <Tag>6001</Tag>
+          <Name>MMT Level 1</Name>
+          <Required>N</Required>
+          <Description>Market mechanism: 2 = Quote Driven Market</Description>
+        </Field>
+        <Field>
+          <Tag>6002</Tag>
+          <Name>MMT Level 2</Name>
+          <Required>N</Required>
+          <Description>Trading mode: 5 = Trade Reporting (On Exchange)</Description>
+        </Field>
+        <Field>
+          <Tag>6003</Tag>
+          <Name>MMT Level 3.1</Name>
+          <Required>N</Required>
+          <Description>This field is not applicable. Always set to "-"</Description>
+        </Field>
+        <Field>
+          <Tag>6004</Tag>
+          <Name>MMT Level 3.2</Name>
+          <Required>N</Required>
+          <Description>Transaction Type: Negotiation Indicator or Pre-trade Transparency Waiver</Description>
+        </Field>
+        <Field>
+          <Tag>6005</Tag>
+          <Name>MMT Level 3.3</Name>
+          <Required>N</Required>
+          <Description>Transaction Type: Agency Cross Trade Indicator</Description>
+        </Field>
+        <Field>
+          <Tag>6006</Tag>
+          <Name>MMT Level 3.4</Name>
+          <Required>N</Required>
+          <Description>Transaction Type: Modification Type</Description>
+        </Field>
+        <Field>
+          <Tag>6007</Tag>
+          <Name>MMT Level 3.5</Name>
+          <Required>N</Required>
+          <Description>Transaction Type: Benchmark or Reference Price Indicator</Description>
+        </Field>
+        <Field>
+          <Tag>6008</Tag>
+          <Name>MMT Level 3.6</Name>
+          <Required>N</Required>
+          <Description>Transaction Type: Special Dividend Indicator</Description>
+        </Field>
+        <Field>
+          <Tag>6009</Tag>
+          <Name>MMT Level 3.7</Name>
+          <Required>N</Required>
+          <Description>Transaction Type: Off Book Automated Indicator</Description>
+        </Field>
+        <Field>
+          <Tag>6010</Tag>
+          <Name>MMT Level 3.8</Name>
+          <Required>N</Required>
+          <Description>Transaction Type: Ordinary/Standard Trades Outside Price Formation/Discovery Process</Description>
+        </Field>
+        <Field>
+          <Tag>6011</Tag>
+          <Name>MMT Level 3.9</Name>
+          <Required>N</Required>
+          <Description>Transaction Type: Algorithmic Indicator</Description>
+        </Field>
+        <Field>
+          <Tag>6012</Tag>
+          <Name>MMT Level 4.1</Name>
+          <Required>N</Required>
+          <Description>Publication Mode/Post-Trade Deferral: Reason</Description>
+        </Field>
+        <Field>
+          <Tag>6013</Tag>
+          <Name>MMT Level 4.2</Name>
+          <Required>N</Required>
+          <Description>Post-Trade Deferral or Enrichment: Type</Description>
+        </Field>
+        <Field>
+          <Tag>6014</Tag>
+          <Name>MMT Level 5</Name>
+          <Required>N</Required>
+          <Description>Duplicative Indicator</Description>
+        </Field>
+        <!-- printed "MMT concatenated 14 flags" in the MMT table's Description column, which names the MMT tags: one token, as the loader makes of the shorter "MMT Level 1" (a four word name reads to it as a sentence) -->
+        <Field>
+          <Tag>6020</Tag>
+          <Name>MMTConcatenated14Flags</Name>
+          <Required>N</Required>
+          <Description>A concatenated string of MMT flags 6001-6014</Description>
+        </Field>
+        <Field>
+          <Tag>6050</Tag>
+          <Name>Transaction MIC</Name>
+          <Required>N</Required>
+          <Description>Provides the Aquis Stock Exchange MIC for the execution</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- News (3.3). Market state messages carry Headline (148) "Market State Change" with Text (58) the market state; security suspensions and restorations carry "Suspension of Trading" or "Restoration of Trading" with the symbol in SecurityID (48); FIX participant suspensions and restorations carry the same headlines and the trader CompID -->
+    <Message>
+      <Name>News</Name>
+      <MsgType>B</MsgType>
+      <Category>app</Category>
+      <Origin>Exchange</Origin>
+      <Description>The News message is published to indicate market status updates, suspensions and restorations of a security and suspensions and restorations of a FIX participant.</Description>
+      <Fields>
+        <Field>
+          <Tag>42</Tag>
+          <Name>OrigTime</Name>
+          <Required>N</Required>
+          <Description>Time of message origination.</Description>
+        </Field>
+        <Field>
+          <Tag>148</Tag>
+          <Name>Headline</Name>
+          <Required>Y</Required>
+          <Description>Specifies the headline text.</Description>
+        </Field>
+        <Group>
+          <Name>NoRelatedSymNews</Name>
+          <Required>N</Required>
+        </Group>
+        <Group>
+          <Name>NoLinesOfText</Name>
+          <Required>Y</Required>
+        </Group>
+        <Field>
+          <Tag>20311</Tag>
+          <Name>NewsStatus</Name>
+          <Required>N</Required>
+          <Description>News broadcast status. 1 = Sent</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+  </Messages>
+
+  <Groups>
+
+    <!-- NoMDEntryTypes (267): "Number of MDEntryType fields requested repeating group"; MDEntryType (269*) is its field (3.1.1) -->
+    <Group>
+      <Name>NoMDEntryTypes</Name>
+      <AnchorTag>267</AnchorTag>
+      <Fields>
+        <Field>
+          <Tag>269</Tag>
+          <Name>MDEntryType</Name>
+          <Required>Y</Required>
+          <Description>Must be the first field in this repeating group. This is a list of all the types of Market Data Entries that the firm requesting the Market Data is interested in receiving. AQSE supported values: 0 = Bid, 1 = Offer, 4 = Opening, 5 = Closing. Note: a request for Bid and Offer will always result in both being subscribed to</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+    <!-- NoRelatedSym (146): "Number of securities requested"; TradingSessionID, Symbol, SecurityID and SecurityIDSource are printed with * under it, in this order (3.1.1) -->
+    <Group>
+      <Name>NoRelatedSym</Name>
+      <AnchorTag>146</AnchorTag>
+      <Fields>
+        <Field>
+          <Tag>336</Tag>
+          <Name>TradingSessionID</Name>
+          <Required>Y</Required>
+          <Description>AQSE supported values: EUR/ISDX-exl, USD/ISDX-exl, EUR/ISDX-exn, GBX/ISDX-exl, USD/ISDX-exn, GBX/ISDX-exn, GBP/ISDX-exl, SEK/ISDX-exn, GBP/ISDX-exn, CHF/ISDX-exl, NOK/ISDX-exl. Note: if only the TradingSessionId is specified, then all instrument prices on that board will be provided in which case NoRelatedSym should be set to 1.</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>N</Required>
+          <Description>Not validated as AQSE uses ISIN to identify the security. AQSE supported values: [N/A]</Description>
+        </Field>
+        <Field>
+          <Tag>48</Tag>
+          <Name>SecurityID</Name>
+          <Required>N</Required>
+          <Description>The ISIN of the security being referenced.</Description>
+        </Field>
+        <Field>
+          <Tag>22</Tag>
+          <Name>SecurityIDSource</Name>
+          <Required>N</Required>
+          <Description>This field must always be set to the IDSource for ISIN. AQSE supported values: 4 = ISIN</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+    <!-- NoRelatedSymNews: the News (3.3) variant of NoRelatedSym (146), its Symbol, SecurityID and SecurityIDSource printed with * -->
+    <Group>
+      <Name>NoRelatedSymNews</Name>
+      <AnchorTag>146</AnchorTag>
+      <Underlying>NoRelatedSym</Underlying>
+      <Fields>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>N</Required>
+          <Description>Will always be set to [N/A].</Description>
+        </Field>
+        <Field>
+          <Tag>48</Tag>
+          <Name>SecurityID</Name>
+          <Required>N</Required>
+          <Description>The ISIN of the security being referenced.</Description>
+        </Field>
+        <Field>
+          <Tag>22</Tag>
+          <Name>SecurityIDSource</Name>
+          <Required>N</Required>
+          <Description>This field must always be set to the IDSource for ISIN. 4 = ISIN</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+    <!-- NoMDEntries (268): "Number of entries following"; MDEntryType, MDEntryPx, MDEntrySize and MDEntryOriginator are printed with * under it (3.1.3) -->
+    <Group>
+      <Name>NoMDEntries</Name>
+      <AnchorTag>268</AnchorTag>
+      <Fields>
+        <Field>
+          <Tag>269</Tag>
+          <Name>MDEntryType</Name>
+          <Required>N</Required>
+          <Description>Type of Market Data entry. AQSE supported values: 0 = Bid, 1 = Offer, 4 = Opening, 5 = Closing</Description>
+        </Field>
+        <Field>
+          <Tag>270</Tag>
+          <Name>MDEntryPx</Name>
+          <Required>N</Required>
+          <Description>Price of the market data entry.</Description>
+        </Field>
+        <Field>
+          <Tag>271</Tag>
+          <Name>MDEntrySize</Name>
+          <Required>N</Required>
+          <Description>Quantity of the market data entry. If MDEntryType (269) = Bid (0) or Offer (1)</Description>
+        </Field>
+        <Field>
+          <Tag>282</Tag>
+          <Name>MDEntryOriginator</Name>
+          <Required>N</Required>
+          <Description>CompID of the Market Maker.</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+    <!-- NoMDEntriesIncremental: the Market Data Incremental Refresh (3.1.4) variant of NoMDEntries (268), MDUpdateAction its first field, the instrument and board printed with * under it -->
+    <Group>
+      <Name>NoMDEntriesIncremental</Name>
+      <AnchorTag>268</AnchorTag>
+      <Underlying>NoMDEntries</Underlying>
+      <Fields>
+        <Field>
+          <Tag>279</Tag>
+          <Name>MDUpdateAction</Name>
+          <Required>Y</Required>
+          <Description>Must be the first field in the repeating group. AQSE supported values: 0 = New, 2 = Delete</Description>
+        </Field>
+        <Field>
+          <Tag>269</Tag>
+          <Name>MDEntryType</Name>
+          <Required>N</Required>
+          <Description>Type of market data entry. 0 = Bid, 1 = Offer, 4 = Opening, 5 = Closing</Description>
+        </Field>
+        <Field>
+          <Tag>270</Tag>
+          <Name>MDEntryPx</Name>
+          <Required>N</Required>
+          <Description>Price of market data entry.</Description>
+        </Field>
+        <Field>
+          <Tag>271</Tag>
+          <Name>MDEntrySize</Name>
+          <Required>N</Required>
+          <Description>Quantity of market data entry. If MDEntryType = Bid (0) or Offer (1)</Description>
+        </Field>
+        <Field>
+          <Tag>282</Tag>
+          <Name>MDEntryOriginator</Name>
+          <Required>N</Required>
+          <Description>CompID of the Market Maker.</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>Y</Required>
+          <Description>Will always be set to [N/A].</Description>
+        </Field>
+        <Field>
+          <Tag>48</Tag>
+          <Name>SecurityID</Name>
+          <Required>Y</Required>
+          <Description>The ISIN of the security being referenced.</Description>
+        </Field>
+        <Field>
+          <Tag>22</Tag>
+          <Name>SecurityIDSource</Name>
+          <Required>Y</Required>
+          <Description>The field must always be set to the IDSource for ISIN. 4 = ISIN</Description>
+        </Field>
+        <Field>
+          <Tag>336</Tag>
+          <Name>TradingSessionID</Name>
+          <Required>Y</Required>
+          <Description>AQSE supported values: EUR/ISDX-exl, USD/ISDX-exl, EUR/ISDX-exn, GBX/ISDX-exl, USD/ISDX-exn, GBX/ISDX-exn, GBP/ISDX-exl, SEK/ISDX-exn, GBP/ISDX-exn, CHF/ISDX-exl, NOK/ISDX-exl</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+    <!-- NoTradePriceConditions (5997): "The number of trade price conditions repeating group"; TradePriceCondition (5998*) is its field (3.2.3) -->
+    <Group>
+      <Name>NoTradePriceConditions</Name>
+      <AnchorTag>5997</AnchorTag>
+      <Fields>
+        <Field>
+          <Tag>5998</Tag>
+          <Name>TradePriceCondition</Name>
+          <Required>N</Required>
+          <Description>Indicates the conditions under which the bargain was struck. AQSE supported values: 0 = CD, 1 = CR, 2 = XD, 3 = XR, 4 = CC, 5 = CP, 6 = XC, 7 = XP, 8 = CS, 9 = CB, 10 = SP, 11 = XB</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+    <!-- NoSides (552): "Number of Side repeating group instances. 1 = One side"; Side, OrderID, NoPartyIDs and TradingSessionID are printed with * under it (3.2.3) -->
+    <Group>
+      <Name>NoSides</Name>
+      <AnchorTag>552</AnchorTag>
+      <Fields>
+        <Field>
+          <Tag>54</Tag>
+          <Name>Side</Name>
+          <Required>Y</Required>
+          <Description>Whether this trade was a buy or sell (with respect to the reporting member). 1 = Buy, 2 = Sell</Description>
+        </Field>
+        <Field>
+          <Tag>37</Tag>
+          <Name>OrderID</Name>
+          <Required>Y</Required>
+          <Description>Will be set to [N/A].</Description>
+        </Field>
+        <Group>
+          <Name>NoPartyIDs</Name>
+          <Required>Y</Required>
+        </Group>
+        <Field>
+          <Tag>336</Tag>
+          <Name>TradingSessionID</Name>
+          <Required>Y</Required>
+          <Description>The identifier of the board to which the Trade Report is being submitted. AQSE supported values: EUR/ISDX-exl, USD/ISDX-exl, EUR/ISDX-exn, GBX/ISDX-exl, USD/ISDX-exn, GBX/ISDX-exn, GBP/ISDX-exl, SEK/ISDX-exn, GBP/ISDX-exn, CHF/ISDX-exl, NOK/ISDX-exl</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+    <!-- NoPartyIDs (453*): "Number of PartyID (448), PartyIDSource (447), and PartyRole (452) entries", printed below it with a second mark (3.2.3) -->
+    <Group>
+      <Name>NoPartyIDs</Name>
+      <AnchorTag>453</AnchorTag>
+      <Fields>
+        <Field>
+          <Tag>448</Tag>
+          <Name>PartyID</Name>
+          <Required>Y</Required>
+          <Description>Used to identify source of PartyID (448). Required if the PartyIDSource (447) is specified. Required if NoPartyIDs (453) &gt; 0. Only populated if being sent to the originating Market Maker, else [N/A].</Description>
+        </Field>
+        <Field>
+          <Tag>447</Tag>
+          <Name>PartyIDSource</Name>
+          <Required>Y</Required>
+          <Description>Used to identify class source of PartyID (448) value (e.g. BIC). Required if PartyID (448) is specified. AQSE supported values: B = BIC, G = MIC, D = Prop code</Description>
+        </Field>
+        <Field>
+          <Tag>452</Tag>
+          <Name>PartyRole</Name>
+          <Required>Y</Required>
+          <Description>Identifies the type of PartyID (448) (e.g. executing broker). Required if NoPartyIDs (453) &gt; 0. AQSE supported values: 1 = Executing Firm, 12 = Executing Trader, 17 = Contra Firm, 73 = Executing Venue, 44 = Order Entry Operator ID</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+    <!-- NoLinesOfText (33): "Identifies the number of lines of text body. This is always set to 2." Text (58) is printed without the * but holds those two lines, the first the news type and the second its description (3.3), so it is the group's field -->
+    <Group>
+      <Name>NoLinesOfText</Name>
+      <AnchorTag>33</AnchorTag>
+      <Fields>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Description>News type is stated in the first line and the news description in the second.</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+  </Groups>
+
+  <Values>
+
+    <!-- SubscriptionRequestType (263): the Market Data Request's values (3.1.1); the Trade Capture Report Request prints 1 = Snapshot + Updates and 2 = Unsubscribe -->
+    <Value>
+      <Type>SubscriptionRequestType</Type>
+      <Enum>0</Enum>
+      <Description>Snapshot</Description>
+    </Value>
+    <Value>
+      <Type>SubscriptionRequestType</Type>
+      <Enum>1</Enum>
+      <Description>Snapshot and Updates (Subscribe)</Description>
+    </Value>
+    <Value>
+      <Type>SubscriptionRequestType</Type>
+      <Enum>2</Enum>
+      <Description>Unsubscribe</Description>
+    </Value>
+
+    <!-- MDEntryType (269) -->
+    <Value>
+      <Type>MDEntryType</Type>
+      <Enum>0</Enum>
+      <Description>Bid</Description>
+    </Value>
+    <Value>
+      <Type>MDEntryType</Type>
+      <Enum>1</Enum>
+      <Description>Offer</Description>
+    </Value>
+    <Value>
+      <Type>MDEntryType</Type>
+      <Enum>4</Enum>
+      <Description>Opening</Description>
+    </Value>
+    <Value>
+      <Type>MDEntryType</Type>
+      <Enum>5</Enum>
+      <Description>Closing</Description>
+    </Value>
+
+    <!-- TradingSessionID (336): the boards -->
+    <Value>
+      <Type>TradingSessionID</Type>
+      <Enum>EUR/ISDX-exl</Enum>
+      <Description>EUR/ISDX-exl</Description>
+    </Value>
+    <Value>
+      <Type>TradingSessionID</Type>
+      <Enum>USD/ISDX-exl</Enum>
+      <Description>USD/ISDX-exl</Description>
+    </Value>
+    <Value>
+      <Type>TradingSessionID</Type>
+      <Enum>EUR/ISDX-exn</Enum>
+      <Description>EUR/ISDX-exn</Description>
+    </Value>
+    <Value>
+      <Type>TradingSessionID</Type>
+      <Enum>GBX/ISDX-exl</Enum>
+      <Description>GBX/ISDX-exl</Description>
+    </Value>
+    <Value>
+      <Type>TradingSessionID</Type>
+      <Enum>USD/ISDX-exn</Enum>
+      <Description>USD/ISDX-exn</Description>
+    </Value>
+    <Value>
+      <Type>TradingSessionID</Type>
+      <Enum>GBX/ISDX-exn</Enum>
+      <Description>GBX/ISDX-exn</Description>
+    </Value>
+    <Value>
+      <Type>TradingSessionID</Type>
+      <Enum>GBP/ISDX-exl</Enum>
+      <Description>GBP/ISDX-exl</Description>
+    </Value>
+    <Value>
+      <Type>TradingSessionID</Type>
+      <Enum>SEK/ISDX-exn</Enum>
+      <Description>SEK/ISDX-exn</Description>
+    </Value>
+    <Value>
+      <Type>TradingSessionID</Type>
+      <Enum>GBP/ISDX-exn</Enum>
+      <Description>GBP/ISDX-exn</Description>
+    </Value>
+    <Value>
+      <Type>TradingSessionID</Type>
+      <Enum>CHF/ISDX-exl</Enum>
+      <Description>CHF/ISDX-exl</Description>
+    </Value>
+    <Value>
+      <Type>TradingSessionID</Type>
+      <Enum>NOK/ISDX-exl</Enum>
+      <Description>NOK/ISDX-exl</Description>
+    </Value>
+
+    <!-- SecurityIDSource (22) -->
+    <Value>
+      <Type>SecurityIDSource</Type>
+      <Enum>4</Enum>
+      <Description>ISIN</Description>
+    </Value>
+
+    <!-- MDUpdateAction (279) -->
+    <Value>
+      <Type>MDUpdateAction</Type>
+      <Enum>0</Enum>
+      <Description>New</Description>
+    </Value>
+    <Value>
+      <Type>MDUpdateAction</Type>
+      <Enum>2</Enum>
+      <Description>Delete</Description>
+    </Value>
+
+    <!-- TradeRequestType (569) -->
+    <Value>
+      <Type>TradeRequestType</Type>
+      <Enum>0</Enum>
+      <Description>All trades</Description>
+    </Value>
+
+    <!-- TradeRequestResult (749) -->
+    <Value>
+      <Type>TradeRequestResult</Type>
+      <Enum>0</Enum>
+      <Description>Successful</Description>
+    </Value>
+    <Value>
+      <Type>TradeRequestResult</Type>
+      <Enum>99</Enum>
+      <Description>Other</Description>
+    </Value>
+
+    <!-- TradeRequestStatus (750) -->
+    <Value>
+      <Type>TradeRequestStatus</Type>
+      <Enum>0</Enum>
+      <Description>Accepted</Description>
+    </Value>
+    <Value>
+      <Type>TradeRequestStatus</Type>
+      <Enum>2</Enum>
+      <Description>Rejected</Description>
+    </Value>
+
+    <!-- TradeReportTransType (487) -->
+    <Value>
+      <Type>TradeReportTransType</Type>
+      <Enum>0</Enum>
+      <Description>New</Description>
+    </Value>
+    <Value>
+      <Type>TradeReportTransType</Type>
+      <Enum>1</Enum>
+      <Description>Cancel</Description>
+    </Value>
+    <Value>
+      <Type>TradeReportTransType</Type>
+      <Enum>2</Enum>
+      <Description>Replace</Description>
+    </Value>
+
+    <!-- TrdType (828) -->
+    <Value>
+      <Type>TrdType</Type>
+      <Enum>0</Enum>
+      <Description>Regular Trade (O)</Description>
+    </Value>
+    <Value>
+      <Type>TrdType</Type>
+      <Enum>38</Enum>
+      <Description>Large in Scale (L)</Description>
+    </Value>
+    <Value>
+      <Type>TrdType</Type>
+      <Enum>101</Enum>
+      <Description>Negotiated Trade in Liquid Financial Instruments</Description>
+    </Value>
+    <Value>
+      <Type>TrdType</Type>
+      <Enum>102</Enum>
+      <Description>Negotiated Trade in Illiquid Financial Instruments</Description>
+    </Value>
+    <Value>
+      <Type>TrdType</Type>
+      <Enum>103</Enum>
+      <Description>Negotiated Trade Subject to Conditions Other Than the Current Market Price</Description>
+    </Value>
+
+    <!-- TrdSubType (829) -->
+    <Value>
+      <Type>TrdSubType</Type>
+      <Enum>15</Enum>
+      <Description>B</Description>
+    </Value>
+    <Value>
+      <Type>TrdSubType</Type>
+      <Enum>18</Enum>
+      <Description>M</Description>
+    </Value>
+    <Value>
+      <Type>TrdSubType</Type>
+      <Enum>22</Enum>
+      <Description>P</Description>
+    </Value>
+    <Value>
+      <Type>TrdSubType</Type>
+      <Enum>26</Enum>
+      <Description>R</Description>
+    </Value>
+    <Value>
+      <Type>TrdSubType</Type>
+      <Enum>37</Enum>
+      <Description>X</Description>
+    </Value>
+
+    <!-- TrdTypeBenchRef (830) -->
+    <Value>
+      <Type>TrdTypeBenchRef</Type>
+      <Enum>0</Enum>
+      <Description>No Benchmark or Reference Price Trade (-)</Description>
+    </Value>
+    <Value>
+      <Type>TrdTypeBenchRef</Type>
+      <Enum>1</Enum>
+      <Description>Benchmark Trade (B)</Description>
+    </Value>
+    <Value>
+      <Type>TrdTypeBenchRef</Type>
+      <Enum>2</Enum>
+      <Description>Reference Price Trade (S)</Description>
+    </Value>
+
+    <!-- TradePriceCondition (5998) -->
+    <Value>
+      <Type>TradePriceCondition</Type>
+      <Enum>0</Enum>
+      <Description>CD</Description>
+    </Value>
+    <Value>
+      <Type>TradePriceCondition</Type>
+      <Enum>1</Enum>
+      <Description>CR</Description>
+    </Value>
+    <Value>
+      <Type>TradePriceCondition</Type>
+      <Enum>2</Enum>
+      <Description>XD</Description>
+    </Value>
+    <Value>
+      <Type>TradePriceCondition</Type>
+      <Enum>3</Enum>
+      <Description>XR</Description>
+    </Value>
+    <Value>
+      <Type>TradePriceCondition</Type>
+      <Enum>4</Enum>
+      <Description>CC</Description>
+    </Value>
+    <Value>
+      <Type>TradePriceCondition</Type>
+      <Enum>5</Enum>
+      <Description>CP</Description>
+    </Value>
+    <Value>
+      <Type>TradePriceCondition</Type>
+      <Enum>6</Enum>
+      <Description>XC</Description>
+    </Value>
+    <Value>
+      <Type>TradePriceCondition</Type>
+      <Enum>7</Enum>
+      <Description>XP</Description>
+    </Value>
+    <Value>
+      <Type>TradePriceCondition</Type>
+      <Enum>8</Enum>
+      <Description>CS</Description>
+    </Value>
+    <Value>
+      <Type>TradePriceCondition</Type>
+      <Enum>9</Enum>
+      <Description>CB</Description>
+    </Value>
+    <Value>
+      <Type>TradePriceCondition</Type>
+      <Enum>10</Enum>
+      <Description>SP</Description>
+    </Value>
+    <Value>
+      <Type>TradePriceCondition</Type>
+      <Enum>11</Enum>
+      <Description>XB</Description>
+    </Value>
+
+    <!-- Side (54) -->
+    <Value>
+      <Type>Side</Type>
+      <Enum>1</Enum>
+      <Description>Buy</Description>
+    </Value>
+    <Value>
+      <Type>Side</Type>
+      <Enum>2</Enum>
+      <Description>Sell</Description>
+    </Value>
+
+    <!-- PartyIDSource (447) -->
+    <Value>
+      <Type>PartyIDSource</Type>
+      <Enum>B</Enum>
+      <Description>BIC</Description>
+    </Value>
+    <Value>
+      <Type>PartyIDSource</Type>
+      <Enum>G</Enum>
+      <Description>MIC</Description>
+    </Value>
+    <Value>
+      <Type>PartyIDSource</Type>
+      <Enum>D</Enum>
+      <Description>Prop code</Description>
+    </Value>
+
+    <!-- PartyRole (452) -->
+    <Value>
+      <Type>PartyRole</Type>
+      <Enum>1</Enum>
+      <Description>Executing Firm</Description>
+    </Value>
+    <Value>
+      <Type>PartyRole</Type>
+      <Enum>12</Enum>
+      <Description>Executing Trader</Description>
+    </Value>
+    <Value>
+      <Type>PartyRole</Type>
+      <Enum>17</Enum>
+      <Description>Contra Firm</Description>
+    </Value>
+    <Value>
+      <Type>PartyRole</Type>
+      <Enum>73</Enum>
+      <Description>Executing Venue</Description>
+    </Value>
+    <Value>
+      <Type>PartyRole</Type>
+      <Enum>44</Enum>
+      <Description>Order Entry Operator ID</Description>
+    </Value>
+
+    <!-- MMT Level 1 (6001), market mechanism -->
+    <Value>
+      <Type>MMT Level 1</Type>
+      <Enum>2</Enum>
+      <Description>Quote Driven Market</Description>
+    </Value>
+
+    <!-- MMT Level 2 (6002), trading mode -->
+    <Value>
+      <Type>MMT Level 2</Type>
+      <Enum>5</Enum>
+      <Description>Trade Reporting (On Exchange)</Description>
+    </Value>
+
+    <!-- MMT Level 3.1 (6003): "This field is not applicable. Always set to '-'" -->
+    <Value>
+      <Type>MMT Level 3.1</Type>
+      <Enum>-</Enum>
+      <Description>Not applicable</Description>
+    </Value>
+
+    <!-- MMT Level 3.2 (6004) -->
+    <Value>
+      <Type>MMT Level 3.2</Type>
+      <Enum>-</Enum>
+      <Description>No Negotiated Trade</Description>
+    </Value>
+    <Value>
+      <Type>MMT Level 3.2</Type>
+      <Enum>1</Enum>
+      <Description>Negotiated Trade in Liquid Financial Instruments</Description>
+    </Value>
+    <Value>
+      <Type>MMT Level 3.2</Type>
+      <Enum>2</Enum>
+      <Description>Negotiated Trade in Illiquid Financial Instruments</Description>
+    </Value>
+    <Value>
+      <Type>MMT Level 3.2</Type>
+      <Enum>3</Enum>
+      <Description>Negotiated Trade Subject to Conditions Other Than The Current Market Price</Description>
+    </Value>
+
+    <!-- MMT Level 3.3 (6005) -->
+    <Value>
+      <Type>MMT Level 3.3</Type>
+      <Enum>X</Enum>
+      <Description>Agency Cross Trade</Description>
+    </Value>
+    <Value>
+      <Type>MMT Level 3.3</Type>
+      <Enum>-</Enum>
+      <Description>No Agency Cross Trade</Description>
+    </Value>
+
+    <!-- MMT Level 3.4 (6006) -->
+    <Value>
+      <Type>MMT Level 3.4</Type>
+      <Enum>-</Enum>
+      <Description>New Trade</Description>
+    </Value>
+    <Value>
+      <Type>MMT Level 3.4</Type>
+      <Enum>A</Enum>
+      <Description>Trade Amendment</Description>
+    </Value>
+    <Value>
+      <Type>MMT Level 3.4</Type>
+      <Enum>C</Enum>
+      <Description>Trade Cancellation</Description>
+    </Value>
+
+    <!-- MMT Level 3.5 (6007) -->
+    <Value>
+      <Type>MMT Level 3.5</Type>
+      <Enum>-</Enum>
+      <Description>No Benchmark or Reference Price Trade</Description>
+    </Value>
+    <Value>
+      <Type>MMT Level 3.5</Type>
+      <Enum>B</Enum>
+      <Description>Benchmark Price Trade</Description>
+    </Value>
+    <Value>
+      <Type>MMT Level 3.5</Type>
+      <Enum>S</Enum>
+      <Description>Reference Price Trade</Description>
+    </Value>
+
+    <!-- MMT Level 3.6 (6008) -->
+    <Value>
+      <Type>MMT Level 3.6</Type>
+      <Enum>E</Enum>
+      <Description>Special Dividend Trade</Description>
+    </Value>
+    <Value>
+      <Type>MMT Level 3.6</Type>
+      <Enum>-</Enum>
+      <Description>No Special Dividend Trade</Description>
+    </Value>
+
+    <!-- MMT Level 3.7 (6009) -->
+    <Value>
+      <Type>MMT Level 3.7</Type>
+      <Enum>-</Enum>
+      <Description>Unspecified or does not apply</Description>
+    </Value>
+
+    <!-- MMT Level 3.8 (6010) -->
+    <Value>
+      <Type>MMT Level 3.8</Type>
+      <Enum>P</Enum>
+      <Description>Plain-Vanilla Trade</Description>
+    </Value>
+
+    <!-- MMT Level 3.9 (6011) -->
+    <Value>
+      <Type>MMT Level 3.9</Type>
+      <Enum>-</Enum>
+      <Description>No Algorithmic Trade</Description>
+    </Value>
+
+    <!-- MMT Level 4.1 (6012) -->
+    <Value>
+      <Type>MMT Level 4.1</Type>
+      <Enum>-</Enum>
+      <Description>Immediate Publication</Description>
+    </Value>
+    <Value>
+      <Type>MMT Level 4.1</Type>
+      <Enum>2</Enum>
+      <Description>Non-Immediate Publication: Deferral for "Large in Scale"</Description>
+    </Value>
+    <Value>
+      <Type>MMT Level 4.1</Type>
+      <Enum>3</Enum>
+      <Description>Non-Immediate Publication: Deferral for "Illiquid Instrument"</Description>
+    </Value>
+
+    <!-- MMT Level 4.2 (6013) -->
+    <Value>
+      <Type>MMT Level 4.2</Type>
+      <Enum>-</Enum>
+      <Description>Not Applicable</Description>
+    </Value>
+
+    <!-- MMT Level 5 (6014) -->
+    <Value>
+      <Type>MMT Level 5</Type>
+      <Enum>-</Enum>
+      <Description>Not Applicable</Description>
+    </Value>
+
+    <!-- Transaction MIC (6050) -->
+    <Value>
+      <Type>Transaction MIC</Type>
+      <Enum>NEXL</Enum>
+      <Description>Equity Main Board</Description>
+    </Value>
+    <Value>
+      <Type>Transaction MIC</Type>
+      <Enum>NEXD</Enum>
+      <Description>Non-Equity Main Board</Description>
+    </Value>
+    <Value>
+      <Type>Transaction MIC</Type>
+      <Enum>NEXT</Enum>
+      <Description>Equity MTF Trading</Description>
+    </Value>
+    <Value>
+      <Type>Transaction MIC</Type>
+      <Enum>NEXN</Enum>
+      <Description>Non-Equity MTF Trading</Description>
+    </Value>
+    <Value>
+      <Type>Transaction MIC</Type>
+      <Enum>NEXG</Enum>
+      <Description>Equity Growth Market</Description>
+    </Value>
+    <Value>
+      <Type>Transaction MIC</Type>
+      <Enum>NEXF</Enum>
+      <Description>Non-Equity Growth Market</Description>
+    </Value>
+
+    <!-- NewsStatus (20311) -->
+    <Value>
+      <Type>NewsStatus</Type>
+      <Enum>1</Enum>
+      <Description>Sent</Description>
+    </Value>
+
+  </Values>
+
+</OmiFixPdf>

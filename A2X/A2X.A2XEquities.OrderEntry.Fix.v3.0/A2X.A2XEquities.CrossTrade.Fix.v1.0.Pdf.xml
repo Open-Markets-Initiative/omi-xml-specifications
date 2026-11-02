@@ -1,0 +1,234 @@
+<OmiFixPdf>
+
+  <!--
+  A2X Cross Trade (XT) Technical Specification v1.0: a Central Order Book Cross Trade is submitted as a
+  FIX 4.2 Trade Capture Report (35=AE) on the A2X FIX interface, "following the A2X FIX 4.2 Specification
+  Section 5.6", and acknowledged by a Trade Capture Report Acknowledgement (35=AR). This source
+  transcribes the XT tables; composed after the FIX 4.2 v3.0 transcription, it adds what that one does
+  not carry (OrderAttributeTypes 8015).
+  -->
+
+  <Messages>
+
+    <!-- TradeCaptureReport (AE), section 3. The rows marked * are the NoSides (552) repeating group -->
+    <Message>
+      <Name>TradeCaptureReport</Name>
+      <MsgType>AE</MsgType>
+      <Category>app</Category>
+      <Origin>Client</Origin>
+      <Description>An XT is submitted in a single Trade Capture Report message (MsgType 35 = AE), with the Member acting on behalf of both the buyer and the seller.</Description>
+      <Fields>
+        <Field>
+          <Tag>15</Tag>
+          <Name>Currency</Name>
+          <Required>N</Required>
+          <Type>Currency</Type>
+          <Description>Required if ISIN is used to identify the security, IDSource (22) = 4 (ISIN). ZAC = South African Cents</Description>
+        </Field>
+        <Field>
+          <Tag>22</Tag>
+          <Name>IDSource</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>4 = ISIN, 5 = RIC. Please refer to the Note on Symbology in the A2X FIX 4.2 Specification</Description>
+        </Field>
+        <Field>
+          <Tag>31</Tag>
+          <Name>LastPx</Name>
+          <Required>Y</Required>
+          <Type>Price</Type>
+          <Description>Price of the trade. Validated against the elected BBO (see Section 2).</Description>
+        </Field>
+        <Field>
+          <Tag>32</Tag>
+          <Name>LastQty</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>Quantity of the trade. No minimum size applies to XT trades.</Description>
+        </Field>
+        <Field>
+          <Tag>48</Tag>
+          <Name>SecurityID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>If using alternative symbology, RIC (primary or A2X) or ISIN depending on the value of IDSource (22)</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Uniform symbology code for the security (not required if alternative symbology is used)</Description>
+        </Field>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>Y</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Time the transaction represented by this TCR occurred (expressed in UTC)</Description>
+        </Field>
+        <Field>
+          <Tag>75</Tag>
+          <Name>TradeDate</Name>
+          <Required>Y</Required>
+          <Type>LocalMktDate</Type>
+          <Description>Date of trade in YYYYMMDD format. Current day only.</Description>
+        </Field>
+        <Field>
+          <Tag>207</Tag>
+          <Name>SecurityExchange</Name>
+          <Required>N</Required>
+          <Type>Exchange</Type>
+          <Description>Required if ISIN is used, IDSource (22) = 4. XJSE = JSE (Johannesburg)</Description>
+        </Field>
+        <Group>
+          <Name>NoSides</Name>
+          <Required>N</Required>
+        </Group>
+        <Field>
+          <Tag>571</Tag>
+          <Name>TradeReportID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Unique identifier for the Trade Capture Report</Description>
+        </Field>
+        <Field>
+          <Tag>828</Tag>
+          <Name>TrdType</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Cross Trade values: 11 = Cross trade, price check against PBBO, 12 = Cross trade, price check against APBBO</Description>
+        </Field>
+        <Field>
+          <Tag>829</Tag>
+          <Name>TrdSubType</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>6 = Cross trade for clearing. TrdSubType (829) must be 6; clearing is not a per-trade choice on an XT. Self-trade suppression for clearing at the session level takes precedence. See the Clearing Configuration section of the A2X FIX 4.2 Specification.</Description>
+        </Field>
+        <Field>
+          <Tag>8015</Tag>
+          <Name>OrderAttributeTypes</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>4 = Algorithmic trade (transaction executed as a result of algorithmic trading as defined in Article 4(1)(39) of Directive 2014/65/EU). Default if not supplied = No.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- TradeCaptureReportAck (AR), section 4: the key fields; the table prints no Req'd column -->
+    <Message>
+      <Name>TradeCaptureReportAck</Name>
+      <MsgType>AR</MsgType>
+      <Category>app</Category>
+      <Origin>Exchange</Origin>
+      <Description>In response to a submitted XT, A2X sends a Trade Capture Report Acknowledgement (MsgType 35 = AR) echoing the submitted fields, as set out in the A2X FIX 4.2 Specification Section 5.7.</Description>
+      <Fields>
+        <Field>
+          <Tag>17</Tag>
+          <Name>ExecID</Name>
+          <Type>String</Type>
+          <Description>Unique ID for the trading day for this Trade Capture Report. Corresponds to the TVTIC for transaction reporting purposes.</Description>
+        </Field>
+        <Field>
+          <Tag>150</Tag>
+          <Name>ExecType</Name>
+          <Type>Char</Type>
+          <Description>TCR status: F = Trade (price within the elected BBO), 8 = Rejected (price outside the elected BBO)</Description>
+        </Field>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Type>String</Type>
+          <Description>Reason text in the case of a reject</Description>
+        </Field>
+        <Field>
+          <Tag>828</Tag>
+          <Name>TrdType</Name>
+          <Type>Int</Type>
+          <Description>Copied from the incoming Trade Capture Report</Description>
+        </Field>
+        <Field>
+          <Tag>829</Tag>
+          <Name>TrdSubType</Name>
+          <Type>Int</Type>
+          <Description>Copied from the incoming Trade Capture Report</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+  </Messages>
+
+  <Groups>
+
+    <!-- NoSides (552): "Number of Side repeating group instances (maximum 2). For an XT, both the buy side
+         and the sell side are reported in the one message." -->
+    <Group>
+      <Name>NoSides</Name>
+      <AnchorTag>552</AnchorTag>
+      <Fields>
+        <Field>
+          <Tag>54</Tag>
+          <Name>Side</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>1 = Buy, 2 = Sell</Description>
+        </Field>
+        <Field>
+          <Tag>37</Tag>
+          <Name>OrderID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Unique identifier for each chain of orders. Value must be greater than 1.</Description>
+        </Field>
+        <Field>
+          <Tag>1</Tag>
+          <Name>Account</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>House or Client Account for use with clearing. If not supplied, A2X will assume ‘House’. Values need to be pre-loaded on the trading platform.</Description>
+        </Field>
+        <Field>
+          <!-- Printed OrderCapacity, the name tag 47 carries on the order messages; named SideOrderCapacity so each tag keeps one name -->
+          <Tag>528</Tag>
+          <Name>SideOrderCapacity</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Description>The capacity for this side of the trade: A = Agency, P = Principal</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+  </Groups>
+
+  <Values>
+
+    <!-- TrdType (828), section 2.1 and 3 -->
+    <Value>
+      <Type>TrdType</Type>
+      <Enum>11</Enum>
+      <Description>Cross trade, price check against PBBO</Description>
+    </Value>
+    <Value>
+      <Type>TrdType</Type>
+      <Enum>12</Enum>
+      <Description>Cross trade, price check against APBBO</Description>
+    </Value>
+
+    <!-- TrdSubType (829) -->
+    <Value>
+      <Type>TrdSubType</Type>
+      <Enum>6</Enum>
+      <Description>Cross trade for clearing</Description>
+    </Value>
+
+    <!-- OrderAttributeTypes (8015) -->
+    <Value>
+      <Type>OrderAttributeTypes</Type>
+      <Enum>4</Enum>
+      <Description>Algorithmic trade (transaction executed as a result of algorithmic trading as defined in Article 4(1)(39) of Directive 2014/65/EU)</Description>
+    </Value>
+
+  </Values>
+
+</OmiFixPdf>

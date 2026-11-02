@@ -1,0 +1,1358 @@
+<OmiAtpPdf>
+
+  <Messages>
+
+    <!--Login Message-->
+    <Message>
+      <Name>Login Message</Name>
+      <Description>The Login message is the initial message used to establish a trading session. It is also used to re-establish a session after a break.</Description>
+      <Branch>Payload</Branch>
+      <Dependency>Msg Type</Dependency>
+      <Origin>Member</Origin>
+      <Category>Session</Category>
+      <Code>1</Code>
+      <Fields>
+        <Field>
+          <Name>protocolVersion</Name>
+          <Type>u16</Type>
+          <Size>2</Size>
+          <Description>A two byte field to represent the version of the ATP protocol that the user conforms to with major version number in the most significant byte and minor version number in the least significant byte. i.e. The current version v2.9 is LSB =9 MSB = 2 represented by value 0x0209</Description>
+        </Field>
+        <Field>
+          <Name>senderId</Name>
+          <Type>char(n)</Type>
+          <Size>16</Size>
+          <Description>Value as agreed with A2X to identify the Members ATP session</Description>
+        </Field>
+        <Field>
+          <Name>password</Name>
+          <Type>char(n)</Type>
+          <Size>16</Size>
+          <Description>Password as agreed with A2X to verify the user</Description>
+        </Field>
+        <Field>
+          <Name>inactivityTimeout</Name>
+          <Type>u16</Type>
+          <Size>2</Size>
+          <Description>Optional inactivity timeout in seconds. If there are no messages received for this period of time then A2X will close the session (triggering cancel on disconnect)</Description>
+        </Field>
+        <Field>
+          <Name>atpSeqNo</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>The next sequence number from A2X that the trading Member is expecting. After a drop or break in the session this can be used by A2X to identify a gap and trigger any missed messages to be re-sent (see Login Response).</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!--Login Response Message-->
+    <Message>
+      <Name>Login Response Message</Name>
+      <Description>The Login Response message is sent by A2X to acknowledge a Login request, and either accept or reject it.</Description>
+      <Branch>Payload</Branch>
+      <Dependency>Msg Type</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Session</Category>
+      <Code>2</Code>
+      <Fields>
+        <Field>
+          <Name>resultCode</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Result of logon attempt 0 = Successful login 1 = Already logged in 2 = Sequence number error 3 = Unsupported protocol 4 = Failed authentication (incorrect password) 5 = Unknown Source Network</Description>
+        </Field>
+        <Field>
+          <Name>clientSeqNo</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Next sequence number A2X expects to receive</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!--Heartbeat-->
+    <Message>
+      <Name>Heartbeat</Name>
+      <Description>A Heartbeat message is simply a message header with a heartbeat id as the message content. For a heartbeat, msgType is set to 0 and msgSeqNo is set to the sequence number that will be set on the next business message.</Description>
+      <Branch>Payload</Branch>
+      <Dependency>Msg Type</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Session</Category>
+      <Code>0</Code>
+      <Fields />
+    </Message>
+
+    <!--Logout Request Message-->
+    <Message>
+      <Name>Logout Request Message</Name>
+      <Description>The Logout Request message is used by the trading Member to request the closure of a trading session.</Description>
+      <Branch>Payload</Branch>
+      <Dependency>Msg Type</Dependency>
+      <Origin>Member</Origin>
+      <Category>Session</Category>
+      <Code>3</Code>
+      <Fields />
+    </Message>
+
+    <!--Logout Message-->
+    <Message>
+      <Name>Logout Message</Name>
+      <Description>The Logout message is usually sent as a response to the Logout Request however it may also be sent by A2X in case of a low sequence number or other protocol violation, or for other reasons. The TCP/IP connection is closed immediately after this message has been sent.</Description>
+      <Branch>Payload</Branch>
+      <Dependency>Msg Type</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Session</Category>
+      <Code>4</Code>
+      <Fields>
+        <!-- printed reasonCode; named logoutReasonCode, as the Aquis transcription does, so its values do not join the status bitfield's reasonCode -->
+        <Field>
+          <Name>logoutReasonCode</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Reason for logout 0 = User requested 1 = Admin (market operations) 2 = Disconnect 3 = End of Day 4 = Inactivity timeout 5 = Protocol error 6 = Sequence number error</Description>
+        </Field>
+        <Field>
+          <Name>reasonText</Name>
+          <Type>char(n)</Type>
+          <Size>32</Size>
+          <Description>Text describing reason for logout</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!--Order Add Message-->
+    <Message>
+      <Name>Order Add Message</Name>
+      <Description>The Add Order message is sent by the trading Member to enter an order for a particular security.</Description>
+      <Branch>Payload</Branch>
+      <Dependency>Msg Type</Dependency>
+      <Origin>Member</Origin>
+      <Category>Order Entry</Category>
+      <Code>24</Code>
+      <Fields>
+        <Field>
+          <Name>securityId</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Numeric security identifier</Description>
+        </Field>
+        <Field>
+          <Name>orderType</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>1 = Limit Order 2 = Auction on Demand (Limit Order) 3 = Auction on Demand (Trade at Middle/Limit or Pegged/Limit) 6 = Market at Close 8 = Post Only Cancel Replace (POCR) 9 = Post-Only (PO)</Description>
+        </Field>
+        <Field>
+          <Name>timeInForce</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Time in force for this order 1 = Day order 2 = Fill or Kill (FOK) 3 = Immediate or Cancel (IOC) 9 = Good for Auction (GFA) Only Day orders are valid for the Market at Close (MaC). GFA orders are only valid for the Auction on Demand</Description>
+        </Field>
+        <Field>
+          <Name>side</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>1 = Buy order 2 = Sell order</Description>
+        </Field>
+        <Field>
+          <Name>quantity</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Number of shares</Description>
+        </Field>
+        <Field>
+          <Name>price</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Limit price of the order (0 for MaC order)</Description>
+        </Field>
+        <Field>
+          <Name>orderCapacity</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>1 = Agency 2 = Principal</Description>
+        </Field>
+        <Field>
+          <Name>account</Name>
+          <Type>u16</Type>
+          <Size>2</Size>
+          <Description>Clearing account identifier possible values: 1 to 65,535 1=House Account &gt;2=ID for agreed Client Account Code</Description>
+        </Field>
+        <Field>
+          <Name>userTag</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Free form tag assigned by trading Member</Description>
+        </Field>
+        <!-- printed "Reserved 37 16" with no type -->
+        <Field>
+          <Name>Reserved</Name>
+          <Type></Type>
+          <Size>16</Size>
+          <Description></Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!--Order Add Extended Message-->
+    <Message>
+      <Name>Order Add Extended Message</Name>
+      <Description>The Order Add Extended message is sent by the trading Member to enter an order for a particular security with additional attributes.</Description>
+      <Branch>Payload</Branch>
+      <Dependency>Msg Type</Dependency>
+      <Origin>Member</Origin>
+      <Category>Order Entry</Category>
+      <Code>25</Code>
+      <Fields>
+        <Field>
+          <Name>securityId</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Numeric security identifier</Description>
+        </Field>
+        <Field>
+          <Name>orderType</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>1 = Limit Order 2 = Auction on Demand Limit Order 3 = Auction on Demand Pegged Limit 6 = Market at Close 8 = Post Only Cancel Replace (POCR) 9 = Post-Only (PO)</Description>
+        </Field>
+        <Field>
+          <Name>timeInForce</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Time in force for this order 1 = Day order 2 = Fill or Kill (FOK) 3 = Immediate or Cancel (IOC) 9 = Good for Auction (GFA) Only Day orders are valid for the Market at Close (MaC). GFA orders are only valid for the Auction on Demand</Description>
+        </Field>
+        <Field>
+          <Name>side</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>1 = Buy order 2 = Sell order</Description>
+        </Field>
+        <Field>
+          <Name>quantity</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Number of shares</Description>
+        </Field>
+        <Field>
+          <Name>price</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Limit price of the order (0 for MaC order)</Description>
+        </Field>
+        <Field>
+          <Name>orderCapacity</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>1 = Agency 2 = Principal</Description>
+        </Field>
+        <Field>
+          <Name>account</Name>
+          <Type>u16</Type>
+          <Size>2</Size>
+          <Description>Clearing account identifier possible values: 1 to 65,535 1=House Account &gt;2=ID for agreed Client Account Code</Description>
+        </Field>
+        <Field>
+          <Name>userTag</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Free form tag assigned by trading Member</Description>
+        </Field>
+        <!-- printed "Reserved 37 16" with no type -->
+        <Field>
+          <Name>Reserved</Name>
+          <Type></Type>
+          <Size>16</Size>
+          <Description></Description>
+        </Field>
+        <Field>
+          <Name>displayQuantity</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Display quantity for an iceberg order. Only valid for iceberg orders. For non-iceberg orders, value must be set to 0.</Description>
+        </Field>
+        <Field>
+          <Name>minQty</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Minimum quantity (shares) of an order to be executed. Only valid when OrderType = 2 or 3</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!--Order Add Response Message-->
+    <Message>
+      <Name>Order Add Response Message</Name>
+      <Description>A2X sends an Add Order Response message to acknowledge the receipt of an Order Add message.</Description>
+      <Branch>Payload</Branch>
+      <Dependency>Msg Type</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Order Entry</Category>
+      <Code>6</Code>
+      <Fields>
+        <Field>
+          <Name>orderRef</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Order reference number</Description>
+        </Field>
+        <Field>
+          <Name>marketDataId</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>The id of this order as seen in the A2X market data. This value will be zero if the order is cancelled (IOC) or fully traded on entry</Description>
+        </Field>
+        <Field>
+          <Name>status</Name>
+          <Type>bitfield</Type>
+          <Size>1</Size>
+          <Description>Status of order and reject or cancel code (if needed) First 3 most significant bits - order status; Lower 5 bits - reason code (if rejected or cancelled); Otherwise zero. See Section 4 for values.</Description>
+        </Field>
+        <Field>
+          <Name>tradedQuantity</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Number of shares traded if any</Description>
+        </Field>
+        <Field>
+          <Name>timestamp</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Time that the order was accepted or rejected by the A2X system</Description>
+        </Field>
+        <Field>
+          <Name>userTag</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Free form tag as assigned by trading Member on the Order Add message</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!--Order Cancel Message-->
+    <Message>
+      <Name>Order Cancel Message</Name>
+      <Description>The Order Cancel message is sent when a user wishes to cancel an open order.</Description>
+      <Branch>Payload</Branch>
+      <Dependency>Msg Type</Dependency>
+      <Origin>Member</Origin>
+      <Category>Order Entry</Category>
+      <Code>7</Code>
+      <Fields>
+        <Field>
+          <Name>orderRef</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Order reference number</Description>
+        </Field>
+        <Field>
+          <Name>userTag</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Free form tag assigned by trading Member</Description>
+        </Field>
+        <!-- printed "Reserved 19 16" with no type -->
+        <Field>
+          <Name>Reserved</Name>
+          <Type></Type>
+          <Size>16</Size>
+          <Description></Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!--Order Cancel Response Message-->
+    <Message>
+      <Name>Order Cancel Response Message</Name>
+      <Description>A2X sends an Order Cancel Response to accept or reject an Order Cancel message. The message is also used if an order is cancelled by Market Operations or due to cancel on disconnect.</Description>
+      <Branch>Payload</Branch>
+      <Dependency>Msg Type</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Order Entry</Category>
+      <Code>8</Code>
+      <Fields>
+        <Field>
+          <Name>orderRef</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Order reference number</Description>
+        </Field>
+        <Field>
+          <Name>requestRef</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Sequence number (msgSeqNo) of the trading Members cancel request message. Note that this field will be zero in the case of a forced cancel by A2X Market Operations.</Description>
+        </Field>
+        <Field>
+          <Name>status</Name>
+          <Type>bitfield</Type>
+          <Size>1</Size>
+          <Description>Status of order and reject or cancel code (if needed) First 3 most significant bits - order status; Lower 5 bits - reason code (if rejected or cancelled); See Section 4 for values.</Description>
+        </Field>
+        <Field>
+          <Name>timestamp</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Time that the cancellation was accepted or rejected by the A2X system</Description>
+        </Field>
+        <Field>
+          <Name>userTag</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Free form tag as assigned by trading Member on the Order Cancel message</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!--Order Modify Message-->
+    <Message>
+      <Name>Order Modify Message</Name>
+      <Description>The Order Modify message is sent when a user wishes to modify an open order. Order quantity and/or limit price may be modified. Both values must be included, even if one of them is unchanged.</Description>
+      <Branch>Payload</Branch>
+      <Dependency>Msg Type</Dependency>
+      <Origin>Member</Origin>
+      <Category>Order Entry</Category>
+      <Code>9</Code>
+      <Fields>
+        <Field>
+          <Name>orderRef</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Order reference number</Description>
+        </Field>
+        <Field>
+          <Name>price</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>The new price of the order</Description>
+        </Field>
+        <Field>
+          <Name>quantity</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>The new order quantity</Description>
+        </Field>
+        <Field>
+          <Name>userTag</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Free form tag assigned by trading Member</Description>
+        </Field>
+        <!-- printed "Reserved 31 16" with no type -->
+        <Field>
+          <Name>Reserved</Name>
+          <Type></Type>
+          <Size>16</Size>
+          <Description></Description>
+        </Field>
+        <Field>
+          <Name>orderCapacity</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>0 = Unchanged 1 = Agency 2 = Principal</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!--Order Modify Extended Message-->
+    <Message>
+      <Name>Order Modify Extended Message</Name>
+      <Description>The Order Modify Extended message is sent when a user wants to modify an open Order Add Extended. Order quantity and/or limit price and/or display quantity and/or minimum quantity may be modified. All values must be included, even if some are unchanged.</Description>
+      <Branch>Payload</Branch>
+      <Dependency>Msg Type</Dependency>
+      <Origin>Member</Origin>
+      <Category>Order Entry</Category>
+      <Code>22</Code>
+      <Fields>
+        <Field>
+          <Name>orderRef</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Order reference number</Description>
+        </Field>
+        <Field>
+          <Name>price</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>The new price of the order</Description>
+        </Field>
+        <Field>
+          <Name>quantity</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>The new order quantity</Description>
+        </Field>
+        <Field>
+          <Name>userTag</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Free form tag assigned by trading Member</Description>
+        </Field>
+        <!-- printed "Reserved 31 16" with no type -->
+        <Field>
+          <Name>Reserved</Name>
+          <Type></Type>
+          <Size>16</Size>
+          <Description></Description>
+        </Field>
+        <Field>
+          <Name>orderCapacity</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>1 = Agency 2 = Principal</Description>
+        </Field>
+        <Field>
+          <Name>displayQuantity</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>New display quantity of the iceberg order</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!--Order Modify Response Message-->
+    <Message>
+      <Name>Order Modify Response Message</Name>
+      <Description>A2X sends an Order Modify Response to accept or reject an Order Modify or an Order Modify Extended message.</Description>
+      <Branch>Payload</Branch>
+      <Dependency>Msg Type</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Order Entry</Category>
+      <Code>10</Code>
+      <Fields>
+        <Field>
+          <Name>orderRef</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Order reference number</Description>
+        </Field>
+        <Field>
+          <Name>requestRef</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Sequence number (msgSeqNo) of the trading Members modify request message.</Description>
+        </Field>
+        <Field>
+          <Name>status</Name>
+          <Type>bitfield</Type>
+          <Size>1</Size>
+          <Description>Status of order and reject or cancel code (if needed) First 3 most significant bits - order status; Lower 5 bits - reason code; See Section 4 for values.</Description>
+        </Field>
+        <Field>
+          <Name>timestamp</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Time that the modification was accepted or rejected by the A2X system</Description>
+        </Field>
+        <Field>
+          <Name>userTag</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Free form tag as assigned by trading Member on the Order Modify message</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!--Iceberg Order Refresh Message-->
+    <Message>
+      <Name>Iceberg Order Refresh Message</Name>
+      <Description>A2X sends an Iceberg Order Refresh message to notify the Member when an iceberg order is refreshed from the non-displayed reserve quantity.</Description>
+      <Branch>Payload</Branch>
+      <Dependency>Msg Type</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Order Entry</Category>
+      <Code>23</Code>
+      <Fields>
+        <Field>
+          <Name>orderRef</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Order reference number</Description>
+        </Field>
+        <Field>
+          <Name>origA2xOrdId</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>The ID of the original order as seen in the A2X market data</Description>
+        </Field>
+        <Field>
+          <Name>newA2xOrdId</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>The ID of the Iceberg order refresh as seen in the A2X market data</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Refreshed display quantity of the iceberg order</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!--Trade Capture Message-->
+    <Message>
+      <Name>Trade Capture Message</Name>
+      <Description>A2X uses a Trade Capture Report message for the purpose of allowing members to submit Large in Scale (LS), Negotiated Benchmark Cross (NBC) and Matched Principal (MP) trades to the exchange.</Description>
+      <Branch>Payload</Branch>
+      <Dependency>Msg Type</Dependency>
+      <Origin>Member</Origin>
+      <Category>Order Entry</Category>
+      <Code>26</Code>
+      <Fields>
+        <Field>
+          <Name>quantity</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Number of shares traded if any</Description>
+        </Field>
+        <Field>
+          <Name>price</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>The price of the trade</Description>
+        </Field>
+        <Field>
+          <Name>securityId</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Numeric security identifier</Description>
+        </Field>
+        <Field>
+          <Name>tradeCaptureType</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>1 = Large in Scale (LS) 3 = Negotiated Benchmark Cross (NBC) 5 = Matched Principal (MP)</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description></Description>
+        </Field>
+        <Field>
+          <Name>userTag</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Free form tag assigned by trading Member</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description></Description>
+        </Field>
+        <Field>
+          <Name>buyAccount</Name>
+          <Type>u16</Type>
+          <Size>2</Size>
+          <Description>Clearing account identifier possible values: 1 to 65,535 1=House Account &gt;2=ID for agreed Client Account Code</Description>
+        </Field>
+        <Field>
+          <Name>buyOrderCapacity</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>1 = Agency 2 = Principal</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description></Description>
+        </Field>
+        <Field>
+          <Name>sellAccount</Name>
+          <Type>u16</Type>
+          <Size>2</Size>
+          <Description>Clearing account identifier possible values: 1 to 65,535 1=House Account &gt;2=ID for agreed Client Account Code</Description>
+        </Field>
+        <Field>
+          <Name>sellOrderCapacity</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>1 = Agency 2 = Principal</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!--Trade Capture Response Message-->
+    <Message>
+      <Name>Trade Capture Response Message</Name>
+      <Description>A2X sends a Trade Capture Response Message to accept or reject a Trade Capture Message.</Description>
+      <Branch>Payload</Branch>
+      <Dependency>Msg Type</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Order Entry</Category>
+      <Code>18</Code>
+      <Fields>
+        <Field>
+          <Name>status</Name>
+          <Type>bitfield</Type>
+          <Size>1</Size>
+          <Description>Status of order and reject or cancel code (if needed) First 3 most significant bits - order status; Lower 5 bits - reason code; See Section 4 for values.</Description>
+        </Field>
+        <Field>
+          <Name>tradeRef</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Trade reference number.</Description>
+        </Field>
+        <Field>
+          <Name>requestRef</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Sequence number (msgSeqNo) of the trading Member's Trade Capture Message.</Description>
+        </Field>
+        <Field>
+          <Name>userTag</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Free form tag as assigned by trading Member on the Trade Capture Message.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!--Trade Message-->
+    <Message>
+      <Name>Trade Message</Name>
+      <Description>The Trade message is published when an order executes. The Trade message is also used to communicate indicative trade reports at lock time for Market at Close orders. Note that the price and tradeRef values will be zero for indicative trade reports published when MaC orders are matched at lock time.</Description>
+      <Branch>Payload</Branch>
+      <Dependency>Msg Type</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Order Entry</Category>
+      <Code>11</Code>
+      <Fields>
+        <Field>
+          <Name>orderRef</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Order reference number</Description>
+        </Field>
+        <Field>
+          <Name>quantity</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Number of shares traded if any</Description>
+        </Field>
+        <Field>
+          <Name>price</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>The price of the trade</Description>
+        </Field>
+        <Field>
+          <Name>side</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>1 = Buy order 2 = Sell order</Description>
+        </Field>
+        <Field>
+          <Name>tradeRef</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Trade reference number</Description>
+        </Field>
+        <Field>
+          <Name>ccpCode</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>Clearing CCP code 1 = Self clearing 2 = EMCFNL2A</Description>
+        </Field>
+        <Field>
+          <Name>liqIndicator</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>1 = Added liquidity 2 = Removed liquidity 3 = Removed liquidity (hidden quantity)</Description>
+        </Field>
+        <Field>
+          <Name>securityId</Name>
+          <Type>u16</Type>
+          <Size>2</Size>
+          <Description>Numeric security identifier</Description>
+        </Field>
+        <Field>
+          <Name>timestamp</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Time that the trade occurred on the A2X system</Description>
+        </Field>
+        <Field>
+          <Name>userTag</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Free form tag as assigned by trading Member on the Order Add message or the most recent Order Modify message</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!--Trade Bust Message-->
+    <Message>
+      <Name>Trade Bust Message</Name>
+      <Description>If a trade is invalidated, a Trade Bust message is sent to notify the trading Member.</Description>
+      <Branch>Payload</Branch>
+      <Dependency>Msg Type</Dependency>
+      <Origin>Exchange</Origin>
+      <Category>Order Entry</Category>
+      <Code>12</Code>
+      <Fields>
+        <Field>
+          <Name>orderRef</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Order reference number</Description>
+        </Field>
+        <Field>
+          <Name>quantity</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Number of shares on invalidated trade</Description>
+        </Field>
+        <Field>
+          <Name>price</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>The price of the invalidated trade</Description>
+        </Field>
+        <Field>
+          <Name>side</Name>
+          <Type>u8</Type>
+          <Size>1</Size>
+          <Description>1 = Buy order 2 = Sell order</Description>
+        </Field>
+        <Field>
+          <Name>tradeRef</Name>
+          <Type>u32</Type>
+          <Size>4</Size>
+          <Description>Trade reference number for the invalidated trade</Description>
+        </Field>
+        <Field>
+          <Name>timestamp</Name>
+          <Type>u64</Type>
+          <Size>8</Size>
+          <Description>Time that the trade was busted by A2X Market Operations</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+  </Messages>
+
+  <Bitfields>
+
+    <!--status-->
+    <Bitfield>
+      <Name>status</Name>
+      <Description>Order status and reason code</Description>
+      <Fields>
+        <Field>
+          <Name>reasonCode</Name>
+          <Bits>5</Bits>
+          <Description>Reason code if rejected or cancelled; otherwise zero</Description>
+        </Field>
+        <Field>
+          <Name>orderStatus</Name>
+          <Bits>3</Bits>
+          <Type>orderStatus</Type>
+          <Description>Order status</Description>
+        </Field>
+      </Fields>
+    </Bitfield>
+
+  </Bitfields>
+
+  <Enums>
+
+    <!--cancelReason-->
+    <Enum>
+      <Name>cancelReason</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Member Request</Name>
+          <Description>Member request</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>A2X Forced Cancel</Name>
+          <Description>A2X forced cancel</Description>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Market Close</Name>
+          <Description>Market close</Description>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>Expired</Name>
+        </Value>
+        <Value>
+          <Data>5</Data>
+          <Name>Reserved</Name>
+        </Value>
+        <Value>
+          <Data>6</Data>
+          <Name>Aborted</Name>
+        </Value>
+        <Value>
+          <Data>7</Data>
+          <Name>Self-Trade Prevention</Name>
+          <Description>Self-trade prevention</Description>
+        </Value>
+        <Value>
+          <Data>8</Data>
+          <Name>Cancel on Disconnect</Name>
+          <Description>Cancel on disconnect</Description>
+        </Value>
+        <Value>
+          <Data>9</Data>
+          <Name>Post-Only Cancel</Name>
+          <Description>Post-only cancel (cancel to prevent aggressive trade)</Description>
+        </Value>
+        <Value>
+          <Data>10</Data>
+          <Name>Cancel Residual Quantity</Name>
+          <Description>Cancel residual quantity</Description>
+        </Value>
+        <Value>
+          <Data>11</Data>
+          <Name>Post-Only Cancel Resting</Name>
+          <Description>Post-only cancel resting (cancel to prevent aggressive trade)</Description>
+        </Value>
+        <Value>
+          <Data>12</Data>
+          <Name>Minimum Resting Value</Name>
+          <Description>Minimum resting value</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!--ccpCode-->
+    <Enum>
+      <Name>ccpCode</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Self Clearing</Name>
+          <Description>Self clearing</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>EMCFNL2A</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!--liqIndicator-->
+    <Enum>
+      <Name>liqIndicator</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Added Liquidity</Name>
+          <Description>Added liquidity</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Removed Liquidity</Name>
+          <Description>Removed liquidity</Description>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Removed Liquidity Hidden Quantity</Name>
+          <Description>Removed liquidity (hidden quantity)</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!--logoutReasonCode-->
+    <Enum>
+      <Name>logoutReasonCode</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>User Requested</Name>
+          <Description>User requested</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Admin</Name>
+          <Description>Admin (market operations)</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Disconnect</Name>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>End of Day</Name>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>Inactivity Timeout</Name>
+          <Description>Inactivity timeout</Description>
+        </Value>
+        <Value>
+          <Data>5</Data>
+          <Name>Protocol Error</Name>
+          <Description>Protocol error</Description>
+        </Value>
+        <Value>
+          <Data>6</Data>
+          <Name>Sequence Number Error</Name>
+          <Description>Sequence number error</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!--modificationReason-->
+    <Enum>
+      <Name>modificationReason</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Modification Accepted</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Order Cancelled</Name>
+          <Description>Order cancelled as a result of modification which updates the remaining quantity to zero</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!--orderCapacity-->
+    <Enum>
+      <Name>orderCapacity</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>Unchanged</Name>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Agency</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Principal</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!--buyOrderCapacity-->
+    <Enum>
+      <Name>buyOrderCapacity</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Agency</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Principal</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!--sellOrderCapacity-->
+    <Enum>
+      <Name>sellOrderCapacity</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Agency</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Principal</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!--orderStatus-->
+    <Enum>
+      <Name>orderStatus</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Pending New</Name>
+          <Description>Pending New (Internal use only)</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Acknowledged</Name>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Cancelled</Name>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>Rejected</Name>
+        </Value>
+        <Value>
+          <Data>5</Data>
+          <Name>Filled</Name>
+        </Value>
+        <Value>
+          <Data>6</Data>
+          <Name>Modified</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!--orderType-->
+    <Enum>
+      <Name>orderType</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Limit Order</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Auction on Demand Limit Order</Name>
+          <Description>Auction on Demand (Limit Order)</Description>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Auction on Demand Trade at Middle Limit or Pegged Limit</Name>
+          <Description>Auction on Demand (Trade at Middle/Limit or Pegged/Limit)</Description>
+        </Value>
+        <Value>
+          <Data>6</Data>
+          <Name>Market at Close</Name>
+        </Value>
+        <Value>
+          <Data>8</Data>
+          <Name>Post Only Cancel Replace</Name>
+          <Description>Post Only Cancel Replace (POCR)</Description>
+        </Value>
+        <Value>
+          <Data>9</Data>
+          <Name>Post-Only</Name>
+          <Description>Post-Only (PO)</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!--rejectReason-->
+    <Enum>
+      <Name>rejectReason</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Not Authorised To Trade</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Invalid Quantity</Name>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Invalid Price</Name>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>Unknown Security</Name>
+        </Value>
+        <Value>
+          <Data>5</Data>
+          <Name>Price Does Not Conform To Tick</Name>
+        </Value>
+        <Value>
+          <Data>6</Data>
+          <Name>Invalid Order Type</Name>
+        </Value>
+        <Value>
+          <Data>7</Data>
+          <Name>Invalid Side</Name>
+        </Value>
+        <Value>
+          <Data>8</Data>
+          <Name>Invalid Order Capacity</Name>
+        </Value>
+        <Value>
+          <Data>9</Data>
+          <Name>Market Is Closed</Name>
+        </Value>
+        <Value>
+          <Data>10</Data>
+          <Name>Halted</Name>
+        </Value>
+        <Value>
+          <Data>11</Data>
+          <Name>Suspended</Name>
+        </Value>
+        <Value>
+          <Data>12</Data>
+          <Name>Invalid TimeInForce</Name>
+        </Value>
+        <Value>
+          <Data>13</Data>
+          <Name>Order Not Found Not Open</Name>
+          <Description>Order Not Found / Not Open</Description>
+        </Value>
+        <Value>
+          <Data>14</Data>
+          <Name>No Clearing In Place</Name>
+        </Value>
+        <Value>
+          <Data>15</Data>
+          <Name>Failed Price Range Check</Name>
+        </Value>
+        <Value>
+          <Data>16</Data>
+          <Name>Invalid Clearing Account</Name>
+        </Value>
+        <Value>
+          <Data>17</Data>
+          <Name>Not Supported</Name>
+        </Value>
+        <Value>
+          <Data>18</Data>
+          <Name>Max Value Exceeded</Name>
+        </Value>
+        <Value>
+          <Data>19</Data>
+          <Name>Auction Ended</Name>
+        </Value>
+        <Value>
+          <Data>20</Data>
+          <Name>Drop Feed Is Down</Name>
+        </Value>
+        <Value>
+          <Data>21</Data>
+          <Name>Technical Reject</Name>
+        </Value>
+        <Value>
+          <Data>23</Data>
+          <Name>Stock Restricted</Name>
+        </Value>
+        <Value>
+          <Data>24</Data>
+          <Name>Minimum Consideration</Name>
+        </Value>
+        <Value>
+          <Data>27</Data>
+          <Name>Invalid</Name>
+        </Value>
+        <Value>
+          <Data>29</Data>
+          <Name>Bad Date</Name>
+        </Value>
+        <Value>
+          <Data>30</Data>
+          <Name>Duplicate</Name>
+        </Value>
+        <Value>
+          <Data>31</Data>
+          <Name>Reject Internal</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!--resultCode-->
+    <Enum>
+      <Name>resultCode</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>Successful Login</Name>
+          <Description>Successful login</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Already Logged In</Name>
+          <Description>Already logged in</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Sequence Number Error</Name>
+          <Description>Sequence number error</Description>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Unsupported Protocol</Name>
+          <Description>Unsupported protocol</Description>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>Failed Authentication</Name>
+          <Description>Failed authentication (incorrect password)</Description>
+        </Value>
+        <Value>
+          <Data>5</Data>
+          <Name>Unknown Source Network</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!--side-->
+    <Enum>
+      <Name>side</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Buy Order</Name>
+          <Description>Buy order</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Sell Order</Name>
+          <Description>Sell order</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!--timeInForce-->
+    <Enum>
+      <Name>timeInForce</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Day</Name>
+          <Description>Day order</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Fill or Kill</Name>
+          <Description>Fill or Kill (FOK)</Description>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Immediate or Cancel</Name>
+          <Description>Immediate or Cancel (IOC)</Description>
+        </Value>
+        <Value>
+          <Data>9</Data>
+          <Name>Good for Auction</Name>
+          <Description>Good for Auction (GFA)</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!--tradeCaptureType-->
+    <Enum>
+      <Name>tradeCaptureType</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Large in Scale</Name>
+          <Description>Large in Scale (LS)</Description>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Negotiated Benchmark Cross</Name>
+          <Description>Negotiated Benchmark Cross (NBC)</Description>
+        </Value>
+        <Value>
+          <Data>5</Data>
+          <Name>Matched Principal</Name>
+          <Description>Matched Principal (MP)</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+  </Enums>
+
+</OmiAtpPdf>

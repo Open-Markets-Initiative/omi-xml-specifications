@@ -5,7 +5,7 @@
     <!--Snapshot Start Message-->
     <Message>
       <Name>Snapshot Start Message</Name>
-      <Description>Published as the first message in a snapshot, identifying the continuous stream sequence number and number of securities being reported.</Description>
+      <Description>A Snapshot Start message is published as the first message in a snapshot to identify the sequence number in the continuous stream that this snapshot relates to. It also states the number of securities being reported in this snapshot.</Description>
       <Branch>Payload</Branch>
       <Dependency>Msg Type</Dependency>
       <Origin>Exchange</Origin>
@@ -16,7 +16,7 @@
           <Name>streamSeqNo</Name>
           <Type>u32</Type>
           <Size>4</Size>
-          <Description>Sequence number of the last message in the continuous stream which relates to this snapshot</Description>
+          <Description>The sequence number of the last message in the continuous stream which relates to this snapshot</Description>
         </Field>
         <Field>
           <Name>securityCount</Name>
@@ -36,7 +36,7 @@
     <!--Book Status Message-->
     <Message>
       <Name>Book Status Message</Name>
-      <Description>Published to report the trading and market status of each security and the number of open orders on the order book at the time of the snapshot.</Description>
+      <Description>A Book Status message is published to report the trading and market status of each security and the number of open orders on the order book for the security at the time of the snapshot.</Description>
       <Branch>Payload</Branch>
       <Dependency>Msg Type</Dependency>
       <Origin>Exchange</Origin>
@@ -53,13 +53,13 @@
           <Name>tradingStatus</Name>
           <Type>u8</Type>
           <Size>1</Size>
-          <Description>Trading status of the security</Description>
+          <Description>See Section 3.4.8 (Security Status message)</Description>
         </Field>
         <Field>
           <Name>marketFlags</Name>
           <Type>bitfield</Type>
           <Size>1</Size>
-          <Description>Market status flags</Description>
+          <Description>See Section 3.4.8 (Security Status message)</Description>
         </Field>
         <Field>
           <Name>entries</Name>
@@ -71,13 +71,13 @@
           <Name>closingBuyQty</Name>
           <Type>u32</Type>
           <Size>4</Size>
-          <Description>Total order quantity on the buy side during the closing market; otherwise 0</Description>
+          <Description>Total order quantity on the buy side during the closing market, otherwise set to 0</Description>
         </Field>
         <Field>
           <Name>closingSellQty</Name>
           <Type>u32</Type>
           <Size>4</Size>
-          <Description>Total order quantity on the sell side during the closing market; otherwise 0</Description>
+          <Description>Total order quantity on the sell side during the closing market, otherwise set to 0</Description>
         </Field>
         <Field>
           <Name>indicativePrice</Name>
@@ -91,7 +91,7 @@
     <!--Book Entry Message-->
     <Message>
       <Name>Book Entry Message</Name>
-      <Description>Published after each Book Status message to provide details of each order for building the book.</Description>
+      <Description>An appropriate number of Book Entry messages is published after each Book Status message to provide details of each order and allow the book to be built.</Description>
       <Branch>Payload</Branch>
       <Dependency>Msg Type</Dependency>
       <Origin>Exchange</Origin>
@@ -131,10 +131,10 @@
       </Fields>
     </Message>
 
-    <!--MaC Book Entry Message-->
+    <!--Mac Book Entry Message-->
     <Message>
-      <Name>MaC Book Entry Message</Name>
-      <Description>Published during MaC phase to provide the volume of the 5 best bid and offer orders per security in chronological order.</Description>
+      <Name>Mac Book Entry Message</Name>
+      <Description>During the MaC phase, Aquis will publish the volume of the 5 best bid and offer orders per security in chronological order using the MaC Book Entry Message.</Description>
       <Branch>Payload</Branch>
       <Dependency>Msg Type</Dependency>
       <Origin>Exchange</Origin>
@@ -186,17 +186,17 @@
         <Field>
           <Name>trading</Name>
           <Bits>1</Bits>
-          <Description>Continuous trading status; 0 = Closed, 1 = Open</Description>
+          <Description>0 = Continuous Trading Closed, 1 = Continuous Trading Open</Description>
         </Field>
         <Field>
           <Name>macOpen</Name>
           <Bits>1</Bits>
-          <Description>MaC status; 0 = Closed, 1 = Open</Description>
+          <Description>0 = MaC is closed, 1 = MaC is open</Description>
         </Field>
         <Field>
           <Name>macRun</Name>
           <Bits>1</Bits>
-          <Description>MaC lockdown status; 0 = Not locked down, 1 = Locked down</Description>
+          <Description>0 = MaC is not locked down, 1 = MaC is locked down</Description>
         </Field>
         <Field>
           <Name>Unused</Name>
@@ -225,9 +225,9 @@
       </Values>
     </Enum>
 
-    <!-- TradingStatus -->
+    <!-- tradingStatus -->
     <Enum>
-      <Name>TradingStatus</Name>
+      <Name>tradingStatus</Name>
       <Values>
         <Value>
           <Name>Active</Name>
@@ -242,12 +242,63 @@
           <Data>3</Data>
         </Value>
         <Value>
-          <Name>AoD Start</Name>
+          <Name>Aod Start</Name>
+          <Description>AoD Start</Description>
           <Data>8</Data>
         </Value>
         <Value>
-          <Name>AoD End</Name>
+          <Name>Aod End</Name>
+          <Description>AoD End</Description>
           <Data>24</Data>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!--trading-->
+    <Enum>
+      <Name>trading</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>Continuous Trading Closed</Name>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Continuous Trading Open</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!--macOpen-->
+    <Enum>
+      <Name>macOpen</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>Mac Is Closed</Name>
+          <Description>MaC is closed</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Mac Is Open</Name>
+          <Description>MaC is open</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!--macRun-->
+    <Enum>
+      <Name>macRun</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>Mac Is Not Locked Down</Name>
+          <Description>MaC is not locked down</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Mac Is Locked Down</Name>
+          <Description>MaC is locked down</Description>
         </Value>
       </Values>
     </Enum>
