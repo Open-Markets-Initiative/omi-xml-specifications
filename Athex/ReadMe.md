@@ -1,4 +1,4 @@
-[![Athex](https://github.com/Open-Markets-Initiative/Open-Markets-Initiative/blob/main/Organizations/Athex/Images/Logo.png)](https://www.athexgroup.gr)
+[![Athex](https://github.com/Open-Markets-Initiative/Open-Markets-Initiative/raw/main/Organizations/Athex/Images/Logo.png)](https://www.athexgroup.gr)
 
 
 ## Athens Exchange Group

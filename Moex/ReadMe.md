@@ -1,4 +1,4 @@
-[![Moex](https://github.com/Open-Markets-Initiative/Open-Markets-Initiative/blob/main/Organizations/Moex/Images/Logo.png)](https://www.moex.com)
+[![Moex](https://github.com/Open-Markets-Initiative/Open-Markets-Initiative/raw/main/Organizations/Moex/Images/Logo.png)](https://www.moex.com)
 
 
 ## Moscow Exchange

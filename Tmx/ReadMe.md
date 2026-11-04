@@ -1,4 +1,4 @@
-[![Tmx](https://github.com/Open-Markets-Initiative/Open-Markets-Initiative/blob/main/Organizations/Tmx/Images/Logo.png)](https://www.tmx.com/)
+[![Tmx](https://github.com/Open-Markets-Initiative/Open-Markets-Initiative/raw/main/Organizations/Tmx/Images/Logo.png)](https://www.tmx.com/)
 
 
 ## TMX Group
