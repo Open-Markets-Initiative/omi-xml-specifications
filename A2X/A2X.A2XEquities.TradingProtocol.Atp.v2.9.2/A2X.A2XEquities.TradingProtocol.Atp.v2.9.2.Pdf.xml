@@ -307,6 +307,7 @@
           <Type>bitfield</Type>
           <Size>1</Size>
           <Description>Status of order and reject or cancel code (if needed) First 3 most significant bits - order status; Lower 5 bits - reason code (if rejected or cancelled); Otherwise zero. See Section 4 for values.</Description>
+          <!-- section 4.3: the cancel reason when the incoming order is cancelled on entry; section 4.4: the reject reason when it is rejected -->
         </Field>
         <Field>
           <Name>tradedQuantity</Name>
@@ -388,6 +389,7 @@
           <Type>bitfield</Type>
           <Size>1</Size>
           <Description>Status of order and reject or cancel code (if needed) First 3 most significant bits - order status; Lower 5 bits - reason code (if rejected or cancelled); See Section 4 for values.</Description>
+          <!-- section 4.3: the cancel reason; section 4.4: the reject reason when the cancel is rejected -->
         </Field>
         <Field>
           <Name>timestamp</Name>
@@ -537,6 +539,7 @@
           <Type>bitfield</Type>
           <Size>1</Size>
           <Description>Status of order and reject or cancel code (if needed) First 3 most significant bits - order status; Lower 5 bits - reason code; See Section 4 for values.</Description>
+          <!-- section 4.2: the modification reason; section 4.4: the reject reason when the modify is rejected -->
         </Field>
         <!-- printed u32 with width 8 (v2.9.3 corrects the type to u64) -->
         <Field>
@@ -859,6 +862,57 @@
     </Bitfield>
 
   </Bitfields>
+
+  <!-- Reason tables each response status takes, by message: the document states them in its
+       status and reason codes section, and the tables differ from message to message while the
+       status bitfield they read does not -->
+
+  <Reasons>
+    <Reason>
+      <Message>Order Add Response Message</Message>
+      <Field>status</Field>
+      <Bitfield>status</Bitfield>
+      <Code>reasoncode</Code>
+      <Dependency>orderstatus</Dependency>
+      <Case>
+        <Value>3</Value>
+        <Enum>cancelReason</Enum>
+      </Case>
+      <Case>
+        <Value>4</Value>
+        <Enum>rejectReason</Enum>
+      </Case>
+    </Reason>
+
+    <Reason>
+      <Message>Order Cancel Response Message</Message>
+      <Field>status</Field>
+      <Bitfield>status</Bitfield>
+      <Code>reasoncode</Code>
+      <Dependency>orderstatus</Dependency>
+      <Case>
+        <Value>3</Value>
+        <Enum>cancelReason</Enum>
+      </Case>
+      <Case>
+        <Value>4</Value>
+        <Enum>rejectReason</Enum>
+      </Case>
+    </Reason>
+
+    <Reason>
+      <Message>Order Modify Response Message</Message>
+      <Field>status</Field>
+      <Bitfield>status</Bitfield>
+      <Code>reasoncode</Code>
+      <Dependency>orderstatus</Dependency>
+      <Case>
+        <Value>4</Value>
+        <Enum>rejectReason</Enum>
+      </Case>
+      <Default>modificationReason</Default>
+    </Reason>
+  </Reasons>
 
   <Enums>
 
