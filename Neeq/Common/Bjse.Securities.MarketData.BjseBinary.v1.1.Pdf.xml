@@ -1,0 +1,1765 @@
+<OmiBjsePdf>
+
+  <!--
+    Bjse Binary market data v1.1, market data messages.
+
+    Transcribed from the Beijing Stock Exchange and NEEQ Market Data Interface Specification
+    (Binary) V1.1 (December 2025), chapters 4.3 Common Messages and 4.4 Real Time Market Data. The
+    document is in Chinese; field names are the document's own English names and descriptions are
+    translated. Message names translate the Chinese section titles.
+
+    Field types are not given in the message tables. Each <Type> carries the type Table 5-3
+    Business Layer Definition names for the field, and each <Size> the byte width Table 5-1 Data
+    Type Definition resolves it to. Price carries five decimal places, Qty three, Amt three, and
+    MDEntryPx is declared separately as an Int64 N18(5). These scales differ from the Szse Binary
+    encoding the format follows. LocalTimestamp is a readable local YYYYMMDDHHMMSSsss value
+    rather than an epoch offset. All integers are big endian and every string is GB18030.
+
+    The Snapshot, Order Tick and Trade Tick tables give a common body followed by "Extend Fields"
+    selected by the message type, so each variant is declared as a message in its own right.
+
+    Three variants are left out because the document leaves some of their extension fields
+    untyped: no dictionary entry exists for MMOrdType and MMDataType (307022, market making order
+    tick), SecurityType and NPOrdType (307024, non public transfer order tick), or BidBranchName
+    and OfferBranchName (308024, non public transfer trade tick). All three are marked not yet
+    enabled.
+
+    The MDEntryType codes are documented per snapshot with overlapping sets, so one enum carries
+    their union. Code x5 is the one conflict: the matching trade last price in the spot bond
+    trading snapshot (306001), the first stock price earnings ratio in the centralized auction
+    snapshot (306002, not yet enabled). Its value name carries both.
+  -->
+
+  <Messages>
+
+    <!-- Channel Heartbeat Message -->
+    <Message>
+      <Name>Channel Heartbeat Message</Name>
+      <Dependency>msgtype</Dependency>
+      <Branch>payload</Branch>
+      <Code>301000</Code>
+      <Category>Administrative</Category>
+      <Origin>Exchange</Origin>
+      <Description>Sent on a market data channel every 3 seconds, carrying the sequence number of the last tick message on the channel.</Description>
+      <Fields>
+        <Field>
+          <Name>ChannelNo</Name>
+          <Type>uInt16</Type>
+          <Size>2</Size>
+          <Description>Channel code</Description>
+        </Field>
+        <Field>
+          <Name>ApplLastSeqNum</Name>
+          <Type>SeqNum</Type>
+          <Size>8</Size>
+          <Description>Sequence number of the last market data message</Description>
+        </Field>
+        <Field>
+          <Name>EndOfChannel</Name>
+          <Type>Boolean</Type>
+          <Size>2</Size>
+          <Description>End of channel flag</Description>
+        </Field>
+        <Field>
+          <Name>OrigTime</Name>
+          <Type>LocalTimestamp</Type>
+          <Size>8</Size>
+          <Description>Time the channel heartbeat was generated</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Retransmission Message -->
+    <Message>
+      <Name>Retransmission Message</Name>
+      <Dependency>msgtype</Dependency>
+      <Branch>payload</Branch>
+      <Code>302000</Code>
+      <Category>Administrative</Category>
+      <Origin>Firm</Origin>
+      <Description>Sent by the Vendor Supplied System to request tick data or announcements again; the gateway returns the data and then the same message type to mark the retransmission complete or report why it failed, so both sides transmit this message type.</Description>
+      <Fields>
+        <Field>
+          <Name>ResendType</Name>
+          <Type>uInt8</Type>
+          <Size>1</Size>
+          <Description>Retransmission type</Description>
+        </Field>
+        <Field>
+          <Name>ChannelNo</Name>
+          <Type>uInt16</Type>
+          <Size>2</Size>
+          <Description>Channel code</Description>
+        </Field>
+        <Field>
+          <Name>ApplBegSeqNum</Name>
+          <Type>SeqNum</Type>
+          <Size>8</Size>
+          <Description>Starting sequence number, effective when ResendType = 1</Description>
+        </Field>
+        <Field>
+          <Name>ApplEndSeqNum</Name>
+          <Type>SeqNum</Type>
+          <Size>8</Size>
+          <Description>Ending sequence number, effective when ResendType = 1; when 0 the gateway sets it to the highest sequence number of the channel it holds in memory</Description>
+        </Field>
+        <Field>
+          <Name>NewsID</Name>
+          <Type>char[16]</Type>
+          <Size>16</Size>
+          <Description>Announcement identifier, effective when ResendType = 2; an empty string requests the announcement summary</Description>
+        </Field>
+        <Field>
+          <Name>ResendStatus</Name>
+          <Type>uInt8</Type>
+          <Size>1</Size>
+          <Description>Retransmission status, effective only on the gateway reply</Description>
+        </Field>
+        <Field>
+          <Name>RejectText</Name>
+          <Type>char[16]</Type>
+          <Size>16</Size>
+          <Description>Effective only on the gateway reply; when the request is rejected, the error code is returned here</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Snapshot Channel Statistics Message -->
+    <Message>
+      <Name>Snapshot Channel Statistics Message</Name>
+      <Dependency>msgtype</Dependency>
+      <Branch>payload</Branch>
+      <Code>303000</Code>
+      <Category>Administrative</Category>
+      <Origin>Exchange</Origin>
+      <Description>Sent by each snapshot channel every 15 seconds.</Description>
+      <Fields>
+        <Field>
+          <Name>OrigTime</Name>
+          <Type>LocalTimestamp</Type>
+          <Size>8</Size>
+          <Description>Time the data was generated</Description>
+        </Field>
+        <Field>
+          <Name>ChannelNo</Name>
+          <Type>uInt16</Type>
+          <Size>2</Size>
+          <Description>Channel code</Description>
+        </Field>
+        <Field>
+          <Name>NoMDStreamID</Name>
+          <Type>NumInGroup</Type>
+          <Size>4</Size>
+          <Description>Number of market data categories</Description>
+        </Field>
+        <Field>
+          <Name>MDStreamIDs</Name>
+          <Type>group</Type>
+          <Size>0</Size>
+          <Description>One entry per market data category carried on the channel</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Business Reject Message -->
+    <Message>
+      <Name>Business Reject Message</Name>
+      <Dependency>msgtype</Dependency>
+      <Branch>payload</Branch>
+      <Code>8</Code>
+      <Category>Administrative</Category>
+      <Origin>Exchange</Origin>
+      <Description>Rejects an application message that satisfies the session layer rules but not the business layer rules, mainly an invalid retransmission request.</Description>
+      <Fields>
+        <Field>
+          <Name>RefSeqNum</Name>
+          <Type>SeqNum</Type>
+          <Size>8</Size>
+          <Description>Sequence number of the rejected message</Description>
+        </Field>
+        <Field>
+          <Name>RefMsgType</Name>
+          <Type>uInt32</Type>
+          <Size>4</Size>
+          <Description>Message type of the rejected message</Description>
+        </Field>
+        <Field>
+          <Name>BusinessRejectRefID</Name>
+          <Type>char[10]</Type>
+          <Size>10</Size>
+          <Description>Business layer ID of the rejected message</Description>
+        </Field>
+        <Field>
+          <Name>BusinessRejectReason</Name>
+          <Type>uInt16</Type>
+          <Size>2</Size>
+          <Description>Reject reason</Description>
+        </Field>
+        <Field>
+          <Name>BusinessRejectText</Name>
+          <Type>char[50]</Type>
+          <Size>50</Size>
+          <Description>Reject reason text, up to 50 bytes that may include Chinese characters</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Security Real Time Status Message -->
+    <Message>
+      <Name>Security Real Time Status Message</Name>
+      <Dependency>msgtype</Dependency>
+      <Branch>payload</Branch>
+      <Code>304000</Code>
+      <Category>Market Data</Category>
+      <Origin>Exchange</Origin>
+      <Description>Real time status of a security, published every 10 minutes; the switch types are not yet enabled.</Description>
+      <Fields>
+        <Field>
+          <Name>OrigTime</Name>
+          <Type>LocalTimestamp</Type>
+          <Size>8</Size>
+          <Description>Time the data was generated</Description>
+        </Field>
+        <Field>
+          <Name>ChannelNo</Name>
+          <Type>uInt16</Type>
+          <Size>2</Size>
+          <Description>Channel code</Description>
+        </Field>
+        <Field>
+          <Name>SecurityID</Name>
+          <Type>SecurityID</Type>
+          <Size>8</Size>
+          <Description>Security code, six digits behind two leading spaces</Description>
+        </Field>
+        <Field>
+          <Name>SecurityIDSource</Name>
+          <Type>char[4]</Type>
+          <Size>4</Size>
+          <Description>Security code source, behind one leading space</Description>
+        </Field>
+        <Field>
+          <Name>SecuritySymbol</Name>
+          <Type>char[40]</Type>
+          <Size>40</Size>
+          <Description>Security short name</Description>
+        </Field>
+        <Field>
+          <Name>NoSwitch</Name>
+          <Type>NumInGroup</Type>
+          <Size>4</Size>
+          <Description>Number of switches</Description>
+        </Field>
+        <Field>
+          <Name>Switch</Name>
+          <Type>group</Type>
+          <Size>0</Size>
+          <Description>One entry per security switch, giving its type and status</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Announcement Message -->
+    <Message>
+      <Name>Announcement Message</Name>
+      <Dependency>msgtype</Dependency>
+      <Branch>payload</Branch>
+      <Code>305000</Code>
+      <Category>Notification</Category>
+      <Origin>Exchange</Origin>
+      <Description>Carries an announcement file; an empty NewsID marks the announcement summary, a text list of NewsNo, NewsID, Headline, RawDataLength, OrigTime and NewsType for every announcement issued. Under the multicast distribution protocol with announcement landing enabled, each announcement is sent as a summary that carries no content and has RawDataLength fixed to 0, its content being stored as a file.</Description>
+      <Fields>
+        <Field>
+          <Name>OrigTime</Name>
+          <Type>LocalTimestamp</Type>
+          <Size>8</Size>
+          <Description>Announcement time</Description>
+        </Field>
+        <Field>
+          <Name>ChannelNo</Name>
+          <Type>uInt16</Type>
+          <Size>2</Size>
+          <Description>Channel code</Description>
+        </Field>
+        <Field>
+          <Name>NewsID</Name>
+          <Type>char[16]</Type>
+          <Size>16</Size>
+          <Description>Unique identifier; an empty string marks the announcement summary, which is sent repeatedly</Description>
+        </Field>
+        <Field>
+          <Name>Headline</Name>
+          <Type>char[128]</Type>
+          <Size>128</Size>
+          <Description>Announcement title, up to 128 bytes that may include Chinese characters</Description>
+        </Field>
+        <Field>
+          <Name>NewsType</Name>
+          <Type>uInt8</Type>
+          <Size>1</Size>
+          <Description>Announcement type</Description>
+        </Field>
+        <Field>
+          <Name>RawDataFormat</Name>
+          <Type>char[8]</Type>
+          <Size>8</Size>
+          <Description>Binary data format, such as TXT, PDF or DOC</Description>
+        </Field>
+        <Field>
+          <Name>RawDataLength</Name>
+          <Type>Length</Type>
+          <Size>4</Size>
+          <Description>Binary data length</Description>
+        </Field>
+        <Field>
+          <Name>RawData</Name>
+          <Type>RawData</Type>
+          <Size>variable</Size>
+          <Description>Binary data, its length given by the leading RawDataLength</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Bond Spot Trading Snapshot Message -->
+    <Message>
+      <Name>Bond Spot Trading Snapshot Message</Name>
+      <Dependency>msgtype</Dependency>
+      <Branch>payload</Branch>
+      <Code>306001</Code>
+      <Category>Market Data</Category>
+      <Origin>Exchange</Origin>
+      <Description>Snapshot of spot bond trading, market data category 010, published every 3 seconds.</Description>
+      <Fields>
+        <Field>
+          <Name>OrigTime</Name>
+          <Type>LocalTimestamp</Type>
+          <Size>8</Size>
+          <Description>Time the data was generated</Description>
+        </Field>
+        <Field>
+          <Name>ChannelNo</Name>
+          <Type>uInt16</Type>
+          <Size>2</Size>
+          <Description>Channel code</Description>
+        </Field>
+        <Field>
+          <Name>MDStreamID</Name>
+          <Type>char[3]</Type>
+          <Size>3</Size>
+          <Description>Market data category</Description>
+        </Field>
+        <Field>
+          <Name>SecurityID</Name>
+          <Type>SecurityID</Type>
+          <Size>8</Size>
+          <Description>Security code, six digits behind two leading spaces</Description>
+        </Field>
+        <Field>
+          <Name>SecurityIDSource</Name>
+          <Type>char[4]</Type>
+          <Size>4</Size>
+          <Description>Security code source, behind one leading space</Description>
+        </Field>
+        <Field>
+          <Name>TradingPhaseCode</Name>
+          <Type>char[8]</Type>
+          <Size>8</Size>
+          <Description>Trading phase code of the product. Only the first two characters are used: character 0 is the phase, S = start before the open, O = opening call auction, T = continuous trading, E = closed, H = temporary halt, V = volatility interruption; character 1 is 0 = cannot trade normally (before the open, suspended all day or after the close) or 1 = can trade normally</Description>
+        </Field>
+        <Field>
+          <Name>PreClosePx</Name>
+          <Type>Price</Type>
+          <Size>8</Size>
+          <Description>Previous close price</Description>
+        </Field>
+        <Field>
+          <Name>NumTrades</Name>
+          <Type>Int64</Type>
+          <Size>8</Size>
+          <Description>Number of trades</Description>
+        </Field>
+        <Field>
+          <Name>TotalVolumeTrade</Name>
+          <Type>Amt</Type>
+          <Size>8</Size>
+          <Description>Total trade volume</Description>
+        </Field>
+        <Field>
+          <Name>TotalValueTrade</Name>
+          <Type>Amt</Type>
+          <Size>8</Size>
+          <Description>Total trade value</Description>
+        </Field>
+        <Field>
+          <Name>NoMDEntries</Name>
+          <Type>NumInGroup</Type>
+          <Size>4</Size>
+          <Description>Number of market data entries</Description>
+        </Field>
+        <Field>
+          <Name>MDEntries</Name>
+          <Type>group</Type>
+          <Size>0</Size>
+          <Description>Market data entries disclosing the order book, with the orders at each price level nested inside</Description>
+        </Field>
+        <Field>
+          <Name>NoSubTradingPhaseCodes</Name>
+          <Type>NumInGroup</Type>
+          <Size>4</Size>
+          <Description>Number of trading phase subdivisions, reserved</Description>
+        </Field>
+        <Field>
+          <Name>SubTradingPhaseCodes</Name>
+          <Type>group</Type>
+          <Size>0</Size>
+          <Description>One entry per trading phase subdivision, giving its code and trading type</Description>
+        </Field>
+        <Field>
+          <Name>AuctionVolumeTrade</Name>
+          <Type>Amt</Type>
+          <Size>8</Size>
+          <Description>Matching trade volume</Description>
+        </Field>
+        <Field>
+          <Name>AuctionValueTrade</Name>
+          <Type>Amt</Type>
+          <Size>8</Size>
+          <Description>Matching trade value</Description>
+        </Field>
+        <Field>
+          <Name>TradeTime</Name>
+          <Type>LocalTimestamp</Type>
+          <Size>8</Size>
+          <Description>Time of the most recent trade</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Auction Trading Snapshot Message -->
+    <Message>
+      <Name>Auction Trading Snapshot Message</Name>
+      <Dependency>msgtype</Dependency>
+      <Branch>payload</Branch>
+      <Code>306002</Code>
+      <Category>Market Data</Category>
+      <Origin>Exchange</Origin>
+      <Description>Snapshot of centralized auction trading of stocks, convertible bonds and other cash products, market data category 020, published every 3 seconds; not yet enabled.</Description>
+      <Fields>
+        <Field>
+          <Name>OrigTime</Name>
+          <Type>LocalTimestamp</Type>
+          <Size>8</Size>
+          <Description>Time the data was generated</Description>
+        </Field>
+        <Field>
+          <Name>ChannelNo</Name>
+          <Type>uInt16</Type>
+          <Size>2</Size>
+          <Description>Channel code</Description>
+        </Field>
+        <Field>
+          <Name>MDStreamID</Name>
+          <Type>char[3]</Type>
+          <Size>3</Size>
+          <Description>Market data category</Description>
+        </Field>
+        <Field>
+          <Name>SecurityID</Name>
+          <Type>SecurityID</Type>
+          <Size>8</Size>
+          <Description>Security code, six digits behind two leading spaces</Description>
+        </Field>
+        <Field>
+          <Name>SecurityIDSource</Name>
+          <Type>char[4]</Type>
+          <Size>4</Size>
+          <Description>Security code source, behind one leading space</Description>
+        </Field>
+        <Field>
+          <Name>TradingPhaseCode</Name>
+          <Type>char[8]</Type>
+          <Size>8</Size>
+          <Description>Trading phase code of the product. Only the first two characters are used: character 0 is the phase, S = start before the open, O = opening call auction, T = continuous trading, E = closed, H = temporary halt, V = volatility interruption; character 1 is 0 = cannot trade normally (before the open, suspended all day or after the close) or 1 = can trade normally</Description>
+        </Field>
+        <Field>
+          <Name>PreClosePx</Name>
+          <Type>Price</Type>
+          <Size>8</Size>
+          <Description>Previous close price</Description>
+        </Field>
+        <Field>
+          <Name>NumTrades</Name>
+          <Type>Int64</Type>
+          <Size>8</Size>
+          <Description>Number of trades</Description>
+        </Field>
+        <Field>
+          <Name>TotalVolumeTrade</Name>
+          <Type>Amt</Type>
+          <Size>8</Size>
+          <Description>Total trade volume</Description>
+        </Field>
+        <Field>
+          <Name>TotalValueTrade</Name>
+          <Type>Amt</Type>
+          <Size>8</Size>
+          <Description>Total trade value</Description>
+        </Field>
+        <Field>
+          <Name>NoMDEntries</Name>
+          <Type>NumInGroup</Type>
+          <Size>4</Size>
+          <Description>Number of market data entries</Description>
+        </Field>
+        <Field>
+          <Name>MDEntries</Name>
+          <Type>group</Type>
+          <Size>0</Size>
+          <Description>Market data entries disclosing the order book, with the orders at each price level nested inside</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Index Snapshot Message -->
+    <Message>
+      <Name>Index Snapshot Message</Name>
+      <Dependency>msgtype</Dependency>
+      <Branch>payload</Branch>
+      <Code>306003</Code>
+      <Category>Market Data</Category>
+      <Origin>Exchange</Origin>
+      <Description>Snapshot of Beijing Stock Exchange indices and volume statistics, market data category 030, published every 3 seconds; not yet enabled.</Description>
+      <Fields>
+        <Field>
+          <Name>OrigTime</Name>
+          <Type>LocalTimestamp</Type>
+          <Size>8</Size>
+          <Description>Time the data was generated</Description>
+        </Field>
+        <Field>
+          <Name>ChannelNo</Name>
+          <Type>uInt16</Type>
+          <Size>2</Size>
+          <Description>Channel code</Description>
+        </Field>
+        <Field>
+          <Name>MDStreamID</Name>
+          <Type>char[3]</Type>
+          <Size>3</Size>
+          <Description>Market data category</Description>
+        </Field>
+        <Field>
+          <Name>SecurityID</Name>
+          <Type>SecurityID</Type>
+          <Size>8</Size>
+          <Description>Security code, six digits behind two leading spaces</Description>
+        </Field>
+        <Field>
+          <Name>SecurityIDSource</Name>
+          <Type>char[4]</Type>
+          <Size>4</Size>
+          <Description>Security code source, behind one leading space</Description>
+        </Field>
+        <Field>
+          <Name>TradingPhaseCode</Name>
+          <Type>char[8]</Type>
+          <Size>8</Size>
+          <Description>Trading phase code of the index. Character 0 is the phase, S = start before the open, O = opening call auction, T = continuous trading or E = closed; the document does not define character 1 for indices</Description>
+        </Field>
+        <Field>
+          <Name>PreClosePx</Name>
+          <Type>Price</Type>
+          <Size>8</Size>
+          <Description>Previous close price</Description>
+        </Field>
+        <Field>
+          <Name>NumTrades</Name>
+          <Type>Int64</Type>
+          <Size>8</Size>
+          <Description>Number of trades</Description>
+        </Field>
+        <Field>
+          <Name>TotalVolumeTrade</Name>
+          <Type>Amt</Type>
+          <Size>8</Size>
+          <Description>Total trade volume</Description>
+        </Field>
+        <Field>
+          <Name>TotalValueTrade</Name>
+          <Type>Amt</Type>
+          <Size>8</Size>
+          <Description>Total trade value</Description>
+        </Field>
+        <Field>
+          <Name>NoMDEntries</Name>
+          <Type>NumInGroup</Type>
+          <Size>4</Size>
+          <Description>Number of market data entries</Description>
+        </Field>
+        <Field>
+          <Name>Index MDEntries</Name>
+          <Type>group</Type>
+          <Size>0</Size>
+          <Description>Market data entries giving the index points</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Bond Spot Matching Large Order Tick Message -->
+    <Message>
+      <Name>Bond Spot Matching Large Order Tick Message</Name>
+      <Dependency>msgtype</Dependency>
+      <Branch>payload</Branch>
+      <Code>307011</Code>
+      <Category>Market Data</Category>
+      <Origin>Exchange</Origin>
+      <Description>Order tick of large lot matching in spot bond trading, market data category 011, published in real time.</Description>
+      <Fields>
+        <Field>
+          <Name>ChannelNo</Name>
+          <Type>uInt16</Type>
+          <Size>2</Size>
+          <Description>Channel code</Description>
+        </Field>
+        <Field>
+          <Name>ApplSeqNum</Name>
+          <Type>SeqNum</Type>
+          <Size>8</Size>
+          <Description>Message sequence number, counting from 1</Description>
+        </Field>
+        <Field>
+          <Name>MDStreamID</Name>
+          <Type>char[3]</Type>
+          <Size>3</Size>
+          <Description>Market data category</Description>
+        </Field>
+        <Field>
+          <Name>SecurityID</Name>
+          <Type>SecurityID</Type>
+          <Size>8</Size>
+          <Description>Security code, six digits behind two leading spaces</Description>
+        </Field>
+        <Field>
+          <Name>SecurityIDSource</Name>
+          <Type>char[4]</Type>
+          <Size>4</Size>
+          <Description>Security code source, behind one leading space</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Price</Type>
+          <Size>8</Size>
+          <Description>Order price</Description>
+        </Field>
+        <Field>
+          <Name>OrderQty</Name>
+          <Type>Qty</Type>
+          <Size>8</Size>
+          <Description>Order quantity</Description>
+        </Field>
+        <Field>
+          <Name>Side</Name>
+          <Type>char</Type>
+          <Size>1</Size>
+          <Description>Side</Description>
+        </Field>
+        <Field>
+          <Name>TransactTime</Name>
+          <Type>LocalTimestamp</Type>
+          <Size>8</Size>
+          <Description>Order time</Description>
+        </Field>
+        <Field>
+          <Name>OrdType</Name>
+          <Type>char</Type>
+          <Size>1</Size>
+          <Description>Order type</Description>
+        </Field>
+        <Field>
+          <Name>SettlType</Name>
+          <Type>char</Type>
+          <Size>1</Size>
+          <Description>Settlement method</Description>
+        </Field>
+        <Field>
+          <Name>SettlPeriod</Name>
+          <Type>char</Type>
+          <Size>1</Size>
+          <Description>Settlement period</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Agreement Trading Order Tick Message -->
+    <Message>
+      <Name>Agreement Trading Order Tick Message</Name>
+      <Dependency>msgtype</Dependency>
+      <Branch>payload</Branch>
+      <Code>307021</Code>
+      <Category>Market Data</Category>
+      <Origin>Exchange</Origin>
+      <Description>Order tick of agreement trading on the trading support platform, market data category 021, published in real time; not yet enabled.</Description>
+      <Fields>
+        <Field>
+          <Name>ChannelNo</Name>
+          <Type>uInt16</Type>
+          <Size>2</Size>
+          <Description>Channel code</Description>
+        </Field>
+        <Field>
+          <Name>ApplSeqNum</Name>
+          <Type>SeqNum</Type>
+          <Size>8</Size>
+          <Description>Message sequence number, counting from 1</Description>
+        </Field>
+        <Field>
+          <Name>MDStreamID</Name>
+          <Type>char[3]</Type>
+          <Size>3</Size>
+          <Description>Market data category</Description>
+        </Field>
+        <Field>
+          <Name>SecurityID</Name>
+          <Type>SecurityID</Type>
+          <Size>8</Size>
+          <Description>Security code, six digits behind two leading spaces</Description>
+        </Field>
+        <Field>
+          <Name>SecurityIDSource</Name>
+          <Type>char[4]</Type>
+          <Size>4</Size>
+          <Description>Security code source, behind one leading space</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Price</Type>
+          <Size>8</Size>
+          <Description>Order price</Description>
+        </Field>
+        <Field>
+          <Name>OrderQty</Name>
+          <Type>Qty</Type>
+          <Size>8</Size>
+          <Description>Order quantity</Description>
+        </Field>
+        <Field>
+          <Name>Side</Name>
+          <Type>char</Type>
+          <Size>1</Size>
+          <Description>Side</Description>
+        </Field>
+        <Field>
+          <Name>TransactTime</Name>
+          <Type>LocalTimestamp</Type>
+          <Size>8</Size>
+          <Description>Order time</Description>
+        </Field>
+        <Field>
+          <Name>ConfirmID</Name>
+          <Type>uInt32</Type>
+          <Size>4</Size>
+          <Description>Trade agreement number</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Securities Lending Order Tick Message -->
+    <Message>
+      <Name>Securities Lending Order Tick Message</Name>
+      <Dependency>msgtype</Dependency>
+      <Branch>payload</Branch>
+      <Code>307023</Code>
+      <Category>Market Data</Category>
+      <Origin>Exchange</Origin>
+      <Description>Order tick of refinancing securities lending, market data category 023, published in real time; not yet enabled.</Description>
+      <Fields>
+        <Field>
+          <Name>ChannelNo</Name>
+          <Type>uInt16</Type>
+          <Size>2</Size>
+          <Description>Channel code</Description>
+        </Field>
+        <Field>
+          <Name>ApplSeqNum</Name>
+          <Type>SeqNum</Type>
+          <Size>8</Size>
+          <Description>Message sequence number, counting from 1</Description>
+        </Field>
+        <Field>
+          <Name>MDStreamID</Name>
+          <Type>char[3]</Type>
+          <Size>3</Size>
+          <Description>Market data category</Description>
+        </Field>
+        <Field>
+          <Name>SecurityID</Name>
+          <Type>SecurityID</Type>
+          <Size>8</Size>
+          <Description>Security code, six digits behind two leading spaces</Description>
+        </Field>
+        <Field>
+          <Name>SecurityIDSource</Name>
+          <Type>char[4]</Type>
+          <Size>4</Size>
+          <Description>Security code source, behind one leading space</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Price</Type>
+          <Size>8</Size>
+          <Description>Order price</Description>
+        </Field>
+        <Field>
+          <Name>OrderQty</Name>
+          <Type>Qty</Type>
+          <Size>8</Size>
+          <Description>Order quantity</Description>
+        </Field>
+        <Field>
+          <Name>Side</Name>
+          <Type>char</Type>
+          <Size>1</Size>
+          <Description>Side</Description>
+        </Field>
+        <Field>
+          <Name>TransactTime</Name>
+          <Type>LocalTimestamp</Type>
+          <Size>8</Size>
+          <Description>Order time</Description>
+        </Field>
+        <Field>
+          <Name>ExpirationDays</Name>
+          <Type>uInt16</Type>
+          <Size>2</Size>
+          <Description>Term in days</Description>
+        </Field>
+        <Field>
+          <Name>ExpirationType</Name>
+          <Type>uInt8</Type>
+          <Size>1</Size>
+          <Description>Term type</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Bond Spot Matching Large Trade Tick Message -->
+    <Message>
+      <Name>Bond Spot Matching Large Trade Tick Message</Name>
+      <Dependency>msgtype</Dependency>
+      <Branch>payload</Branch>
+      <Code>308011</Code>
+      <Category>Market Data</Category>
+      <Origin>Exchange</Origin>
+      <Description>Trade tick of large lot matching in spot bond trading, market data category 011, published in real time.</Description>
+      <Fields>
+        <Field>
+          <Name>ChannelNo</Name>
+          <Type>uInt16</Type>
+          <Size>2</Size>
+          <Description>Channel code</Description>
+        </Field>
+        <Field>
+          <Name>ApplSeqNum</Name>
+          <Type>SeqNum</Type>
+          <Size>8</Size>
+          <Description>Message sequence number, counting from 1</Description>
+        </Field>
+        <Field>
+          <Name>MDStreamID</Name>
+          <Type>char[3]</Type>
+          <Size>3</Size>
+          <Description>Market data category</Description>
+        </Field>
+        <Field>
+          <Name>SecurityID</Name>
+          <Type>SecurityID</Type>
+          <Size>8</Size>
+          <Description>Security code, six digits behind two leading spaces</Description>
+        </Field>
+        <Field>
+          <Name>SecurityIDSource</Name>
+          <Type>char[4]</Type>
+          <Size>4</Size>
+          <Description>Security code source, behind one leading space</Description>
+        </Field>
+        <Field>
+          <Name>BidApplSeqNum</Name>
+          <Type>SeqNum</Type>
+          <Size>8</Size>
+          <Description>Buy order index, counting from 1; 0 means no corresponding order</Description>
+        </Field>
+        <Field>
+          <Name>AskApplSeqNum</Name>
+          <Type>SeqNum</Type>
+          <Size>8</Size>
+          <Description>Sell order index, counting from 1; 0 means no corresponding order</Description>
+        </Field>
+        <Field>
+          <Name>TradePrice</Name>
+          <Type>Price</Type>
+          <Size>8</Size>
+          <Description>Trade price</Description>
+        </Field>
+        <Field>
+          <Name>TradeQty</Name>
+          <Type>Qty</Type>
+          <Size>8</Size>
+          <Description>Trade quantity</Description>
+        </Field>
+        <Field>
+          <Name>TradeMoney</Name>
+          <Type>Amt</Type>
+          <Size>8</Size>
+          <Description>Trade value in yuan</Description>
+        </Field>
+        <Field>
+          <Name>ExecType</Name>
+          <Type>char</Type>
+          <Size>1</Size>
+          <Description>Execution type</Description>
+        </Field>
+        <Field>
+          <Name>TransactTime</Name>
+          <Type>LocalTimestamp</Type>
+          <Size>8</Size>
+          <Description>Trade time</Description>
+        </Field>
+        <Field>
+          <Name>SettlPeriod</Name>
+          <Type>char</Type>
+          <Size>1</Size>
+          <Description>Settlement period</Description>
+        </Field>
+        <Field>
+          <Name>SettlType</Name>
+          <Type>char</Type>
+          <Size>1</Size>
+          <Description>Settlement method</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Bond Spot Negotiated Trade Tick Message -->
+    <Message>
+      <Name>Bond Spot Negotiated Trade Tick Message</Name>
+      <Dependency>msgtype</Dependency>
+      <Branch>payload</Branch>
+      <Code>308012</Code>
+      <Category>Market Data</Category>
+      <Origin>Exchange</Origin>
+      <Description>Trade tick of negotiated trading in spot bond trading, market data category 012, published in real time.</Description>
+      <Fields>
+        <Field>
+          <Name>ChannelNo</Name>
+          <Type>uInt16</Type>
+          <Size>2</Size>
+          <Description>Channel code</Description>
+        </Field>
+        <Field>
+          <Name>ApplSeqNum</Name>
+          <Type>SeqNum</Type>
+          <Size>8</Size>
+          <Description>Message sequence number, counting from 1</Description>
+        </Field>
+        <Field>
+          <Name>MDStreamID</Name>
+          <Type>char[3]</Type>
+          <Size>3</Size>
+          <Description>Market data category</Description>
+        </Field>
+        <Field>
+          <Name>SecurityID</Name>
+          <Type>SecurityID</Type>
+          <Size>8</Size>
+          <Description>Security code, six digits behind two leading spaces</Description>
+        </Field>
+        <Field>
+          <Name>SecurityIDSource</Name>
+          <Type>char[4]</Type>
+          <Size>4</Size>
+          <Description>Security code source, behind one leading space</Description>
+        </Field>
+        <Field>
+          <Name>BidApplSeqNum</Name>
+          <Type>SeqNum</Type>
+          <Size>8</Size>
+          <Description>Buy order index, counting from 1; 0 means no corresponding order</Description>
+        </Field>
+        <Field>
+          <Name>AskApplSeqNum</Name>
+          <Type>SeqNum</Type>
+          <Size>8</Size>
+          <Description>Sell order index, counting from 1; 0 means no corresponding order</Description>
+        </Field>
+        <Field>
+          <Name>TradePrice</Name>
+          <Type>Price</Type>
+          <Size>8</Size>
+          <Description>Trade price</Description>
+        </Field>
+        <Field>
+          <Name>TradeQty</Name>
+          <Type>Qty</Type>
+          <Size>8</Size>
+          <Description>Trade quantity</Description>
+        </Field>
+        <Field>
+          <Name>TradeMoney</Name>
+          <Type>Amt</Type>
+          <Size>8</Size>
+          <Description>Trade value in yuan</Description>
+        </Field>
+        <Field>
+          <Name>ExecType</Name>
+          <Type>char</Type>
+          <Size>1</Size>
+          <Description>Execution type</Description>
+        </Field>
+        <Field>
+          <Name>TransactTime</Name>
+          <Type>LocalTimestamp</Type>
+          <Size>8</Size>
+          <Description>Trade time</Description>
+        </Field>
+        <Field>
+          <Name>SettlPeriod</Name>
+          <Type>char</Type>
+          <Size>1</Size>
+          <Description>Settlement period</Description>
+        </Field>
+        <Field>
+          <Name>SettlType</Name>
+          <Type>char</Type>
+          <Size>1</Size>
+          <Description>Settlement method</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Securities Lending Trade Tick Message -->
+    <Message>
+      <Name>Securities Lending Trade Tick Message</Name>
+      <Dependency>msgtype</Dependency>
+      <Branch>payload</Branch>
+      <Code>308023</Code>
+      <Category>Market Data</Category>
+      <Origin>Exchange</Origin>
+      <Description>Trade tick of refinancing securities lending, market data category 023, published in real time; it has no extension fields and is not yet enabled.</Description>
+      <Fields>
+        <Field>
+          <Name>ChannelNo</Name>
+          <Type>uInt16</Type>
+          <Size>2</Size>
+          <Description>Channel code</Description>
+        </Field>
+        <Field>
+          <Name>ApplSeqNum</Name>
+          <Type>SeqNum</Type>
+          <Size>8</Size>
+          <Description>Message sequence number, counting from 1</Description>
+        </Field>
+        <Field>
+          <Name>MDStreamID</Name>
+          <Type>char[3]</Type>
+          <Size>3</Size>
+          <Description>Market data category</Description>
+        </Field>
+        <Field>
+          <Name>SecurityID</Name>
+          <Type>SecurityID</Type>
+          <Size>8</Size>
+          <Description>Security code, six digits behind two leading spaces</Description>
+        </Field>
+        <Field>
+          <Name>SecurityIDSource</Name>
+          <Type>char[4]</Type>
+          <Size>4</Size>
+          <Description>Security code source, behind one leading space</Description>
+        </Field>
+        <Field>
+          <Name>BidApplSeqNum</Name>
+          <Type>SeqNum</Type>
+          <Size>8</Size>
+          <Description>Buy order index, counting from 1; 0 means no corresponding order</Description>
+        </Field>
+        <Field>
+          <Name>AskApplSeqNum</Name>
+          <Type>SeqNum</Type>
+          <Size>8</Size>
+          <Description>Sell order index, counting from 1; 0 means no corresponding order</Description>
+        </Field>
+        <Field>
+          <Name>TradePrice</Name>
+          <Type>Price</Type>
+          <Size>8</Size>
+          <Description>Trade price</Description>
+        </Field>
+        <Field>
+          <Name>TradeQty</Name>
+          <Type>Qty</Type>
+          <Size>8</Size>
+          <Description>Trade quantity</Description>
+        </Field>
+        <Field>
+          <Name>TradeMoney</Name>
+          <Type>Amt</Type>
+          <Size>8</Size>
+          <Description>Trade value in yuan</Description>
+        </Field>
+        <Field>
+          <Name>ExecType</Name>
+          <Type>char</Type>
+          <Size>1</Size>
+          <Description>Execution type</Description>
+        </Field>
+        <Field>
+          <Name>TransactTime</Name>
+          <Type>LocalTimestamp</Type>
+          <Size>8</Size>
+          <Description>Trade time</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+  </Messages>
+
+  <Groups>
+
+    <!-- MDStreamIDs -->
+    <Group>
+      <Name>MDStreamIDs</Name>
+      <Description>One entry per market data category carried on the channel</Description>
+      <Type>REPEATING</Type>
+      <Dependency>NoMDStreamID</Dependency>
+      <Fields>
+        <Field>
+          <Name>MDStreamID</Name>
+          <Type>char[3]</Type>
+          <Size>3</Size>
+          <Description>Market data category</Description>
+        </Field>
+        <Field>
+          <Name>StockNum</Name>
+          <Type>uInt32</Type>
+          <Size>4</Size>
+          <Description>Number of securities</Description>
+        </Field>
+        <Field>
+          <Name>TradingPhaseCode</Name>
+          <Type>char[8]</Type>
+          <Size>8</Size>
+          <Description>Closing status. Character 0 is T = continuous trading, not every security has closed yet, or E = closed</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+    <!-- Switch -->
+    <Group>
+      <Name>Switch</Name>
+      <Description>One entry per security switch, giving its type and status</Description>
+      <Type>REPEATING</Type>
+      <Dependency>NoSwitch</Dependency>
+      <Fields>
+        <Field>
+          <Name>SecuritySwitchType</Name>
+          <Type>uInt16</Type>
+          <Size>2</Size>
+          <Description>Switch type</Description>
+        </Field>
+        <Field>
+          <Name>SecuritySwitchStatus</Name>
+          <Type>Boolean</Type>
+          <Size>2</Size>
+          <Description>Switch status</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+    <!-- MDEntries -->
+    <Group>
+      <Name>MDEntries</Name>
+      <Description>Market data entries disclosing the order book, with the orders at each price level nested inside</Description>
+      <Type>REPEATING</Type>
+      <Dependency>NoMDEntries</Dependency>
+      <Fields>
+        <Field>
+          <Name>MDEntryType</Name>
+          <Type>char[2]</Type>
+          <Size>2</Size>
+          <Description>Market data entry type</Description>
+        </Field>
+        <Field>
+          <Name>MDEntryPx</Name>
+          <Type>Int64</Type>
+          <Size>8</Size>
+          <Description>Price, N18(5)</Description>
+        </Field>
+        <Field>
+          <Name>MDEntrySize</Name>
+          <Type>Amt</Type>
+          <Size>8</Size>
+          <Description>Quantity. In a spot bond trading snapshot the last price entry (MDEntryType 2) uses it for the trading method that produced the price: 0.001 = matching, 0.002 = click, 0.003 = negotiated, 0.004 = inquiry, 0.005 = bidding</Description>
+        </Field>
+        <Field>
+          <Name>MDPriceLevel</Name>
+          <Type>uInt16</Type>
+          <Size>2</Size>
+          <Description>Bid or offer book level</Description>
+        </Field>
+        <Field>
+          <Name>NumberOfOrders</Name>
+          <Type>Int64</Type>
+          <Size>8</Size>
+          <Description>Total number of orders at the price level; 0 means not disclosed</Description>
+        </Field>
+        <Field>
+          <Name>NoOrders</Name>
+          <Type>NumInGroup</Type>
+          <Size>4</Size>
+          <Description>Number of orders disclosed at the price level; 0 means not disclosed</Description>
+        </Field>
+        <Field>
+          <Name>Orders</Name>
+          <Type>group</Type>
+          <Size>0</Size>
+          <Description>The individual order quantities disclosed at this price level</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+    <!-- Orders -->
+    <Group>
+      <Name>Orders</Name>
+      <Description>The individual order quantities disclosed at this price level</Description>
+      <Type>REPEATING</Type>
+      <Dependency>NoOrders</Dependency>
+      <Fields>
+        <Field>
+          <Name>OrderQty</Name>
+          <Type>Qty</Type>
+          <Size>8</Size>
+          <Description>Order quantity</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+    <!-- SubTradingPhaseCodes -->
+    <Group>
+      <Name>SubTradingPhaseCodes</Name>
+      <Description>One entry per trading phase subdivision, giving its code and trading type</Description>
+      <Type>REPEATING</Type>
+      <Dependency>NoSubTradingPhaseCodes</Dependency>
+      <Fields>
+        <Field>
+          <Name>SubTradingPhaseCode</Name>
+          <Type>char[8]</Type>
+          <Size>8</Size>
+          <Description>Trading phase code of the trading type</Description>
+        </Field>
+        <Field>
+          <Name>TradingType</Name>
+          <Type>uInt8</Type>
+          <Size>1</Size>
+          <Description>Trading type</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+    <!-- Index MDEntries -->
+    <Group>
+      <Name>Index MDEntries</Name>
+      <Description>Market data entries giving the index points</Description>
+      <Type>REPEATING</Type>
+      <Dependency>NoMDEntries</Dependency>
+      <Fields>
+        <Field>
+          <Name>MDEntryType</Name>
+          <Type>char[2]</Type>
+          <Size>2</Size>
+          <Description>Market data entry type</Description>
+        </Field>
+        <Field>
+          <Name>MDEntryPx</Name>
+          <Type>Int64</Type>
+          <Size>8</Size>
+          <Description>Index points, N18(5)</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+  </Groups>
+
+  <Enums>
+
+    <!-- EndOfChannel -->
+    <Enum>
+      <Name>EndOfChannel</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>No</Name>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Yes</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- SecuritySwitchStatus -->
+    <Enum>
+      <Name>SecuritySwitchStatus</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>No</Name>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Yes</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- ResendType -->
+    <Enum>
+      <Name>ResendType</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Tick Data</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Announcement</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- ResendStatus -->
+    <Enum>
+      <Name>ResendStatus</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Complete</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Partially Complete</Name>
+          <Description>Some of the requested data was not returned</Description>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>No Permission</Name>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>Data Unavailable</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- SecurityIDSource -->
+    <Enum>
+      <Name>SecurityIDSource</Name>
+      <Values>
+        <Value>
+          <Data>106</Data>
+          <Name>Beijing Stock Exchange</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- SecuritySwitchType -->
+    <Enum>
+      <Name>SecuritySwitchType</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Margin Buy</Name>
+          <Description>Applicable to securities eligible for margin buying</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Short Sell</Name>
+          <Description>Applicable to securities eligible for short selling</Description>
+        </Value>
+        <Value>
+          <Data>5</Data>
+          <Name>Subscription</Name>
+          <Description>Applicable to online issue subscription codes</Description>
+        </Value>
+        <Value>
+          <Data>6</Data>
+          <Name>Conversion</Name>
+          <Description>Applicable to directed issue convertible bonds, delisted company convertible bonds and non-public preferred shares in the conversion period</Description>
+        </Value>
+        <Value>
+          <Data>7</Data>
+          <Name>Put Back</Name>
+          <Description>Applicable to corporate bonds, non-public corporate bonds, directed issue convertible bonds and delisted company convertible bonds in the put back period</Description>
+        </Value>
+        <Value>
+          <Data>14</Data>
+          <Name>Tender Offer Acceptance</Name>
+          <Description>Applicable to stocks in a tender offer period</Description>
+        </Value>
+        <Value>
+          <Data>15</Data>
+          <Name>Tender Offer Withdrawal</Name>
+          <Description>Applicable to stocks in a tender offer period</Description>
+        </Value>
+        <Value>
+          <Data>22</Data>
+          <Name>Voting Right</Name>
+          <Description>Applicable to non-public preferred shares</Description>
+        </Value>
+        <Value>
+          <Data>23</Data>
+          <Name>Stock Pledged Repo</Name>
+          <Description>Applicable to securities eligible for stock pledged repo</Description>
+        </Value>
+        <Value>
+          <Data>27</Data>
+          <Name>Market Maker Quotation</Name>
+          <Description>Applicable to bonds and other securities supporting market maker quotation</Description>
+        </Value>
+        <Value>
+          <Data>34</Data>
+          <Name>Put Back Cancellation</Name>
+          <Description>Applicable to corporate bonds, non-public corporate bonds, directed issue convertible bonds and delisted company convertible bonds in the put back cancellation period</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- NewsType -->
+    <Enum>
+      <Name>NewsType</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Information Announcement</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Listed Company Information</Name>
+          <Description>Quoted or listed company information</Description>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Urgent Announcement</Name>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>Securities Company Information</Name>
+        </Value>
+        <Value>
+          <Data>5</Data>
+          <Name>Other Announcement</Name>
+        </Value>
+        <Value>
+          <Data>6</Data>
+          <Name>Stock Temporary Halt Announcement</Name>
+        </Value>
+        <Value>
+          <Data>7</Data>
+          <Name>Bond Temporary Halt Announcement</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- MDStreamID -->
+    <Enum>
+      <Name>MDStreamID</Name>
+      <Values>
+        <Value>
+          <Data>010</Data>
+          <Name>Bond Spot Trading Snapshot</Name>
+        </Value>
+        <Value>
+          <Data>011</Data>
+          <Name>Bond Spot Matching Large Lot Tick</Name>
+        </Value>
+        <Value>
+          <Data>012</Data>
+          <Name>Bond Spot Negotiated Trade Tick</Name>
+        </Value>
+        <Value>
+          <Data>020</Data>
+          <Name>Centralized Auction Snapshot</Name>
+          <Description>Not yet enabled</Description>
+        </Value>
+        <Value>
+          <Data>021</Data>
+          <Name>Agreement Trading Tick</Name>
+          <Description>Not yet enabled</Description>
+        </Value>
+        <Value>
+          <Data>022</Data>
+          <Name>Market Making Tick</Name>
+          <Description>Not yet enabled</Description>
+        </Value>
+        <Value>
+          <Data>023</Data>
+          <Name>Securities Lending Tick</Name>
+          <Description>Not yet enabled</Description>
+        </Value>
+        <Value>
+          <Data>024</Data>
+          <Name>Non Public Transfer Tick</Name>
+          <Description>Not yet enabled</Description>
+        </Value>
+        <Value>
+          <Data>030</Data>
+          <Name>Index Snapshot</Name>
+          <Description>Not yet enabled</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- MDEntryType -->
+    <Enum>
+      <Name>MDEntryType</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>Bid</Name>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Offer</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Last Price</Name>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Current Index</Name>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>Opening Price</Name>
+        </Value>
+        <Value>
+          <Data>5</Data>
+          <Name>Closing Price</Name>
+        </Value>
+        <Value>
+          <Data>7</Data>
+          <Name>High Price</Name>
+        </Value>
+        <Value>
+          <Data>8</Data>
+          <Name>Low Price</Name>
+        </Value>
+        <Value>
+          <Data>9</Data>
+          <Name>Weighted Average Price</Name>
+          <Description>Reserved</Description>
+        </Value>
+        <Value>
+          <Data>x1</Data>
+          <Name>Change One</Name>
+          <Description>Last price minus previous close</Description>
+        </Value>
+        <Value>
+          <Data>x2</Data>
+          <Name>Change Two</Name>
+          <Description>Last price minus the previous last price</Description>
+        </Value>
+        <Value>
+          <Data>x3</Data>
+          <Name>Bid Summary</Name>
+          <Description>Total quantity and weighted average price of bids</Description>
+        </Value>
+        <Value>
+          <Data>x4</Data>
+          <Name>Offer Summary</Name>
+          <Description>Total quantity and weighted average price of offers</Description>
+        </Value>
+        <Value>
+          <Data>x5</Data>
+          <Name>Matching Last Price Or Price Earnings Ratio One</Name>
+          <Description>Matching trade last price in spot bond trading snapshots; stock price earnings ratio one in centralized auction snapshots</Description>
+        </Value>
+        <Value>
+          <Data>x6</Data>
+          <Name>Price Earnings Ratio Two</Name>
+          <Description>Stock price earnings ratio two in centralized auction snapshots</Description>
+        </Value>
+        <Value>
+          <Data>xa</Data>
+          <Name>Previous Closing Index</Name>
+        </Value>
+        <Value>
+          <Data>xb</Data>
+          <Name>Opening Index</Name>
+        </Value>
+        <Value>
+          <Data>xc</Data>
+          <Name>High Index</Name>
+        </Value>
+        <Value>
+          <Data>xd</Data>
+          <Name>Low Index</Name>
+        </Value>
+        <Value>
+          <Data>xl</Data>
+          <Name>Closing Index</Name>
+        </Value>
+        <Value>
+          <Data>xm</Data>
+          <Name>Closing Index Two</Name>
+          <Description>Reserved</Description>
+        </Value>
+        <Value>
+          <Data>xn</Data>
+          <Name>Closing Index Reserved</Name>
+          <Description>Reserved</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- TradingType -->
+    <Enum>
+      <Name>TradingType</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Matching Trade</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Click Trade</Name>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Negotiated Trade</Name>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>Inquiry Trade</Name>
+        </Value>
+        <Value>
+          <Data>5</Data>
+          <Name>Bidding Trade</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- OrdType -->
+    <Enum>
+      <Name>OrdType</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Market</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Limit</Name>
+        </Value>
+        <Value>
+          <Data>U</Data>
+          <Name>Best Own Side</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Side -->
+    <Enum>
+      <Name>Side</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Buy</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Sell</Name>
+        </Value>
+        <Value>
+          <Data>G</Data>
+          <Name>Borrow</Name>
+        </Value>
+        <Value>
+          <Data>F</Data>
+          <Name>Lend</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- ExecType -->
+    <Enum>
+      <Name>ExecType</Name>
+      <Values>
+        <Value>
+          <Data>4</Data>
+          <Name>Cancelled</Name>
+        </Value>
+        <Value>
+          <Data>F</Data>
+          <Name>Trade</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- SettlPeriod -->
+    <Enum>
+      <Name>SettlPeriod</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>T Plus 0</Name>
+          <Description>T+0</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>T Plus 1</Name>
+          <Description>T+1</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>T Plus 2</Name>
+          <Description>T+2</Description>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>T Plus 3</Name>
+          <Description>T+3</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- SettlType -->
+    <Enum>
+      <Name>SettlType</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Gross</Name>
+          <Description>Trade by trade gross settlement</Description>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Multilateral Net</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- ExpirationType -->
+    <Enum>
+      <Name>ExpirationType</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Fixed Term</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+  </Enums>
+
+</OmiBjsePdf>

@@ -1,0 +1,343 @@
+<OmiNairobiMitchPdf>
+
+  <!--
+    Nairobi Equities MITCH-UDP v1.22, Snapshot channel administrative messages.
+
+    Transcribed from the Nairobi Securities Exchange Equity Trading System Market Data Feed
+    (MITCH-UDP) Specification v1.22 (24 November 2020), section 7. Each message's Length and
+    Message Type fields are the message header of the unit header file, so the tables here start
+    at offset 3. Types are the document's own (7.4): Price is four bytes with four implied decimal
+    places, Long Price eight bytes with up to eight; integers are little endian.
+
+    Where the document gives one label to fields that need different value sets or layouts, the
+    field is qualified and the description records the document's label: Status becomes Login
+    Status, Replay Status and Snapshot Status; Action becomes Price Point Action and Top Of Book
+    Action; Flags is named after its message; the Sub Book bit fields are Sub Book Flags and
+    Price Point Sub Book Flags, apart from the single valued Sub Book code. Bits the document
+    leaves undefined are reserved.
+  -->
+
+  <Messages>
+
+    <!-- Login Request Message -->
+    <Message>
+      <Name>Login Request Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x01</Code>
+      <Category>Administrative</Category>
+      <Origin>Firm</Origin>
+      <Description>Used by the client to login to the Replay or Snapshot channel.</Description>
+      <Fields>
+        <Field>
+          <Name>Username</Name>
+          <Type>Alpha</Type>
+          <Size>6</Size>
+          <Description>CompID assigned to the client.</Description>
+        </Field>
+        <Field>
+          <Name>Password</Name>
+          <Type>Alpha</Type>
+          <Size>10</Size>
+          <Description>Password assigned to the CompID.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Login Response Message -->
+    <Message>
+      <Name>Login Response Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x02</Code>
+      <Category>Administrative</Category>
+      <Origin>Exchange</Origin>
+      <Description>Used by the server to accept or reject a login request to the Replay or Snapshot channel.</Description>
+      <Fields>
+        <Field>
+          <Name>Login Status</Name>
+          <Type>Byte</Type>
+          <Size>1</Size>
+          <Description>Status of the login request. The document names this field Status.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Snapshot Request Message -->
+    <Message>
+      <Name>Snapshot Request Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x81</Code>
+      <Category>Administrative</Category>
+      <Origin>Firm</Origin>
+      <Description>Used by the client to request for a snapshot of the current order book on the Snapshot channel.</Description>
+      <Fields>
+        <Field>
+          <Name>Sequence Number</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Sequence number from which client can build the order book.</Description>
+        </Field>
+        <Field>
+          <Name>Segment</Name>
+          <Type>Alpha</Type>
+          <Size>6</Size>
+          <Description>Segment the request relates to. The field should contain only spaces if it does not relate to a segment.</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Alpha</Type>
+          <Size>12</Size>
+          <Description>Instrument the request relates to. The field should contain only spaces if it does not relate to an instrument. This field is ignored if Segment is specified.</Description>
+        </Field>
+        <Field>
+          <Name>Sub Book Flags</Name>
+          <Type>Bit Field</Type>
+          <Size>1</Size>
+          <Description>Order books the request relates to. The document names this field Sub Book.</Description>
+        </Field>
+        <Field>
+          <Name>Snapshot Type</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>Type of snapshot being requested.</Description>
+        </Field>
+        <Field>
+          <Name>Recover From Time</Name>
+          <Type>Time</Type>
+          <Size>8</Size>
+          <Description>Sending time of the last processed trade with regards to Trades (3), or of the last received announcement with regards to News (5), in local time for the server (i.e. not UTC). Ignored if the Snapshot Type is not Trades (3) or News (5).</Description>
+        </Field>
+        <Field>
+          <Name>Request ID</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Optional identifier of the request.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Snapshot Response Message -->
+    <Message>
+      <Name>Snapshot Response Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x82</Code>
+      <Category>Administrative</Category>
+      <Origin>Exchange</Origin>
+      <Description>Used by the server to respond to a snapshot request on the Snapshot channel.</Description>
+      <Fields>
+        <Field>
+          <Name>Sequence Number</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Sequence number with which the snapshot is synchronised. This will be zero if Status is not "A". Ignore if Snapshot Type is not Order Book (0).</Description>
+        </Field>
+        <Field>
+          <Name>Order Count</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Number of orders that will be transmitted in the snapshot. This will be zero if Order Book is empty or Status is not "A". Ignore if Snapshot Type is not Order Book (0).</Description>
+        </Field>
+        <Field>
+          <Name>Snapshot Status</Name>
+          <Type>Byte</Type>
+          <Size>1</Size>
+          <Description>Status of the snapshot request. The document names this field Status.</Description>
+        </Field>
+        <Field>
+          <Name>Snapshot Type</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>Type of snapshot.</Description>
+        </Field>
+        <Field>
+          <Name>Request ID</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Identifier, if any, of Snapshot Request.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Snapshot Complete Message -->
+    <Message>
+      <Name>Snapshot Complete Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x83</Code>
+      <Category>Administrative</Category>
+      <Origin>Exchange</Origin>
+      <Description>Used by the server to indicate that the transmission of an order book snapshot is complete.</Description>
+      <Fields>
+        <Field>
+          <Name>Sequence Number</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Sequence number with which the snapshot is synchronised.</Description>
+        </Field>
+        <Field>
+          <Name>Segment</Name>
+          <Type>Alpha</Type>
+          <Size>6</Size>
+          <Description>Segment the snapshot relates to. The field will contain only spaces if it does not relate to a segment.</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Alpha</Type>
+          <Size>12</Size>
+          <Description>Instrument the snapshot relates to. The field will contain only spaces if it does not relate to an instrument.</Description>
+        </Field>
+        <Field>
+          <Name>Sub Book Flags</Name>
+          <Type>Bit Field</Type>
+          <Size>1</Size>
+          <Description>Order books the snapshot relates to. The document names this field Sub Book.</Description>
+        </Field>
+        <Field>
+          <Name>Trading Status</Name>
+          <Type>Byte</Type>
+          <Size>1</Size>
+          <Description>Only indicated if the message is sent as a book level complete and the Snapshot Type is Order Book (0) or Statistics (4).</Description>
+        </Field>
+        <Field>
+          <Name>Snapshot Type</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>Type of snapshot.</Description>
+        </Field>
+        <Field>
+          <Name>Request ID</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Identifier, if any, of Snapshot Request.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Logout Request Message -->
+    <Message>
+      <Name>Logout Request Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x05</Code>
+      <Category>Administrative</Category>
+      <Origin>Firm</Origin>
+      <Description>Used by the client to logout of the Replay or Snapshot channel.</Description>
+      <Fields>
+      </Fields>
+    </Message>
+
+  </Messages>
+
+  <Enums>
+
+    <!-- Login Status -->
+    <Enum>
+      <Name>Login Status</Name>
+      <Values>
+        <Value>
+          <Data>A</Data>
+          <Name>Login Accepted</Name>
+        </Value>
+        <Value>
+          <Data>a</Data>
+          <Name>Comp Id Inactive Locked</Name>
+        </Value>
+        <Value>
+          <Data>b</Data>
+          <Name>Login Limit Reached</Name>
+        </Value>
+        <Value>
+          <Data>c</Data>
+          <Name>Service Unavailable</Name>
+        </Value>
+        <Value>
+          <Data>d</Data>
+          <Name>Concurrent Limit Reached</Name>
+        </Value>
+        <Value>
+          <Data>e</Data>
+          <Name>Failed Other</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Snapshot Status -->
+    <Enum>
+      <Name>Snapshot Status</Name>
+      <Values>
+        <Value>
+          <Data>A</Data>
+          <Name>Request Accepted</Name>
+        </Value>
+        <Value>
+          <Data>O</Data>
+          <Name>Out Of Range</Name>
+        </Value>
+        <Value>
+          <Data>U</Data>
+          <Name>Snapshot Unavailable</Name>
+        </Value>
+        <Value>
+          <Data>a</Data>
+          <Name>Segment Symbol Or Sub Book Invalid Or Not Specified</Name>
+        </Value>
+        <Value>
+          <Data>b</Data>
+          <Name>Request Limit Reached</Name>
+        </Value>
+        <Value>
+          <Data>c</Data>
+          <Name>Concurrent Limit Reached</Name>
+        </Value>
+        <Value>
+          <Data>d</Data>
+          <Name>Unsupported Message Type</Name>
+        </Value>
+        <Value>
+          <Data>e</Data>
+          <Name>Failed Other</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Snapshot Type -->
+    <Enum>
+      <Name>Snapshot Type</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>Order Book</Name>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Symbol Status</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Instrument</Name>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Trades</Name>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>Book Level Statistics</Name>
+        </Value>
+        <Value>
+          <Data>5</Data>
+          <Name>News</Name>
+        </Value>
+        <Value>
+          <Data>8</Data>
+          <Name>Top Of Book</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+  </Enums>
+
+</OmiNairobiMitchPdf>

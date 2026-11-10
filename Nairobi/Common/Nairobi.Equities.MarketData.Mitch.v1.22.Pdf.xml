@@ -1,0 +1,2663 @@
+<OmiNairobiMitchPdf>
+
+  <!--
+    Nairobi Equities MITCH-UDP v1.22, application messages.
+
+    Transcribed from the Nairobi Securities Exchange Equity Trading System Market Data Feed
+    (MITCH-UDP) Specification v1.22 (24 November 2020), section 7. Each message's Length and
+    Message Type fields are the message header of the unit header file, so the tables here start
+    at offset 3. Types are the document's own (7.4): Price is four bytes with four implied decimal
+    places, Long Price eight bytes with up to eight; integers are little endian.
+
+    Where the document gives one label to fields that need different value sets or layouts, the
+    field is qualified and the description records the document's label: Status becomes Login
+    Status, Replay Status and Snapshot Status; Action becomes Price Point Action and Top Of Book
+    Action; Flags is named after its message; the Sub Book bit fields are Sub Book Flags and
+    Price Point Sub Book Flags, apart from the single valued Sub Book code. Bits the document
+    leaves undefined are reserved.
+
+    Statistics spells its order book field SubBook, kept verbatim with its own value set holding
+    only the codes its table lists (1, 2 and 9). Every other Sub Book field shares one value set,
+    the union of the per message tables, which list different subsets. Auction Type carries the
+    space Recovery Trade sends for a trade that is not an auction trade. AON Info and Update Price
+    Point give the Side meanings without codes; they share the B and S codes the other tables
+    give. The <XXXX> <Specify> placeholder rows of the segment and trading halt reason appendices
+    are not codes and are left out.
+
+    Extended Statistics Volume and Trades are documented as UInt32 that "will be set to a negative
+    value" when unset; they are transcribed as documented.
+  -->
+
+  <Messages>
+
+    <!-- Time Message -->
+    <Message>
+      <Name>Time Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x54</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Sent by the server for every second for which at least one application message is generated; its time is the reference for the nanosecond offsets of every other application message.</Description>
+      <Fields>
+        <Field>
+          <Name>Seconds</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Number of seconds since midnight. Midnight will be in terms of the local time for the server (i.e. not UTC).</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- System Event Message -->
+    <Message>
+      <Name>System Event Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x53</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Sent to indicate the start and end of the day.</Description>
+      <Fields>
+        <Field>
+          <Name>Nanosecond</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Nanoseconds offset from the last Time message.</Description>
+        </Field>
+        <Field>
+          <Name>Event Code</Name>
+          <Type>Byte</Type>
+          <Size>1</Size>
+          <Description>Start or end of day.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Symbol Directory Message -->
+    <Message>
+      <Name>Symbol Directory Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x52</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Used to disseminate information (e.g. symbol, segment, ISIN, underlying, etc.) on each instrument.</Description>
+      <Fields>
+        <Field>
+          <Name>Nanosecond</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Nanoseconds offset from the last Time message.</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Alpha</Type>
+          <Size>12</Size>
+          <Description>Instrument's symbol.</Description>
+        </Field>
+        <Field>
+          <Name>Symbol Status</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>Status of the instrument. This field will contain a space if the instrument is active.</Description>
+        </Field>
+        <Field>
+          <Name>Identification Number</Name>
+          <Type>Alpha</Type>
+          <Size>12</Size>
+          <Description>Instrument identification number (e.g. ISIN, CUSIP, etc.)</Description>
+        </Field>
+        <Field>
+          <Name>Segment</Name>
+          <Type>Alpha</Type>
+          <Size>6</Size>
+          <Description>Segment the instrument is assigned to.</Description>
+        </Field>
+        <Field>
+          <Name>Expiration Date</Name>
+          <Type>Date</Type>
+          <Size>8</Size>
+          <Description>Date an instrument expires or matures. This field will contain only spaces if the instrument is not a derivative or fixed income instrument.</Description>
+        </Field>
+        <Field>
+          <Name>Underlying</Name>
+          <Type>Alpha</Type>
+          <Size>6</Size>
+          <Description>Symbol of the underlying instrument. This field will contain only spaces if the instrument is not a derivative.</Description>
+        </Field>
+        <Field>
+          <Name>Strike Price</Name>
+          <Type>Price</Type>
+          <Size>4</Size>
+          <Description>Strike price of an option. The price will be zero if the instrument is not an option.</Description>
+        </Field>
+        <Field>
+          <Name>Option Type</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>Call or put. This field will contain a space if the instrument is not an option.</Description>
+        </Field>
+        <Field>
+          <Name>Issuer</Name>
+          <Type>Alpha</Type>
+          <Size>6</Size>
+          <Description>Issuer of the instrument. This field will contain all spaces if the instrument is not an equity or fixed income instrument.</Description>
+        </Field>
+        <Field>
+          <Name>Issue Date</Name>
+          <Type>Date</Type>
+          <Size>8</Size>
+          <Description>Date instrument was issued. This field will contain all spaces if the instrument is not a fixed income instrument.</Description>
+        </Field>
+        <Field>
+          <Name>Coupon</Name>
+          <Type>Price</Type>
+          <Size>4</Size>
+          <Description>Rate of interest applied to the face value. This is a percentage field (e.g. 0.05 represents 5%). The price will be zero if the instrument is not a fixed income instrument.</Description>
+        </Field>
+        <Field>
+          <Name>Symbol Directory Flags</Name>
+          <Type>Bit Field</Type>
+          <Size>1</Size>
+          <Description>Instrument flags. The document names this field Flags.</Description>
+        </Field>
+        <Field>
+          <Name>Sub Book Flags</Name>
+          <Type>Bit Field</Type>
+          <Size>1</Size>
+          <Description>Order books of the instrument. The document names this field Sub Book.</Description>
+        </Field>
+        <Field>
+          <Name>Corporate Action</Name>
+          <Type>Alpha</Type>
+          <Size>5</Size>
+          <Description>Pipe separated field. Identifies the type of Corporate Actions applicable on the instrument for the current Trading day.</Description>
+        </Field>
+        <Field>
+          <Name>Issued Quantity</Name>
+          <Type>Long Price</Type>
+          <Size>8</Size>
+          <Description>Issued Quantity of the instrument.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Symbol Status Message -->
+    <Message>
+      <Name>Symbol Status Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x48</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Indicates the trading session (e.g. pre-opening, regular trading, etc.) that currently applies to an instrument.</Description>
+      <Fields>
+        <Field>
+          <Name>Nanosecond</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Nanoseconds offset from the last Time message.</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Alpha</Type>
+          <Size>12</Size>
+          <Description>Instrument's symbol.</Description>
+        </Field>
+        <Field>
+          <Name>Trading Status</Name>
+          <Type>Byte</Type>
+          <Size>1</Size>
+          <Description>Trading session that applies to the instrument.</Description>
+        </Field>
+        <Field>
+          <Name>Symbol Status Flags</Name>
+          <Type>Bit Field</Type>
+          <Size>1</Size>
+          <Description>Reserved for future use. The document names this field Flags.</Description>
+        </Field>
+        <Field>
+          <Name>Halt Reason</Name>
+          <Type>Alpha</Type>
+          <Size>4</Size>
+          <Description>Reason for the trading halt. This field will contain only spaces if Trading Status is not "H".</Description>
+        </Field>
+        <Field>
+          <Name>Session Change Reason</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>Reason for the session change.</Description>
+        </Field>
+        <Field>
+          <Name>New End Time</Name>
+          <Type>Time</Type>
+          <Size>8</Size>
+          <Description>New session end time specified in terms of local time for server (i.e. not UTC). The field will contain only spaces if Session Change Reason is "0" or "9".</Description>
+        </Field>
+        <Field>
+          <Name>Sub Book</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>Order book the status relates to.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Add Order Message -->
+    <Message>
+      <Name>Add Order Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x41</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Sent to indicate that an anonymous limit or market order is added to the order book.</Description>
+      <Fields>
+        <Field>
+          <Name>Nanosecond</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Nanoseconds offset from the last Time message.</Description>
+        </Field>
+        <Field>
+          <Name>Order ID</Name>
+          <Type>UInt64</Type>
+          <Size>8</Size>
+          <Description>Unique identifier of the order.</Description>
+        </Field>
+        <Field>
+          <Name>Side</Name>
+          <Type>Byte</Type>
+          <Size>1</Size>
+          <Description>Side of the order.</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Displayed quantity of the order.</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Alpha</Type>
+          <Size>12</Size>
+          <Description>Instrument's symbol.</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Price</Type>
+          <Size>4</Size>
+          <Description>Limit price of the order.</Description>
+        </Field>
+        <Field>
+          <Name>Add Order Flags</Name>
+          <Type>Bit Field</Type>
+          <Size>1</Size>
+          <Description>Order flags. The document names this field Flags.</Description>
+        </Field>
+        <Field>
+          <Name>Sub Book</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>Order book of the order.</Description>
+        </Field>
+        <Field>
+          <Name>Settlement Type</Name>
+          <Type>Byte</Type>
+          <Size>1</Size>
+          <Description>Type of settlement. Only valid when Order Book is Block Trade (4).</Description>
+        </Field>
+        <Field>
+          <Name>Interest Rate</Name>
+          <Type>Price</Type>
+          <Size>4</Size>
+          <Description>Gives the interest rate for a Repo order. Only valid when Order Book is Block Trade (4).</Description>
+        </Field>
+        <Field>
+          <Name>Term</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>Gives the term of settlement of the 2nd leg of the Repo. Only valid when Order Book is Block Trade (4).</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Add Attributed Order Message -->
+    <Message>
+      <Name>Add Attributed Order Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x46</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Indicates that an attributable limit order is added to the order book. The identity of the submitting firm is included in the message.</Description>
+      <Fields>
+        <Field>
+          <Name>Nanosecond</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Nanoseconds offset from the last Time message.</Description>
+        </Field>
+        <Field>
+          <Name>Order ID</Name>
+          <Type>UInt64</Type>
+          <Size>8</Size>
+          <Description>Unique identifier of the order.</Description>
+        </Field>
+        <Field>
+          <Name>Side</Name>
+          <Type>Byte</Type>
+          <Size>1</Size>
+          <Description>Side of the order.</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Displayed quantity of the order.</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Alpha</Type>
+          <Size>12</Size>
+          <Description>Instrument's symbol.</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Price</Type>
+          <Size>4</Size>
+          <Description>Limit price of the order.</Description>
+        </Field>
+        <Field>
+          <Name>Attribution</Name>
+          <Type>Alpha</Type>
+          <Size>6</Size>
+          <Description>Identity of firm that submitted the order.</Description>
+        </Field>
+        <Field>
+          <Name>Add Attributed Order Flags</Name>
+          <Type>Bit Field</Type>
+          <Size>1</Size>
+          <Description>Order flags. The document names this field Flags.</Description>
+        </Field>
+        <Field>
+          <Name>Sub Book</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>Order book of the order.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Order Deleted Message -->
+    <Message>
+      <Name>Order Deleted Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x44</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Sent to indicate that the remainder of a displayed order is cancelled.</Description>
+      <Fields>
+        <Field>
+          <Name>Nanosecond</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Nanoseconds offset from the last Time message.</Description>
+        </Field>
+        <Field>
+          <Name>Order ID</Name>
+          <Type>UInt64</Type>
+          <Size>8</Size>
+          <Description>Identifier for the order.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Order Modified Message -->
+    <Message>
+      <Name>Order Modified Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x55</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Indicates that the displayed quantity or price of a displayed order has been updated, and whether the order has retained or lost its time priority.</Description>
+      <Fields>
+        <Field>
+          <Name>Nanosecond</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Nanoseconds offset from the last Time message.</Description>
+        </Field>
+        <Field>
+          <Name>Order ID</Name>
+          <Type>UInt64</Type>
+          <Size>8</Size>
+          <Description>Identifier for the order.</Description>
+        </Field>
+        <Field>
+          <Name>New Quantity</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>New displayed quantity of the order.</Description>
+        </Field>
+        <Field>
+          <Name>New Price</Name>
+          <Type>Price</Type>
+          <Size>4</Size>
+          <Description>New limit price of the order.</Description>
+        </Field>
+        <Field>
+          <Name>Order Modified Flags</Name>
+          <Type>Bit Field</Type>
+          <Size>1</Size>
+          <Description>Order flags. The document names this field Flags.</Description>
+        </Field>
+        <Field>
+          <Name>Settlement Type</Name>
+          <Type>Byte</Type>
+          <Size>1</Size>
+          <Description>Type of settlement. Only valid when Order Book is Block Trade (4).</Description>
+        </Field>
+        <Field>
+          <Name>Interest Rate</Name>
+          <Type>Price</Type>
+          <Size>4</Size>
+          <Description>Gives the interest rate for a Repo order. Only valid when Order Book is Block Trade (4).</Description>
+        </Field>
+        <Field>
+          <Name>Term</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>Gives the term of settlement of the 2nd leg of the Repo. Only valid when Order Book is Block Trade (4).</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Order Book Clear Message -->
+    <Message>
+      <Name>Order Book Clear Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x79</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Sent to instruct recipients to remove all orders from the order book for the specified instrument.</Description>
+      <Fields>
+        <Field>
+          <Name>Nanosecond</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Nanoseconds offset from the last Time message.</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Alpha</Type>
+          <Size>12</Size>
+          <Description>Instrument's symbol.</Description>
+        </Field>
+        <Field>
+          <Name>Sub Book</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>Order book to be cleared.</Description>
+        </Field>
+        <Field>
+          <Name>Book Type</Name>
+          <Type>Byte</Type>
+          <Size>1</Size>
+          <Description>Type of book to be cleared.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Order Executed Message -->
+    <Message>
+      <Name>Order Executed Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x45</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Indicates that the displayed portion of an order is fully or partially filled at its displayed price. The executed quantity is included in the message.</Description>
+      <Fields>
+        <Field>
+          <Name>Nanosecond</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Nanoseconds offset from the last Time message.</Description>
+        </Field>
+        <Field>
+          <Name>Order ID</Name>
+          <Type>UInt64</Type>
+          <Size>8</Size>
+          <Description>Identifier for the order.</Description>
+        </Field>
+        <Field>
+          <Name>Executed Quantity</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Quantity executed.</Description>
+        </Field>
+        <Field>
+          <Name>Trade ID</Name>
+          <Type>UInt64</Type>
+          <Size>8</Size>
+          <Description>Unique identifier of the trade.</Description>
+        </Field>
+        <Field>
+          <Name>Buy Firm</Name>
+          <Type>Alpha</Type>
+          <Size>6</Size>
+          <Description>Identifier of the firm which submitted the buy order. Required only if the 'Publish Firms' is enabled for the order book in which the execution occurred.</Description>
+        </Field>
+        <Field>
+          <Name>Sell Firm</Name>
+          <Type>Alpha</Type>
+          <Size>6</Size>
+          <Description>Identifier of the firm which submitted the sell order. Required only if the 'Publish Firms' is enabled for the order book in which the execution occurred.</Description>
+        </Field>
+        <Field>
+          <Name>LastOptPx</Name>
+          <Type>Long Price</Type>
+          <Size>8</Size>
+          <Description>Converted price of the executed volatility of the options instrument.</Description>
+        </Field>
+        <Field>
+          <Name>Volatility</Name>
+          <Type>Long Price</Type>
+          <Size>8</Size>
+          <Description>Converted volatility of the executed price of the options instrument.</Description>
+        </Field>
+        <Field>
+          <Name>Underlying Reference Price</Name>
+          <Type>Long Price</Type>
+          <Size>8</Size>
+          <Description>Underlying Reference Price related to converted value calculated upon an options instrument trade execution.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Order Executed With Price Size Message -->
+    <Message>
+      <Name>Order Executed With Price Size Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x43</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Sent if a displayed order is fully or partially filled at a price that is different from its displayed price, with an indication of whether the trade should update time and sales and statistics displays.</Description>
+      <Fields>
+        <Field>
+          <Name>Nanosecond</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Nanoseconds offset from the last Time message.</Description>
+        </Field>
+        <Field>
+          <Name>Order ID</Name>
+          <Type>UInt64</Type>
+          <Size>8</Size>
+          <Description>Identifier for the order.</Description>
+        </Field>
+        <Field>
+          <Name>Executed Quantity</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Quantity executed.</Description>
+        </Field>
+        <Field>
+          <Name>Display Quantity</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Displayed quantity of the order after the execution.</Description>
+        </Field>
+        <Field>
+          <Name>Trade ID</Name>
+          <Type>UInt64</Type>
+          <Size>8</Size>
+          <Description>Unique identifier of the trade.</Description>
+        </Field>
+        <Field>
+          <Name>Printable</Name>
+          <Type>Byte</Type>
+          <Size>1</Size>
+          <Description>Whether the trade should update time and sales and statistics displays.</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Price</Type>
+          <Size>4</Size>
+          <Description>Price at which the order was executed.</Description>
+        </Field>
+        <Field>
+          <Name>Buy Firm</Name>
+          <Type>Alpha</Type>
+          <Size>6</Size>
+          <Description>Identifier of the firm which submitted the buy order. Required only if the 'Publish Firms' is enabled for the order book in which the execution occurred.</Description>
+        </Field>
+        <Field>
+          <Name>Sell Firm</Name>
+          <Type>Alpha</Type>
+          <Size>6</Size>
+          <Description>Identifier of the firm which submitted the sell order. Required only if the 'Publish Firms' is enabled for the order book in which the execution occurred.</Description>
+        </Field>
+        <Field>
+          <Name>LastOptPx</Name>
+          <Type>Long Price</Type>
+          <Size>8</Size>
+          <Description>Converted price of the executed volatility of the options instrument.</Description>
+        </Field>
+        <Field>
+          <Name>Volatility</Name>
+          <Type>Long Price</Type>
+          <Size>8</Size>
+          <Description>Converted volatility of the executed price of the options instrument.</Description>
+        </Field>
+        <Field>
+          <Name>Underlying Reference Price</Name>
+          <Type>Long Price</Type>
+          <Size>8</Size>
+          <Description>Underlying Reference Price related to converted value calculated upon an options instrument trade execution.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Trade Message -->
+    <Message>
+      <Name>Trade Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x50</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Sent if the non-displayed portion of an iceberg order or a reserve order is fully or partially filled, or if the negotiated non-disclosed order in the block trade order book is executed.</Description>
+      <Fields>
+        <Field>
+          <Name>Nanosecond</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Nanoseconds offset from the last Time message.</Description>
+        </Field>
+        <Field>
+          <Name>Executed Quantity</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Quantity executed.</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Alpha</Type>
+          <Size>12</Size>
+          <Description>Instrument's symbol.</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Price</Type>
+          <Size>4</Size>
+          <Description>Executed price.</Description>
+        </Field>
+        <Field>
+          <Name>Trade ID</Name>
+          <Type>UInt64</Type>
+          <Size>8</Size>
+          <Description>Unique identifier of the trade.</Description>
+        </Field>
+        <Field>
+          <Name>Sub Book</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>Order book of the trade.</Description>
+        </Field>
+        <Field>
+          <Name>Buy Firm</Name>
+          <Type>Alpha</Type>
+          <Size>6</Size>
+          <Description>Identifier of the firm which submitted the buy order. Required only if the 'Publish Firms' is enabled for the order book in which the execution occurred.</Description>
+        </Field>
+        <Field>
+          <Name>Sell Firm</Name>
+          <Type>Alpha</Type>
+          <Size>6</Size>
+          <Description>Identifier of the firm which submitted the sell order. Required only if the 'Publish Firms' is enabled for the order book in which the execution occurred.</Description>
+        </Field>
+        <Field>
+          <Name>LastOptPx</Name>
+          <Type>Long Price</Type>
+          <Size>8</Size>
+          <Description>Converted price of the executed volatility of the options instrument.</Description>
+        </Field>
+        <Field>
+          <Name>Volatility</Name>
+          <Type>Long Price</Type>
+          <Size>8</Size>
+          <Description>Converted volatility of the executed price of the options instrument.</Description>
+        </Field>
+        <Field>
+          <Name>Underlying Reference Price</Name>
+          <Type>Long Price</Type>
+          <Size>8</Size>
+          <Description>Underlying Reference Price related to converted value calculated upon an options instrument trade execution.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Auction Trade Message -->
+    <Message>
+      <Name>Auction Trade Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x51</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Sent to report details of an auction (e.g. opening, closing, intra-day, etc.).</Description>
+      <Fields>
+        <Field>
+          <Name>Nanosecond</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Nanoseconds offset from the last Time message.</Description>
+        </Field>
+        <Field>
+          <Name>Executed Quantity</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Quantity executed in auction.</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Alpha</Type>
+          <Size>12</Size>
+          <Description>Instrument's symbol.</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Price</Type>
+          <Size>4</Size>
+          <Description>Price of auction.</Description>
+        </Field>
+        <Field>
+          <Name>Trade ID</Name>
+          <Type>UInt64</Type>
+          <Size>8</Size>
+          <Description>Unique identifier of the trade.</Description>
+        </Field>
+        <Field>
+          <Name>Auction Type</Name>
+          <Type>Byte</Type>
+          <Size>1</Size>
+          <Description>Type of auction.</Description>
+        </Field>
+        <Field>
+          <Name>LastOptPx</Name>
+          <Type>Long Price</Type>
+          <Size>8</Size>
+          <Description>Converted price of the executed volatility of the options instrument.</Description>
+        </Field>
+        <Field>
+          <Name>Volatility</Name>
+          <Type>Long Price</Type>
+          <Size>8</Size>
+          <Description>Converted volatility of the executed price of the options instrument.</Description>
+        </Field>
+        <Field>
+          <Name>Underlying Reference Price</Name>
+          <Type>Long Price</Type>
+          <Size>8</Size>
+          <Description>Underlying Reference Price related to converted value calculated upon an options instrument trade execution.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Off Book Trade Message -->
+    <Message>
+      <Name>Off Book Trade Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x78</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Sent to report the details of an off-book trade.</Description>
+      <Fields>
+        <Field>
+          <Name>Nanosecond</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Nanoseconds offset from the last Time message.</Description>
+        </Field>
+        <Field>
+          <Name>Executed Quantity</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Quantity executed.</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Alpha</Type>
+          <Size>12</Size>
+          <Description>Instrument's symbol.</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Price</Type>
+          <Size>4</Size>
+          <Description>Executed price.</Description>
+        </Field>
+        <Field>
+          <Name>Trade ID</Name>
+          <Type>UInt64</Type>
+          <Size>8</Size>
+          <Description>Unique identifier of the trade.</Description>
+        </Field>
+        <Field>
+          <Name>Off Book Trade Type</Name>
+          <Type>Alpha</Type>
+          <Size>4</Size>
+          <Description>Type of off-book trade.</Description>
+        </Field>
+        <Field>
+          <Name>Trade Time</Name>
+          <Type>Time</Type>
+          <Size>8</Size>
+          <Description>Time off-book trade was executed. The time is specified in terms of the local time for the server (i.e. not UTC).</Description>
+        </Field>
+        <Field>
+          <Name>Trade Date</Name>
+          <Type>Date</Type>
+          <Size>8</Size>
+          <Description>Date off-book trade was executed.</Description>
+        </Field>
+        <Field>
+          <Name>LastOptPx</Name>
+          <Type>Long Price</Type>
+          <Size>8</Size>
+          <Description>Converted price of the executed volatility of the options instrument.</Description>
+        </Field>
+        <Field>
+          <Name>Volatility</Name>
+          <Type>Long Price</Type>
+          <Size>8</Size>
+          <Description>Converted volatility of the executed price of the options instrument.</Description>
+        </Field>
+        <Field>
+          <Name>Underlying Reference Price</Name>
+          <Type>Long Price</Type>
+          <Size>8</Size>
+          <Description>Underlying Reference Price related to converted value calculated upon an options instrument trade execution.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Trade Break Message -->
+    <Message>
+      <Name>Trade Break Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x42</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Sent to indicate that a previously reported trade is cancelled.</Description>
+      <Fields>
+        <Field>
+          <Name>Nanosecond</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Nanoseconds offset from the last Time message.</Description>
+        </Field>
+        <Field>
+          <Name>Trade ID</Name>
+          <Type>UInt64</Type>
+          <Size>8</Size>
+          <Description>Identifier of the cancelled trade.</Description>
+        </Field>
+        <Field>
+          <Name>Trade Type</Name>
+          <Type>Byte</Type>
+          <Size>1</Size>
+          <Description>On-book or off-book trade.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Trade Correction Message -->
+    <Message>
+      <Name>Trade Correction Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x60</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Sent to report the correction of the executed quantity of a trade.</Description>
+      <Fields>
+        <Field>
+          <Name>Nanosecond</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Nanoseconds offset from the last Time message.</Description>
+        </Field>
+        <Field>
+          <Name>Trade ID</Name>
+          <Type>UInt64</Type>
+          <Size>8</Size>
+          <Description>Unique identifier of the trade.</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Alpha</Type>
+          <Size>12</Size>
+          <Description>Symbol of the trade.</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Price</Type>
+          <Size>4</Size>
+          <Description>The original executed price (price of a trade cannot be amended).</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>New executed quantity of the trade.</Description>
+        </Field>
+        <Field>
+          <Name>Sub Book</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>Order book of the trade.</Description>
+        </Field>
+        <Field>
+          <Name>Buy Firm</Name>
+          <Type>Alpha</Type>
+          <Size>6</Size>
+          <Description>Gives the broker ID who submitted the buy order.</Description>
+        </Field>
+        <Field>
+          <Name>Sell Firm</Name>
+          <Type>Alpha</Type>
+          <Size>6</Size>
+          <Description>Gives the broker ID who submitted the sell order.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Recovery Trade Message -->
+    <Message>
+      <Name>Recovery Trade Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x76</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Sent on the Snapshot channel to retransmit the trades published on the Real-Time channel.</Description>
+      <Fields>
+        <Field>
+          <Name>Nanosecond</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Nanoseconds offset from the last Time message.</Description>
+        </Field>
+        <Field>
+          <Name>Executed Quantity</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Quantity executed.</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Alpha</Type>
+          <Size>12</Size>
+          <Description>Instrument's symbol.</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Price</Type>
+          <Size>4</Size>
+          <Description>Executed price.</Description>
+        </Field>
+        <Field>
+          <Name>Trade ID</Name>
+          <Type>UInt64</Type>
+          <Size>8</Size>
+          <Description>Unique identifier of the trade.</Description>
+        </Field>
+        <Field>
+          <Name>Auction Type</Name>
+          <Type>Byte</Type>
+          <Size>1</Size>
+          <Description>Type of auction. This field will contain a space if the trade is not an auction trade.</Description>
+        </Field>
+        <Field>
+          <Name>Off Book Trade Type</Name>
+          <Type>Alpha</Type>
+          <Size>4</Size>
+          <Description>Type of off-book trade. This field will contain only spaces for on-book trades.</Description>
+        </Field>
+        <Field>
+          <Name>Trade Time</Name>
+          <Type>Time</Type>
+          <Size>8</Size>
+          <Description>Time trade was executed. The time is specified in terms of the local time for the server (i.e. not UTC).</Description>
+        </Field>
+        <Field>
+          <Name>Trade Date</Name>
+          <Type>Date</Type>
+          <Size>8</Size>
+          <Description>Date the off-book trade was executed. This field will contain only spaces for on-book trades.</Description>
+        </Field>
+        <Field>
+          <Name>Action Type</Name>
+          <Type>Byte</Type>
+          <Size>1</Size>
+          <Description>Action on the trade.</Description>
+        </Field>
+        <Field>
+          <Name>Sub Book</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>Order book of the trade.</Description>
+        </Field>
+        <Field>
+          <Name>Buy Firm</Name>
+          <Type>Alpha</Type>
+          <Size>6</Size>
+          <Description>Identifier of the firm which submitted the buy order. Required only if the 'Publish Firms' is enabled for the order book in which the execution occurred.</Description>
+        </Field>
+        <Field>
+          <Name>Sell Firm</Name>
+          <Type>Alpha</Type>
+          <Size>6</Size>
+          <Description>Identifier of the firm which submitted the sell order. Required only if the 'Publish Firms' is enabled for the order book in which the execution occurred.</Description>
+        </Field>
+        <Field>
+          <Name>LastOptPx</Name>
+          <Type>Long Price</Type>
+          <Size>8</Size>
+          <Description>Converted price of the executed volatility of the options instrument.</Description>
+        </Field>
+        <Field>
+          <Name>Volatility</Name>
+          <Type>Long Price</Type>
+          <Size>8</Size>
+          <Description>Converted volatility of the executed price of the options instrument.</Description>
+        </Field>
+        <Field>
+          <Name>Underlying Reference Price</Name>
+          <Type>Long Price</Type>
+          <Size>8</Size>
+          <Description>Underlying Reference Price related to converted value calculated upon an options instrument trade execution.</Description>
+        </Field>
+        <Field>
+          <Name>Auction Trade Type</Name>
+          <Type>Byte</Type>
+          <Size>1</Size>
+          <Description>Denotes the type of the auction trade being disseminated. For regular trades this field will be unset.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Auction Info Message -->
+    <Message>
+      <Name>Auction Info Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x49</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Indicative auction information for an instrument; the document labels the message type Indicative Auction Info.</Description>
+      <Fields>
+        <Field>
+          <Name>Nanosecond</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Nanoseconds offset from the last Time message.</Description>
+        </Field>
+        <Field>
+          <Name>Paired Quantity</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Quantity that will be matched at the indicative price.</Description>
+        </Field>
+        <Field>
+          <Name>Imbalance Quantity</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Quantity that is eligible to be matched at the indicative price but will not be matched.</Description>
+        </Field>
+        <Field>
+          <Name>Imbalance Direction</Name>
+          <Type>Byte</Type>
+          <Size>1</Size>
+          <Description>Direction of the imbalance.</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Alpha</Type>
+          <Size>12</Size>
+          <Description>Instrument's symbol.</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Price</Type>
+          <Size>4</Size>
+          <Description>Indicative auction price.</Description>
+        </Field>
+        <Field>
+          <Name>Auction Type</Name>
+          <Type>Byte</Type>
+          <Size>1</Size>
+          <Description>Type of auction.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Statistics Message -->
+    <Message>
+      <Name>Statistics Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x77</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Sent to disseminate the opening, closing and previous closing prices of an instrument.</Description>
+      <Fields>
+        <Field>
+          <Name>Nanosecond</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Nanoseconds offset from the last Time message.</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Alpha</Type>
+          <Size>12</Size>
+          <Description>Instrument's symbol.</Description>
+        </Field>
+        <Field>
+          <Name>Statistic Type</Name>
+          <Type>Byte</Type>
+          <Size>1</Size>
+          <Description>Type of statistic.</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Price</Type>
+          <Size>4</Size>
+          <Description>Opening or closing price.</Description>
+        </Field>
+        <Field>
+          <Name>Open Close Indicator</Name>
+          <Type>Byte</Type>
+          <Size>1</Size>
+          <Description>How the price was determined.</Description>
+        </Field>
+        <Field>
+          <Name>SubBook</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>Order book of the statistic.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Extended Statistics Message -->
+    <Message>
+      <Name>Extended Statistics Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x80</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Sent to disseminate the high, low, VWAP, volume, turnover and other statistics of an instrument for a sub book.</Description>
+      <Fields>
+        <Field>
+          <Name>Nanosecond</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Nanoseconds offset from the last Time message.</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Alpha</Type>
+          <Size>12</Size>
+          <Description>Instrument's symbol.</Description>
+        </Field>
+        <Field>
+          <Name>High Price</Name>
+          <Type>Price</Type>
+          <Size>4</Size>
+          <Description>High price for the sub book. Will be set to a negative value if the value is not set or withdrawn.</Description>
+        </Field>
+        <Field>
+          <Name>Low Price</Name>
+          <Type>Price</Type>
+          <Size>4</Size>
+          <Description>Low price for the sub book. Will be set to a negative value if the value is not set or withdrawn.</Description>
+        </Field>
+        <Field>
+          <Name>VWAP</Name>
+          <Type>Price</Type>
+          <Size>4</Size>
+          <Description>VWAP for the sub book. Will be set to a negative value if the value is not set or withdrawn.</Description>
+        </Field>
+        <Field>
+          <Name>Volume</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Volume for the sub book. Will be set to a negative value if the value is not set or withdrawn. The document types the field as an unsigned integer.</Description>
+        </Field>
+        <Field>
+          <Name>Turnover</Name>
+          <Type>Long Price</Type>
+          <Size>8</Size>
+          <Description>Turnover for the sub book. Will be set to a negative value if the value is not set or withdrawn.</Description>
+        </Field>
+        <Field>
+          <Name>Trades</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Number of trades for the sub book. Will be set to a negative value if the value is not set or withdrawn. The document types the field as an unsigned integer.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved 8</Name>
+          <Type>Reserved</Type>
+          <Size>8</Size>
+          <Description>Reserved for future use.</Description>
+        </Field>
+        <Field>
+          <Name>Sub Book</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>Order book of the statistics.</Description>
+        </Field>
+        <Field>
+          <Name>Notional Exposure</Name>
+          <Type>Long Price</Type>
+          <Size>8</Size>
+          <Description>Notional exposure related to the options trade executions.</Description>
+        </Field>
+        <Field>
+          <Name>Notional Delta Exposure</Name>
+          <Type>Long Price</Type>
+          <Size>8</Size>
+          <Description>Notional exposure updated by the delta of the option based on trade executions.</Description>
+        </Field>
+        <Field>
+          <Name>Daily Foreign Buy Value</Name>
+          <Type>Long Price</Type>
+          <Size>8</Size>
+          <Description>Total foreign buy trade value for the day for the sub book. Will be set to a negative value if the value is not set or withdrawn.</Description>
+        </Field>
+        <Field>
+          <Name>Daily Foreign Sell Value</Name>
+          <Type>Long Price</Type>
+          <Size>8</Size>
+          <Description>Total foreign sell trade value for the day for the sub book. Will be set to a negative value if the value is not set or withdrawn.</Description>
+        </Field>
+        <Field>
+          <Name>Market Capitalization</Name>
+          <Type>Long Price</Type>
+          <Size>8</Size>
+          <Description>Market Capitalization of the instrument. Will be set to a negative value if the value is not set or withdrawn.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Consolidated Statistics Message -->
+    <Message>
+      <Name>Consolidated Statistics Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x64</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Sent to disseminate the volume, turnover and trades of a market, sector or instrument type.</Description>
+      <Fields>
+        <Field>
+          <Name>Nanosecond</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Nanoseconds offset from the last Time message.</Description>
+        </Field>
+        <Field>
+          <Name>Statistics Type</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>Level the statistics relate to.</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Alpha</Type>
+          <Size>12</Size>
+          <Description>Unique identifier of market or sector.</Description>
+        </Field>
+        <Field>
+          <Name>Volume</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Traded volume for the market or sector.</Description>
+        </Field>
+        <Field>
+          <Name>Turnover</Name>
+          <Type>Long Price</Type>
+          <Size>8</Size>
+          <Description>Turnover of the market or sector.</Description>
+        </Field>
+        <Field>
+          <Name>Trades</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Number of trades for market or sector.</Description>
+        </Field>
+        <Field>
+          <Name>Daily Foreign Buy Value</Name>
+          <Type>Long Price</Type>
+          <Size>8</Size>
+          <Description>Total foreign buy trade value for the day for the market, sector or instrument type.</Description>
+        </Field>
+        <Field>
+          <Name>Daily Foreign Sell Value</Name>
+          <Type>Long Price</Type>
+          <Size>8</Size>
+          <Description>Total foreign sell trade value for the day for the market, sector or instrument type.</Description>
+        </Field>
+        <Field>
+          <Name>Market Capitalization</Name>
+          <Type>Long Price</Type>
+          <Size>8</Size>
+          <Description>Market Capitalization of the Market or Sector. Will be set to a negative value if the value is not set or withdrawn.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Index Message -->
+    <Message>
+      <Name>Index Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x62</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Sent to disseminate the value of an index.</Description>
+      <Fields>
+        <Field>
+          <Name>Nanosecond</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Nanoseconds offset from the last Time message.</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Alpha</Type>
+          <Size>12</Size>
+          <Description>Unique identifier of the index.</Description>
+        </Field>
+        <Field>
+          <Name>Index Value</Name>
+          <Type>Price</Type>
+          <Size>4</Size>
+          <Description>Index value.</Description>
+        </Field>
+        <Field>
+          <Name>Update Type</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>Type of index value.</Description>
+        </Field>
+        <Field>
+          <Name>Perctg Diff From Closing</Name>
+          <Type>Price</Type>
+          <Size>4</Size>
+          <Description>Percentage difference of the current Index value compared to the Previous Closing index value. This will be set to 0 when the Index Type is Previous Close (2); the document means Update Type.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- AON Info Message -->
+    <Message>
+      <Name>AON Info Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x65</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Sent to disseminate the details of an All or None auction.</Description>
+      <Fields>
+        <Field>
+          <Name>Nanosecond</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Nanoseconds offset from the last Time message.</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Alpha</Type>
+          <Size>12</Size>
+          <Description>Instrument's symbol.</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Price</Type>
+          <Size>4</Size>
+          <Description>AON Auction Price.</Description>
+        </Field>
+        <Field>
+          <Name>Side</Name>
+          <Type>Byte</Type>
+          <Size>1</Size>
+          <Description>Side of the auction.</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Quantity being auctioned.</Description>
+        </Field>
+        <Field>
+          <Name>AON Status</Name>
+          <Type>Alpha</Type>
+          <Size>1</Size>
+          <Description>Status of the auction.</Description>
+        </Field>
+        <Field>
+          <Name>Date</Name>
+          <Type>Date</Type>
+          <Size>8</Size>
+          <Description>Date the auction is being held. This field will contain only spaces if the instrument contains an AON Status of 'Inactive' or 'Cancelled'.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- News Message -->
+    <Message>
+      <Name>News Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x75</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Sent to disseminate an announcement.</Description>
+      <Fields>
+        <Field>
+          <Name>Nanosecond</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Nanoseconds offset from the last Time message.</Description>
+        </Field>
+        <Field>
+          <Name>Time</Name>
+          <Type>Time</Type>
+          <Size>8</Size>
+          <Description>Time the announcement was published. The time is specified in terms of the local time for the server (i.e. not UTC).</Description>
+        </Field>
+        <Field>
+          <Name>Urgency</Name>
+          <Type>Byte</Type>
+          <Size>1</Size>
+          <Description>Urgency of the announcement.</Description>
+        </Field>
+        <Field>
+          <Name>Headline</Name>
+          <Type>Alpha</Type>
+          <Size>100</Size>
+          <Description>Headline or subject of announcement.</Description>
+        </Field>
+        <Field>
+          <Name>Text</Name>
+          <Type>Alpha</Type>
+          <Size>750</Size>
+          <Description>Text of the announcement.</Description>
+        </Field>
+        <Field>
+          <Name>Instruments</Name>
+          <Type>Alpha</Type>
+          <Size>100</Size>
+          <Description>Pipe separated list of symbols of the instruments announcement relates to.</Description>
+        </Field>
+        <Field>
+          <Name>Underlyings</Name>
+          <Type>Alpha</Type>
+          <Size>100</Size>
+          <Description>Pipe separated list of symbols of the underlyings announcement relates to.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Update Price Point Message -->
+    <Message>
+      <Name>Update Price Point Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x73</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Communicates the addition of a new price point or a size update to an already published price point.</Description>
+      <Fields>
+        <Field>
+          <Name>Nanosecond</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Nanoseconds offset from the last Time message.</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Alpha</Type>
+          <Size>12</Size>
+          <Description>Instrument's symbol.</Description>
+        </Field>
+        <Field>
+          <Name>Price Point Sub Book Flags</Name>
+          <Type>Bit Field</Type>
+          <Size>1</Size>
+          <Description>Order books of the price point. The document names this field Sub book.</Description>
+        </Field>
+        <Field>
+          <Name>Price Point Action</Name>
+          <Type>Byte</Type>
+          <Size>1</Size>
+          <Description>Action on the price point. The document names this field Action.</Description>
+        </Field>
+        <Field>
+          <Name>Side</Name>
+          <Type>Byte</Type>
+          <Size>1</Size>
+          <Description>Side of the price point.</Description>
+        </Field>
+        <Field>
+          <Name>Price Level</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>Price Level of the order. A smaller number will denote a more marketable price point. A Price Level of 0 will denote market orders.</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Price</Type>
+          <Size>4</Size>
+          <Description>Limit price of the order. Will be set to 0 if the entry refers to market orders.</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Total visible size at this price point.</Description>
+        </Field>
+        <Field>
+          <Name>Splits</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Number of orders that contribute to this price point. Only the orders with a visible portion will be considered.</Description>
+        </Field>
+        <Field>
+          <Name>Update Price Point Flags</Name>
+          <Type>Bit Field</Type>
+          <Size>1</Size>
+          <Description>Price point flags. The document names this field Flags.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved 1</Name>
+          <Type>Reserved</Type>
+          <Size>1</Size>
+          <Description>Reserved for future use.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Delete Price Point Message -->
+    <Message>
+      <Name>Delete Price Point Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x72</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Communicates the removal of a price point.</Description>
+      <Fields>
+        <Field>
+          <Name>Nanosecond</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Nanoseconds offset from the last Time message.</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Alpha</Type>
+          <Size>12</Size>
+          <Description>Instrument's symbol.</Description>
+        </Field>
+        <Field>
+          <Name>Price Point Sub Book Flags</Name>
+          <Type>Bit Field</Type>
+          <Size>1</Size>
+          <Description>Order books of the price point. The document names this field Sub book.</Description>
+        </Field>
+        <Field>
+          <Name>Side</Name>
+          <Type>Byte</Type>
+          <Size>1</Size>
+          <Description>Side of the price point.</Description>
+        </Field>
+        <Field>
+          <Name>Price Level</Name>
+          <Type>UInt8</Type>
+          <Size>1</Size>
+          <Description>Price Level that needs to be deleted.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved 1</Name>
+          <Type>Reserved</Type>
+          <Size>1</Size>
+          <Description>Reserved for future use.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Top Of Book Message -->
+    <Message>
+      <Name>Top Of Book Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>0x71</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Communicates the best price and cumulative visible size of a side of an order book.</Description>
+      <Fields>
+        <Field>
+          <Name>Nanosecond</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Nanoseconds offset from the last Time message.</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>Alpha</Type>
+          <Size>12</Size>
+          <Description>Instrument's symbol.</Description>
+        </Field>
+        <Field>
+          <Name>Price Point Sub Book Flags</Name>
+          <Type>Bit Field</Type>
+          <Size>1</Size>
+          <Description>Order books of the top of book. The document names this field Sub Book.</Description>
+        </Field>
+        <Field>
+          <Name>Top Of Book Action</Name>
+          <Type>Byte</Type>
+          <Size>1</Size>
+          <Description>Action on the top of book. The document names this field Action.</Description>
+        </Field>
+        <Field>
+          <Name>Side</Name>
+          <Type>Byte</Type>
+          <Size>1</Size>
+          <Description>Side of the top of book.</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>Price</Type>
+          <Size>4</Size>
+          <Description>Best price for the particular side.</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Cumulative visible size at best price. This will be set to zero on a delete action.</Description>
+        </Field>
+        <Field>
+          <Name>Market Order Quantity</Name>
+          <Type>UInt32</Type>
+          <Size>4</Size>
+          <Description>Cumulative visible size of market orders.</Description>
+        </Field>
+        <Field>
+          <Name>Reserved 2</Name>
+          <Type>Reserved</Type>
+          <Size>2</Size>
+          <Description>Reserved for future use.</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+  </Messages>
+
+  <Bitfields>
+
+    <!-- Price Point Sub Book Flags -->
+    <Bitfield>
+      <Name>Price Point Sub Book Flags</Name>
+      <Description>Order books of an Update Price Point, Delete Price Point or Top of Book message, one bit per book. The document labels this field Sub book or Sub Book; it defines no bit 1 or bit 7, and its bit 6 is Default Auction.</Description>
+      <Fields>
+        <Field>
+          <Name>Regular</Name>
+          <Bits>1</Bits>
+          <Description>Regular order book</Description>
+        </Field>
+        <Field>
+          <Name>Reserved 1</Name>
+          <Bits>1</Bits>
+          <Description>Not defined</Description>
+        </Field>
+        <Field>
+          <Name>Block Trade</Name>
+          <Bits>1</Bits>
+          <Description>Block Trade order book</Description>
+        </Field>
+        <Field>
+          <Name>Odd Lot</Name>
+          <Bits>1</Bits>
+          <Description>Odd Lot order book</Description>
+        </Field>
+        <Field>
+          <Name>Early Settlement</Name>
+          <Bits>1</Bits>
+          <Description>Early Settlement order book</Description>
+        </Field>
+        <Field>
+          <Name>Bulletin Board</Name>
+          <Bits>1</Bits>
+          <Description>Bulletin Board order book</Description>
+        </Field>
+        <Field>
+          <Name>Default Auction</Name>
+          <Bits>1</Bits>
+          <Description>Default Auction order book</Description>
+        </Field>
+        <Field>
+          <Name>Reserved 7</Name>
+          <Bits>1</Bits>
+          <Description>Not defined</Description>
+        </Field>
+      </Fields>
+    </Bitfield>
+
+    <!-- Symbol Directory Flags -->
+    <Bitfield>
+      <Name>Symbol Directory Flags</Name>
+      <Description>Instrument flags of the Symbol Directory message, which the document labels Flags.</Description>
+      <Fields>
+        <Field>
+          <Name>Inverse Order Book</Name>
+          <Bits>1</Bits>
+          <Description>Inverse order book</Description>
+        </Field>
+        <Field>
+          <Name>Reserved 1-7</Name>
+          <Bits>7</Bits>
+          <Description>Not defined</Description>
+        </Field>
+      </Fields>
+    </Bitfield>
+
+    <!-- Symbol Status Flags -->
+    <Bitfield>
+      <Name>Symbol Status Flags</Name>
+      <Description>Flags of the Symbol Status message, which the document labels Flags and reserves for future use.</Description>
+      <Fields>
+        <Field>
+          <Name>Reserved 0-7</Name>
+          <Bits>8</Bits>
+          <Description>Reserved for future use</Description>
+        </Field>
+      </Fields>
+    </Bitfield>
+
+    <!-- Add Order Flags -->
+    <Bitfield>
+      <Name>Add Order Flags</Name>
+      <Description>Flags of the Add Order message, which the document labels Flags.</Description>
+      <Fields>
+        <Field>
+          <Name>Reserved 0-3</Name>
+          <Bits>4</Bits>
+          <Description>Not defined</Description>
+        </Field>
+        <Field>
+          <Name>Market Order</Name>
+          <Bits>1</Bits>
+          <Description>Market order</Description>
+        </Field>
+        <Field>
+          <Name>Bulletin Board</Name>
+          <Bits>1</Bits>
+          <Description>Bulletin Board order</Description>
+        </Field>
+        <Field>
+          <Name>Reserved 6-7</Name>
+          <Bits>2</Bits>
+          <Description>Not defined</Description>
+        </Field>
+      </Fields>
+    </Bitfield>
+
+    <!-- Add Attributed Order Flags -->
+    <Bitfield>
+      <Name>Add Attributed Order Flags</Name>
+      <Description>Flags of the Add Attributed Order message, which the document labels Flags.</Description>
+      <Fields>
+        <Field>
+          <Name>Reserved 0-4</Name>
+          <Bits>5</Bits>
+          <Description>Not defined</Description>
+        </Field>
+        <Field>
+          <Name>Bulletin Board</Name>
+          <Bits>1</Bits>
+          <Description>Bulletin Board order</Description>
+        </Field>
+        <Field>
+          <Name>Reserved 6-7</Name>
+          <Bits>2</Bits>
+          <Description>Not defined</Description>
+        </Field>
+      </Fields>
+    </Bitfield>
+
+    <!-- Order Modified Flags -->
+    <Bitfield>
+      <Name>Order Modified Flags</Name>
+      <Description>Flags of the Order Modified message, which the document labels Flags.</Description>
+      <Fields>
+        <Field>
+          <Name>Priority Flag</Name>
+          <Bits>1</Bits>
+          <Description>Whether the order retained its time priority</Description>
+        </Field>
+        <Field>
+          <Name>Reserved 1-7</Name>
+          <Bits>7</Bits>
+          <Description>Not defined</Description>
+        </Field>
+      </Fields>
+    </Bitfield>
+
+    <!-- Update Price Point Flags -->
+    <Bitfield>
+      <Name>Update Price Point Flags</Name>
+      <Description>Flags of the Update Price Point message, which the document labels Flags.</Description>
+      <Fields>
+        <Field>
+          <Name>Reserved 0-3</Name>
+          <Bits>4</Bits>
+          <Description>Not defined</Description>
+        </Field>
+        <Field>
+          <Name>Market Order</Name>
+          <Bits>1</Bits>
+          <Description>Market order price point</Description>
+        </Field>
+        <Field>
+          <Name>Reserved 5-7</Name>
+          <Bits>3</Bits>
+          <Description>Not defined</Description>
+        </Field>
+      </Fields>
+    </Bitfield>
+
+    <!-- Sub Book Flags -->
+    <Bitfield>
+      <Name>Sub Book Flags</Name>
+      <Description>Order books a message relates to, one bit per book. The document labels this field Sub Book, the label it also gives the single valued order book code of the trade and statistics messages; the two are different encodings.</Description>
+      <Fields>
+        <Field>
+          <Name>Regular</Name>
+          <Bits>1</Bits>
+          <Description>Regular order book</Description>
+        </Field>
+        <Field>
+          <Name>Off Book</Name>
+          <Bits>1</Bits>
+          <Description>Off-Book order book</Description>
+        </Field>
+        <Field>
+          <Name>Block Trade</Name>
+          <Bits>1</Bits>
+          <Description>Block Trade order book</Description>
+        </Field>
+        <Field>
+          <Name>Odd Lot</Name>
+          <Bits>1</Bits>
+          <Description>Odd Lot order book</Description>
+        </Field>
+        <Field>
+          <Name>Early Settlement</Name>
+          <Bits>1</Bits>
+          <Description>Early Settlement order book</Description>
+        </Field>
+        <Field>
+          <Name>Bulletin Board</Name>
+          <Bits>1</Bits>
+          <Description>Bulletin Board order book</Description>
+        </Field>
+        <Field>
+          <Name>Auction</Name>
+          <Bits>1</Bits>
+          <Description>Auction order book</Description>
+        </Field>
+        <Field>
+          <Name>All Or None</Name>
+          <Bits>1</Bits>
+          <Description>All or None order book</Description>
+        </Field>
+      </Fields>
+    </Bitfield>
+
+  </Bitfields>
+
+  <Enums>
+
+    <!-- Event Code -->
+    <Enum>
+      <Name>Event Code</Name>
+      <Values>
+        <Value>
+          <Data>C</Data>
+          <Name>End Of Day</Name>
+        </Value>
+        <Value>
+          <Data>O</Data>
+          <Name>Start Of Day</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Symbol Status -->
+    <Enum>
+      <Name>Symbol Status</Name>
+      <Values>
+        <Value>
+          <Data>H</Data>
+          <Name>Halted</Name>
+        </Value>
+        <Value>
+          <Data>S</Data>
+          <Name>Suspended</Name>
+        </Value>
+        <Value>
+          <Data>a</Data>
+          <Name>Inactive</Name>
+        </Value>
+        <Value>
+          <Data>" "</Data>
+          <Name>Active</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Segment -->
+    <Enum>
+      <Name>Segment</Name>
+      <Values>
+        <Value>
+          <Data>MBD</Data>
+          <Name>Main Board</Name>
+        </Value>
+        <Value>
+          <Data>SBD</Data>
+          <Name>Secondary Board</Name>
+        </Value>
+        <Value>
+          <Data>DBD</Data>
+          <Name>Default Board</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Option Type -->
+    <Enum>
+      <Name>Option Type</Name>
+      <Values>
+        <Value>
+          <Data>C</Data>
+          <Name>Call Option</Name>
+        </Value>
+        <Value>
+          <Data>P</Data>
+          <Name>Put Option</Name>
+        </Value>
+        <Value>
+          <Data>" "</Data>
+          <Name>Not An Option</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Trading Status -->
+    <Enum>
+      <Name>Trading Status</Name>
+      <Values>
+        <Value>
+          <Data>H</Data>
+          <Name>Halt</Name>
+        </Value>
+        <Value>
+          <Data>T</Data>
+          <Name>Regular Trading</Name>
+        </Value>
+        <Value>
+          <Data>a</Data>
+          <Name>Opening Auction Call</Name>
+        </Value>
+        <Value>
+          <Data>b</Data>
+          <Name>Post Close</Name>
+        </Value>
+        <Value>
+          <Data>c</Data>
+          <Name>Market Close</Name>
+        </Value>
+        <Value>
+          <Data>d</Data>
+          <Name>Closing Auction Call</Name>
+        </Value>
+        <Value>
+          <Data>e</Data>
+          <Name>Re Opening Auction Call</Name>
+        </Value>
+        <Value>
+          <Data>l</Data>
+          <Name>Pause</Name>
+        </Value>
+        <Value>
+          <Data>n</Data>
+          <Name>Order Entry</Name>
+        </Value>
+        <Value>
+          <Data>p</Data>
+          <Name>Auction Initiation</Name>
+        </Value>
+        <Value>
+          <Data>q</Data>
+          <Name>Start Of Auction Call</Name>
+        </Value>
+        <Value>
+          <Data>r</Data>
+          <Name>End Of Auction Call</Name>
+        </Value>
+        <Value>
+          <Data>s</Data>
+          <Name>Start Of Aon Order Entry</Name>
+        </Value>
+        <Value>
+          <Data>t</Data>
+          <Name>End Of Aon Order Entry</Name>
+        </Value>
+        <Value>
+          <Data>u</Data>
+          <Name>Closing Price Cross</Name>
+        </Value>
+        <Value>
+          <Data>v</Data>
+          <Name>Reserved For Backward Compatibility</Name>
+        </Value>
+        <Value>
+          <Data>w</Data>
+          <Name>No Active Session</Name>
+        </Value>
+        <Value>
+          <Data>x</Data>
+          <Name>End Of Post Close</Name>
+        </Value>
+        <Value>
+          <Data>y</Data>
+          <Name>Pre Trading</Name>
+        </Value>
+        <Value>
+          <Data>z</Data>
+          <Name>Closing Price Publication</Name>
+        </Value>
+        <Value>
+          <Data>o</Data>
+          <Name>Intraday Auction Call</Name>
+        </Value>
+        <Value>
+          <Data>0</Data>
+          <Name>Auction Execution</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Halt Reason -->
+    <Enum>
+      <Name>Halt Reason</Name>
+      <Values>
+        <Value>
+          <Data>101</Data>
+          <Name>Instrument Level Circuit Breaker Tripped</Name>
+        </Value>
+        <Value>
+          <Data>102</Data>
+          <Name>Instrument Status Is Halted</Name>
+        </Value>
+        <Value>
+          <Data>9998</Data>
+          <Name>Matching Partition Suspended</Name>
+        </Value>
+        <Value>
+          <Data>9999</Data>
+          <Name>System Suspended</Name>
+        </Value>
+        <Value>
+          <Data>"    "</Data>
+          <Name>Reason Not Available</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Session Change Reason -->
+    <Enum>
+      <Name>Session Change Reason</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>Scheduled Transition</Name>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Extended By Market Ops</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Shortened By Market Ops</Name>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Market Order Extension</Name>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>Price Monitoring Extension</Name>
+        </Value>
+        <Value>
+          <Data>5</Data>
+          <Name>Circuit Breaker Tripped</Name>
+        </Value>
+        <Value>
+          <Data>9</Data>
+          <Name>Unavailable</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Sub Book -->
+    <Enum>
+      <Name>Sub Book</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Regular</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Off Book</Name>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Odd Lot</Name>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>Block Trade</Name>
+        </Value>
+        <Value>
+          <Data>5</Data>
+          <Name>All Or None</Name>
+        </Value>
+        <Value>
+          <Data>6</Data>
+          <Name>Early Settlement</Name>
+        </Value>
+        <Value>
+          <Data>7</Data>
+          <Name>Auction</Name>
+        </Value>
+        <Value>
+          <Data>9</Data>
+          <Name>Bulletin Board</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- SubBook -->
+    <Enum>
+      <Name>SubBook</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Regular</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Off Book</Name>
+        </Value>
+        <Value>
+          <Data>9</Data>
+          <Name>Bulletin Board</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Side -->
+    <Enum>
+      <Name>Side</Name>
+      <Values>
+        <Value>
+          <Data>B</Data>
+          <Name>Buy Order</Name>
+        </Value>
+        <Value>
+          <Data>S</Data>
+          <Name>Sell Order</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Settlement Type -->
+    <Enum>
+      <Name>Settlement Type</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Cash T Plus 0</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Early Settle T Plus 1</Name>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>T Plus 2</Name>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>Regular T Plus 3</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Book Type -->
+    <Enum>
+      <Name>Book Type</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>Mbp Mbo Statistics</Name>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Top Of Book</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Printable -->
+    <Enum>
+      <Name>Printable</Name>
+      <Values>
+        <Value>
+          <Data>N</Data>
+          <Name>Non Printable</Name>
+        </Value>
+        <Value>
+          <Data>Y</Data>
+          <Name>Printable</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Auction Type -->
+    <Enum>
+      <Name>Auction Type</Name>
+      <Values>
+        <Value>
+          <Data>A</Data>
+          <Name>Re Opening Auction</Name>
+        </Value>
+        <Value>
+          <Data>C</Data>
+          <Name>Closing Auction</Name>
+        </Value>
+        <Value>
+          <Data>O</Data>
+          <Name>Opening Auction</Name>
+        </Value>
+        <Value>
+          <Data>K</Data>
+          <Name>Intra Day Auction</Name>
+        </Value>
+        <Value>
+          <Data>" "</Data>
+          <Name>Not An Auction Trade</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Off Book Trade Type -->
+    <Enum>
+      <Name>Off Book Trade Type</Name>
+      <Values>
+        <Value>
+          <Data>16</Data>
+          <Name>Block Trade</Name>
+        </Value>
+        <Value>
+          <Data>20</Data>
+          <Name>Not To Mark</Name>
+        </Value>
+        <Value>
+          <Data>37</Data>
+          <Name>Crossed Trade</Name>
+        </Value>
+        <Value>
+          <Data>39</Data>
+          <Name>Large In Scale</Name>
+        </Value>
+        <Value>
+          <Data>"    "</Data>
+          <Name>Trade Type Not Available</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Trade Type -->
+    <Enum>
+      <Name>Trade Type</Name>
+      <Values>
+        <Value>
+          <Data>T</Data>
+          <Name>On Book Trade</Name>
+        </Value>
+        <Value>
+          <Data>N</Data>
+          <Name>Off Book Trade</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Action Type -->
+    <Enum>
+      <Name>Action Type</Name>
+      <Values>
+        <Value>
+          <Data>C</Data>
+          <Name>Cancelled Trade</Name>
+        </Value>
+        <Value>
+          <Data>N</Data>
+          <Name>Trade</Name>
+        </Value>
+        <Value>
+          <Data>A</Data>
+          <Name>Amend Trade</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Auction Trade Type -->
+    <Enum>
+      <Name>Auction Trade Type</Name>
+      <Values>
+        <Value>
+          <Data>B</Data>
+          <Name>Bulk Trade</Name>
+        </Value>
+        <Value>
+          <Data>S</Data>
+          <Name>Supplementary Trade</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Imbalance Direction -->
+    <Enum>
+      <Name>Imbalance Direction</Name>
+      <Values>
+        <Value>
+          <Data>B</Data>
+          <Name>Buy Imbalance</Name>
+        </Value>
+        <Value>
+          <Data>N</Data>
+          <Name>No Imbalance</Name>
+        </Value>
+        <Value>
+          <Data>O</Data>
+          <Name>Insufficient Orders For Auction</Name>
+        </Value>
+        <Value>
+          <Data>S</Data>
+          <Name>Sell Imbalance</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Statistic Type -->
+    <Enum>
+      <Name>Statistic Type</Name>
+      <Values>
+        <Value>
+          <Data>C</Data>
+          <Name>Closing Price</Name>
+        </Value>
+        <Value>
+          <Data>O</Data>
+          <Name>Opening Price</Name>
+        </Value>
+        <Value>
+          <Data>P</Data>
+          <Name>Previous Close</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Open Close Indicator -->
+    <Enum>
+      <Name>Open Close Indicator</Name>
+      <Values>
+        <Value>
+          <Data>A</Data>
+          <Name>Auction Trade</Name>
+        </Value>
+        <Value>
+          <Data>B</Data>
+          <Name>Regular Trade</Name>
+        </Value>
+        <Value>
+          <Data>C</Data>
+          <Name>Mid Point</Name>
+        </Value>
+        <Value>
+          <Data>D</Data>
+          <Name>Last Regular Trade</Name>
+        </Value>
+        <Value>
+          <Data>E</Data>
+          <Name>Last Auction</Name>
+        </Value>
+        <Value>
+          <Data>F</Data>
+          <Name>Manual</Name>
+        </Value>
+        <Value>
+          <Data>H</Data>
+          <Name>Vwap</Name>
+        </Value>
+        <Value>
+          <Data>I</Data>
+          <Name>Previous Close</Name>
+        </Value>
+        <Value>
+          <Data>T</Data>
+          <Name>Theoretical Price</Name>
+        </Value>
+        <Value>
+          <Data>U</Data>
+          <Name>Best Bid</Name>
+        </Value>
+        <Value>
+          <Data>V</Data>
+          <Name>Best Offer</Name>
+        </Value>
+        <Value>
+          <Data>W</Data>
+          <Name>None</Name>
+        </Value>
+        <Value>
+          <Data>X</Data>
+          <Name>Vwap Of Last N Trades</Name>
+        </Value>
+        <Value>
+          <Data>Y</Data>
+          <Name>Reference Price</Name>
+        </Value>
+        <Value>
+          <Data>Z</Data>
+          <Name>Price Unavailable</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Statistics Type -->
+    <Enum>
+      <Name>Statistics Type</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>Market</Name>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Sector</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Instrument Type</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Update Type -->
+    <Enum>
+      <Name>Update Type</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>Intra Day</Name>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Closing</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Previous Close</Name>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Indicative</Name>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>High</Name>
+        </Value>
+        <Value>
+          <Data>5</Data>
+          <Name>Low</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- AON Status -->
+    <Enum>
+      <Name>AON Status</Name>
+      <Values>
+        <Value>
+          <Data>A</Data>
+          <Name>Active</Name>
+        </Value>
+        <Value>
+          <Data>C</Data>
+          <Name>Completed</Name>
+        </Value>
+        <Value>
+          <Data>H</Data>
+          <Name>Halted</Name>
+        </Value>
+        <Value>
+          <Data>I</Data>
+          <Name>Inactive</Name>
+        </Value>
+        <Value>
+          <Data>X</Data>
+          <Name>Cancelled</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Urgency -->
+    <Enum>
+      <Name>Urgency</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>Regular</Name>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>High Priority</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Low Priority</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Price Point Action -->
+    <Enum>
+      <Name>Price Point Action</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>Add</Name>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Change</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Top Of Book Action -->
+    <Enum>
+      <Name>Top Of Book Action</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Update</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Delete</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Priority Flag -->
+    <Enum>
+      <Name>Priority Flag</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>Priority Lost</Name>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Priority Retained</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+  </Enums>
+
+</OmiNairobiMitchPdf>
