@@ -38,6 +38,12 @@
           <Size>1</Size>
           <Description>A number, n (possibly 0), of parameter groups to follow.</Description>
         </Field>
+        <Field>
+          <Name>ParamGroup</Name>
+          <Type>group</Type>
+          <Size>1</Size>
+          <Description>Param groups</Description>
+        </Field>
       </Fields>
     </Message>
 
@@ -112,10 +118,22 @@
           <Description>A number, n, of unit/sequence pairs to follow, one per unit. A pair for every unit will be sent, even if no messages have been sent to this port today. For unsuccessful logins, this will be 0.</Description>
         </Field>
         <Field>
+          <Name>UnitSequences</Name>
+          <Type>group</Type>
+          <Size>5</Size>
+          <Description>Unit sequences</Description>
+        </Field>
+        <Field>
           <Name>NumberOfParamGroups</Name>
           <Type>Binary</Type>
           <Size>1</Size>
           <Description>Echoed back from the original Login Request message. A number, n (possibly 0), of parameter groups to follow.</Description>
+        </Field>
+        <Field>
+          <Name>ParamGroup</Name>
+          <Type>group</Type>
+          <Size>1</Size>
+          <Description>Param groups</Description>
         </Field>
       </Fields>
     </Message>
@@ -154,6 +172,12 @@
           <Type>Binary</Type>
           <Size>1</Size>
           <Description>A number, n (possibly 0), of unit/sequence pairs to follow, one per unit from which the client has received messages.</Description>
+        </Field>
+        <Field>
+          <Name>UnitSequences</Name>
+          <Type>group</Type>
+          <Size>5</Size>
+          <Description>Unit sequences</Description>
         </Field>
       </Fields>
     </Message>
@@ -551,6 +575,18 @@
           <Name>PurgeOrdersBitfield2</Name>
           <Type>bitfield</Type>
           <Size>1</Size>
+        </Field>
+        <Field>
+          <Name>RiskGroupIDCnt</Name>
+          <Type>Binary</Type>
+          <Size>1</Size>
+          <Description>Number of repeating RiskGroupID values included in this message.</Description>
+        </Field>
+        <Field>
+          <Name>RiskGroupIDs</Name>
+          <Type>group</Type>
+          <Size>2</Size>
+          <Description>Repeating group, stated RiskGroupIDCnt times. A maximum of 10 RiskGroupIDs may be included on a single Purge Orders message.</Description>
         </Field>
       </Fields>
     </Message>
@@ -2111,16 +2147,6 @@
       <Code>0x80</Code>
       <Fields>
         <Field>
-          <Name>ParamGroupLength</Name>
-          <Type>Binary</Type>
-          <Size>2</Size>
-        </Field>
-        <Field>
-          <Name>ParamGroupType</Name>
-          <Type>Binary</Type>
-          <Size>1</Size>
-        </Field>
-        <Field>
           <Name>NoUnspecifiedUnitReplay</Name>
           <Type>Binary</Type>
           <Size>1</Size>
@@ -2146,16 +2172,6 @@
       <Branch>paramgrouppayload</Branch>
       <Code>0x81</Code>
       <Fields>
-        <Field>
-          <Name>ParamGroupLength</Name>
-          <Type>Binary</Type>
-          <Size>2</Size>
-        </Field>
-        <Field>
-          <Name>ParamGroupType</Name>
-          <Type>Binary</Type>
-          <Size>1</Size>
-        </Field>
         <Field>
           <Name>MessageType</Name>
           <Type>Binary</Type>
@@ -2287,6 +2303,21 @@
       </Fields>
     </Group>
 
+    <!-- RiskGroupIDs -->
+    <Group>
+      <Name>RiskGroupIDs</Name>
+      <Description>Repeating group stated RiskGroupIDCnt times.</Description>
+      <Dependency>RiskGroupIDCnt</Dependency>
+      <Fields>
+        <Field>
+          <Name>RiskGroupID</Name>
+          <Type>Binary</Type>
+          <Size>2</Size>
+          <Description>RiskGroupID. Only present if RiskGroupIDCnt is non-zero.</Description>
+        </Field>
+      </Fields>
+    </Group>
+
     <!-- ParamGroup -->
     <Group>
       <Name>ParamGroup</Name>
@@ -2302,6 +2333,11 @@
           <Name>ParamGroupType</Name>
           <Type>Binary</Type>
           <Size>1</Size>
+        </Field>
+        <Field>
+          <Name>ParamGroupPayload</Name>
+          <Type>payload</Type>
+          <Description>Remaining bytes of the parameter group, ParamGroupLength - 3, read as the variant ParamGroupType selects.</Description>
         </Field>
       </Fields>
     </Group>

@@ -5,11 +5,11 @@
 
 | Division | Protocol | Encoding | Version | Specification |
 | --- | --- | --- | --- | --- |
-| Optiq | DropCopy | Fix | 5.25 | [files](Euronext.Optiq.DropCopy.Fix.v5.25/) |
-| Optiq | DropCopy | Fix | 5.39 | [files](Euronext.Optiq.DropCopy.Fix.v5.39/) |
-| Optiq | DropCopy | Fix | 5.53 | [files](Euronext.Optiq.DropCopy.Fix.v5.53/) |
+| Optiq | DropCopy | Fix | 5.25 | private |
+| Optiq | DropCopy | Fix | 5.39 | private |
+| Optiq | DropCopy | Fix | 5.53 | private |
 | Optiq | DropCopy | Fix | 5.54 | [files](Euronext.Optiq.DropCopy.Fix.v5.54/) |
-| Optiq | DropCopy | Fix | 5.55 | [files](Euronext.Optiq.DropCopy.Fix.v5.55/) |
+| Optiq | DropCopy | Fix | 5.55 | private |
 | Optiq | DropCopy | Fix | 5.57 | [files](Euronext.Optiq.DropCopy.Fix.v5.57/) |
 | Optiq | DropCopy | Fix | 5.58 | [files](Euronext.Optiq.DropCopy.Fix.v5.58/) |
 | Optiq | DropCopyGateway | Sbe | 5.35 | [files](Euronext.Optiq.DropCopyGateway.Sbe.v5.35/) |
@@ -63,21 +63,21 @@
 | Optiq | MarketDataGateway | Sbe | 6.69 | [files](Euronext.Optiq.MarketDataGateway.Sbe.v6.69/) |
 | Optiq | MarketDataPacket | Udp | 1 | [files](Euronext.Optiq.MarketDataPacket.Udp.v1/) |
 | Optiq | OrderEntry | Fix | 5.24 | [files](Euronext.Optiq.OrderEntry.Fix.v5.24/) |
-| Optiq | OrderEntry | Fix | 5.25 | [files](Euronext.Optiq.OrderEntry.Fix.v5.25/) |
+| Optiq | OrderEntry | Fix | 5.25 | private |
 | Optiq | OrderEntry | Fix | 5.35 | [files](Euronext.Optiq.OrderEntry.Fix.v5.35/) |
 | Optiq | OrderEntry | Fix | 5.36 | [files](Euronext.Optiq.OrderEntry.Fix.v5.36/) |
-| Optiq | OrderEntry | Fix | 5.38 | [files](Euronext.Optiq.OrderEntry.Fix.v5.38/) |
-| Optiq | OrderEntry | Fix | 5.39 | [files](Euronext.Optiq.OrderEntry.Fix.v5.39/) |
+| Optiq | OrderEntry | Fix | 5.38 | private |
+| Optiq | OrderEntry | Fix | 5.39 | private |
 | Optiq | OrderEntry | Fix | 5.53 | [files](Euronext.Optiq.OrderEntry.Fix.v5.53/) |
 | Optiq | OrderEntry | Fix | 5.54 | [files](Euronext.Optiq.OrderEntry.Fix.v5.54/) |
 | Optiq | OrderEntry | Fix | 5.55 | [files](Euronext.Optiq.OrderEntry.Fix.v5.55/) |
-| Optiq | OrderEntry | Fix | 5.56 | [files](Euronext.Optiq.OrderEntry.Fix.v5.56/) |
+| Optiq | OrderEntry | Fix | 5.56 | private |
 | Optiq | OrderEntry | Fix | 5.57 | [files](Euronext.Optiq.OrderEntry.Fix.v5.57/) |
-| Optiq | OrderEntry | Fix | 5.58 | [files](Euronext.Optiq.OrderEntry.Fix.v5.58/) |
-| Optiq | OrderEntry | Fix | 6.63 | [files](Euronext.Optiq.OrderEntry.Fix.v6.63/) |
+| Optiq | OrderEntry | Fix | 5.58 | private |
+| Optiq | OrderEntry | Fix | 6.63 | private |
 | Optiq | OrderEntry | Fix | 6.64 | [files](Euronext.Optiq.OrderEntry.Fix.v6.64/) |
 | Optiq | OrderEntry | Fix | 6.65 | [files](Euronext.Optiq.OrderEntry.Fix.v6.65/) |
-| Optiq | OrderEntry | Fix | 6.66 | [files](Euronext.Optiq.OrderEntry.Fix.v6.66/) |
+| Optiq | OrderEntry | Fix | 6.66 | private |
 | Optiq | OrderEntry | Fix | 6.69 | [files](Euronext.Optiq.OrderEntry.Fix.v6.69/) |
 | Optiq | OrderEntry | Fix | 6.70 | [files](Euronext.Optiq.OrderEntry.Fix.v6.70/) |
 | Optiq | OrderEntryGateway | Sbe | 1.3 | [files](Euronext.Optiq.OrderEntryGateway.Sbe.v1.3/) |
@@ -120,6 +120,8 @@
 | Optiq | OrderEntryGateway | Sbe | 6.65 | [files](Euronext.Optiq.OrderEntryGateway.Sbe.v6.65/) |
 | Optiq | OrderEntryGateway | Sbe | 6.67 | [files](Euronext.Optiq.OrderEntryGateway.Sbe.v6.67/) |
 | Optiq | OrderEntryGateway | Sbe | 6.69 | [files](Euronext.Optiq.OrderEntryGateway.Sbe.v6.69/) |
+
+A specification marked private is released by the venue to registered participants only. Those protocols are listed here for completeness, and nothing read out of their documents is published: no message layouts, no field names, no wording. The generated parsers in the definition repositories describe the wire format and are published as usual.
 
 
 Euronext: [website](https://www.euronext.com "Go to Euronext")
