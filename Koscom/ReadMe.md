@@ -21,6 +21,7 @@
 | MdcsRealtime | NightDerivatives | Exture | 2.020 | private |
 | MdcsRealtime | ReferenceInfoInvestorActivities | Exture | 2.018 | private |
 | MdcsRealtime | ReferenceInfoInvestorActivities | Exture | 2.020 | private |
+| MdcsRealtime | SecuritiesA | Exture | 2.009 | [files](Koscom.MdcsRealtime.SecuritiesA.Exture.v2.009/) |
 | MdcsRealtime | SecuritiesA | Exture | 2.018 | private |
 | MdcsRealtime | SecuritiesA | Exture | 2.020 | private |
 | MdcsRealtime | SecuritiesB | Exture | 2.018 | private |
