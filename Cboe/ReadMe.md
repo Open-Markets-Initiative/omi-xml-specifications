@@ -142,6 +142,7 @@
 | C1Options | DropCopy | Fix | 2.8 | [files](Cboe.C1Options.DropCopy.Fix.v2.8/) |
 | C1Options | Flex | Pitch | 1.1.30 | [files](Cboe.C1Options.Flex.Pitch.v1.1.30/) |
 | C1Options | Flex | Spin | 1.1.30 | [files](Cboe.C1Options.Flex.Spin.v1.1.30/) |
+| C1Options | Index | Csm | 1.3.3 | [files](Cboe.C1Options.Index.Csm.v1.3.3/) |
 | C1Options | MarketDataFeed | Csm | 1.4.2 | [files](Cboe.C1Options.MarketDataFeed.Csm.v1.4.2/) |
 | C1Options | MarketLevel2 | Csm | 1.0.4 | [files](Cboe.C1Options.MarketLevel2.Csm.v1.0.4/) |
 | C1Options | MulticastDepthOfBook | Pitch | 2.39.4 | [files](Cboe.C1Options.MulticastDepthOfBook.Pitch.v2.39.4/) |
