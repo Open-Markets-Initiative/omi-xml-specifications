@@ -1,5 +1,8 @@
 <OmiFixPdf>
 
+  <!-- Coinbase Derivatives Drop Copy API V0.09.pdf, FIX Drop Copy API Specification Version 0.09 (revision 0.09, Apr-19-2022): the Standard Header and Trailer, the administrative messages, the Parties group and the drop copy Execution Reports (sections 4 to 6) and the Tag Values (section 7).
+       Names, FIX types (split as Type and Size: "String(12)" is String, Size 12) and Req (C: conditional) are as printed; misprinted names are renamed by edits, not here. Tag 35 rows some tables list in the body are the Standard Header MsgType and are not repeated. Execution Report: one Branch per ExecType, from its own table. -->
+
   <Header>
     <Fields>
       <Field>
@@ -7,6 +10,7 @@
         <Name>BeginString</Name>
         <Required>Y</Required>
         <Type>String</Type>
+        <Size>7</Size>
         <Fixed>Y</Fixed>
         <Description>FIX Version for session, i.e. 'FIX.4.4'</Description>
       </Field>
@@ -14,7 +18,8 @@
         <Tag>9</Tag>
         <Name>BodyLength</Name>
         <Required>Y</Required>
-        <Type>Length</Type>
+        <Type>Int</Type>
+        <Size>6</Size>
         <Fixed>Y</Fixed>
         <Description>Number of bytes in the message body.</Description>
       </Field>
@@ -23,6 +28,7 @@
         <Name>MsgType</Name>
         <Required>Y</Required>
         <Type>String</Type>
+        <Size>2</Size>
         <Fixed>Y</Fixed>
         <Description>Identifies FIX message type.</Description>
       </Field>
@@ -30,7 +36,8 @@
         <Tag>34</Tag>
         <Name>MsgSeqNum</Name>
         <Required>Y</Required>
-        <Type>SeqNum</Type>
+        <Type>Int</Type>
+        <Size>9</Size>
         <Description>Sequence number</Description>
       </Field>
       <Field>
@@ -38,6 +45,7 @@
         <Name>PossDupFlag</Name>
         <Required>N</Required>
         <Type>Boolean</Type>
+        <Size>1</Size>
         <Description>Indicates possible retransmission of message with this sequence number. Must be set to 'Y' for messages sent in response to a Resend Request from Coinbase Derivatives</Description>
       </Field>
       <Field>
@@ -45,6 +53,7 @@
         <Name>SenderCompID</Name>
         <Required>Y</Required>
         <Type>String</Type>
+        <Size>7</Size>
         <Description>To Exchange: Connection identifier assigned by Coinbase Derivatives. This tag consists of 2 subcomponents: Session ID and SubFirmID Session ID is the left-most 3 characters. The next 3 characters represent SubFirmID. Example: EBR123 Session ID: EBR SubFirmID: 123 From Exchange: Value from order entry tag 56-TargetCompID - "COIND"</Description>
       </Field>
       <Field>
@@ -52,6 +61,7 @@
         <Name>SenderSubID</Name>
         <Required>Y</Required>
         <Type>String</Type>
+        <Size>18</Size>
         <Description>Unique identifier for the end trader submitting orders. Tag 50 IDs are issued by an exchange clearing member firm (clearing member), their contracted vendors or assignees</Description>
       </Field>
       <Field>
@@ -59,6 +69,7 @@
         <Name>SendingTime</Name>
         <Required>Y</Required>
         <Type>UTCTimestamp</Type>
+        <Size>21</Size>
         <Description>Timestamp of the message leaving the client system.</Description>
       </Field>
       <Field>
@@ -66,6 +77,7 @@
         <Name>TargetCompID</Name>
         <Required>Y</Required>
         <Type>String</Type>
+        <Size>7</Size>
         <Description>To Exchange: Identifies entity receiving the message = "COIND" From Exchange Connection identifier assigned by Coinbase Derivatives. This tag consists of 2 subcomponents: Session ID and SubFirmID. Session ID is the left-most 3 characters. The next 3 characters represent SubFirmID. Example: EBR123 Session ID: EBR SubFirmID: 123</Description>
       </Field>
       <Field>
@@ -73,13 +85,15 @@
         <Name>TargetSubID</Name>
         <Required>Y</Required>
         <Type>String</Type>
-        <Description>To Exchange: Identifies destination exchange system - "PROD" or "TEST"From Exchange: Echo back Tag57 sent by client system</Description>
+        <Size>20</Size>
+        <Description>To Exchange: Identifies destination exchange system - "PROD" or "TEST" From Exchange: Echo back Tag57 sent by client system</Description>
       </Field>
       <Field>
         <Tag>122</Tag>
         <Name>OrigSendingTime</Name>
-        <Required>N</Required>
+        <Required>C</Required>
         <Type>UTCTimestamp</Type>
+        <Size>21</Size>
         <Description>For resent messages only, contains timestamp from tag 52-SendingTime from original message.</Description>
       </Field>
     </Fields>
@@ -92,6 +106,7 @@
         <Name>CheckSum</Name>
         <Required>Y</Required>
         <Type>String</Type>
+        <Size>3</Size>
         <Fixed>Y</Fixed>
         <Description>Always last tag in message. Functions as end-of-message delimiter.</Description>
       </Field>
@@ -100,11 +115,13 @@
 
   <Messages>
 
+    <!-- 5.1 Logon (MsgType = A), page 9 -->
     <Message>
       <Name>Logon</Name>
       <MsgType>A</MsgType>
       <Category>admin</Category>
       <Origin>Client,Exchange</Origin>
+      <Description>Initiates connection from client side and approves connection if sent by the exchange. ResetSeqNumFlag allows clients to start a new session (reset session sequence numbers). The Heartbeat Interval is declared by the session initiator using the HeartBtInt field in the Logon message. The heartbeat interval timer should be reset after every message is transmitted (not just heartbeats). The HeartBtInt value should be agreed upon and specified by the Logon initiator (client) and echoed back by the Logon acceptor. The same HeartBtInt value is used by both sides, the Logon "initiator" and Logon "acceptor".</Description>
       <Fields>
         <Field>
           <Tag>98</Tag>
@@ -131,40 +148,45 @@
           <Tag>553</Tag>
           <Name>Username</Name>
           <Required>Y</Required>
-          <Type>String</Type>
+          <Type></Type>
           <Description>Username</Description>
         </Field>
         <Field>
           <Tag>554</Tag>
           <Name>Password</Name>
           <Required>Y</Required>
-          <Type>String</Type>
+          <Type></Type>
           <Description>Password</Description>
         </Field>
       </Fields>
     </Message>
 
+    <!-- 5.2 Logout (MsgType = 5), page 9 -->
     <Message>
       <Name>Logout</Name>
       <MsgType>5</MsgType>
       <Category>admin</Category>
       <Origin>Client,Exchange</Origin>
+      <Description>The message initiates or confirms termination of a FIX session.</Description>
       <Fields>
         <Field>
           <Tag>58</Tag>
           <Name>Text</Name>
           <Required>N</Required>
           <Type>String</Type>
+          <Size>200</Size>
           <Description>Logout reason</Description>
         </Field>
       </Fields>
     </Message>
 
+    <!-- 5.3 Resend Request (MsgType = 2), page 10 -->
     <Message>
       <Name>ResendRequest</Name>
       <MsgType>2</MsgType>
       <Category>admin</Category>
       <Origin>Client,Exchange</Origin>
+      <Description>The message is used to recover an inbound session sequence if a message was missed.</Description>
       <Fields>
         <Field>
           <Tag>7</Tag>
@@ -183,11 +205,13 @@
       </Fields>
     </Message>
 
+    <!-- 5.4 Sequence Reset (MsgType = 4), page 10 -->
     <Message>
       <Name>SequenceReset</Name>
       <MsgType>4</MsgType>
       <Category>admin</Category>
       <Origin>Client,Exchange</Origin>
+      <Description>The message may be used in two modes: Reset Mode forces counterparty to adjust inbound message sequence, GapFillFlag = "N" or omitted; Fill Gap Mode is used during retransmission of messages missed by a client. Administrative messages and rejected business messages are not to be retransmitted. Instead a Sequence Reset message with GapFillFlag = "Y" must be used.</Description>
       <Fields>
         <Field>
           <Tag>123</Tag>
@@ -206,43 +230,51 @@
       </Fields>
     </Message>
 
+    <!-- 5.5 Test Request (MsgType = 1), page 10 -->
     <Message>
       <Name>TestRequest</Name>
       <MsgType>1</MsgType>
       <Category>admin</Category>
       <Origin>Client,Exchange</Origin>
+      <Description>A Test message is useful for checking sequence numbers or verifying the communication line status. Connection participant received the message is required to reply with Heartbeat message referring to TestReqID of the initial message.</Description>
       <Fields>
         <Field>
           <Tag>112</Tag>
           <Name>TestReqID</Name>
           <Required>Y</Required>
           <Type>String</Type>
+          <Size>20</Size>
           <Description>Identifier to be returned in resulting Heartbeat message</Description>
         </Field>
       </Fields>
     </Message>
 
+    <!-- 5.6 Heartbeat (MsgType = 0), page 11 -->
     <Message>
       <Name>Heartbeat</Name>
       <MsgType>0</MsgType>
       <Category>admin</Category>
       <Origin>Client,Exchange</Origin>
+      <Description>Used for replying to the Test request as well as checking the status of communication.</Description>
       <Fields>
         <Field>
           <Tag>112</Tag>
           <Name>TestReqID</Name>
           <Required>Y</Required>
           <Type>String</Type>
+          <Size>20</Size>
           <Description>Identifier to be returned in resulting Heartbeat message</Description>
         </Field>
       </Fields>
     </Message>
 
+    <!-- 5.7 Reject (MsgType = 3), page 11 -->
     <Message>
       <Name>Reject</Name>
       <MsgType>3</MsgType>
       <Category>admin</Category>
       <Origin>Client,Exchange</Origin>
+      <Description>Issued by a party if an incoming FIX message is unsupported or not properly formed. Rejected messages must not be resent if a Resend Request is received; instead a SequenceReset with GapFillFlag = "Y" is expected.</Description>
       <Fields>
         <Field>
           <Tag>45</Tag>
@@ -256,6 +288,7 @@
           <Name>Text</Name>
           <Required>Y</Required>
           <Type>String</Type>
+          <Size>200</Size>
           <Description>Error message</Description>
         </Field>
         <Field>
@@ -263,11 +296,13 @@
           <Name>SessionRejectReason</Name>
           <Required>Y</Required>
           <Type>Int</Type>
+          <Size>2</Size>
           <Description>Reject reason code. See Session Reject Reason Codes (tag 373).</Description>
         </Field>
       </Fields>
     </Message>
 
+    <!-- Execution Report (8): one table per ExecType (6.3 to 6.8, pages 13-24). Fields every table prints with the same Req stay here; the rest are in each ExecType's Branch -->
     <Message>
       <Name>ExecutionReport</Name>
       <MsgType>8</MsgType>
@@ -279,76 +314,67 @@
           <Name>Account</Name>
           <Required>Y</Required>
           <Type>String</Type>
+          <Size>12</Size>
           <Description>Unique account identifier.</Description>
         </Field>
+        <Group>
+          <Name>NoPartyIDs</Name>
+          <Required>Y</Required>
+        </Group>
         <Field>
           <Tag>11</Tag>
           <Name>ClOrdID</Name>
           <Required>Y</Required>
           <Type>String</Type>
+          <Size>20</Size>
           <Description>Unique order identifier assigned by client system. Client system must maintain uniqueness of this value for the life of the order.</Description>
         </Field>
         <Field>
           <Tag>14</Tag>
           <Name>CumQty</Name>
           <Required>Y</Required>
-          <Type>Qty</Type>
+          <Type>Int</Type>
+          <Size>9</Size>
           <Description>Contains cumulated traded quantity throughout lifespan of an order.</Description>
         </Field>
         <Field>
           <Tag>17</Tag>
           <Name>ExecID</Name>
           <Required>Y</Required>
-          <Type>Qty</Type>
+          <Type>String</Type>
+          <Size>40</Size>
           <Description>Unique exchange assigned identifier of the execution</Description>
         </Field>
         <Field>
           <Tag>37</Tag>
           <Name>OrderID</Name>
           <Required>Y</Required>
-          <Type>Qty</Type>
+          <Type>String</Type>
+          <Size>17</Size>
           <Description>Unique exchange assigned order identifier</Description>
-        </Field>
-        <Field>
-          <Tag>38</Tag>
-          <Name>OrderQty</Name>
-          <Required>N</Required>
-          <Type>Qty</Type>
-          <Description>Quantity of order.</Description>
         </Field>
         <Field>
           <Tag>39</Tag>
           <Name>OrdStatus</Name>
           <Required>Y</Required>
           <Type>Char</Type>
+          <Size>1</Size>
           <Description>Indicates order status. See OrderStatus (tag 39) "1" - Partial Fill "2" - Complete Fill</Description>
-        </Field>
-        <Field>
-          <Tag>40</Tag>
-          <Name>OrdType</Name>
-          <Required>Y</Required>
-          <Type>Char</Type>
-          <Description>Order types. See order types (Tag40)</Description>
         </Field>
         <Field>
           <Tag>41</Tag>
           <Name>OrigClOrdID</Name>
           <Required>N</Required>
           <Type>String</Type>
+          <Size>20</Size>
           <Description>Last accepted ClOrdID in the order chain.</Description>
-        </Field>
-        <Field>
-          <Tag>44</Tag>
-          <Name>Price</Name>
-          <Required>N</Required>
-          <Type>Price</Type>
-          <Description>Price per single contract unit. All Execution Report messages sent in response to Market orders (with protection) and Stop orders (with protection) will include tag 44-Price populated with the Protection Price Limit (best available price +/- the protection points). If the order is not completely filled, the remaining Open Quantity will rest on the order book at the Protection Price Limit. Note: Fo</Description>
         </Field>
         <Field>
           <Tag>54</Tag>
           <Name>Side</Name>
           <Required>Y</Required>
           <Type>Char</Type>
+          <Size>1</Size>
           <Description>Side of order. See Order Sides (Tag54)</Description>
         </Field>
         <Field>
@@ -356,6 +382,7 @@
           <Name>Symbol</Name>
           <Required>Y</Required>
           <Type>String</Type>
+          <Size>24</Size>
           <Description>This tag contains the details of the instrument. Future Example: EUM20</Description>
         </Field>
         <Field>
@@ -363,233 +390,877 @@
           <Name>SecurityType</Name>
           <Required>N</Required>
           <Type>String</Type>
+          <Size>6</Size>
           <Description>Indicates security type. See Security Type (Tag167)</Description>
-        </Field>
-        <Field>
-          <Tag>59</Tag>
-          <Name>TimeInForce</Name>
-          <Required>N</Required>
-          <Type>Char</Type>
-          <Description>Specifies how long the order remains in effect. If not present, DAY order is the default. See Order TimeInForce (Tag59)</Description>
-        </Field>
-        <Field>
-          <Tag>60</Tag>
-          <Name>TransactTime</Name>
-          <Required>Y</Required>
-          <Type>UTCTimestamp</Type>
-          <Description>UTC format YYYYMMDD-HH:MM:SS.sss</Description>
         </Field>
         <Field>
           <Tag>150</Tag>
           <Name>ExecType</Name>
           <Required>Y</Required>
           <Type>Char</Type>
+          <Size>1</Size>
           <Description>Indicates type of execution report. See ExecType (tag 150). Always "F" for Trade</Description>
-        </Field>
-        <Field>
-          <Tag>151</Tag>
-          <Name>LeavesQty</Name>
-          <Required>N</Required>
-          <Type>Qty</Type>
-          <Description>Amount of contracts remaining for execution after this fill.</Description>
         </Field>
         <Field>
           <Tag>1028</Tag>
           <Name>ManualOrderIndicator</Name>
           <Required>Y</Required>
           <Type>Boolean</Type>
+          <Size>1</Size>
           <Description>Value sent on inbound message from client system indicating the order as sent manually or generated by automated trading logic.</Description>
         </Field>
         <Field>
           <Tag>1031</Tag>
           <Name>CustOrderHandlingInst</Name>
           <Required>Y</Required>
-          <Type>Char</Type>
+          <Type>String</Type>
+          <Size>1</Size>
           <Description>Defines source of original order. See CustOrderHandlingInst (tag1031)</Description>
         </Field>
-        <Group>
-          <Name>NoPartyIDs</Name>
-          <Required>N</Required>
-        </Group>
-        <!-- ExecType-conditional fields. The PDF documents each ExecType as its own full table, but FIX
-             carries each tag once and the vendor dictionary lists these flat, so each is listed once here
-             (Required N: presence depends on ExecType) rather than in per-ExecType branches, which made the
-             compiled model expect the tag twice. Per-field comments give the ExecTypes whose table lists it.
-             PDF V0.09 tables by ExecType: F = 6.3 Trade p13-14, H = 6.4 Trade Cancel p15-16,
-             0/4/5 = 6.5 Accepted Order p17-18, 8 = 6.6 Rejected p19-20, 3 = 6.7 Done for Day p21-22,
-             C = 6.8 Expired p23-24 -->
-        <Field>
-          <!-- ExecType F, H -->
-          <Tag>880</Tag>
-          <Name>TrdMatchID</Name>
-          <Required>N</Required>
-          <Type>Qty</Type>
-          <Description>Match Identifier: can be used to link sides of a match</Description>
-        </Field>
-        <Field>
-          <!-- ExecType F, H -->
-          <Tag>31</Tag>
-          <Name>LastPx</Name>
-          <Required>N</Required>
-          <Type>Price</Type>
-          <Description>Price at which order was filled.</Description>
-        </Field>
-        <Field>
-          <!-- ExecType F, H -->
-          <Tag>32</Tag>
-          <Name>LastQty</Name>
-          <Required>N</Required>
-          <Type>Qty</Type>
-          <Description>Quantity filled.</Description>
-        </Field>
-        <Field>
-          <!-- ExecType F, H, 8, 3 -->
-          <Tag>75</Tag>
-          <Name>TradeDate</Name>
-          <Required>N</Required>
-          <Type>LocalMktDate</Type>
-          <Description>Indicates date of trade reference in this message in YYYYMMDD format.</Description>
-        </Field>
-        <Field>
-          <!-- ExecType F, H -->
-          <Tag>393</Tag>
-          <Name>TotalNumSecurities</Name>
-          <Required>N</Required>
-          <Type>Int</Type>
-          <Description>Contains the number of Leg Fill Acknowledgment messages sent with the spread summary. Sent for spread fill message only.</Description>
-        </Field>
-        <Field>
-          <!-- ExecType F, H -->
-          <Tag>442</Tag>
-          <Name>MultiLegReporting</Name>
-          <Required>N</Required>
-          <Type>Char</Type>
-          <Description>Indicates if acknowledgment message is sent for an outright, leg of spread or spread. See MultiLegReporting (tag 442)</Description>
-        </Field>
-        <Field>
-          <!-- ExecType F, H -->
-          <Tag>527</Tag>
-          <Name>SecondaryExecID</Name>
-          <Required>N</Required>
-          <Type>String</Type>
-          <Description>Exchange assigned unique identifier; can be used to link spread summary fill notice with leg fill notice and trade cancel messages.</Description>
-        </Field>
-        <Field>
-          <!-- ExecType F -->
-          <Tag>528</Tag>
-          <Name>OrderCapacity</Name>
-          <Required>N</Required>
-          <Type>Char</Type>
-          <Description>The type of business conducted. 0 = Customer/Agency 1 = Principal</Description>
-        </Field>
-        <Field>
-          <!-- ExecType F -->
-          <Tag>582</Tag>
-          <Name>CustOrderCapacity</Name>
-          <Required>N</Required>
-          <Type>Int</Type>
-          <Description>Capacity of the customer. Used to indicate the Customer Type Indicator (CTI) Code. See CustOrderCapacity (tag582)</Description>
-        </Field>
-        <Field>
-          <!-- ExecType F -->
-          <Tag>1057</Tag>
-          <Name>AggressorIndicator</Name>
-          <Required>N</Required>
-          <Type>Boolean</Type>
-          <Description>Indicates if order was incoming or resting for the match event. See AggressorIndicator (tag 1057)</Description>
-        </Field>
-        <Field>
-          <!-- ExecType F, H, 0/4/5, 3, C -->
-          <Tag>5979</Tag>
-          <Name>RequestTime</Name>
-          <Required>N</Required>
-          <Type>String</Type>
-          <Description>Information carried on a response to convey the time (UTC) when the request was received by Exchange UTC format YYYYMMDD-HH:MM:SS.sss</Description>
-        </Field>
-        <Field>
-          <!-- ExecType H -->
-          <Tag>19</Tag>
-          <Name>ExecRefID</Name>
-          <Required>N</Required>
-          <Type>Qty</Type>
-          <Description>Contains unique ID for the trade being cancelled</Description>
-        </Field>
-        <Field>
-          <!-- ExecType 0/4/5 -->
-          <Tag>99</Tag>
-          <Name>StopPx</Name>
-          <Required>N</Required>
-          <Type>Price</Type>
-          <Description>Stop price of the order. Required for stop and stop-limit orders.</Description>
-        </Field>
-        <Field>
-          <!-- ExecType 0/4/5, C -->
-          <Tag>110</Tag>
-          <Name>MinQty</Name>
-          <Required>N</Required>
-          <Type>Qty</Type>
-          <Description>Minimum quantity of an order to be executed. This tag is used only when tag 59-TimeInForce=4 (Fill and Kill).</Description>
-        </Field>
-        <Field>
-          <!-- ExecType 0/4/5 -->
-          <Tag>210</Tag>
-          <Name>MaxShow</Name>
-          <Required>N</Required>
-          <Type>Qty</Type>
-          <Description>Display quantity of an order to be shown in the order book at any given time.</Description>
-        </Field>
-        <Field>
-          <!-- ExecType 0/4/5 -->
-          <Tag>378</Tag>
-          <Name>ExecRestatementReason</Name>
-          <Required>N</Required>
-          <Type>Int</Type>
-          <Description>Identifies origin of the order elimination. See ExecRestatementReason (tag 378)</Description>
-        </Field>
-        <Field>
-          <!-- ExecType 0/4/5, C -->
-          <Tag>432</Tag>
-          <Name>ExpireDate</Name>
-          <Required>N</Required>
-          <Type>LocalMktDate</Type>
-          <Description>Contains business date when order expires.</Description>
-        </Field>
-        <Field>
-          <!-- ExecType 0/4/5, C -->
-          <Tag>7928</Tag>
-          <Name>SelfMatchPreventionId</Name>
-          <Required>N</Required>
-          <Type>Int</Type>
-          <Description>This tag is required when market participants elect to use the optional Self Match Prevention functionality.</Description>
-        </Field>
-        <Field>
-          <!-- ExecType 0/4/5, C -->
-          <Tag>8000</Tag>
-          <Name>SelfMatchPreventionInstruction</Name>
-          <Required>N</Required>
-          <Type>Char</Type>
-          <Description>Indicates a cancel instruction when Self Match Prevention is triggered. To use tag 8000-SelfMatchPreventionStrategy, client systems must include tag 7928-SelfMatchPreventionID on the originating message See SelfMatchPreventionStrategy (tag 8000)</Description>
-        </Field>
-        <Field>
-          <!-- ExecType 8 -->
-          <Tag>58</Tag>
-          <Name>Text</Name>
-          <Required>N</Required>
-          <Type>String</Type>
-          <Description>Text explanation of error code.</Description>
-        </Field>
-        <Field>
-          <!-- ExecType 8 -->
-          <Tag>103</Tag>
-          <Name>OrdRejReason</Name>
-          <Required>N</Required>
-          <Type>Int</Type>
-          <Description>Error code. See OrdRejReason (tag 103)</Description>
-        </Field>
+        <!-- 6.3 Execution Report: Trade (MsgType = 8, ExecType = F), page 13: Sent by the Coinbase Derivatives system to report order fill. -->
+        <Branch>
+          <Name>Trade</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>F</Value>
+          <Fields>
+            <Field>
+              <Tag>880</Tag>
+              <Name>TrdMatchID</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Size>20</Size>
+              <Description>Match Identifier: can be used to link sides of a match</Description>
+            </Field>
+            <Field>
+              <Tag>31</Tag>
+              <Name>LastPx</Name>
+              <Required>Y</Required>
+              <Type>Price</Type>
+              <Size>20</Size>
+              <Description>Price at which order was filled.</Description>
+            </Field>
+            <Field>
+              <Tag>32</Tag>
+              <Name>LastQty</Name>
+              <Required>Y</Required>
+              <Type>Int</Type>
+              <Size>9</Size>
+              <Description>Quantity filled.</Description>
+            </Field>
+            <Field>
+              <Tag>38</Tag>
+              <Name>OrderQty</Name>
+              <Required>C</Required>
+              <Type>Int</Type>
+              <Size>9</Size>
+              <Description>Quantity of order.</Description>
+            </Field>
+            <Field>
+              <Tag>40</Tag>
+              <Name>OrdType</Name>
+              <Required>Y</Required>
+              <Type>Char</Type>
+              <Size>1</Size>
+              <Description>Order types. See order types (Tag40)</Description>
+            </Field>
+            <Field>
+              <Tag>44</Tag>
+              <Name>Price</Name>
+              <Required>C</Required>
+              <Type>Price</Type>
+              <Size>20</Size>
+              <Description>Price per single contract unit. All Execution Report messages sent in response to Market orders (with protection) and Stop orders (with protection) will include tag 44-Price populated with the Protection Price Limit (best available price +/- the protection points). If the order is not completely filled, the remaining Open Quantity will rest on the order book at the Protection Price Limit. Note: For spread trade Execution Reports, this tag is sent in the Execution Report - Fill Notice (35=8, 39=1 or 2) for the spread only and not the legs of the spread.</Description>
+            </Field>
+            <Field>
+              <Tag>59</Tag>
+              <Name>TimeInForce</Name>
+              <Required>N</Required>
+              <Type>Char</Type>
+              <Size>1</Size>
+              <Description>Specifies how long the order remains in effect. If not present, DAY order is the default. See Order TimeInForce (Tag59)</Description>
+            </Field>
+            <Field>
+              <Tag>60</Tag>
+              <Name>TransactTime</Name>
+              <Required>Y</Required>
+              <Type>UTCTimeStamp</Type>
+              <Size>21</Size>
+              <Description>UTC format YYYYMMDD-HH:MM:SS.sss</Description>
+            </Field>
+            <Field>
+              <Tag>75</Tag>
+              <Name>TradeDate</Name>
+              <Required>Y</Required>
+              <Type>LocalMktDate</Type>
+              <Size>8</Size>
+              <Description>Indicates date of trade reference in this message in YYYYMMDD format.</Description>
+            </Field>
+            <Field>
+              <Tag>151</Tag>
+              <Name>LeavesQty</Name>
+              <Required>C</Required>
+              <Type>Int</Type>
+              <Size>9</Size>
+              <Description>Amount of contracts remaining for execution after this fill.</Description>
+            </Field>
+            <Field>
+              <Tag>393</Tag>
+              <Name>TotalNumSecurities</Name>
+              <Required>N</Required>
+              <Type>Int</Type>
+              <Size>3</Size>
+              <Description>Contains the number of Leg Fill Acknowledgment messages sent with the spread summary. Sent for spread fill message only.</Description>
+            </Field>
+            <Field>
+              <Tag>442</Tag>
+              <Name>MultiLegReportingType</Name>
+              <Required>N</Required>
+              <Type>Int</Type>
+              <Size>1</Size>
+              <Description>Indicates if acknowledgment message is sent for an outright, leg of spread or spread. See MultiLegReporting (tag 442)</Description>
+            </Field>
+            <Field>
+              <Tag>527</Tag>
+              <Name>SecondaryExecID</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Size>40</Size>
+              <Description>Exchange assigned unique identifier; can be used to link spread summary fill notice with leg fill notice and trade cancel messages.</Description>
+            </Field>
+            <Field>
+              <Tag>528</Tag>
+              <Name>OrderCapacity</Name>
+              <Required>Y</Required>
+              <Type>Int</Type>
+              <Size>1</Size>
+              <Description>The type of business conducted. 0 = Customer/Agency 1 = Principal</Description>
+            </Field>
+            <Field>
+              <Tag>582</Tag>
+              <Name>CustOrderCapacity</Name>
+              <Required>Y</Required>
+              <Type>Char</Type>
+              <Size>1</Size>
+              <Description>Capacity of the customer. Used to indicate the Customer Type Indicator (CTI) Code. See CustOrderCapacity (tag582)</Description>
+            </Field>
+            <Field>
+              <Tag>1057</Tag>
+              <Name>AggressorIndicator</Name>
+              <Required>C</Required>
+              <Type>Char</Type>
+              <Size>1</Size>
+              <Description>Indicates if order was incoming or resting for the match event. See AggressorIndicator (tag 1057)</Description>
+            </Field>
+            <Field>
+              <Tag>5979</Tag>
+              <Name>RequestTime</Name>
+              <Required>N</Required>
+              <Type>Int</Type>
+              <Size>20</Size>
+              <Description>Information carried on a response to convey the time (UTC) when the request was received by Exchange UTC format YYYYMMDD-HH:MM:SS.sss</Description>
+            </Field>
+          </Fields>
+        </Branch>
+        <!-- 6.4 Execution Report: Trade Cancel (MsgType = 8, Tag 39 = H), page 15 -->
+        <Branch>
+          <Name>TradeCancelAck</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>H</Value>
+          <Fields>
+            <Field>
+              <Tag>880</Tag>
+              <Name>TrdMatchID</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Size>20</Size>
+              <Description>Match Identifier: can be used to link sides of a match</Description>
+            </Field>
+            <Field>
+              <Tag>19</Tag>
+              <Name>ExecRefID</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Size>40</Size>
+              <Description>Contains unique ID for the trade being cancelled</Description>
+            </Field>
+            <Field>
+              <Tag>31</Tag>
+              <Name>LastPx</Name>
+              <Required>Y</Required>
+              <Type>Price</Type>
+              <Size>20</Size>
+              <Description>Price of the canceled trade</Description>
+            </Field>
+            <Field>
+              <Tag>32</Tag>
+              <Name>LastQty</Name>
+              <Required>Y</Required>
+              <Type>Int</Type>
+              <Size>9</Size>
+              <Description>Quantity of canceled trade</Description>
+            </Field>
+            <Field>
+              <Tag>60</Tag>
+              <Name>TransactTime</Name>
+              <Required>Y</Required>
+              <Type>UTCTimeStamp</Type>
+              <Size>21</Size>
+              <Description>UTC format YYYYMMDD-HH:MM:SS.sss</Description>
+            </Field>
+            <Field>
+              <Tag>75</Tag>
+              <Name>TradeDate</Name>
+              <Required>Y</Required>
+              <Type>LocalMktDate</Type>
+              <Size>8</Size>
+              <Description>Indicates date of trade reference in this message in YYYYMMDD format.</Description>
+            </Field>
+            <Field>
+              <Tag>393</Tag>
+              <Name>TotalNumSecurities</Name>
+              <Required>N</Required>
+              <Type>Int</Type>
+              <Size>3</Size>
+              <Description>Contains the number of Leg Fill Acknowledgment messages sent with the spread summary. Sent for spread fill message only.</Description>
+            </Field>
+            <Field>
+              <Tag>442</Tag>
+              <Name>MultiLegReportingType</Name>
+              <Required>N</Required>
+              <Type>Int</Type>
+              <Size>1</Size>
+              <Description>Indicates if acknowledgment message is sent for an outright, leg of spread or spread. See MultiLegReporting (tag 442)</Description>
+            </Field>
+            <Field>
+              <Tag>527</Tag>
+              <Name>SecondaryExecID</Name>
+              <Required>Y</Required>
+              <Type>String</Type>
+              <Size>40</Size>
+              <Description>Exchange assigned unique identifier; can be used to link spread summary fill notice with leg fill notice and trade cancel messages.</Description>
+            </Field>
+            <Field>
+              <Tag>5979</Tag>
+              <Name>RequestTime</Name>
+              <Required>N</Required>
+              <Type>Int</Type>
+              <Size>20</Size>
+              <Description>Information carried on a response to convey the time (UTC) when the request was received by Exchange UTC format YYYYMMDD-HH:MM:SS.sss</Description>
+            </Field>
+          </Fields>
+        </Branch>
+        <!-- 6.5 Execution Report: Accepted Order (MsgType = 8, ExecType = 0 or 4 or 5), page 17: Reports with execution type New (0), Cancelled (1), Correction (2) represent an acknowledgement of successful acceptance of a New, Cancel or Cancel/Replace order. -->
+        <Branch>
+          <Name>NewOrderAck</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>0</Value>
+          <Fields>
+            <Field>
+              <Tag>38</Tag>
+              <Name>OrderQty</Name>
+              <Required>Y</Required>
+              <Type>Int</Type>
+              <Size>9</Size>
+              <Description>Order quantity. Must be a positive integer.</Description>
+            </Field>
+            <Field>
+              <Tag>40</Tag>
+              <Name>OrdType</Name>
+              <Required>Y</Required>
+              <Type>Char</Type>
+              <Size>1</Size>
+              <Description>Order types. See order types (Tag40) Market Order types are not accepted during opening auction</Description>
+            </Field>
+            <Field>
+              <Tag>44</Tag>
+              <Name>Price</Name>
+              <Required>C</Required>
+              <Type>Price</Type>
+              <Size>20</Size>
+              <Description>Required for limit or stop-limit orders. Designates the price per single contract unit.</Description>
+            </Field>
+            <Field>
+              <Tag>59</Tag>
+              <Name>TimeInForce</Name>
+              <Required>N</Required>
+              <Type>Char</Type>
+              <Size>1</Size>
+              <Description>Specifies how long the order remains in effect. If not present, DAY order is the default. See Order TimeInForce (Tag59) For FAK, MinQty can also be specified.</Description>
+            </Field>
+            <Field>
+              <Tag>60</Tag>
+              <Name>TransactTime</Name>
+              <Required>Y</Required>
+              <Type>UTCTimestamp</Type>
+              <Size>21</Size>
+              <Description>Timestamp of the business event of submitting the order (e.g., click the submission button). UTC format YYYYMMDD-HH:MM:SS.sss</Description>
+            </Field>
+            <Field>
+              <Tag>99</Tag>
+              <Name>StopPx</Name>
+              <Required>C</Required>
+              <Type>Price</Type>
+              <Size>20</Size>
+              <Description>Stop price of the order. Required for stop and stop-limit orders.</Description>
+            </Field>
+            <Field>
+              <Tag>110</Tag>
+              <Name>MinQty</Name>
+              <Required>N</Required>
+              <Type>Int</Type>
+              <Size>9</Size>
+              <Description>Minimum quantity of an order to be executed. This tag is used only when tag 59-TimeInForce=4 (Fill and Kill).</Description>
+            </Field>
+            <Field>
+              <Tag>151</Tag>
+              <Name>LeavesQty</Name>
+              <Required>Y</Required>
+              <Type>int</Type>
+              <Size>9</Size>
+              <Description>Amount of contract units open for further execution.</Description>
+            </Field>
+            <Field>
+              <Tag>210</Tag>
+              <Name>MaxShow</Name>
+              <Required>N</Required>
+              <Type>Qty</Type>
+              <Size>9</Size>
+              <Description>Display quantity of an order to be shown in the order book at any given time.</Description>
+            </Field>
+            <Field>
+              <Tag>378</Tag>
+              <Name>ExecRestatementReason</Name>
+              <Required>N</Required>
+              <Type>Int</Type>
+              <Size>3</Size>
+              <Description>Identifies origin of the order elimination. See ExecRestatementReason (tag 378)</Description>
+            </Field>
+            <Field>
+              <Tag>432</Tag>
+              <Name>ExpireDate</Name>
+              <Required>C</Required>
+              <Type>LocalMktDate</Type>
+              <Size>8</Size>
+              <Description>Contains business date when order expires.</Description>
+            </Field>
+            <Field>
+              <Tag>5979</Tag>
+              <Name>RequestTime</Name>
+              <Required>N</Required>
+              <Type>Int</Type>
+              <Size>20</Size>
+              <Description>Information carried on a response to convey the time (UTC) when the request was received by the Exchange</Description>
+            </Field>
+            <Field>
+              <Tag>7928</Tag>
+              <Name>SelfMatchPreventionID</Name>
+              <Required>C</Required>
+              <Type>Int</Type>
+              <Size>8</Size>
+              <Description>This tag is required when market participants elect to use the optional Self Match Prevention functionality.</Description>
+            </Field>
+            <Field>
+              <Tag>8000</Tag>
+              <Name>SelfMatchPreventionStrategy</Name>
+              <Required>N</Required>
+              <Type>Char</Type>
+              <Size>1</Size>
+              <Description>Indicates a cancel instruction when Self Match Prevention is triggered. To use tag 8000-SelfMatchPreventionStrategy, client systems must include tag 7928-SelfMatchPreventionID on the originating message See SelfMatchPreventionStrategy (tag 8000)</Description>
+            </Field>
+          </Fields>
+        </Branch>
+        <!-- 6.5 Execution Report: Accepted Order (MsgType = 8, ExecType = 0 or 4 or 5), page 17: Reports with execution type New (0), Cancelled (1), Correction (2) represent an acknowledgement of successful acceptance of a New, Cancel or Cancel/Replace order. -->
+        <Branch>
+          <Name>CancelAck</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>4</Value>
+          <Fields>
+            <Field>
+              <Tag>38</Tag>
+              <Name>OrderQty</Name>
+              <Required>Y</Required>
+              <Type>Int</Type>
+              <Size>9</Size>
+              <Description>Order quantity. Must be a positive integer.</Description>
+            </Field>
+            <Field>
+              <Tag>40</Tag>
+              <Name>OrdType</Name>
+              <Required>Y</Required>
+              <Type>Char</Type>
+              <Size>1</Size>
+              <Description>Order types. See order types (Tag40) Market Order types are not accepted during opening auction</Description>
+            </Field>
+            <Field>
+              <Tag>44</Tag>
+              <Name>Price</Name>
+              <Required>C</Required>
+              <Type>Price</Type>
+              <Size>20</Size>
+              <Description>Required for limit or stop-limit orders. Designates the price per single contract unit.</Description>
+            </Field>
+            <Field>
+              <Tag>59</Tag>
+              <Name>TimeInForce</Name>
+              <Required>N</Required>
+              <Type>Char</Type>
+              <Size>1</Size>
+              <Description>Specifies how long the order remains in effect. If not present, DAY order is the default. See Order TimeInForce (Tag59) For FAK, MinQty can also be specified.</Description>
+            </Field>
+            <Field>
+              <Tag>60</Tag>
+              <Name>TransactTime</Name>
+              <Required>Y</Required>
+              <Type>UTCTimestamp</Type>
+              <Size>21</Size>
+              <Description>Timestamp of the business event of submitting the order (e.g., click the submission button). UTC format YYYYMMDD-HH:MM:SS.sss</Description>
+            </Field>
+            <Field>
+              <Tag>99</Tag>
+              <Name>StopPx</Name>
+              <Required>C</Required>
+              <Type>Price</Type>
+              <Size>20</Size>
+              <Description>Stop price of the order. Required for stop and stop-limit orders.</Description>
+            </Field>
+            <Field>
+              <Tag>110</Tag>
+              <Name>MinQty</Name>
+              <Required>N</Required>
+              <Type>Int</Type>
+              <Size>9</Size>
+              <Description>Minimum quantity of an order to be executed. This tag is used only when tag 59-TimeInForce=4 (Fill and Kill).</Description>
+            </Field>
+            <Field>
+              <Tag>151</Tag>
+              <Name>LeavesQty</Name>
+              <Required>Y</Required>
+              <Type>int</Type>
+              <Size>9</Size>
+              <Description>Amount of contract units open for further execution.</Description>
+            </Field>
+            <Field>
+              <Tag>210</Tag>
+              <Name>MaxShow</Name>
+              <Required>N</Required>
+              <Type>Qty</Type>
+              <Size>9</Size>
+              <Description>Display quantity of an order to be shown in the order book at any given time.</Description>
+            </Field>
+            <Field>
+              <Tag>378</Tag>
+              <Name>ExecRestatementReason</Name>
+              <Required>N</Required>
+              <Type>Int</Type>
+              <Size>3</Size>
+              <Description>Identifies origin of the order elimination. See ExecRestatementReason (tag 378)</Description>
+            </Field>
+            <Field>
+              <Tag>432</Tag>
+              <Name>ExpireDate</Name>
+              <Required>C</Required>
+              <Type>LocalMktDate</Type>
+              <Size>8</Size>
+              <Description>Contains business date when order expires.</Description>
+            </Field>
+            <Field>
+              <Tag>5979</Tag>
+              <Name>RequestTime</Name>
+              <Required>N</Required>
+              <Type>Int</Type>
+              <Size>20</Size>
+              <Description>Information carried on a response to convey the time (UTC) when the request was received by the Exchange</Description>
+            </Field>
+            <Field>
+              <Tag>7928</Tag>
+              <Name>SelfMatchPreventionID</Name>
+              <Required>C</Required>
+              <Type>Int</Type>
+              <Size>8</Size>
+              <Description>This tag is required when market participants elect to use the optional Self Match Prevention functionality.</Description>
+            </Field>
+            <Field>
+              <Tag>8000</Tag>
+              <Name>SelfMatchPreventionStrategy</Name>
+              <Required>N</Required>
+              <Type>Char</Type>
+              <Size>1</Size>
+              <Description>Indicates a cancel instruction when Self Match Prevention is triggered. To use tag 8000-SelfMatchPreventionStrategy, client systems must include tag 7928-SelfMatchPreventionID on the originating message See SelfMatchPreventionStrategy (tag 8000)</Description>
+            </Field>
+          </Fields>
+        </Branch>
+        <!-- 6.5 Execution Report: Accepted Order (MsgType = 8, ExecType = 0 or 4 or 5), page 17: Reports with execution type New (0), Cancelled (1), Correction (2) represent an acknowledgement of successful acceptance of a New, Cancel or Cancel/Replace order. -->
+        <Branch>
+          <Name>ModifyAck</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>5</Value>
+          <Fields>
+            <Field>
+              <Tag>38</Tag>
+              <Name>OrderQty</Name>
+              <Required>Y</Required>
+              <Type>Int</Type>
+              <Size>9</Size>
+              <Description>Order quantity. Must be a positive integer.</Description>
+            </Field>
+            <Field>
+              <Tag>40</Tag>
+              <Name>OrdType</Name>
+              <Required>Y</Required>
+              <Type>Char</Type>
+              <Size>1</Size>
+              <Description>Order types. See order types (Tag40) Market Order types are not accepted during opening auction</Description>
+            </Field>
+            <Field>
+              <Tag>44</Tag>
+              <Name>Price</Name>
+              <Required>C</Required>
+              <Type>Price</Type>
+              <Size>20</Size>
+              <Description>Required for limit or stop-limit orders. Designates the price per single contract unit.</Description>
+            </Field>
+            <Field>
+              <Tag>59</Tag>
+              <Name>TimeInForce</Name>
+              <Required>N</Required>
+              <Type>Char</Type>
+              <Size>1</Size>
+              <Description>Specifies how long the order remains in effect. If not present, DAY order is the default. See Order TimeInForce (Tag59) For FAK, MinQty can also be specified.</Description>
+            </Field>
+            <Field>
+              <Tag>60</Tag>
+              <Name>TransactTime</Name>
+              <Required>Y</Required>
+              <Type>UTCTimestamp</Type>
+              <Size>21</Size>
+              <Description>Timestamp of the business event of submitting the order (e.g., click the submission button). UTC format YYYYMMDD-HH:MM:SS.sss</Description>
+            </Field>
+            <Field>
+              <Tag>99</Tag>
+              <Name>StopPx</Name>
+              <Required>C</Required>
+              <Type>Price</Type>
+              <Size>20</Size>
+              <Description>Stop price of the order. Required for stop and stop-limit orders.</Description>
+            </Field>
+            <Field>
+              <Tag>110</Tag>
+              <Name>MinQty</Name>
+              <Required>N</Required>
+              <Type>Int</Type>
+              <Size>9</Size>
+              <Description>Minimum quantity of an order to be executed. This tag is used only when tag 59-TimeInForce=4 (Fill and Kill).</Description>
+            </Field>
+            <Field>
+              <Tag>151</Tag>
+              <Name>LeavesQty</Name>
+              <Required>Y</Required>
+              <Type>int</Type>
+              <Size>9</Size>
+              <Description>Amount of contract units open for further execution.</Description>
+            </Field>
+            <Field>
+              <Tag>210</Tag>
+              <Name>MaxShow</Name>
+              <Required>N</Required>
+              <Type>Qty</Type>
+              <Size>9</Size>
+              <Description>Display quantity of an order to be shown in the order book at any given time.</Description>
+            </Field>
+            <Field>
+              <Tag>378</Tag>
+              <Name>ExecRestatementReason</Name>
+              <Required>N</Required>
+              <Type>Int</Type>
+              <Size>3</Size>
+              <Description>Identifies origin of the order elimination. See ExecRestatementReason (tag 378)</Description>
+            </Field>
+            <Field>
+              <Tag>432</Tag>
+              <Name>ExpireDate</Name>
+              <Required>C</Required>
+              <Type>LocalMktDate</Type>
+              <Size>8</Size>
+              <Description>Contains business date when order expires.</Description>
+            </Field>
+            <Field>
+              <Tag>5979</Tag>
+              <Name>RequestTime</Name>
+              <Required>N</Required>
+              <Type>Int</Type>
+              <Size>20</Size>
+              <Description>Information carried on a response to convey the time (UTC) when the request was received by the Exchange</Description>
+            </Field>
+            <Field>
+              <Tag>7928</Tag>
+              <Name>SelfMatchPreventionID</Name>
+              <Required>C</Required>
+              <Type>Int</Type>
+              <Size>8</Size>
+              <Description>This tag is required when market participants elect to use the optional Self Match Prevention functionality.</Description>
+            </Field>
+            <Field>
+              <Tag>8000</Tag>
+              <Name>SelfMatchPreventionStrategy</Name>
+              <Required>N</Required>
+              <Type>Char</Type>
+              <Size>1</Size>
+              <Description>Indicates a cancel instruction when Self Match Prevention is triggered. To use tag 8000-SelfMatchPreventionStrategy, client systems must include tag 7928-SelfMatchPreventionID on the originating message See SelfMatchPreventionStrategy (tag 8000)</Description>
+            </Field>
+          </Fields>
+        </Branch>
+        <!-- 6.6 Execution Report: Order is Rejected (MsgType=8, ExecType = 8), page 19: Message notifies client system of a rejected order. -->
+        <Branch>
+          <Name>RejectAck</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>8</Value>
+          <Fields>
+            <Field>
+              <Tag>38</Tag>
+              <Name>OrderQty</Name>
+              <Required>C</Required>
+              <Type>Int</Type>
+              <Size>9</Size>
+              <Description>Quantity of order.</Description>
+            </Field>
+            <Field>
+              <Tag>40</Tag>
+              <Name>OrdType</Name>
+              <Required>Y</Required>
+              <Type>Char</Type>
+              <Size>1</Size>
+              <Description>Order types. See order types (Tag40)</Description>
+            </Field>
+            <Field>
+              <Tag>44</Tag>
+              <Name>Price</Name>
+              <Required>C</Required>
+              <Type>Price</Type>
+              <Size>20</Size>
+              <Description>Price per single contract unit.</Description>
+            </Field>
+            <Field>
+              <Tag>58</Tag>
+              <Name>Text</Name>
+              <Required>N</Required>
+              <Type>String</Type>
+              <Size>200</Size>
+              <Description>Text explanation of error code.</Description>
+            </Field>
+            <Field>
+              <Tag>59</Tag>
+              <Name>TimeInForce</Name>
+              <Required>N</Required>
+              <Type>Char</Type>
+              <Size>1</Size>
+              <Description>Specifies how long the order remains in effect. If not present, DAY order is the default. See Order TimeInForce (Tag59)</Description>
+            </Field>
+            <Field>
+              <Tag>60</Tag>
+              <Name>TransactTime</Name>
+              <Required>Y</Required>
+              <Type>UTCTimeStamp</Type>
+              <Size>21</Size>
+              <Description>UTC format YYYYMMDD-HH:MM:SS.sss</Description>
+            </Field>
+            <Field>
+              <Tag>75</Tag>
+              <Name>TradeDate</Name>
+              <Required>Y</Required>
+              <Type>LocalMktDate</Type>
+              <Size>8</Size>
+              <Description>Indicates date of trade reference in this message in YYYYMMDD format.</Description>
+            </Field>
+            <Field>
+              <Tag>103</Tag>
+              <Name>OrdRejReason</Name>
+              <Required>N</Required>
+              <Type>Int</Type>
+              <Size>6</Size>
+              <Description>Error code. See OrdRejReason (tag 103)</Description>
+            </Field>
+            <Field>
+              <Tag>151</Tag>
+              <Name>LeavesQty</Name>
+              <Required>C</Required>
+              <Type>Int</Type>
+              <Size>9</Size>
+              <Description>Amount of contracts remaining for execution. Always 0 for reject</Description>
+            </Field>
+          </Fields>
+        </Branch>
+        <!-- 6.7 Execution Report: Done for Day (MsgType = 8, ExecType = 3), page 21: Reports with execution type 'Done for Day' (3) are sent by the exchange to the firms that need the status of their open orders after the trading session is closed. -->
+        <Branch>
+          <Name>DoneForDay</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>3</Value>
+          <Fields>
+            <Field>
+              <Tag>38</Tag>
+              <Name>OrderQty</Name>
+              <Required>C</Required>
+              <Type>Int</Type>
+              <Size>9</Size>
+              <Description>Quantity of order.</Description>
+            </Field>
+            <Field>
+              <Tag>40</Tag>
+              <Name>OrdType</Name>
+              <Required>Y</Required>
+              <Type>Char</Type>
+              <Size>1</Size>
+              <Description>Order types. See order types (Tag40)</Description>
+            </Field>
+            <Field>
+              <Tag>44</Tag>
+              <Name>Price</Name>
+              <Required>C</Required>
+              <Type>Price</Type>
+              <Size>20</Size>
+              <Description>Price per single contract unit.</Description>
+            </Field>
+            <Field>
+              <Tag>59</Tag>
+              <Name>TimeInForce</Name>
+              <Required>N</Required>
+              <Type>Char</Type>
+              <Size>1</Size>
+              <Description>Specifies how long the order remains in effect. If not present, DAY order is the default. See Order TimeInForce (Tag59)</Description>
+            </Field>
+            <Field>
+              <Tag>60</Tag>
+              <Name>TransactTime</Name>
+              <Required>Y</Required>
+              <Type>UTCTimeStamp</Type>
+              <Size>21</Size>
+              <Description>UTC format YYYYMMDD-HH:MM:SS.sss</Description>
+            </Field>
+            <Field>
+              <Tag>75</Tag>
+              <Name>TradeDate</Name>
+              <Required>Y</Required>
+              <Type>LocalMktDate</Type>
+              <Size>8</Size>
+              <Description>Indicates date of trade reference in this message in YYYYMMDD format.</Description>
+            </Field>
+            <Field>
+              <Tag>151</Tag>
+              <Name>LeavesQty</Name>
+              <Required>C</Required>
+              <Type>Int</Type>
+              <Size>9</Size>
+              <Description>Amount of contracts remaining for execution</Description>
+            </Field>
+            <Field>
+              <Tag>5979</Tag>
+              <Name>RequestTime</Name>
+              <Required>N</Required>
+              <Type>Int</Type>
+              <Size>20</Size>
+              <Description>Information carried on a response to convey the time (UTC) when the request was received by Exchange UTC format YYYYMMDD-HH:MM:SS.sss</Description>
+            </Field>
+          </Fields>
+        </Branch>
+        <!-- 6.8 Execution Report: Expired (MsgType = 8, ExecType = C), page 23: Reports with execution type Expired (C) are sent by the exchange to the firms that need to track the expiration of their time-limited orders (such as DAY). -->
+        <Branch>
+          <Name>EliminationAck</Name>
+          <Dependency>ExecType</Dependency>
+          <Value>C</Value>
+          <Fields>
+            <Field>
+              <Tag>38</Tag>
+              <Name>OrderQty</Name>
+              <Required>Y</Required>
+              <Type>Int</Type>
+              <Size>9</Size>
+              <Description>Order quantity submitted by client.</Description>
+            </Field>
+            <Field>
+              <Tag>40</Tag>
+              <Name>OrdType</Name>
+              <Required>Y</Required>
+              <Type>Char</Type>
+              <Size>1</Size>
+              <Description>Order types. See order types (Tag40)</Description>
+            </Field>
+            <Field>
+              <Tag>44</Tag>
+              <Name>Price</Name>
+              <Required>N</Required>
+              <Type>Price</Type>
+              <Size>20</Size>
+              <Description>Price per unit of quantity.</Description>
+            </Field>
+            <Field>
+              <Tag>59</Tag>
+              <Name>TimeInForce</Name>
+              <Required>N</Required>
+              <Type>Char</Type>
+              <Size>1</Size>
+              <Description>Specifies how long the order remains in effect. If not present, DAY order is the default. See Order TimeInForce (Tag59)</Description>
+            </Field>
+            <Field>
+              <Tag>60</Tag>
+              <Name>TransactTime</Name>
+              <Required>N</Required>
+              <Type>UTCTimestamp</Type>
+              <Size>21</Size>
+              <Description>UTC format YYYYMMDD-HH:MM:SS.sss e.g. 20091216-19:21:41.109</Description>
+            </Field>
+            <Field>
+              <Tag>110</Tag>
+              <Name>MinQty</Name>
+              <Required>C</Required>
+              <Type>Int</Type>
+              <Size>9</Size>
+              <Description>Sent in the Order Elimination message if the originating order was an FAK/FOK/MinQty that contained tag 110-MinQty.</Description>
+            </Field>
+            <Field>
+              <Tag>151</Tag>
+              <Name>LeavesQty</Name>
+              <Required>Y</Required>
+              <Type>Int</Type>
+              <Size>9</Size>
+              <Description>Quantity available for further execution. Always 0</Description>
+            </Field>
+            <Field>
+              <Tag>432</Tag>
+              <Name>ExpireDate</Name>
+              <Required>N</Required>
+              <Type>LocalMktDate</Type>
+              <Size>8</Size>
+              <Description>Required only if tag 59-TimeInForce=Good Till Date (GTD). Note: For spread trade Execution Reports, this tag is sent in the Execution Report - Fill Notice (35=8, 39=1 or 2) for the spread only and not the legs of the spread.</Description>
+            </Field>
+            <Field>
+              <Tag>7928</Tag>
+              <Name>SelfMatchPreventionID</Name>
+              <Required>N</Required>
+              <Type>Int</Type>
+              <Size>8</Size>
+              <Description>This tag is required when market participants elect to use the optional Self Match Prevention functionality.</Description>
+            </Field>
+            <Field>
+              <Tag>8000</Tag>
+              <Name>SelfMatchPreventionStrategy</Name>
+              <Required>N</Required>
+              <Type>Char</Type>
+              <Size>1</Size>
+              <Description>This tag is required when market participants elect to use the optional Self Match Prevention functionality.</Description>
+            </Field>
+            <Field>
+              <Tag>5979</Tag>
+              <Name>RequestTime</Name>
+              <Required>N</Required>
+              <Type>Int</Type>
+              <Size>20</Size>
+              <Description>Information carried on a response to convey the time (UTC) when the request was received by Exchange UTC format YYYYMMDD-HH:MM:SS.sss</Description>
+            </Field>
+          </Fields>
+        </Branch>
       </Fields>
     </Message>
 
-    <!-- Direction only: dictionary messages this overlay does not transcribe -->
+    <!-- Direction only: dictionary messages the pdf does not print -->
     <Message>
       <Name>BusinessMessageReject</Name>
       <MsgType>j</MsgType>
@@ -636,6 +1307,7 @@
 
   <Groups>
 
+    <!-- 6.2 Parties Repeating Group, page 12 -->
     <Group>
       <Name>NoPartyIDs</Name>
       <AnchorTag>453</AnchorTag>
@@ -645,13 +1317,14 @@
           <Name>PartyID</Name>
           <Required>Y</Required>
           <Type>String</Type>
+          <Size>20</Size>
           <Description>Party identifier/code</Description>
         </Field>
         <Field>
           <Tag>447</Tag>
           <Name>PartyIDSource</Name>
           <Required>Y</Required>
-          <Type>Char</Type>
+          <Type>char</Type>
           <Description>447 = D (Proprietary)</Description>
         </Field>
         <Field>
@@ -676,466 +1349,481 @@
       <Description>FIX 4.4</Description>
     </Value>
 
+    <!-- OrdStatus: 7.1 Order Status (tag 39), page 25 -->
     <Value>
       <Type>OrdStatus</Type>
       <Enum>0</Enum>
       <Description>New</Description>
     </Value>
-
     <Value>
       <Type>OrdStatus</Type>
       <Enum>1</Enum>
       <Description>Partially filled</Description>
     </Value>
-
     <Value>
       <Type>OrdStatus</Type>
       <Enum>2</Enum>
       <Description>Filled</Description>
     </Value>
-
     <Value>
       <Type>OrdStatus</Type>
       <Enum>3</Enum>
       <Description>Done for day</Description>
     </Value>
-
     <Value>
       <Type>OrdStatus</Type>
       <Enum>4</Enum>
       <Description>Cancelled</Description>
     </Value>
-
     <Value>
       <Type>OrdStatus</Type>
       <Enum>5</Enum>
       <Description>Modify</Description>
     </Value>
-
     <Value>
       <Type>OrdStatus</Type>
       <Enum>8</Enum>
       <Description>Rejected</Description>
     </Value>
-
     <Value>
       <Type>OrdStatus</Type>
       <Enum>U</Enum>
       <Description>Undefined</Description>
     </Value>
-
     <Value>
       <Type>OrdStatus</Type>
       <Enum>C</Enum>
       <Description>Expired</Description>
     </Value>
-
     <Value>
       <Type>OrdStatus</Type>
       <Enum>G</Enum>
       <Description>TradeCorrect</Description>
     </Value>
-
     <Value>
       <Type>OrdStatus</Type>
       <Enum>H</Enum>
       <Description>TradeCancel</Description>
     </Value>
 
+    <!-- OrdType: 7.2 Order Types (tag 40), page 25 -->
     <Value>
       <Type>OrdType</Type>
       <Enum>1</Enum>
       <Description>Market</Description>
     </Value>
-
     <Value>
       <Type>OrdType</Type>
       <Enum>2</Enum>
       <Description>Limit</Description>
     </Value>
-
     <Value>
       <Type>OrdType</Type>
       <Enum>3</Enum>
       <Description>Stop</Description>
     </Value>
-
     <Value>
       <Type>OrdType</Type>
       <Enum>4</Enum>
       <Description>Stop Limit</Description>
     </Value>
-
     <Value>
       <Type>OrdType</Type>
       <Enum>5</Enum>
       <Description>Market Limit</Description>
     </Value>
 
+    <!-- Side: 7.3 Order Sides (tag 54 and tag 624), page 25 -->
     <Value>
       <Type>Side</Type>
       <Enum>1</Enum>
       <Description>Buy Side</Description>
     </Value>
-
     <Value>
       <Type>Side</Type>
       <Enum>2</Enum>
       <Description>Sell Side</Description>
     </Value>
 
+    <!-- TimeInForce: 7.4 Order Time-in-force (tag 59), page 26 -->
     <Value>
       <Type>TimeInForce</Type>
       <Enum>0</Enum>
       <Description>Day</Description>
     </Value>
-
     <Value>
       <Type>TimeInForce</Type>
       <Enum>1</Enum>
       <Description>Good Till Cancel (GTC)</Description>
     </Value>
-
     <Value>
       <Type>TimeInForce</Type>
       <Enum>3</Enum>
       <Description>Immediate Or Cancel (IOC)</Description>
     </Value>
-
     <Value>
       <Type>TimeInForce</Type>
       <Enum>4</Enum>
       <Description>Fill or Kill (FOK)</Description>
     </Value>
 
-    <Value>
-      <Type>PositionEffect</Type>
-      <Enum>O</Enum>
-      <Description>Open</Description>
-    </Value>
-
-    <Value>
-      <Type>PositionEffect</Type>
-      <Enum>C</Enum>
-      <Description>Close</Description>
-    </Value>
-
-    <Value>
-      <Type>PositionEffect</Type>
-      <Enum>D</Enum>
-      <Description>Default</Description>
-    </Value>
-
-    <Value>
-      <Type>CxlRejReason</Type>
-      <Enum>0</Enum>
-      <Description>Too late to cancel</Description>
-    </Value>
-
-    <Value>
-      <Type>CxlRejReason</Type>
-      <Enum>1</Enum>
-      <Description>Unknown order</Description>
-    </Value>
-
+    <!-- OrdRejReason: 7.7 Order Reject Reason (tag 103), page 26 -->
     <Value>
       <Type>OrdRejReason</Type>
       <Enum>1</Enum>
       <Description>Unknown symbol</Description>
     </Value>
-
     <Value>
       <Type>OrdRejReason</Type>
       <Enum>2</Enum>
       <Description>Exchange closed</Description>
     </Value>
-
     <Value>
       <Type>OrdRejReason</Type>
       <Enum>6</Enum>
       <Description>Duplicate order</Description>
     </Value>
-
+    <Value>
+      <Type>OrdRejReason</Type>
+      <Enum>18</Enum>
+      <Description>Invalid price increment (submitted price precision exceeds the one supported for the instrument)</Description>
+    </Value>
     <Value>
       <Type>OrdRejReason</Type>
       <Enum>99</Enum>
       <Description>Other</Description>
     </Value>
 
+    <!-- ExecType: 7.8 Execution Types (tag 150), page 26 -->
     <Value>
       <Type>ExecType</Type>
       <Enum>0</Enum>
       <Description>New order Ack</Description>
     </Value>
-
     <Value>
       <Type>ExecType</Type>
       <Enum>F</Enum>
       <Description>Trade</Description>
     </Value>
-
     <Value>
       <Type>ExecType</Type>
       <Enum>3</Enum>
       <Description>Done for Day</Description>
     </Value>
-
     <Value>
       <Type>ExecType</Type>
       <Enum>4</Enum>
       <Description>Cancel Ack</Description>
     </Value>
-
     <Value>
       <Type>ExecType</Type>
       <Enum>5</Enum>
       <Description>Modify Ack</Description>
     </Value>
-
     <Value>
       <Type>ExecType</Type>
       <Enum>8</Enum>
       <Description>Reject Ack</Description>
     </Value>
-
     <Value>
       <Type>ExecType</Type>
       <Enum>I</Enum>
       <Description>Order status</Description>
     </Value>
-
     <Value>
       <Type>ExecType</Type>
       <Enum>H</Enum>
       <Description>Trade Cancel Ack</Description>
     </Value>
-
     <Value>
       <Type>ExecType</Type>
       <Enum>C</Enum>
       <Description>Elimination Ack</Description>
     </Value>
 
+    <!-- SecurityType: 7.9 Security Types (tag 167), page 27 -->
     <Value>
       <Type>SecurityType</Type>
       <Enum>FUT</Enum>
       <Description>Future</Description>
     </Value>
-
     <Value>
       <Type>SecurityType</Type>
       <Enum>OPT</Enum>
       <Description>Option</Description>
     </Value>
 
+    <!-- SessionRejectReason: 7.10 Session Reject Reason Codes (tag 373), page 27 -->
     <Value>
       <Type>SessionRejectReason</Type>
       <Enum>0</Enum>
       <Description>Invalid tag number</Description>
     </Value>
-
     <Value>
       <Type>SessionRejectReason</Type>
       <Enum>1</Enum>
       <Description>Required tag missing</Description>
     </Value>
-
     <Value>
       <Type>SessionRejectReason</Type>
       <Enum>3</Enum>
       <Description>Undefined Tag</Description>
     </Value>
-
     <Value>
       <Type>SessionRejectReason</Type>
       <Enum>4</Enum>
       <Description>Tag specified without a value</Description>
     </Value>
-
     <Value>
       <Type>SessionRejectReason</Type>
       <Enum>5</Enum>
       <Description>Value is incorrect (out of range) for this tag</Description>
     </Value>
-
     <Value>
       <Type>SessionRejectReason</Type>
       <Enum>6</Enum>
       <Description>Incorrect data format for value</Description>
     </Value>
-
     <Value>
       <Type>SessionRejectReason</Type>
       <Enum>9</Enum>
       <Description>CompID problem</Description>
     </Value>
-
     <Value>
       <Type>SessionRejectReason</Type>
       <Enum>99</Enum>
       <Description>Other</Description>
     </Value>
 
+    <!-- ExecRestatementReason: 7.11 ExecRestatementReason (tag 378), page 27 -->
     <Value>
       <Type>ExecRestatementReason</Type>
       <Enum>8</Enum>
       <Description>Exchange</Description>
     </Value>
-
     <Value>
       <Type>ExecRestatementReason</Type>
       <Enum>100</Enum>
       <Description>Cancel on Disconnect</Description>
     </Value>
-
     <Value>
       <Type>ExecRestatementReason</Type>
       <Enum>103</Enum>
       <Description>Cancel Oldest (resting) due to Self Match Prevention</Description>
     </Value>
-
     <Value>
       <Type>ExecRestatementReason</Type>
       <Enum>104</Enum>
       <Description>Cancel from Exchange Credit Controls violation</Description>
     </Value>
-
     <Value>
       <Type>ExecRestatementReason</Type>
       <Enum>105</Enum>
       <Description>Cancel from Exchange Website</Description>
     </Value>
-
     <Value>
       <Type>ExecRestatementReason</Type>
       <Enum>106</Enum>
       <Description>Cancel from Risk Management API</Description>
     </Value>
-
     <Value>
       <Type>ExecRestatementReason</Type>
       <Enum>107</Enum>
       <Description>Cancel Newest (Aggressing) due to Self Match Prevention</Description>
     </Value>
-
     <Value>
       <Type>ExecRestatementReason</Type>
       <Enum>108</Enum>
       <Description>Cancel due to resting order quantity less than min lot size</Description>
     </Value>
-
     <Value>
       <Type>ExecRestatementReason</Type>
       <Enum>109</Enum>
       <Description>Cancel both due to Self Match Prevention</Description>
     </Value>
 
+    <!-- MultiLegReportingType: 7.12 MultiLegReporting (tag 442), page 27 -->
     <Value>
-      <Type>MultiLegReporting</Type>
+      <Type>MultiLegReportingType</Type>
       <Enum>1</Enum>
       <Description>Outright</Description>
     </Value>
-
     <Value>
-      <Type>MultiLegReporting</Type>
+      <Type>MultiLegReportingType</Type>
       <Enum>2</Enum>
       <Description>Leg of Spread</Description>
     </Value>
-
     <Value>
-      <Type>MultiLegReporting</Type>
+      <Type>MultiLegReportingType</Type>
       <Enum>3</Enum>
       <Description>Spread</Description>
     </Value>
 
+    <!-- OrderCapacity: 7.13 OrderCapacity (tag 528), page 28 -->
     <Value>
       <Type>OrderCapacity</Type>
       <Enum>A</Enum>
       <Description>Agency. Order placed by customer</Description>
     </Value>
-
     <Value>
       <Type>OrderCapacity</Type>
       <Enum>P</Enum>
       <Description>Principal. Order placed by the firm</Description>
     </Value>
 
+    <!-- CustOrderCapacity: 7.14 CustOrderCapacity (tag 582), page 28 -->
+    <Value>
+      <Type>CustOrderCapacity</Type>
+      <Enum>1</Enum>
+      <Description>CTI 1: Transactions initiated and executed by an individual member for his/her own account, for an account he/she controls, or for an account in which he/she has ownership or financial interest.</Description>
+    </Value>
+    <Value>
+      <Type>CustOrderCapacity</Type>
+      <Enum>2</Enum>
+      <Description>CTI 2: Transactions executed for the proprietary account of a clearing member or non-clearing member firm.</Description>
+    </Value>
+    <Value>
+      <Type>CustOrderCapacity</Type>
+      <Enum>3</Enum>
+      <Description>CTI 3: Transactions where an individual member or authorized trader executes for the personal account of another individual member, for an account the other individual member controls or for an account in which the other individual member has ownership or financial interest.</Description>
+    </Value>
+    <Value>
+      <Type>CustOrderCapacity</Type>
+      <Enum>4</Enum>
+      <Description>CTI 4: Any transaction not meeting the definition of CTI 1, 2 or 3. (These should be non-member customer transactions).</Description>
+    </Value>
+
+    <!-- CustOrderHandlingInst: 7.15 CustomerOrderHandlingInst (tag 1031), page 28 -->
     <Value>
       <Type>CustOrderHandlingInst</Type>
       <Enum>W</Enum>
       <Description>Desk</Description>
     </Value>
-
     <Value>
       <Type>CustOrderHandlingInst</Type>
       <Enum>Y</Enum>
       <Description>Electronic (Default)</Description>
     </Value>
-
     <Value>
       <Type>CustOrderHandlingInst</Type>
       <Enum>C</Enum>
       <Description>Vendor provided platform Billed by Executing Broker</Description>
     </Value>
-
     <Value>
       <Type>CustOrderHandlingInst</Type>
       <Enum>G</Enum>
       <Description>Sponsored Access via exchange API</Description>
     </Value>
-
     <Value>
       <Type>CustOrderHandlingInst</Type>
       <Enum>H</Enum>
       <Description>Premium Algorithmic trading provided by executing broker</Description>
     </Value>
-
     <Value>
       <Type>CustOrderHandlingInst</Type>
       <Enum>D</Enum>
       <Description>Other</Description>
     </Value>
 
+    <!-- AggressorIndicator: 7.16 AggressorIndicator (tag 1057), page 28 -->
     <Value>
       <Type>AggressorIndicator</Type>
       <Enum>Y</Enum>
       <Description>Match aggressor</Description>
     </Value>
-
     <Value>
       <Type>AggressorIndicator</Type>
       <Enum>N</Enum>
       <Description>Resting at match</Description>
     </Value>
 
+    <!-- ManualOrderIndicator: 7.17 Manual or Automated flow (tag 1028), page 29 -->
     <Value>
       <Type>ManualOrderIndicator</Type>
       <Enum>Y</Enum>
       <Description>Manual</Description>
     </Value>
-
     <Value>
       <Type>ManualOrderIndicator</Type>
       <Enum>N</Enum>
       <Description>Automated</Description>
     </Value>
 
+    <!-- SelfMatchPreventionStrategy: 7.18 SelfMatchPreventionStrategy (tag 8000), page 29 -->
     <Value>
-      <Type>SelfMatchPreventionInstruction</Type>
+      <Type>SelfMatchPreventionStrategy</Type>
       <Enum>N</Enum>
       <Description>Cancel aggressing order</Description>
     </Value>
-
     <Value>
-      <Type>SelfMatchPreventionInstruction</Type>
+      <Type>SelfMatchPreventionStrategy</Type>
       <Enum>O</Enum>
       <Description>Cancel resting order</Description>
     </Value>
-
     <Value>
-      <Type>SelfMatchPreventionInstruction</Type>
+      <Type>SelfMatchPreventionStrategy</Type>
       <Enum>Q</Enum>
       <Description>Cancel both aggressing and resting orders</Description>
+    </Value>
+
+    <!-- EncryptMethod (98): printed in its row's description (5.1 Logon). Dictionary (EncryptMethod): the dictionary also lists 1, 2, 3, 4, 5, 6 -->
+    <Value>
+      <Type>EncryptMethod</Type>
+      <Enum>0</Enum>
+      <Description>None</Description>
+    </Value>
+
+    <!-- ResetSeqNumFlag (141): printed in its row's description (5.1 Logon) -->
+    <Value>
+      <Type>ResetSeqNumFlag</Type>
+      <Enum>N</Enum>
+      <Description>use previous sequences</Description>
+    </Value>
+    <Value>
+      <Type>ResetSeqNumFlag</Type>
+      <Enum>Y</Enum>
+      <Description>reset sequences (start new session)</Description>
+    </Value>
+
+    <!-- GapFillFlag (123): printed in its row's description (5.4 Sequence Reset) -->
+    <Value>
+      <Type>GapFillFlag</Type>
+      <Enum>N</Enum>
+      <Description>sequence reset, the counterparty must adjust inbound sequence number</Description>
+    </Value>
+    <Value>
+      <Type>GapFillFlag</Type>
+      <Enum>Y</Enum>
+      <Description>indicates the message is used instead of administrative or business messages which are not to be resent</Description>
+    </Value>
+
+    <!-- PartyIDSource (447): printed in its row's description (6.2 Parties Repeating Group) -->
+    <Value>
+      <Type>PartyIDSource</Type>
+      <Enum>D</Enum>
+      <Description>Proprietary</Description>
+    </Value>
+
+    <!-- PartyRole (452): printed in its row's description (6.2 Parties Repeating Group). Dictionary (PartyRole): the dictionary also lists 3, 30, 36, 99 -->
+    <Value>
+      <Type>PartyRole</Type>
+      <Enum>1</Enum>
+      <Description>Subfirm code</Description>
+    </Value>
+    <Value>
+      <Type>PartyRole</Type>
+      <Enum>4</Enum>
+      <Description>Clearing Firm Code</Description>
+    </Value>
+    <Value>
+      <Type>PartyRole</Type>
+      <Enum>11</Enum>
+      <Description>Order Originating Trader</Description>
+    </Value>
+    <Value>
+      <Type>PartyRole</Type>
+      <Enum>55</Enum>
+      <Description>Session ID</Description>
     </Value>
 
   </Values>

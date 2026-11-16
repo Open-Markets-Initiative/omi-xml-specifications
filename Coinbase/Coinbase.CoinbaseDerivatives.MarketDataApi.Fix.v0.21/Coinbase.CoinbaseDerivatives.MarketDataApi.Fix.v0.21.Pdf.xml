@@ -1,0 +1,1732 @@
+<OmiFixPdf>
+
+  <!-- FairX FIX Order and Market Data API Specification Version 0.21: the session and market data messages, transcribed from the pdf alone.
+       Names, FIX types (split as Type and Size: "String(12)" is String, Size 12) and Req (C: conditional)
+       are as printed; misprinted names are renamed by edits, not here. One type token is fixed in place:
+       MaturityMonthYear (200) prints "Month-year", which the compiler rejects, so it is MonthYear here.
+       The 35 MsgType row each market data table opens with is the Standard Header's and is not
+       repeated. Values: the Tag Values tables of section 9. -->
+
+  <Header>
+    <Fields>
+      <Field>
+        <Tag>8</Tag>
+        <Name>BeginString</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Size>7</Size>
+        <Fixed>Y</Fixed>
+        <Description>FIX Version for session, i.e. 'FIX.4.4'</Description>
+      </Field>
+      <Field>
+        <Tag>9</Tag>
+        <Name>BodyLength</Name>
+        <Required>Y</Required>
+        <Type>Int</Type>
+        <Size>6</Size>
+        <Fixed>Y</Fixed>
+        <Description>Number of bytes in the message body.</Description>
+      </Field>
+      <Field>
+        <Tag>35</Tag>
+        <Name>MsgType</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Size>2</Size>
+        <Fixed>Y</Fixed>
+        <Description>Identifies FIX message type.</Description>
+      </Field>
+      <Field>
+        <Tag>34</Tag>
+        <Name>MsgSeqNum</Name>
+        <Required>Y</Required>
+        <Type>Int</Type>
+        <Size>9</Size>
+        <Description>Sequence number</Description>
+      </Field>
+      <Field>
+        <Tag>43</Tag>
+        <Name>PossDupFlag</Name>
+        <Required>N</Required>
+        <Type>Boolean</Type>
+        <Size>1</Size>
+        <Description>Indicates possible retransmission of message with this sequence number. Must be set to 'Y' for messages sent in response to a Resend Request from FairX</Description>
+      </Field>
+      <Field>
+        <Tag>49</Tag>
+        <Name>SenderCompID</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Size>6</Size>
+        <Description>To Exchange: Connection identifier assigned by FairX. This tag consists of 2 subcomponents: SubFirm ID and Session ID SubFirm ID is the left-most 3 characters. The next 3 characters represent Session ID. Example: EBR123 SubFirm ID: EBR Session ID: 123 From Exchange: Value from order entry tag 56-TargetCompID - "FAIRX"</Description>
+      </Field>
+      <Field>
+        <Tag>50</Tag>
+        <Name>SenderSubID</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Size>18</Size>
+        <Description>Unique identifier for the end trader submitting orders. Tag 50 IDs are issued by an exchange clearing member firm (clearing member), their contracted vendors or assignees</Description>
+      </Field>
+      <Field>
+        <Tag>116</Tag>
+        <Name>OnBehalfOfSubID</Name>
+        <Required>N</Required>
+        <Type>String</Type>
+        <Size>18</Size>
+        <Description>Can be used to identify the end trader submitting orders if Tag 50 is populated by a third party connection provider.</Description>
+      </Field>
+      <Field>
+        <Tag>52</Tag>
+        <Name>SendingTime</Name>
+        <Required>Y</Required>
+        <Type>UTCTimestamp</Type>
+        <Size>21</Size>
+        <Description>Timestamp of the message leaving the client system.</Description>
+      </Field>
+      <Field>
+        <Tag>56</Tag>
+        <Name>TargetCompID</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Size>7</Size>
+        <Description>To Exchange: Identifies entity receiving the message = "FAIRX" From Exchange Connection identifier assigned by FairX. This tag consists of 2 subcomponents: SubFirm ID and Session ID SubFirm ID is the left-most 3 characters. The next 3 characters represent Session ID. Example: EBR123 SubFirm ID: EBR Session ID: 123</Description>
+      </Field>
+      <Field>
+        <Tag>57</Tag>
+        <Name>TargetSubID</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Size>20</Size>
+        <Description>To Exchange: Identifies destination exchange system - "PROD" or "TEST" From Exchange: Echo back Tag57 sent by client system</Description>
+      </Field>
+      <Field>
+        <Tag>122</Tag>
+        <Name>OrigSendingTime</Name>
+        <Required>C</Required>
+        <Type>UTCTimestamp</Type>
+        <Size>21</Size>
+        <Description>For resent messages only, contains timestamp from tag 52-SendingTime from original message.</Description>
+      </Field>
+      <Field>
+        <Tag>369</Tag>
+        <Name>LastMsgSeqNumProcessed</Name>
+        <Required>N</Required>
+        <Type>Int</Type>
+        <Size>9</Size>
+        <Description>MsgSeqNum (34) of the last message from the client received and processed by the gateway.</Description>
+      </Field>
+    </Fields>
+  </Header>
+
+  <Trailer>
+    <Fields>
+      <Field>
+        <Tag>10</Tag>
+        <Name>CheckSum</Name>
+        <Required>Y</Required>
+        <Type>String</Type>
+        <Size>3</Size>
+        <Fixed>Y</Fixed>
+        <Description>Always last tag in message. Functions as end-of-message delimiter.</Description>
+      </Field>
+    </Fields>
+  </Trailer>
+
+  <Messages>
+
+    <Message>
+      <Name>Logon</Name>
+      <MsgType>A</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>98</Tag>
+          <Name>EncryptMethod</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>"0" - None. Security must be guaranteed on transport level</Description>
+        </Field>
+        <Field>
+          <Tag>108</Tag>
+          <Name>HeartBtInt</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Heartbeat interval in seconds - Allowed values are between 5s and 60s, 30s is recommended</Description>
+        </Field>
+        <Field>
+          <Tag>141</Tag>
+          <Name>ResetSeqNumFlag</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>"N" - use previous sequences "Y" - reset sequences (start new session). If clients cannot recover the previous session they start new session with 1 and set this field to "Y". The flag should be used with caution especially during trading session as this might lead to business data loss</Description>
+        </Field>
+        <Field>
+          <Tag>553</Tag>
+          <Name>Username</Name>
+          <Required>Y</Required>
+          <Description>Username</Description>
+        </Field>
+        <Field>
+          <Tag>554</Tag>
+          <Name>Password</Name>
+          <Required>Y</Required>
+          <Description>Password</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <Message>
+      <Name>Logout</Name>
+      <MsgType>5</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Size>200</Size>
+          <Description>Logout reason</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <Message>
+      <Name>ResendRequest</Name>
+      <MsgType>2</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>7</Tag>
+          <Name>BeginSeqNo</Name>
+          <Required>Y</Required>
+          <Type>SeqNum</Type>
+          <Description>Sequence number of the first message in range to be resent</Description>
+        </Field>
+        <Field>
+          <Tag>16</Tag>
+          <Name>EndSeqNo</Name>
+          <Required>Y</Required>
+          <Type>SeqNum</Type>
+          <Description>Sequence number of the last message in range to be resent</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <Message>
+      <Name>SequenceReset</Name>
+      <MsgType>4</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>123</Tag>
+          <Name>GapFillFlag</Name>
+          <Required>N</Required>
+          <Type>Boolean</Type>
+          <Description>"N" - sequence reset, the counterparty must adjust inbound sequence number. "Y" - indicates the message is used instead of administrative or business messages which are not to be resent</Description>
+        </Field>
+        <Field>
+          <Tag>36</Tag>
+          <Name>NewSeqNo</Name>
+          <Required>Y</Required>
+          <Type>SeqNum</Type>
+          <Description>New adjusted sequence number</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <Message>
+      <Name>TestRequest</Name>
+      <MsgType>1</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>112</Tag>
+          <Name>TestReqID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Size>20</Size>
+          <Description>Identifier to be returned in resulting Heartbeat message</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <Message>
+      <Name>Heartbeat</Name>
+      <MsgType>0</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>112</Tag>
+          <Name>TestReqID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Size>20</Size>
+          <Description>Identifier to be returned in resulting Heartbeat message</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <Message>
+      <Name>Reject</Name>
+      <MsgType>3</MsgType>
+      <Category>admin</Category>
+      <Origin>Client,Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>45</Tag>
+          <Name>RefSeqNum</Name>
+          <Required>Y</Required>
+          <Type>SeqNum</Type>
+          <Description>Sequence number of the rejected message</Description>
+        </Field>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Size>200</Size>
+          <Description>Error message</Description>
+        </Field>
+        <Field>
+          <Tag>373</Tag>
+          <Name>SessionRejectReason</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Size>2</Size>
+          <Description>Reject reason code. See Session Reject Reason Codes (tag 373).</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- 6.18 Business Reject (MsgType = j), page 36: printed "Business Reject", named by its FIX
+         message BusinessMessageReject (j); the table's <Header> row prints MsgType="8", the
+         section title and the overview give MsgType = j -->
+    <Message>
+      <Name>BusinessMessageReject</Name>
+      <MsgType>j</MsgType>
+      <Category>app</Category>
+      <Origin>Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>45</Tag>
+          <Name>RefSeqNum</Name>
+          <Required>Y</Required>
+          <Type>SeqNum</Type>
+          <Size>10</Size>
+          <Description>MsgSeqNum &lt;34&gt; of rejected message</Description>
+        </Field>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Size>200</Size>
+          <Description>Free format text string.</Description>
+        </Field>
+        <Field>
+          <Tag>379</Tag>
+          <Name>BusinessRejectRefID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Size>32</Size>
+          <Description>Value of business-level "ID" of the message being rejected.</Description>
+        </Field>
+        <Field>
+          <Tag>380</Tag>
+          <Name>BusinessRejectReason</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Size>2</Size>
+          <Description>Code identifying reject reason 0=Other 1=Unknown ID 2=Unknown security 3=Unsupported message type 4=Application not available 5=Conditionally required field missing 6=Not authorized 7=Delivery to firm not available at this time</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <Message>
+      <Name>SecurityDefinition</Name>
+      <MsgType>d</MsgType>
+      <Category>app</Category>
+      <Origin>Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>980</Tag>
+          <Name>SecurityUpdateAction</Name>
+          <Required>Y</Required>
+          <Type>Char</Type>
+          <Description>Included in the message on the Incremental feed when a mid-week deletion or modification (i.e. extension) occurs. 980=A: Add represents Security Definition messages that are: Newly added during the current week Disseminated during the Sunday Startup period Resent by the system during the week 980=M: Modify represents modifications to a Security Definition 980=D: Delete represents deletions of a Security Definition</Description>
+        </Field>
+        <Field>
+          <Tag>779</Tag>
+          <Name>LastUpdateTime</Name>
+          <Required>Y</Required>
+          <Type>UTCTimestamp</Type>
+          <Description>Timestamp of when the instrument was last added, modified or deleted. UTC Timestamps are sent in number of nanoseconds since Unix epoch synced to a master clock to microsecond accuracy.</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Instrument Name or Symbol.</Description>
+        </Field>
+        <Field>
+          <Tag>167</Tag>
+          <Name>SecurityType</Name>
+          <Required>C</Required>
+          <Type>String</Type>
+          <Description>See Security Type (Tag167)</Description>
+        </Field>
+        <Field>
+          <Tag>762</Tag>
+          <Name>SecuritySubType</Name>
+          <Required>C</Required>
+          <Type>String</Type>
+          <Description>See SecuritySubType (Tag762) Represents spread strategy if applicable</Description>
+        </Field>
+        <Field>
+          <Tag>107</Tag>
+          <Name>SecurityDesc</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Instrument Name</Description>
+        </Field>
+        <Field>
+          <Tag>200</Tag>
+          <Name>MaturityMonthYear</Name>
+          <Required>C</Required>
+          <Type>MonthYear</Type>
+          <Description>This field provides the calendar month reflected in the instrument symbol (tag 55-Symbol in MDP 3.0; tag 107-SecurityDesc). Format YYYYMM (e.g., 201912) For futures spreads and options spreads, this field contains the first leg's calendar month reflected in the instrument symbol.</Description>
+        </Field>
+        <Field>
+          <Tag>6937</Tag>
+          <Name>Asset</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>String field that indicates the underlying asset code (Product Code). Example: EU (Euro/USD FX Rate). Product Code was previously communicated in tag 1151-SecurityGroup.</Description>
+        </Field>
+        <Field>
+          <Tag>461</Tag>
+          <Name>CFICode</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>ISO standard instrument categorization code.</Description>
+        </Field>
+        <Field>
+          <Tag>462</Tag>
+          <Name>UnderlyingProduct</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>2=Commodity/Agriculture 4=Currency 5=Equity 12=Other 14=Interest Rate 15=FX Cash 16=Energy 17=Metals</Description>
+        </Field>
+        <Field>
+          <Tag>1682</Tag>
+          <Name>MDSecurityTradingStatus</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>21 = Pre Open 27 = Pre Open (No Cancel) 17 = Ready to Trade 2 = Trading Halt 4 = Close 99 = Pause 18 = Expired 98 = Forbidden</Description>
+        </Field>
+        <Field>
+          <Tag>15</Tag>
+          <Name>Currency</Name>
+          <Required>Y</Required>
+          <Type>Currency</Type>
+          <Description>Identifies currency used for price.</Description>
+        </Field>
+        <Field>
+          <Tag>120</Tag>
+          <Name>SettlCurrency</Name>
+          <Required>C</Required>
+          <Type>Currency</Type>
+          <Description>Identifies currency used for settlement price, if different from trade price currency.</Description>
+        </Field>
+        <Field>
+          <Tag>562</Tag>
+          <Name>MinTradeVol</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>The minimum trading quantity for a security.</Description>
+        </Field>
+        <Field>
+          <Tag>1140</Tag>
+          <Name>MaxTradeVol</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>The maximum trading quantity for a security.</Description>
+        </Field>
+        <Field>
+          <Tag>969</Tag>
+          <Name>MinPriceIncrement</Name>
+          <Required>Y</Required>
+          <Type>Float</Type>
+          <Description>Minimum constant tick for the instrument.</Description>
+        </Field>
+        <Group>
+          <Name>NoEvents</Name>
+          <Required>Y</Required>
+        </Group>
+        <Field>
+          <Tag>996</Tag>
+          <Name>UnitOfMeasure</Name>
+          <Required>C</Required>
+          <Type>String</Type>
+          <Description>Unit of measure for the product's original contract size. This will be populated for all products listed on FairX. USD unit of measure can be in U.S. dollars or cents.</Description>
+        </Field>
+        <Field>
+          <Tag>1147</Tag>
+          <Name>UnitOfMeasureQty</Name>
+          <Required>C</Required>
+          <Type>Float</Type>
+          <Description>This field contains the contract size for each instrument. Use in combination with tag 996-UnitofMeasure. For example: Euro futures -Tag 1147=10000 -Tag 996=Euro For variable-quantity products, the contract size reflects the original contract size, before the application of the multiplier</Description>
+        </Field>
+        <Field>
+          <Tag>1149</Tag>
+          <Name>HighLimitPrice</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Allowable high limit price for the trading day. A key parameter in validating order price. Used as the upper band for validating order prices. Orders submitted with prices above the upper limit will be rejected. This price protects off prices for quoting. Note: This value is indicative only and may not reflect the actual real-time high limit price.</Description>
+        </Field>
+        <Field>
+          <Tag>1148</Tag>
+          <Name>LowLimitPrice</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Allowable low limit price for the trading day. A key parameter in validating order price. Used as the lower band for validating order prices. Orders submitted with prices below the lower limit will be rejected. This price protects off prices for quoting. Note: This value is indicative only and may not reflect the actual real-time low limit price.</Description>
+        </Field>
+        <Field>
+          <Tag>1143</Tag>
+          <Name>MaxPriceVariation</Name>
+          <Required>C</Required>
+          <Type>Price</Type>
+          <Description>Differential value for price banding.</Description>
+        </Field>
+        <Field>
+          <Tag>5796</Tag>
+          <Name>TradingReferenceDate</Name>
+          <Required>C</Required>
+          <Type>LocalMktDate</Type>
+          <Description>Date of current trading session</Description>
+        </Field>
+        <Field>
+          <Tag>734</Tag>
+          <Name>PriorSettlPrice</Name>
+          <Required>C</Required>
+          <Type>Price</Type>
+          <Description>Prior Settlement Price (Settlement price of the prior trading session day)</Description>
+        </Field>
+        <Field>
+          <Tag>730</Tag>
+          <Name>SettlPrice</Name>
+          <Required>C</Required>
+          <Type>Price</Type>
+          <Description>Settlement Price</Description>
+        </Field>
+        <Field>
+          <Tag>731</Tag>
+          <Name>SettlPriceType</Name>
+          <Required>C</Required>
+          <Type>Int</Type>
+          <Description>Type of settlement price. The value of 2 (Theoretical) will be sent during the initial seeding of a new contract. This tag is sent in conjunction with Tag 734 (PriorSettlPrice)</Description>
+        </Field>
+        <Group>
+          <Name>NoLegs</Name>
+          <Required>N</Required>
+        </Group>
+      </Fields>
+    </Message>
+
+    <Message>
+      <Name>SecurityListRequest</Name>
+      <MsgType>x</MsgType>
+      <Category>app</Category>
+      <Origin>Client</Origin>
+      <Fields>
+        <Field>
+          <Tag>320</Tag>
+          <Name>SecurityReqID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Unique security request ID</Description>
+        </Field>
+        <Field>
+          <Tag>559</Tag>
+          <Name>SecurityListRequestType</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>0 = Symbol</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>55=NA get all securities</Description>
+        </Field>
+        <Field>
+          <Tag>167</Tag>
+          <Name>SecurityType</Name>
+          <Required>C</Required>
+          <Type>String</Type>
+          <Description>See Security Type (Tag167) Not required if 55=NA</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- SecurityList (MsgType = y), p41-43: the table prints the rows after 146 NoRelatedSym
+         ("number of securities in the list") without the group arrow; they are the entries of that
+         group, as in MarketDataRequest's NoRelatedSym, and are transcribed as its members -->
+    <Message>
+      <Name>SecurityList</Name>
+      <MsgType>y</MsgType>
+      <Category>app</Category>
+      <Origin>Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>320</Tag>
+          <Name>SecurityReqID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Unique security request ID</Description>
+        </Field>
+        <Field>
+          <Tag>322</Tag>
+          <Name>SecurityResponseID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Unique response ID</Description>
+        </Field>
+        <Field>
+          <Tag>560</Tag>
+          <Name>SecurityRequestResult</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>0 = ValidReq 1 = InvalidReq</Description>
+        </Field>
+        <Field>
+          <Tag>393</Tag>
+          <Name>TotNoRelatedSym</Name>
+          <Required>N</Required>
+          <Type>int</Type>
+          <Description>Total number of securities to be returned for this request</Description>
+        </Field>
+        <Field>
+          <Tag>893</Tag>
+          <Name>LastFragment</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>N = Not Last message Y = Last Message for SecurityListRequest</Description>
+        </Field>
+        <Group>
+          <Name>NoRelatedSymSecListGrp</Name>
+          <Required>Y</Required>
+        </Group>
+      </Fields>
+    </Message>
+
+    <Message>
+      <Name>MarketDataRequest</Name>
+      <MsgType>V</MsgType>
+      <Category>app</Category>
+      <Origin>Client</Origin>
+      <Fields>
+        <Field>
+          <Tag>262</Tag>
+          <Name>MDReqID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Unique ID assigned by client for Market Data Request. To unsubscribe, the same ID must be sent with 263 = 2</Description>
+        </Field>
+        <Field>
+          <Tag>263</Tag>
+          <Name>SubscriptionRequestType</Name>
+          <Required>Y</Required>
+          <Type>int</Type>
+          <Description>1 = Subscribe for snapshots and updates 2 = Unsubscribe</Description>
+        </Field>
+        <Group>
+          <Name>NoRelatedSym</Name>
+          <Required>N</Required>
+        </Group>
+      </Fields>
+    </Message>
+
+    <Message>
+      <Name>MarketDataRequestReject</Name>
+      <MsgType>Y</MsgType>
+      <Category>app</Category>
+      <Origin>Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>262</Tag>
+          <Name>MDReqID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Unique ID assigned by client for Market Data Request</Description>
+        </Field>
+        <Field>
+          <Tag>281</Tag>
+          <Name>MDReqRejReason</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Numerical reason for rejection of Market Data Request</Description>
+        </Field>
+        <Field>
+          <Tag>58</Tag>
+          <Name>Text</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Free format text string describing reason for rejection</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <Message>
+      <Name>MarketDataSnapshotFullRefresh</Name>
+      <MsgType>W</MsgType>
+      <Category>app</Category>
+      <Origin>Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>262</Tag>
+          <Name>MDReqID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Unique ID assigned by client for Market Data Request</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>instrument symbol</Description>
+        </Field>
+        <Field>
+          <Tag>167</Tag>
+          <Name>SecurityType</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>See Security Type (Tag167)</Description>
+        </Field>
+        <Field>
+          <Tag>762</Tag>
+          <Name>SecuritySubType</Name>
+          <Required>C</Required>
+          <Type>String</Type>
+          <Description>See SecuritySubType (Tag762) Represents spread strategy if applicable</Description>
+        </Field>
+        <Group>
+          <Name>NoMDEntries</Name>
+          <Required>Y</Required>
+        </Group>
+      </Fields>
+    </Message>
+
+    <Message>
+      <Name>MarketDataIncrementalRefresh</Name>
+      <MsgType>X</MsgType>
+      <Category>app</Category>
+      <Origin>Exchange</Origin>
+      <Fields>
+        <Field>
+          <Tag>262</Tag>
+          <Name>MDReqID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Unique ID assigned by client for Market Data Request. To unsubscribe, the same ID must be sent with 263 = 2</Description>
+        </Field>
+        <Field>
+          <Tag>266</Tag>
+          <Name>AggregatedBook</Name>
+          <Required>Y</Required>
+          <Type>char</Type>
+          <Description>N = Non-aggregated market data</Description>
+        </Field>
+        <Group>
+          <Name>NoMDEntriesIncrementalRefresh</Name>
+          <Required>Y</Required>
+        </Group>
+      </Fields>
+    </Message>
+
+  </Messages>
+
+  <Groups>
+
+    <!-- SecurityDefinition (d) p37-39: NoEvents (864) NuminGroup: Number of repeating EventType entries. Indicates number of repeating groups and length of each repeating group in the message. -->
+    <Group>
+      <Name>NoEvents</Name>
+      <AnchorTag>864</AnchorTag>
+      <Fields>
+        <Field>
+          <Tag>865</Tag>
+          <Name>EventType</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>Code to represent the type of event. 5=Activation 7=Last eligible trade date</Description>
+        </Field>
+        <Field>
+          <Tag>1145</Tag>
+          <Name>EventTime</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Trading Session Date of event. Format yyyyMMdd</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+    <!-- SecurityDefinition (d) p37-39: NoLegs (555) NuminGroup: Number of legs that make up security (for spreads) -->
+    <Group>
+      <Name>NoLegs</Name>
+      <AnchorTag>555</AnchorTag>
+      <Fields>
+        <Field>
+          <Tag>600</Tag>
+          <Name>LegSymbol</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Symbol of underlying leg</Description>
+        </Field>
+        <Field>
+          <Tag>620</Tag>
+          <Name>LegSecurityDesc</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Name of underlying leg</Description>
+        </Field>
+        <Field>
+          <Tag>609</Tag>
+          <Name>LegSecurityType</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Security type of underlying leg</Description>
+        </Field>
+        <Field>
+          <Tag>624</Tag>
+          <Name>LegSide</Name>
+          <Required>N</Required>
+          <Type>Char</Type>
+          <Size>1</Size>
+          <Description>Side of underlying leg</Description>
+        </Field>
+        <Field>
+          <Tag>608</Tag>
+          <Name>LegCFICode</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>ISO standard instrument categorization code of underlying leg</Description>
+        </Field>
+        <Field>
+          <Tag>556</Tag>
+          <Name>LegCurrency</Name>
+          <Required>N</Required>
+          <Type>Currency</Type>
+          <Description>Currency of underlying leg</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+    <!-- SecurityList (y) p41-43: NoRelatedSym (146) int: number of securities in the list. Its members differ from the other NoRelatedSym group's, so it is named apart; Underlying gives the printed counter name -->
+    <Group>
+      <Name>NoRelatedSymSecListGrp</Name>
+      <AnchorTag>146</AnchorTag>
+      <Underlying>NoRelatedSym</Underlying>
+      <Fields>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>instrument code</Description>
+        </Field>
+        <Field>
+          <Tag>167</Tag>
+          <Name>SecurityType</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>See Security Type (Tag167)</Description>
+        </Field>
+        <Field>
+          <Tag>762</Tag>
+          <Name>SecuritySubType</Name>
+          <Required>C</Required>
+          <Type>String</Type>
+          <Description>See SecuritySubType (Tag762) Represents spread strategy if applicable</Description>
+        </Field>
+        <Field>
+          <Tag>107</Tag>
+          <Name>SecurityDesc</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Instrument Name</Description>
+        </Field>
+        <Field>
+          <Tag>200</Tag>
+          <Name>MaturityMonthYear</Name>
+          <Required>C</Required>
+          <Type>MonthYear</Type>
+          <Description>This field provides the calendar month reflected in the instrument symbol (tag 55-Symbol in MDP 3.0; tag 107-SecurityDesc). Format YYYYMM (e.g., 201912) For futures spreads and options spreads, this field contains the first leg's calendar month reflected in the instrument symbol.</Description>
+        </Field>
+        <Field>
+          <Tag>6937</Tag>
+          <Name>Asset</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>String field that indicates the underlying asset code (Product Code). Example: EU (Euro/USD FX Rate) Product Code was previously communicated in tag 1151-SecurityGroup.</Description>
+        </Field>
+        <Field>
+          <Tag>461</Tag>
+          <Name>CFICode</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>ISO standard instrument categorization code.</Description>
+        </Field>
+        <Field>
+          <Tag>462</Tag>
+          <Name>UnderlyingProduct</Name>
+          <Required>Y</Required>
+          <Type>Int</Type>
+          <Description>2=Commodity/Agriculture 4=Currency 5=Equity 12=Other 14=Interest Rate 15=FX Cash 16=Energy 17=Metals</Description>
+        </Field>
+        <Field>
+          <Tag>1682</Tag>
+          <Name>MDSecurityTradingStatus</Name>
+          <Required>N</Required>
+          <Type>Int</Type>
+          <Description>21 = Pre Open 27 = Pre Open (No Cancel) 17 = Ready to Trade 2 = Trading Halt 4 = Close 99 = Pause 18 = Expired 98 = Forbidden</Description>
+        </Field>
+        <Field>
+          <Tag>15</Tag>
+          <Name>Currency</Name>
+          <Required>Y</Required>
+          <Type>Currency</Type>
+          <Description>Identifies currency used for price.</Description>
+        </Field>
+        <Field>
+          <Tag>120</Tag>
+          <Name>SettlCurrency</Name>
+          <Required>C</Required>
+          <Type>Currency</Type>
+          <Description>Identifies currency used for settlement price, if different from trade price currency.</Description>
+        </Field>
+        <Field>
+          <Tag>562</Tag>
+          <Name>MinTradeVol</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>The minimum trading quantity for a security.</Description>
+        </Field>
+        <Field>
+          <Tag>1140</Tag>
+          <Name>MaxTradeVol</Name>
+          <Required>Y</Required>
+          <Type>Qty</Type>
+          <Description>The maximum trading quantity for a security.</Description>
+        </Field>
+        <Field>
+          <Tag>969</Tag>
+          <Name>MinPriceIncrement</Name>
+          <Required>Y</Required>
+          <Type>Float</Type>
+          <Description>Minimum constant tick for the instrument.</Description>
+        </Field>
+        <Group>
+          <Name>NoEvents</Name>
+          <Required>Y</Required>
+        </Group>
+        <Field>
+          <Tag>231</Tag>
+          <Name>ContractMultiplier</Name>
+          <Required>C</Required>
+          <Type>Int</Type>
+          <Description>Number of deliverable units per instrument, e.g., peak days in expiration month or number of calendar days in expiration month. The market data Security Definition (tag 35-MsgType=d) message for the variable quantity spread will be populated with the value '0' for tag 231-ContractMultiplier. The market data Security Definition (tag 35-MsgType=d) message is populated with values for the outright legs for tag 231-ContractMultiplier and customers must extract this value.</Description>
+        </Field>
+        <Field>
+          <Tag>996</Tag>
+          <Name>UnitOfMeasure</Name>
+          <Required>C</Required>
+          <Type>String</Type>
+          <Description>Unit of measure for the product's original contract size. This will be populated for all products listed on FairX. USD unit of measure can be in U.S. dollars or cents.</Description>
+        </Field>
+        <Field>
+          <Tag>1147</Tag>
+          <Name>UnitOfMeasureQty</Name>
+          <Required>C</Required>
+          <Type>Float</Type>
+          <Description>This field contains the contract size for each instrument. Use in combination with tag 996-UnitofMeasure. For example: For example: Euro futures -Tag 1147=10000 -Tag 996=Euro For variable-quantity products, the contract size reflects the original contract size, before the application of the multiplier</Description>
+        </Field>
+        <Field>
+          <Tag>1149</Tag>
+          <Name>HighLimitPrice</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Allowable high limit price for the trading day. A key parameter in validating order price. Used as the upper band for validating order prices. Orders submitted with prices above the upper limit will be rejected. This price protects off prices for quoting. Note: This value is indicative only and may not reflect the actual real-time high limit price.</Description>
+        </Field>
+        <Field>
+          <Tag>1148</Tag>
+          <Name>LowLimitPrice</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>Allowable low limit price for the trading day. A key parameter in validating order price. Used as the lower band for validating order prices. Orders submitted with prices below the lower limit will be rejected. This price protects off prices for quoting. Note: This value is indicative only and may not reflect the actual real-time low limit price.</Description>
+        </Field>
+        <Field>
+          <Tag>1143</Tag>
+          <Name>MaxPriceVariation</Name>
+          <Required>C</Required>
+          <Type>Price</Type>
+          <Description>Differential value for price banding.</Description>
+        </Field>
+        <Field>
+          <Tag>5796</Tag>
+          <Name>TradingReferenceDate</Name>
+          <Required>C</Required>
+          <Type>LocalMktDate</Type>
+          <Description>Date of current trading session</Description>
+        </Field>
+        <Field>
+          <Tag>734</Tag>
+          <Name>PriorSettlPrice</Name>
+          <Required>C</Required>
+          <Type>Price</Type>
+          <Description>Prior Settlement Price (Settlement price of the prior trading session day)</Description>
+        </Field>
+        <Field>
+          <Tag>730</Tag>
+          <Name>SettlPrice</Name>
+          <Required>C</Required>
+          <Type>Price</Type>
+          <Description>Settlement Price</Description>
+        </Field>
+        <Field>
+          <Tag>731</Tag>
+          <Name>SettlPriceType</Name>
+          <Required>C</Required>
+          <Type>Int</Type>
+          <Description>Type of settlement price. The value of 2 (Theoretical) will be sent during the initial seeding of a new contract. This tag is sent in conjunction with Tag 734 (PriorSettlPrice)</Description>
+        </Field>
+        <Group>
+          <Name>NoLegs</Name>
+          <Required>N</Required>
+        </Group>
+      </Fields>
+    </Group>
+
+    <!-- MarketDataRequest (V) p44: NoRelatedSym (146) NumInGroup: Number of securities to subscribe for If not specified, subscribes to all securities -->
+    <Group>
+      <Name>NoRelatedSym</Name>
+      <AnchorTag>146</AnchorTag>
+      <Fields>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>instrument code</Description>
+        </Field>
+        <Field>
+          <Tag>167</Tag>
+          <Name>SecurityType</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>See Security Type (Tag167)</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+    <!-- MarketDataSnapshotFullRefresh (W) p44-45: NoMDEntries (268) int: Number of entries in group -->
+    <Group>
+      <Name>NoMDEntries</Name>
+      <AnchorTag>268</AnchorTag>
+      <Fields>
+        <Field>
+          <Tag>269</Tag>
+          <Name>MDEntryType</Name>
+          <Required>Y</Required>
+          <Type>int</Type>
+          <Description>See MD Entry Types (tag 269)</Description>
+        </Field>
+        <Field>
+          <Tag>278</Tag>
+          <Name>MDEntryID</Name>
+          <Required>N</Required>
+          <Type>String</Type>
+          <Description>Market data identifier MDEntryID is unique on a per instrument, session, and entry type basis An active entry with the same MDEntryID (278) should be replaced</Description>
+        </Field>
+        <Field>
+          <Tag>270</Tag>
+          <Name>MDEntryPx</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>The all-in rate</Description>
+        </Field>
+        <Field>
+          <Tag>271</Tag>
+          <Name>MDEntrySize</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Entry size/quantity</Description>
+        </Field>
+        <Field>
+          <Tag>110</Tag>
+          <Name>MinQty</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Minimum fill size associated with the amount</Description>
+        </Field>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>Y</Required>
+          <Type>UTCTimestamp</Type>
+          <Size>24</Size>
+          <Description>GMT time of event, in microseconds</Description>
+        </Field>
+        <Field>
+          <Tag>1023</Tag>
+          <Name>MDPriceLevel</Name>
+          <Required>N</Required>
+          <Type>int</Type>
+          <Description>1 or 2. Price level in book (implieds only)</Description>
+        </Field>
+        <Field>
+          <Tag>286</Tag>
+          <Name>OpenCloseSettllFlag</Name>
+          <Required>C</Required>
+          <Type>Int</Type>
+          <Description>Flag describing Open Price entry 0=Daily Open Price 5=Indicative Opening Price (IOP)</Description>
+        </Field>
+        <Field>
+          <Tag>5796</Tag>
+          <Name>TradingReferenceDate</Name>
+          <Required>C</Required>
+          <Type>LocalMktDate</Type>
+          <Description>Trading session date corresponding to the MDEntryType. This value will have the current trading date except for open interest and closing price (where it will usually be the previous trading date)</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+    <!-- MarketDataIncrementalRefresh (X) p45-46: NoMDEntries (268) int: Number of entries in group. Its members differ from the other NoMDEntries group's, so it is named apart; Underlying gives the printed counter name -->
+    <Group>
+      <Name>NoMDEntriesIncrementalRefresh</Name>
+      <AnchorTag>268</AnchorTag>
+      <Underlying>NoMDEntries</Underlying>
+      <Fields>
+        <Field>
+          <Tag>279</Tag>
+          <Name>MDUpdateAction</Name>
+          <Required>Y</Required>
+          <Type>int</Type>
+          <Description>0 = New 1 = Change 2 = Delete</Description>
+        </Field>
+        <Field>
+          <Tag>269</Tag>
+          <Name>MDEntryType</Name>
+          <Required>Y</Required>
+          <Type>int</Type>
+          <Description>See MD Entry Types (tag 269)</Description>
+        </Field>
+        <Field>
+          <Tag>278</Tag>
+          <Name>MDEntryID</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>Market data identifier MDEntryID is unique on a per instrument, session, and entry type basis MDUpdateAction = 0/1 (New/Change) should replace any active entry with the same MDEntryID (278) MDUpdateAction = 2 (Delete) indicates any active entry with same MDEntryID should be deleted</Description>
+        </Field>
+        <Field>
+          <Tag>55</Tag>
+          <Name>Symbol</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>instrument symbol</Description>
+        </Field>
+        <Field>
+          <Tag>167</Tag>
+          <Name>SecurityType</Name>
+          <Required>Y</Required>
+          <Type>String</Type>
+          <Description>See Security Type (Tag167)</Description>
+        </Field>
+        <Field>
+          <Tag>762</Tag>
+          <Name>SecuritySubType</Name>
+          <Required>C</Required>
+          <Type>String</Type>
+          <Description>See SecuritySubType (Tag762) Represents spread strategy if applicable</Description>
+        </Field>
+        <Field>
+          <Tag>270</Tag>
+          <Name>MDEntryPx</Name>
+          <Required>N</Required>
+          <Type>Price</Type>
+          <Description>The all-in rate Required when MDUpdateAction = New (0) or Change (1)</Description>
+        </Field>
+        <Field>
+          <Tag>271</Tag>
+          <Name>MDEntrySize</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Required when MDUpdateAction = New (0) or Change (1)</Description>
+        </Field>
+        <Field>
+          <Tag>110</Tag>
+          <Name>MinQty</Name>
+          <Required>N</Required>
+          <Type>Qty</Type>
+          <Description>Minimum fill size associated with the amount</Description>
+        </Field>
+        <Field>
+          <Tag>60</Tag>
+          <Name>TransactTime</Name>
+          <Required>Y</Required>
+          <Type>UTCTimestamp</Type>
+          <Size>24</Size>
+          <Description>GMT time of event, in microseconds</Description>
+        </Field>
+        <Field>
+          <Tag>1023</Tag>
+          <Name>MDPriceLevel</Name>
+          <Required>N</Required>
+          <Type>int</Type>
+          <Description>1 or 2. Price level in book (implieds only)</Description>
+        </Field>
+        <Field>
+          <Tag>286</Tag>
+          <Name>OpenCloseSettllFlag</Name>
+          <Required>C</Required>
+          <Type>Int</Type>
+          <Description>Flag describing Open Price entry 0=Daily Open Price 5=Indicative Opening Price (IOP)</Description>
+        </Field>
+        <Field>
+          <Tag>5796</Tag>
+          <Name>TradingReferenceDate</Name>
+          <Required>C</Required>
+          <Type>LocalMktDate</Type>
+          <Description>Trading session date corresponding to the MDEntryType. This value will have the current trading date</Description>
+        </Field>
+        <Field>
+          <Tag>5797</Tag>
+          <Name>AggressorSide</Name>
+          <Required>C</Required>
+          <Type>Int</Type>
+          <Description>Indicates the aggressor side. During certain periods (Pre-open, Halt, etc.) trades can occur without aggressors 0=No Aggressor 1=Buy 2=Sell This value is sent for 269=2 (trades)</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+  </Groups>
+
+  <Values>
+
+    <!-- BeginString (8) static. Source: "FIX Version for session, i.e. 'FIX.4.4'" -->
+    <Value>
+      <Type>BeginString</Type>
+      <Enum>FIX.4.4</Enum>
+      <Kind>Static</Kind>
+      <Description>FIX 4.4</Description>
+    </Value>
+
+    <!-- LegSide shares the Side values: "Order Sides (tag 54 and tag 624)", page 47 -->
+    <Value>
+      <Type>LegSide</Type>
+      <Enum>1</Enum>
+      <Description>Buy Side</Description>
+    </Value>
+
+    <Value>
+      <Type>LegSide</Type>
+      <Enum>2</Enum>
+      <Description>Sell Side</Description>
+    </Value>
+
+    <!-- "Security Types (tag 167 and 609)", page 49 -->
+    <Value>
+      <Type>SecurityType</Type>
+      <Enum>FUT</Enum>
+      <Description>Future</Description>
+    </Value>
+
+    <Value>
+      <Type>SecurityType</Type>
+      <Enum>OPT</Enum>
+      <Description>Option</Description>
+    </Value>
+
+    <!-- LegSecurityType shares the SecurityType values: "Security Types (tag 167 and 609)", page 49 -->
+    <Value>
+      <Type>LegSecurityType</Type>
+      <Enum>FUT</Enum>
+      <Description>Future</Description>
+    </Value>
+
+    <Value>
+      <Type>LegSecurityType</Type>
+      <Enum>OPT</Enum>
+      <Description>Option</Description>
+    </Value>
+
+    <!-- "MD Entry Types (tag 269)", page 49 -->
+    <Value>
+      <Type>MDEntryType</Type>
+      <Enum>0</Enum>
+      <Description>Bid</Description>
+    </Value>
+
+    <Value>
+      <Type>MDEntryType</Type>
+      <Enum>1</Enum>
+      <Description>Offer</Description>
+    </Value>
+
+    <Value>
+      <Type>MDEntryType</Type>
+      <Enum>2</Enum>
+      <Description>Trade</Description>
+    </Value>
+
+    <Value>
+      <Type>MDEntryType</Type>
+      <Enum>4</Enum>
+      <Description>Opening Price</Description>
+    </Value>
+
+    <Value>
+      <Type>MDEntryType</Type>
+      <Enum>5</Enum>
+      <Description>Closing Price</Description>
+    </Value>
+
+    <Value>
+      <Type>MDEntryType</Type>
+      <Enum>6</Enum>
+      <Description>Settlement Price</Description>
+    </Value>
+
+    <Value>
+      <Type>MDEntryType</Type>
+      <Enum>7</Enum>
+      <Description>Trading Session High Price</Description>
+    </Value>
+
+    <Value>
+      <Type>MDEntryType</Type>
+      <Enum>8</Enum>
+      <Description>Trading Session Low Price</Description>
+    </Value>
+
+    <Value>
+      <Type>MDEntryType</Type>
+      <Enum>9</Enum>
+      <Description>Trading Session Vwap Price</Description>
+    </Value>
+
+    <Value>
+      <Type>MDEntryType</Type>
+      <Enum>B</Enum>
+      <Description>Trading Session Traded Volume</Description>
+    </Value>
+
+    <Value>
+      <Type>MDEntryType</Type>
+      <Enum>C</Enum>
+      <Description>Open Interest</Description>
+    </Value>
+
+    <Value>
+      <Type>MDEntryType</Type>
+      <Enum>E</Enum>
+      <Description>Implied Bid</Description>
+    </Value>
+
+    <Value>
+      <Type>MDEntryType</Type>
+      <Enum>F</Enum>
+      <Description>Implied Offer</Description>
+    </Value>
+
+    <Value>
+      <Type>MDEntryType</Type>
+      <Enum>J</Enum>
+      <Description>Empty Book</Description>
+    </Value>
+
+    <!-- "Session Reject Reason Codes (tag 373)", page 49 -->
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>0</Enum>
+      <Description>Invalid tag number</Description>
+    </Value>
+
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>1</Enum>
+      <Description>Required tag missing</Description>
+    </Value>
+
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>3</Enum>
+      <Description>Undefined Tag</Description>
+    </Value>
+
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>4</Enum>
+      <Description>Tag specified without a value</Description>
+    </Value>
+
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>5</Enum>
+      <Description>Value is incorrect (out of range) for this tag</Description>
+    </Value>
+
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>6</Enum>
+      <Description>Incorrect data format for value</Description>
+    </Value>
+
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>9</Enum>
+      <Description>CompID problem</Description>
+    </Value>
+
+    <Value>
+      <Type>SessionRejectReason</Type>
+      <Enum>99</Enum>
+      <Description>Other</Description>
+    </Value>
+
+    <!-- "SecuritySubType (tag 762)", page 51 -->
+    <Value>
+      <Type>SecuritySubType</Type>
+      <Enum>SP</Enum>
+      <Description>Standard Calendar Spreads</Description>
+    </Value>
+
+    <!-- EncryptMethod (98): printed in its row's description (Logon) -->
+    <Value>
+      <Type>EncryptMethod</Type>
+      <Enum>0</Enum>
+      <Description>None</Description>
+    </Value>
+
+    <!-- ResetSeqNumFlag (141): printed in its row's description (Logon) -->
+    <Value>
+      <Type>ResetSeqNumFlag</Type>
+      <Enum>N</Enum>
+      <Description>use previous sequences</Description>
+    </Value>
+
+    <Value>
+      <Type>ResetSeqNumFlag</Type>
+      <Enum>Y</Enum>
+      <Description>reset sequences (start new session)</Description>
+    </Value>
+
+    <!-- GapFillFlag (123): printed in its row's description (SequenceReset) -->
+    <Value>
+      <Type>GapFillFlag</Type>
+      <Enum>N</Enum>
+      <Description>sequence reset, the counterparty must adjust inbound sequence number</Description>
+    </Value>
+
+    <Value>
+      <Type>GapFillFlag</Type>
+      <Enum>Y</Enum>
+      <Description>indicates the message is used instead of administrative or business messages which are not to be resent</Description>
+    </Value>
+
+    <!-- BusinessRejectReason (380): printed in its row's description (BusinessMessageReject) -->
+    <Value>
+      <Type>BusinessRejectReason</Type>
+      <Enum>0</Enum>
+      <Description>Other</Description>
+    </Value>
+
+    <Value>
+      <Type>BusinessRejectReason</Type>
+      <Enum>1</Enum>
+      <Description>Unknown ID</Description>
+    </Value>
+
+    <Value>
+      <Type>BusinessRejectReason</Type>
+      <Enum>2</Enum>
+      <Description>Unknown security</Description>
+    </Value>
+
+    <Value>
+      <Type>BusinessRejectReason</Type>
+      <Enum>3</Enum>
+      <Description>Unsupported message type</Description>
+    </Value>
+
+    <Value>
+      <Type>BusinessRejectReason</Type>
+      <Enum>4</Enum>
+      <Description>Application not available</Description>
+    </Value>
+
+    <Value>
+      <Type>BusinessRejectReason</Type>
+      <Enum>5</Enum>
+      <Description>Conditionally required field missing</Description>
+    </Value>
+
+    <Value>
+      <Type>BusinessRejectReason</Type>
+      <Enum>6</Enum>
+      <Description>Not authorized</Description>
+    </Value>
+
+    <Value>
+      <Type>BusinessRejectReason</Type>
+      <Enum>7</Enum>
+      <Description>Delivery to firm not available at this time</Description>
+    </Value>
+
+    <!-- SecurityUpdateAction (980): printed in its row's description (SecurityDefinition) -->
+    <Value>
+      <Type>SecurityUpdateAction</Type>
+      <Enum>A</Enum>
+      <Description>Add</Description>
+    </Value>
+
+    <Value>
+      <Type>SecurityUpdateAction</Type>
+      <Enum>M</Enum>
+      <Description>Modify</Description>
+    </Value>
+
+    <Value>
+      <Type>SecurityUpdateAction</Type>
+      <Enum>D</Enum>
+      <Description>Delete</Description>
+    </Value>
+
+    <!-- UnderlyingProduct (462): printed in its row's description (SecurityDefinition; SecurityList); this edition prints no 99 -->
+    <Value>
+      <Type>UnderlyingProduct</Type>
+      <Enum>2</Enum>
+      <Description>Commodity/Agriculture</Description>
+    </Value>
+
+    <Value>
+      <Type>UnderlyingProduct</Type>
+      <Enum>4</Enum>
+      <Description>Currency</Description>
+    </Value>
+
+    <Value>
+      <Type>UnderlyingProduct</Type>
+      <Enum>5</Enum>
+      <Description>Equity</Description>
+    </Value>
+
+    <Value>
+      <Type>UnderlyingProduct</Type>
+      <Enum>12</Enum>
+      <Description>Other</Description>
+    </Value>
+
+    <Value>
+      <Type>UnderlyingProduct</Type>
+      <Enum>14</Enum>
+      <Description>Interest Rate</Description>
+    </Value>
+
+    <Value>
+      <Type>UnderlyingProduct</Type>
+      <Enum>15</Enum>
+      <Description>FX Cash</Description>
+    </Value>
+
+    <Value>
+      <Type>UnderlyingProduct</Type>
+      <Enum>16</Enum>
+      <Description>Energy</Description>
+    </Value>
+
+    <Value>
+      <Type>UnderlyingProduct</Type>
+      <Enum>17</Enum>
+      <Description>Metals</Description>
+    </Value>
+
+    <!-- MDSecurityTradingStatus (1682): printed in its row's description (SecurityDefinition; SecurityList) -->
+    <Value>
+      <Type>MDSecurityTradingStatus</Type>
+      <Enum>21</Enum>
+      <Description>Pre Open</Description>
+    </Value>
+
+    <Value>
+      <Type>MDSecurityTradingStatus</Type>
+      <Enum>27</Enum>
+      <Description>Pre Open (No Cancel)</Description>
+    </Value>
+
+    <Value>
+      <Type>MDSecurityTradingStatus</Type>
+      <Enum>17</Enum>
+      <Description>Ready to Trade</Description>
+    </Value>
+
+    <Value>
+      <Type>MDSecurityTradingStatus</Type>
+      <Enum>2</Enum>
+      <Description>Trading Halt</Description>
+    </Value>
+
+    <Value>
+      <Type>MDSecurityTradingStatus</Type>
+      <Enum>4</Enum>
+      <Description>Close</Description>
+    </Value>
+
+    <Value>
+      <Type>MDSecurityTradingStatus</Type>
+      <Enum>99</Enum>
+      <Description>Pause</Description>
+    </Value>
+
+    <Value>
+      <Type>MDSecurityTradingStatus</Type>
+      <Enum>18</Enum>
+      <Description>Expired</Description>
+    </Value>
+
+    <Value>
+      <Type>MDSecurityTradingStatus</Type>
+      <Enum>98</Enum>
+      <Description>Forbidden</Description>
+    </Value>
+
+    <!-- EventType (865): printed in its row's description (SecurityDefinition; SecurityList) -->
+    <Value>
+      <Type>EventType</Type>
+      <Enum>5</Enum>
+      <Description>Activation</Description>
+    </Value>
+
+    <Value>
+      <Type>EventType</Type>
+      <Enum>7</Enum>
+      <Description>Last eligible trade date</Description>
+    </Value>
+
+    <!-- SecurityListRequestType (559): printed in its row's description (SecurityListRequest) -->
+    <Value>
+      <Type>SecurityListRequestType</Type>
+      <Enum>0</Enum>
+      <Description>Symbol</Description>
+    </Value>
+
+    <!-- SecurityRequestResult (560): printed in its row's description (SecurityList) -->
+    <Value>
+      <Type>SecurityRequestResult</Type>
+      <Enum>0</Enum>
+      <Description>ValidReq</Description>
+    </Value>
+
+    <Value>
+      <Type>SecurityRequestResult</Type>
+      <Enum>1</Enum>
+      <Description>InvalidReq</Description>
+    </Value>
+
+    <!-- LastFragment (893): printed in its row's description (SecurityList) -->
+    <Value>
+      <Type>LastFragment</Type>
+      <Enum>N</Enum>
+      <Description>Not Last message</Description>
+    </Value>
+
+    <Value>
+      <Type>LastFragment</Type>
+      <Enum>Y</Enum>
+      <Description>Last Message for SecurityListRequest</Description>
+    </Value>
+
+    <!-- SubscriptionRequestType (263): printed in its row's description (MarketDataRequest) -->
+    <Value>
+      <Type>SubscriptionRequestType</Type>
+      <Enum>1</Enum>
+      <Description>Subscribe for snapshots and updates</Description>
+    </Value>
+
+    <Value>
+      <Type>SubscriptionRequestType</Type>
+      <Enum>2</Enum>
+      <Description>Unsubscribe</Description>
+    </Value>
+
+    <!-- AggregatedBook (266): printed in its row's description (MarketDataIncrementalRefresh) -->
+    <Value>
+      <Type>AggregatedBook</Type>
+      <Enum>N</Enum>
+      <Description>Non-aggregated market data</Description>
+    </Value>
+
+    <!-- MDUpdateAction (279): printed in its row's description (MarketDataIncrementalRefresh) -->
+    <Value>
+      <Type>MDUpdateAction</Type>
+      <Enum>0</Enum>
+      <Description>New</Description>
+    </Value>
+
+    <Value>
+      <Type>MDUpdateAction</Type>
+      <Enum>1</Enum>
+      <Description>Change</Description>
+    </Value>
+
+    <Value>
+      <Type>MDUpdateAction</Type>
+      <Enum>2</Enum>
+      <Description>Delete</Description>
+    </Value>
+
+    <!-- OpenCloseSettllFlag (286): printed in its row's description (MarketDataSnapshotFullRefresh; MarketDataIncrementalRefresh) -->
+    <Value>
+      <Type>OpenCloseSettllFlag</Type>
+      <Enum>0</Enum>
+      <Description>Daily Open Price</Description>
+    </Value>
+
+    <Value>
+      <Type>OpenCloseSettllFlag</Type>
+      <Enum>5</Enum>
+      <Description>Indicative Opening Price (IOP)</Description>
+    </Value>
+
+    <!-- AggressorSide (5797): printed in its row's description (MarketDataIncrementalRefresh) -->
+    <Value>
+      <Type>AggressorSide</Type>
+      <Enum>0</Enum>
+      <Description>No Aggressor</Description>
+    </Value>
+
+    <Value>
+      <Type>AggressorSide</Type>
+      <Enum>1</Enum>
+      <Description>Buy</Description>
+    </Value>
+
+    <Value>
+      <Type>AggressorSide</Type>
+      <Enum>2</Enum>
+      <Description>Sell</Description>
+    </Value>
+
+  </Values>
+
+</OmiFixPdf>

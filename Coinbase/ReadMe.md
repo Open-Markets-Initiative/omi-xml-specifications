@@ -5,28 +5,41 @@
 
 | Division | Protocol | Encoding | Version | Specification |
 | --- | --- | --- | --- | --- |
+| CoinbaseDerivatives | DropCopy | Fix | 0.7 | [files](Coinbase.CoinbaseDerivatives.DropCopy.Fix.v0.7/) |
 | CoinbaseDerivatives | DropCopy | Fix | 0.9 | [files](Coinbase.CoinbaseDerivatives.DropCopy.Fix.v0.9/) |
+| CoinbaseDerivatives | MarketDataApi | Fix | 0.21 | [files](Coinbase.CoinbaseDerivatives.MarketDataApi.Fix.v0.21/) |
+| CoinbaseDerivatives | MarketDataApi | Fix | 0.23 | [files](Coinbase.CoinbaseDerivatives.MarketDataApi.Fix.v0.23/) |
+| CoinbaseDerivatives | MarketDataApi | Fix | 0.26 | [files](Coinbase.CoinbaseDerivatives.MarketDataApi.Fix.v0.26/) |
 | CoinbaseDerivatives | MarketDataApi | Fix | 0.27 | [files](Coinbase.CoinbaseDerivatives.MarketDataApi.Fix.v0.27/) |
+| CoinbaseDerivatives | MarketDataApi | Sbe | 1.10 | [files](Coinbase.CoinbaseDerivatives.MarketDataApi.Sbe.v1.10/) |
 | CoinbaseDerivatives | MarketDataApi | Sbe | 1.2 | [files](Coinbase.CoinbaseDerivatives.MarketDataApi.Sbe.v1.2/) |
 | CoinbaseDerivatives | MarketDataApi | Sbe | 1.3 | [files](Coinbase.CoinbaseDerivatives.MarketDataApi.Sbe.v1.3/) |
 | CoinbaseDerivatives | MarketDataApi | Sbe | 1.7 | [files](Coinbase.CoinbaseDerivatives.MarketDataApi.Sbe.v1.7/) |
 | CoinbaseDerivatives | MarketDataApi | Sbe | 1.9 | [files](Coinbase.CoinbaseDerivatives.MarketDataApi.Sbe.v1.9/) |
+| CoinbaseDerivatives | OrdersApi | Fix | 0.21 | [files](Coinbase.CoinbaseDerivatives.OrdersApi.Fix.v0.21/) |
+| CoinbaseDerivatives | OrdersApi | Fix | 0.23 | [files](Coinbase.CoinbaseDerivatives.OrdersApi.Fix.v0.23/) |
+| CoinbaseDerivatives | OrdersApi | Fix | 0.26 | [files](Coinbase.CoinbaseDerivatives.OrdersApi.Fix.v0.26/) |
 | CoinbaseDerivatives | OrdersApi | Fix | 0.27 | [files](Coinbase.CoinbaseDerivatives.OrdersApi.Fix.v0.27/) |
 | CoinbaseDerivatives | OrdersApi | Sbe | 1.3 | [files](Coinbase.CoinbaseDerivatives.OrdersApi.Sbe.v1.3/) |
 | CoinbaseDerivatives | OrdersApi | Sbe | 1.4 | [files](Coinbase.CoinbaseDerivatives.OrdersApi.Sbe.v1.4/) |
 | CoinbaseDerivatives | OrdersApi | Sbe | 1.5 | [files](Coinbase.CoinbaseDerivatives.OrdersApi.Sbe.v1.5/) |
-| CoinbaseDerivatives | OrdersApi | Sbe | 1.6 | [files](Coinbase.CoinbaseDerivatives.OrdersApi.Sbe.v1.6/) |
+| CoinbaseDerivatives | OrdersApi | Sbe | 1.6 | private |
 | CoinbaseDerivatives | OrdersApi | Sbe | 1.7 | [files](Coinbase.CoinbaseDerivatives.OrdersApi.Sbe.v1.7/) |
 | CoinbaseDerivatives | OrdersApi | Sbe | 1.8 | [files](Coinbase.CoinbaseDerivatives.OrdersApi.Sbe.v1.8/) |
+| CoinbaseDerivatives | OrdersApi | Sbe | 1.9 | [files](Coinbase.CoinbaseDerivatives.OrdersApi.Sbe.v1.9/) |
 | CoinbaseDerivatives | Session | Tcp | 1.2 | [files](Coinbase.CoinbaseDerivatives.Session.Tcp.v1.2/) |
 | Deribit | MarketDataApi | Sbe | 0.1 | [files](Coinbase.Deribit.MarketDataApi.Sbe.v0.1/) |
 | Deribit | MarketDataApi | Sbe | 1.0 | [files](Coinbase.Deribit.MarketDataApi.Sbe.v1.0/) |
 | Deribit | OrderEntry | Fix | 1.0 | [files](Coinbase.Deribit.OrderEntry.Fix.v1.0/) |
 | Deribit | OrdersApi | Sbe | 0.1 | [files](Coinbase.Deribit.OrdersApi.Sbe.v0.1/) |
 | Deribit | OrdersApi | Sbe | 1.0 | [files](Coinbase.Deribit.OrdersApi.Sbe.v1.0/) |
+| Deribit | OrdersApi | Sbe | 1.1 | [files](Coinbase.Deribit.OrdersApi.Sbe.v1.1/) |
+| Deribit | OrdersApi | Sbe | 1.2 | [files](Coinbase.Deribit.OrdersApi.Sbe.v1.2/) |
 | Deribit | OrdersApi | Sbe | 1.3 | [files](Coinbase.Deribit.OrdersApi.Sbe.v1.3/) |
 | Deribit | OrdersApi | Sbe | 1.4 | [files](Coinbase.Deribit.OrdersApi.Sbe.v1.4/) |
 | Deribit | OrdersApi | Sbe | 1.5 | [files](Coinbase.Deribit.OrdersApi.Sbe.v1.5/) |
+
+A specification marked private is released by the venue to registered participants only. Those protocols are listed here for completeness, and nothing read out of their documents is published: no message layouts, no field names, no wording. The generated parsers in the definition repositories describe the wire format and are published as usual.
 
 
 Coinbase: [website](https://www.coinbase.com/ "Go to Coinbase")
