@@ -69,6 +69,8 @@
 | NseFo | Snapshot | Tbt | 6.9 | [files](Nse.NseFo.Snapshot.Tbt.v6.9/) |
 | NseFo | Snapshot | Tbt | 7.0 | [files](Nse.NseFo.Snapshot.Tbt.v7.0/) |
 | NseFo | Snapshot | Tbt | 7.1 | [files](Nse.NseFo.Snapshot.Tbt.v7.1/) |
+| NseSlbm | Broadcast | NnfBcast | 2.7 | [files](Nse.NseSlbm.Broadcast.NnfBcast.v2.7/) |
+| NseSlbm | OrderEntry | NnfDirect | 2.7 | [files](Nse.NseSlbm.OrderEntry.NnfDirect.v2.7/) |
 
 
 Nse: [website](https://www.nseindia.com "Go to National Stock Exchange of India Ltd")

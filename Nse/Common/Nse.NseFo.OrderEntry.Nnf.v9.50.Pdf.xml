@@ -435,6 +435,15 @@
           <Size>1</Size>
           <Description>Whether the portfolio is to be updated</Description>
         </Field>
+        <!-- Not in the document's table, which puts MarketIndex at offset 65 and sums to 105
+             bytes under a stated length of 106. Chapter 2 word aligns every member that is not
+             a character, and a captured response carries the byte here: MarketIndex is at 66 -->
+        <Field>
+          <Name>Reserved</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Word alignment of MarketIndex</Description>
+        </Field>
         <Field>
           <Name>MarketIndex</Name>
           <Type>LONG</Type>
@@ -813,13 +822,13 @@
       <Code>7021</Code>
       <Category>Application</Category>
       <Origin>Exchange</Origin>
-      <Description>Carries one downloaded message wrapped in an inner header</Description>
+      <Description>Carries one downloaded message wrapped in a second message header</Description>
       <Fields>
         <Field>
-          <Name>Inner Header</Name>
+          <Name>Download Header</Name>
           <Type>STRUCT</Type>
           <Size>40</Size>
-          <Description>Inner header naming the kind of record carried</Description>
+          <Description>Second message header, naming the downloaded message carried</Description>
         </Field>
         <Field>
           <Name>Message Download Data</Name>
@@ -901,10 +910,10 @@
     <Message>
       <Name>Order Confirmation Message</Name>
       <Dependency>Transaction Code</Dependency>
-      <Branch>Client Message Payload</Branch>
+      <Branch>Server Message Payload</Branch>
       <Code>2073</Code>
       <Category>Application</Category>
-      <Origin>Firm</Origin>
+      <Origin>Exchange</Origin>
       <Description>Order entry confirmation, carried in the shared order entry structure</Description>
       <Fields>
         <Field>
@@ -919,10 +928,10 @@
     <Message>
       <Name>Order Modification Confirmation Message</Name>
       <Dependency>Transaction Code</Dependency>
-      <Branch>Client Message Payload</Branch>
+      <Branch>Server Message Payload</Branch>
       <Code>2074</Code>
       <Category>Application</Category>
-      <Origin>Firm</Origin>
+      <Origin>Exchange</Origin>
       <Description>Order modification confirmation, carried in the shared order entry structure</Description>
       <Fields>
         <Field>
@@ -934,14 +943,38 @@
       </Fields>
     </Message>
 
+    <!-- The order entry structure travels both ways under several transaction codes. The
+         exchange sends the responses, which the document names as outgoing: ORDER_MOD_REJ_OUT
+         2042, ORDER_CXL_REJ_OUT 2072 and ORDER_ERROR_OUT 2231, with PRICE_CONFIRMATION 2012,
+         FREEZE_TO_CONTROL 2170 and BATCH_ORDER_CANCEL 9002 described under Order Entry Response
+         and its unsolicited messages. A captured session carries 2042 and 2072 from the
+         exchange. The trader sends only KILL_SWITCH_IN 2062 -->
     <Message>
-      <Name>Order Entry Message</Name>
+      <Name>Order Response Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Server Message Payload</Branch>
+      <Code>2012,2042,2072,2170,2231,9002</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Price confirmation, modification and cancellation rejections, freeze, order error and batch cancellation, all carried in the shared order entry structure. Transaction Code in the header names the response</Description>
+      <Fields>
+        <Field>
+          <Name>Order Entry Body</Name>
+          <Type>STRUCT</Type>
+          <Size>276</Size>
+          <Description>Shared order entry structure</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <Message>
+      <Name>Kill Switch Request Message</Name>
       <Dependency>Transaction Code</Dependency>
       <Branch>Client Message Payload</Branch>
-      <Code>2012,2042,2062,2072,2170,2231,9002</Code>
+      <Code>2062</Code>
       <Category>Application</Category>
       <Origin>Firm</Origin>
-      <Description>Order entry acknowledgements, rejections, errors and kill switch, all carried in the shared order entry structure. Transaction Code in the header names the operation</Description>
+      <Description>Cancels all of a trader's orders, or all on one contract, carried in the shared order entry structure</Description>
       <Fields>
         <Field>
           <Name>Order Entry Body</Name>
