@@ -69,6 +69,15 @@
 | NseFo | Snapshot | Tbt | 6.9 | [files](Nse.NseFo.Snapshot.Tbt.v6.9/) |
 | NseFo | Snapshot | Tbt | 7.0 | [files](Nse.NseFo.Snapshot.Tbt.v7.0/) |
 | NseFo | Snapshot | Tbt | 7.1 | [files](Nse.NseFo.Snapshot.Tbt.v7.1/) |
+| NseIx | Broadcast | NnfBcast | 1.12 | [files](Nse.NseIx.Broadcast.NnfBcast.v1.12/) |
+| NseIx | DropCopy | NnfDirect | 1.6 | [files](Nse.NseIx.DropCopy.NnfDirect.v1.6/) |
+| NseIx | Mtbt | Tbt | 1.4 | [files](Nse.NseIx.Mtbt.Tbt.v1.4/) |
+| NseIx | MtbtNdal | Tbt | 1.5 | [files](Nse.NseIx.MtbtNdal.Tbt.v1.5/) |
+| NseIx | OrderEntry | Nnf | 1.12 | [files](Nse.NseIx.OrderEntry.Nnf.v1.12/) |
+| NseIx | OrderEntry | NnfDirect | 1.12 | [files](Nse.NseIx.OrderEntry.NnfDirect.v1.12/) |
+| NseIx | OrderEntry | NnfTrimmed | 1.12 | [files](Nse.NseIx.OrderEntry.NnfTrimmed.v1.12/) |
+| NseIx | Recovery | Tbt | 1.4 | [files](Nse.NseIx.Recovery.Tbt.v1.4/) |
+| NseIx | Snapshot | Tbt | 1.4 | [files](Nse.NseIx.Snapshot.Tbt.v1.4/) |
 | NseSlbm | Broadcast | NnfBcast | 2.7 | [files](Nse.NseSlbm.Broadcast.NnfBcast.v2.7/) |
 | NseSlbm | OrderEntry | NnfDirect | 2.7 | [files](Nse.NseSlbm.OrderEntry.NnfDirect.v2.7/) |
 

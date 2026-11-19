@@ -6959,19 +6959,6 @@ low. Must be 2.</Description>
       <Code>0x80</Code>
       <Fields>
         <Field>
-          <Name>ParamGroupLength</Name>
-          <Type>Binary</Type>
-          <Size>2</Size>
-          <Description>Number of bytes for the parameter group, in-
-cluding this field.</Description>
-        </Field>
-        <Field>
-          <Name>ParamGroupType</Name>
-          <Type>Binary</Type>
-          <Size>1</Size>
-          <Description>0x80</Description>
-        </Field>
-        <Field>
           <Name>NoUnspecifiedUnitReplay</Name>
           <Type>Binary</Type>
           <Size>1</Size>
@@ -6996,19 +6983,17 @@ pant has received messages.</Description>
           <Size>5</Size>
           <Description>Repeating group, stated NumberOfUnits times.</Description>
         </Field>
-        <Field>
-          <Name>ParamGroupLength</Name>
-          <Type>Binary</Type>
-          <Size>2</Size>
-          <Description>Number of bytes for the parameter group, in-
-cluding this field.</Description>
-        </Field>
-        <Field>
-          <Name>ParamGroupType</Name>
-          <Type>Binary</Type>
-          <Size>1</Size>
-          <Description>0x81</Description>
-        </Field>
+      </Fields>
+    </Struct>
+
+    <!-- Return Bitfields Parameter Group -->
+    <Struct>
+      <Name>ReturnBitfieldsParamGroup</Name>
+      <Description>The Return Bitfields parameter group.</Description>
+      <Dependency>paramgrouptype</Dependency>
+      <Branch>paramgrouppayload</Branch>
+      <Code>0x81</Code>
+      <Fields>
         <Field>
           <Name>MessageType</Name>
           <Type>Binary</Type>
@@ -7018,10 +7003,16 @@ being specified (e.g., 0x25 for an Order Ac-
 knowledgment V2 message)</Description>
         </Field>
         <Field>
-          <Name>ReturnBitfield1</Name>
+          <Name>NumberOfReturnBitfields</Name>
           <Type>Binary</Type>
           <Size>1</Size>
-          <Description>Bitfield identifying fields to return.</Description>
+          <Description>Number of bitfields to follow.</Description>
+        </Field>
+        <Field>
+          <Name>ReturnBitfields</Name>
+          <Type>group</Type>
+          <Size>1</Size>
+          <Description>Repeating group, stated NumberOfReturnBitfields times.</Description>
         </Field>
       </Fields>
     </Struct>
@@ -7386,7 +7377,12 @@ cluding this field.</Description>
           <Name>ParamGroupType</Name>
           <Type>Binary</Type>
           <Size>1</Size>
-          <Description>0x80</Description>
+          <Description>0x80 = Unit Sequences, 0x81 = Return Bitfields</Description>
+        </Field>
+        <Field>
+          <Name>ParamGroupPayload</Name>
+          <Type>payload</Type>
+          <Description>Remaining bytes of the parameter group, ParamGroupLength - 3, read as the variant ParamGroupType selects.</Description>
         </Field>
       </Fields>
     </Group>
@@ -7408,6 +7404,20 @@ cluding this field.</Description>
           <Size>4</Size>
           <Description>Highest available Cboe to Participant sequence
 number for the unit.</Description>
+        </Field>
+      </Fields>
+    </Group>
+
+    <Group>
+      <Name>ReturnBitfields</Name>
+      <Description>Repeating group stated NumberOfReturnBitfields times.</Description>
+      <Dependency>NumberOfReturnBitfields</Dependency>
+      <Fields>
+        <Field>
+          <Name>ReturnBitfield</Name>
+          <Type>Binary</Type>
+          <Size>1</Size>
+          <Description>Bitfield identifying fields to return.</Description>
         </Field>
       </Fields>
     </Group>

@@ -1,0 +1,2948 @@
+<OmiNnfPdf>
+
+  <!--
+  Nse Ix (NSE International Exchange, formerly NSE IFSC Limited) broadcast circuit: Chapter 10 of the
+  Trimmed Protocol for Non-NEAT Front End, Version 1.12, October 2025, and the broadcasts it prints
+  elsewhere: General Message Broadcast (Chapter 7, p118-119), the Market By Aggregate broadcasts
+  (Chapter 8, p122-125) and the Spread Combination Master Update broadcasts (Chapter 5, p96-98). The
+  interactive circuit of the same document is Nse.NseIx.OrderEntry.Nnf.v1.12.
+
+  Framing is shared with the Nse India broadcasts and lives in Nse.NnfBcast.Udp.v1.0.Source.xml. The
+  forty byte BCAST_HEADER of Table 2 (p19-20) is byte identical, so no field of it is repeated here; a
+  body here is its structure's printed Packet Length less forty. The document compresses 7200, 7201,
+  7202, 7208, 7213, 7215, 7216, 7220 and 7221 with Lzo (p137).
+
+  Prices are not scaled: Chapter 2, Guidelines for Designers 6 and 7 (p14-15), and every price field's own
+  description divide by 10000 for a contract trading in US dollars and by 100 for one trading in cents, a
+  factor of the contract rather than of the field. TradedInCents in the security master says which.
+
+  Change in System Status (7206, p142) is left out, as the Nse Fo and Cm broadcasts leave it: it refers
+  to MS_SYSTEM_INFO_DATA of the interactive specification. The bhavcopy broadcasts of Chapter 9 (1833 and
+  6502) are carried by the interactive specification, as Nse Fo carries its own.
+  -->
+
+  <Messages>
+
+    <!--
+    MS_BCAST_MESSAGE (Table 39, p118-119) prints a Packet Length of 320 bytes, but its fields end at 319
+    -->
+
+    <!-- Broadcast Journal Vct Message -->
+    <Message>
+      <Name>Broadcast Journal Vct Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Message Payload</Branch>
+      <Code>6501</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Carries a general message broadcast to the trading terminals</Description>
+      <Fields>
+        <Field>
+          <Name>BranchNumber</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Branch number of the trader's branch</Description>
+        </Field>
+        <Field>
+          <Name>BrokerNumber</Name>
+          <Type>CHAR</Type>
+          <Size>5</Size>
+          <Description>Trading member Id of the broker</Description>
+        </Field>
+        <Field>
+          <Name>ActionCode</Name>
+          <Type>CHAR</Type>
+          <Size>3</Size>
+          <Description>Action code indicating the action taken</Description>
+        </Field>
+        <Field>
+          <Name>ST_BCAST_DESTINATION</Name>
+          <Type>STRUCT</Type>
+          <Size>2</Size>
+          <Description>Destinations the broadcast is intended for</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>CHAR</Type>
+          <Size>26</Size>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>BroadcastMessageLength</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Length of the broadcast message</Description>
+        </Field>
+        <Field>
+          <Name>BroadcastMessage</Name>
+          <Type>CHAR</Type>
+          <Size>239</Size>
+          <Description>Text of the broadcast message</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!--
+    MS_SECURITY_UPDATE_INFO (Table 62, p142-143), Packet Length 294 bytes, sent for a change in the
+    security master (7305) and periodically for the securities changed during the day (7340, p147).
+
+    The table is transcribed as printed: ST_SEC_ELIGIBILITY_PER_MARKET (Table 63, p143) is three bytes,
+    Eligibility then Status at offset 1, so the four of them end at 116 where the offset column puts
+    IssueRate. Captured 7340 messages are 298 bytes long, and read the four elements as four bytes each,
+    the flags, a zero byte, then Status at offset 2, which puts IssueRate at 120. The document's own appendix
+    (p239) lists BCAST_SECURITY_MSTR_CHG 7305 as MS_SECURITY_UPDATE_INFO of 298 bytes. Chapter 2, Guidelines
+    for Programmers 3 (p16), word aligns every member other than a char, which would place Status at offset 2,
+    and the Nse Fo v9.50 document prints the structure with a Filler at offset 1 and a Packet Length of 4. The user ruled
+    it an erratum on 2026-11-17; the table stays as printed here, and Nse.NseIx.Broadcast.NnfBcast.v1.12.Edits.xml
+    inserts the one byte filler after the flags, which applies it.
+    -->
+
+    <!-- Security Master Change Message -->
+    <Message>
+      <Name>Security Master Change Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Message Payload</Branch>
+      <Code>7305,7340</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Broadcasts a change to the security master, and periodically the securities changed during the day</Description>
+      <Fields>
+        <Field>
+          <Name>Token</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Token number of the security, unique for a symbol and series</Description>
+        </Field>
+        <Field>
+          <Name>SEC_INFO</Name>
+          <Type>STRUCT</Type>
+          <Size>30</Size>
+          <Description>Contract the security master change is for</Description>
+        </Field>
+        <Field>
+          <Name>PermittedToTrade</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Whether the security is permitted to trade</Description>
+        </Field>
+        <Field>
+          <Name>IssuedCapital</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Issue size of the security</Description>
+        </Field>
+        <Field>
+          <Name>WarningQuantity</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Warning quantity</Description>
+        </Field>
+        <Field>
+          <Name>FreezeQuantity</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Freeze quantity</Description>
+        </Field>
+        <Field>
+          <Name>CreditRating</Name>
+          <Type>CHAR</Type>
+          <Size>12</Size>
+          <Description>Credit rating of the security</Description>
+        </Field>
+        <Field>
+          <Name>ST_SEC_ELIGIBILITY_PER_MARKET</Name>
+          <Type>STRUCT</Type>
+          <Size>3</Size>
+          <Description>Eligibility and status of the security in each market</Description>
+        </Field>
+        <Field>
+          <Name>IssueRate</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Price of the issue</Description>
+        </Field>
+        <Field>
+          <Name>IssueStartDate</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Date of issue of the security</Description>
+        </Field>
+        <Field>
+          <Name>InterestPaymentDate</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Interest payment date of the issue</Description>
+        </Field>
+        <Field>
+          <Name>IssueMaturityDate</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Maturity date</Description>
+        </Field>
+        <Field>
+          <Name>MarginPercentage</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Initial margin percent to be collected on a contract</Description>
+        </Field>
+        <Field>
+          <Name>MinimumLotQuantity</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Minimum lot of an order</Description>
+        </Field>
+        <Field>
+          <Name>BoardLotQuantity</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Regular lot size</Description>
+        </Field>
+        <Field>
+          <Name>TickSize</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Tick size</Description>
+        </Field>
+        <Field>
+          <Name>Name</Name>
+          <Type>CHAR</Type>
+          <Size>25</Size>
+          <Description>Security name</Description>
+        </Field>
+        <Field>
+          <Name>TradedInCents</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>C when the contract is traded in cents</Description>
+        </Field>
+        <Field>
+          <Name>ListingDate</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Date of listing</Description>
+        </Field>
+        <Field>
+          <Name>ExpulsionDate</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Date of expulsion</Description>
+        </Field>
+        <Field>
+          <Name>ReAdmissionDate</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Date of readmission</Description>
+        </Field>
+        <Field>
+          <Name>RecordDate</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Record date</Description>
+        </Field>
+        <Field>
+          <Name>LowPriceRange</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Lower price limit of the operating range</Description>
+        </Field>
+        <Field>
+          <Name>HighPriceRange</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Upper price limit of the operating range</Description>
+        </Field>
+        <Field>
+          <Name>ExpiryDate</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Last date of trading before any corporate action</Description>
+        </Field>
+        <Field>
+          <Name>NoDeliveryStartDate</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Date physical delivery stops for book closure</Description>
+        </Field>
+        <Field>
+          <Name>NoDeliveryEndDate</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Date physical delivery starts after book closure</Description>
+        </Field>
+        <Field>
+          <Name>ST_ELIGIBLITY_INDICATORS</Name>
+          <Type>STRUCT</Type>
+          <Size>2</Size>
+          <Description>Order attributes the security is eligible for</Description>
+        </Field>
+        <Field>
+          <Name>BookClosureStartDate</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Date the record books for shareholder names start</Description>
+        </Field>
+        <Field>
+          <Name>BookClosureEndDate</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Date the record books for shareholder names end</Description>
+        </Field>
+        <Field>
+          <Name>ExerciseStartDate</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Starting date for exercise</Description>
+        </Field>
+        <Field>
+          <Name>ExerciseEndDate</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Last date for exercise</Description>
+        </Field>
+        <Field>
+          <Name>Multiplier</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Multiplier of the volume to get the actual quantity</Description>
+        </Field>
+        <Field>
+          <Name>AssetInstrument</Name>
+          <Type>CHAR</Type>
+          <Size>6</Size>
+          <Description>Underlying asset type</Description>
+        </Field>
+        <Field>
+          <Name>AssetName</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Name of the underlying asset</Description>
+        </Field>
+        <Field>
+          <Name>AssetToken</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Token number of the asset</Description>
+        </Field>
+        <Field>
+          <Name>IntrinsicValue</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Intrinsic value of the contract</Description>
+        </Field>
+        <Field>
+          <Name>ExtrinsicValue</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Extrinsic value of the contract</Description>
+        </Field>
+        <Field>
+          <Name>ST_PURPOSE</Name>
+          <Type>STRUCT</Type>
+          <Size>2</Size>
+          <Description>Corporate action flags of the security</Description>
+        </Field>
+        <Field>
+          <Name>LocalUpdateDateTime</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Local database update date and time</Description>
+        </Field>
+        <Field>
+          <Name>DeleteFlag</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Whether the security is deleted</Description>
+        </Field>
+        <Field>
+          <Name>Remark</Name>
+          <Type>CHAR</Type>
+          <Size>25</Size>
+          <Description>Remarks</Description>
+        </Field>
+        <Field>
+          <Name>BasePrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Base price of the security</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!--
+    MS_INSTRUMENT_UPDATE_INFO (Table 66, p148) prints a Packet Length of 80 bytes, but its fields end at 79
+    -->
+
+    <!-- Instrument Master Change Message -->
+    <Message>
+      <Name>Instrument Master Change Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Message Payload</Branch>
+      <Code>7324</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Broadcasts a change to the instrument master</Description>
+      <Fields>
+        <Field>
+          <Name>InstrumentId</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Id of the instrument</Description>
+        </Field>
+        <Field>
+          <Name>InstrumentName</Name>
+          <Type>CHAR</Type>
+          <Size>6</Size>
+          <Description>Type of the instrument</Description>
+        </Field>
+        <Field>
+          <Name>InstrumentDescription</Name>
+          <Type>CHAR</Type>
+          <Size>26</Size>
+          <Description>Full name of the instrument</Description>
+        </Field>
+        <Field>
+          <Name>InstrumentUpdateDateTime</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Time the record was modified</Description>
+        </Field>
+        <Field>
+          <Name>DeleteFlag</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Whether the instrument is deleted</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!--
+    PARTICIPANT_UPDATE_INFO (Table 67, p148-149) prints a Packet Length of 84 bytes, but its fields end at 83
+    -->
+
+    <!-- Participant Master Change Message -->
+    <Message>
+      <Name>Participant Master Change Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Message Payload</Branch>
+      <Code>7306</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Broadcasts a change to a participant</Description>
+      <Fields>
+        <Field>
+          <Name>ParticipantId</Name>
+          <Type>CHAR</Type>
+          <Size>12</Size>
+          <Description>Participant Id</Description>
+        </Field>
+        <Field>
+          <Name>ParticipantName</Name>
+          <Type>CHAR</Type>
+          <Size>25</Size>
+          <Description>Name of the participant</Description>
+        </Field>
+        <Field>
+          <Name>ParticipantStatus</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Status of the participant</Description>
+        </Field>
+        <Field>
+          <Name>ParticipantUpdateDateTime</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Time the participant information was changed</Description>
+        </Field>
+        <Field>
+          <Name>DeleteFlag</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Whether the participant is deleted</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- MS_SECURITY_STATUS_UPDATE_INFO (Table 68, p149-150), Packet Length 462 bytes -->
+
+    <!-- Security Status Change Message -->
+    <Message>
+      <Name>Security Status Change Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Message Payload</Branch>
+      <Code>7320,7210</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Broadcasts the status of securities across markets, and in pre open</Description>
+      <Fields>
+        <Field>
+          <Name>NumberOfRecords</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Number of token and eligibility records</Description>
+        </Field>
+        <Field>
+          <Name>TOKEN_AND_ELIGIBILITY</Name>
+          <Type>STRUCT</Type>
+          <Size>12</Size>
+          <Description>Status of each security, thirty five records</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- MS_BROADCAST_LIMIT_EXCEEDED (Table 70, p151), Packet Length 98 bytes -->
+
+    <!-- Turnover Exceeded Message -->
+    <Message>
+      <Name>Turnover Exceeded Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Message Payload</Branch>
+      <Code>9010,9011</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Broadcast when a broker's turnover limit is about to exceed or has exceeded, or when the broker is reactivated</Description>
+      <Fields>
+        <Field>
+          <Name>BrokerCode</Name>
+          <Type>CHAR</Type>
+          <Size>5</Size>
+          <Description>Broker about to exceed or exceeding the turnover limit</Description>
+        </Field>
+        <Field>
+          <Name>CounterBrokerCode</Name>
+          <Type>CHAR</Type>
+          <Size>5</Size>
+          <Description>Not in use</Description>
+        </Field>
+        <Field>
+          <Name>WarningType</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Whether the turnover limit is about to exceed or has exceeded</Description>
+        </Field>
+        <Field>
+          <Name>Token</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Token number of the contract last traded</Description>
+        </Field>
+        <Field>
+          <Name>InstrumentName</Name>
+          <Type>CHAR</Type>
+          <Size>6</Size>
+          <Description>Instrument of the contract last traded</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Symbol of the security last traded</Description>
+        </Field>
+        <Field>
+          <Name>ExpiryDate</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Expiry date of the contract last traded</Description>
+        </Field>
+        <Field>
+          <Name>StrikePrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Strike price of the contract last traded</Description>
+        </Field>
+        <Field>
+          <Name>OptionType</Name>
+          <Type>CHAR</Type>
+          <Size>2</Size>
+          <Description>Option type of the contract last traded</Description>
+        </Field>
+        <Field>
+          <Name>CA Level</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Corporate action level</Description>
+        </Field>
+        <Field>
+          <Name>TradeNumber</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Trade number the broker last traded in</Description>
+        </Field>
+        <Field>
+          <Name>TradePrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Price of the trade</Description>
+        </Field>
+        <Field>
+          <Name>TradeVolume</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Quantity of the trade</Description>
+        </Field>
+        <Field>
+          <Name>Final</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Whether it is the final auction trade</Description>
+        </Field>
+        <Field>
+          <Name>cFiller</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Reserved for future use</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!--
+    MS_BCAST_VCT_MSGS (Table 71, p153), Packet Length 320 bytes, lists no field from offset 76 to 79, where
+    its offset column jumps from MarketType at 74 to ST_BCAST_DESTINATION at 80, and its fields end at 318.
+    The table is transcribed as printed; Nse.NseIx.Broadcast.NnfBcast.v1.12.Edits.xml inserts the four byte
+    gap after MarketType
+    -->
+
+    <!-- Market Status Message -->
+    <Message>
+      <Name>Market Status Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Message Payload</Branch>
+      <Code>6511,6521,6522,6531,6551,6571</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Broadcast when a market opens, closes, enters or leaves pre open or enters or leaves pre close. Transaction Code names which</Description>
+      <Fields>
+        <Field>
+          <Name>Token</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Token number of the instrument the status change is for</Description>
+        </Field>
+        <Field>
+          <Name>SEC_INFO</Name>
+          <Type>STRUCT</Type>
+          <Size>30</Size>
+          <Description>Contract the status change is for</Description>
+        </Field>
+        <Field>
+          <Name>MarketType</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Type of market</Description>
+        </Field>
+        <Field>
+          <Name>ST_BCAST_DESTINATION</Name>
+          <Type>STRUCT</Type>
+          <Size>2</Size>
+          <Description>Destinations the broadcast is intended for</Description>
+        </Field>
+        <Field>
+          <Name>BroadcastMessageLength</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Length of the broadcast message</Description>
+        </Field>
+        <Field>
+          <Name>BroadcastMessage</Name>
+          <Type>CHAR</Type>
+          <Size>234</Size>
+          <Description>Contents of the broadcast message</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- MS_TICKER_TRADE_DATA (Table 72, p154), Packet Length 484 bytes -->
+
+    <!-- Ticker And Market Index Message -->
+    <Message>
+      <Name>Ticker And Market Index Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Message Payload</Branch>
+      <Code>7202</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Broadcasts the last trade of each contract as a ticker</Description>
+      <Fields>
+        <Field>
+          <Name>Number of Records</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Number of ticker records, at most seventeen</Description>
+        </Field>
+        <Field>
+          <Name>ST_TICKER_INDEX_INFO</Name>
+          <Type>STRUCT</Type>
+          <Size>26</Size>
+          <Description>Ticker records</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!--
+    MS_BCAST_MBO_MBP (Table 74, p155) prints a Packet Length of 410 bytes, but its fields end at 409. Its
+    Record Buffer is ten ST_MBP_INFO.
+    -->
+
+    <!-- Market By Order And Market By Price Message -->
+    <Message>
+      <Name>Market By Order And Market By Price Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Message Payload</Branch>
+      <Code>7200</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Broadcasts the best buy and sell orders and prices of a contract</Description>
+      <Fields>
+        <Field>
+          <Name>ST_INTERACTIVE_MBO_DATA</Name>
+          <Type>STRUCT</Type>
+          <Size>235</Size>
+          <Description>Market by order data for the contract</Description>
+        </Field>
+        <Field>
+          <Name>ST_MBP_INFO</Name>
+          <Type>STRUCT</Type>
+          <Size>10</Size>
+          <Description>Five best buy and five best sell prices</Description>
+        </Field>
+        <Field>
+          <Name>Total Buy Quantity</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Total quantity of buy orders</Description>
+        </Field>
+        <Field>
+          <Name>Total Sell Quantity</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Total quantity of sell orders</Description>
+        </Field>
+        <Field>
+          <Name>ST_INDICATOR</Name>
+          <Type>STRUCT</Type>
+          <Size>2</Size>
+          <Description>Side and last trade direction indicators</Description>
+        </Field>
+        <Field>
+          <Name>ClosingPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Closing price</Description>
+        </Field>
+        <Field>
+          <Name>OpenPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Opening price</Description>
+        </Field>
+        <Field>
+          <Name>HighPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Highest trade price</Description>
+        </Field>
+        <Field>
+          <Name>LowPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Lowest trade price</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!--
+    MS_BCAST_ONLY_MBP (Table 80, p161), sent as BCAST_ONLY_MBP (7208) and periodically as BCAST_MBP_PERIODIC
+    (7343, p165-166). It prints a Packet Length of 470 bytes, but two INTERACTIVE_ONLY_MBP_DATA of 213 bytes
+    end at 468.
+    -->
+
+    <!-- Only Market By Price Message -->
+    <Message>
+      <Name>Only Market By Price Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Message Payload</Branch>
+      <Code>7208,7343</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Broadcasts the best buy and sell prices for two contracts, and periodically for the contracts active during the day</Description>
+      <Fields>
+        <Field>
+          <Name>NoOfRecords</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Number of contract records</Description>
+        </Field>
+        <Field>
+          <Name>INTERACTIVE_ONLY_MBP_DATA</Name>
+          <Type>STRUCT</Type>
+          <Size>213</Size>
+          <Description>Contract records, two</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- MS_BCAST_INQ_RESP_2 (Table 83, p166), Packet Length 472 bytes -->
+
+    <!-- Market Watch Round Robin Message -->
+    <Message>
+      <Name>Market Watch Round Robin Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Message Payload</Branch>
+      <Code>7201</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Broadcasts the market watch for five contracts in rotation</Description>
+      <Fields>
+        <Field>
+          <Name>NoOfRecords</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Number of market watch records</Description>
+        </Field>
+        <Field>
+          <Name>ST_MARKET_WATCH_BCAST</Name>
+          <Type>STRUCT</Type>
+          <Size>86</Size>
+          <Description>Market watch records, five</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- MS_ASSET_DATA (Table 86, p167), Packet Length 76 bytes -->
+
+    <!-- Currency Assets Message -->
+    <Message>
+      <Name>Currency Assets Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Message Payload</Branch>
+      <Code>7213</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Broadcasts the price details of an asset</Description>
+      <Fields>
+        <Field>
+          <Name>Token</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Token number of the asset</Description>
+        </Field>
+        <Field>
+          <Name>BidPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Bid price</Description>
+        </Field>
+        <Field>
+          <Name>AskPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Ask price</Description>
+        </Field>
+        <Field>
+          <Name>DealPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Deal price</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Symbol of the underlying asset</Description>
+        </Field>
+        <Field>
+          <Name>Instrument</Name>
+          <Type>CHAR</Type>
+          <Size>6</Size>
+          <Description>Instrument of the underlying asset</Description>
+        </Field>
+        <Field>
+          <Name>ClosingPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Last trade day's closing price of the asset</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- MBP_INFO (Table 87, p168), Packet Length 262 bytes -->
+
+    <!-- Interest Rate Assets Message -->
+    <Message>
+      <Name>Interest Rate Assets Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Message Payload</Branch>
+      <Code>7214</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Broadcasts the five best buy and sell prices of an interest rate asset</Description>
+      <Fields>
+        <Field>
+          <Name>Token</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Token number of the underlying asset</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Symbol of the underlying asset</Description>
+        </Field>
+        <Field>
+          <Name>MbpBuy Level</Name>
+          <Type>STRUCT</Type>
+          <Size>20</Size>
+          <Description>Five best buy orders</Description>
+        </Field>
+        <Field>
+          <Name>MbpSell Level</Name>
+          <Type>STRUCT</Type>
+          <Size>20</Size>
+          <Description>Five best sell orders</Description>
+        </Field>
+        <Field>
+          <Name>Book Type</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Type of order of the underlying asset</Description>
+        </Field>
+        <Field>
+          <Name>Instrument type</Name>
+          <Type>CHAR</Type>
+          <Size>6</Size>
+          <Description>Instrument type of the underlying asset</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!--
+    Broadcast Circuit Check (p169-170) is the header alone. The page names it BCAST_CIRCUIT_MSG (6551),
+    which is BC_PRECLOSE_ENDED of Change of Market Status (p152-153); the appendix list of transaction
+    codes (p238) gives BC_CIRCUIT_CHECK 6541, which is followed.
+    -->
+
+    <!-- Circuit Check Message -->
+    <Message>
+      <Name>Circuit Check Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Message Payload</Branch>
+      <Code>6541</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Pulse sent when there has been no data on the broadcast circuit for a stipulated period, carrying no body beyond the header</Description>
+      <Fields>
+      </Fields>
+    </Message>
+
+    <!-- MS_SPD_MKT_INFO (Table 90, p170-171), Packet Length 204 bytes -->
+
+    <!-- Spread Market By Price Delta Message -->
+    <Message>
+      <Name>Spread Market By Price Delta Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Message Payload</Branch>
+      <Code>7211</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Broadcasts the best buy and sell prices of a spread combination</Description>
+      <Fields>
+        <Field>
+          <Name>Token1</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Token number of the security with the earlier expiry</Description>
+        </Field>
+        <Field>
+          <Name>Token2</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Token number of the security with the later expiry</Description>
+        </Field>
+        <Field>
+          <Name>MbpBuy</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Total number of buys for the combination</Description>
+        </Field>
+        <Field>
+          <Name>MbpSell</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Total number of sells for the combination</Description>
+        </Field>
+        <Field>
+          <Name>LastActiveTime</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Time the last activity was done</Description>
+        </Field>
+        <Field>
+          <Name>TradedVolume</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Total number of trades today</Description>
+        </Field>
+        <Field>
+          <Name>TotalTradedValue</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Total value traded, divided by 10000 for the value in US dollars</Description>
+        </Field>
+        <Field>
+          <Name>MbpBuys</Name>
+          <Type>STRUCT</Type>
+          <Size>10</Size>
+          <Description>Five best buy orders</Description>
+        </Field>
+        <Field>
+          <Name>MbpSells</Name>
+          <Type>STRUCT</Type>
+          <Size>10</Size>
+          <Description>Five best sell orders</Description>
+        </Field>
+        <Field>
+          <Name>TotalOrderVolume</Name>
+          <Type>STRUCT</Type>
+          <Size>16</Size>
+          <Description>Total buy and sell volume ordered</Description>
+        </Field>
+        <Field>
+          <Name>OpenPriceDifference</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Price difference of the first spread trade of the day</Description>
+        </Field>
+        <Field>
+          <Name>DayHighPriceDifference</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Highest price difference of the day</Description>
+        </Field>
+        <Field>
+          <Name>DayLowPriceDifference</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Lowest price difference of the day</Description>
+        </Field>
+        <Field>
+          <Name>LastTradedPriceDifference</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Price difference of the latest spread trade</Description>
+        </Field>
+        <Field>
+          <Name>LastUpdateTime</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Time the last activity was done</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!--
+    CM_ASSET_OI (Table 94, p172-173), Packet Length 504 bytes, prints its own forty byte header, which puts
+    MarketType at offset 8 and NoOfRecords at offset 12, where BCAST_HEADER has Alpha Char and Error Code;
+    the shared header reads those bytes under its own names. The body is the fifty eight OPEN_INTEREST.
+    -->
+
+    <!-- Asset Open Interest Message -->
+    <Message>
+      <Name>Asset Open Interest Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Message Payload</Branch>
+      <Code>7130</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Broadcasts the open interest of each underlying asset</Description>
+      <Fields>
+        <Field>
+          <Name>ASSET_OPEN_INTEREST</Name>
+          <Type>STRUCT</Type>
+          <Size>8</Size>
+          <Description>Open interest records, fifty eight</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!--
+    MS_ASSET_UPDT_INT_RATE_INFO (Table 96, p173), Packet Length 52 bytes. The table prefaces it with
+    MESSAGE_HEADER; on the broadcast circuit the forty byte header is read as BCAST_HEADER.
+    -->
+
+    <!-- Asset Interest Rate Change Message -->
+    <Message>
+      <Name>Asset Interest Rate Change Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Message Payload</Branch>
+      <Code>6503</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Broadcast when the interest rates or volatility of an asset change</Description>
+      <Fields>
+        <Field>
+          <Name>Token</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Token number of the asset</Description>
+        </Field>
+        <Field>
+          <Name>ForeignInterestRate</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Foreign interest rate of the asset</Description>
+        </Field>
+        <Field>
+          <Name>Volatility</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Volatility</Description>
+        </Field>
+        <Field>
+          <Name>DomesticInterestRate</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Domestic interest rate</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!--
+    MS_BCAST_TRADE_EXECUTION_RANGE (Table 97, p174), Packet Length 344 bytes, sent as
+    BCAST_TRADE_EXECUTION_RANGE (7220), periodically as BCAST_TER_PERIODIC (7342) and for negotiated large
+    trades as BCAST_NLT_TRADE_EXECUTION_RANGE (7221, p175)
+    -->
+
+    <!-- Trade Execution Range Message -->
+    <Message>
+      <Name>Trade Execution Range Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Message Payload</Branch>
+      <Code>7220,7221,7342</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Broadcasts the trade execution bands for a set of contracts, periodically, and for negotiated large trades. Transaction Code names which</Description>
+      <Fields>
+        <Field>
+          <Name>TRADE_EXECUTION_RANGE_DATA</Name>
+          <Type>STRUCT</Type>
+          <Size>304</Size>
+          <Description>Execution bands for a set of contracts</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!--
+    MBA_DELTA (Tables 42 and 46, p122-125), Packet Length 298 bytes, for the exchange defined quantity points
+    (7215) and value points (7216). The tables preface it with MESSAGE_HEADER; on the broadcast circuit the
+    forty byte header is read as BCAST_HEADER. MBA_DATA is printed 240 bytes, five of its 48 byte records.
+    -->
+
+    <!-- Market By Aggregate Delta Message -->
+    <Message>
+      <Name>Market By Aggregate Delta Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Message Payload</Branch>
+      <Code>7215,7216</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Broadcasts the market by aggregate figures for the exchange defined quantity or value points of a contract. Transaction Code names which</Description>
+      <Fields>
+        <Field>
+          <Name>Token</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Token number the market by aggregate is broadcast for</Description>
+        </Field>
+        <Field>
+          <Name>NoOfRecords</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Number of quantity or value points</Description>
+        </Field>
+        <Field>
+          <Name>MarketBuyPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Best buy price for the contract</Description>
+        </Field>
+        <Field>
+          <Name>MarketSellPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Best sell price for the contract</Description>
+        </Field>
+        <Field>
+          <Name>IdealPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Average of the best bid and ask prices</Description>
+        </Field>
+        <Field>
+          <Name>MBA_DATA</Name>
+          <Type>STRUCT</Type>
+          <Size>48</Size>
+          <Description>Buy and sell figures for each point, five</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!--
+    MS_SPD_UPDATE_INFO (Table 29, p96-98), Packet Length 132 bytes, for an intraday change to the spread
+    combination master (7309) and periodically for the combinations changed during the day (7341). The table
+    prefaces it with MESSAGE_HEADER; on the broadcast circuit the forty byte header is read as BCAST_HEADER.
+    Its two SEC_INFO are named SecInfo1 and SecInfo2, and are declared under those names.
+    -->
+
+    <!-- Spread Combination Master Change Message -->
+    <Message>
+      <Name>Spread Combination Master Change Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Message Payload</Branch>
+      <Code>7309,7341</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Broadcasts a change to the spread combination master, and periodically the combinations changed during the day</Description>
+      <Fields>
+        <Field>
+          <Name>Token1</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Token number of the first leg</Description>
+        </Field>
+        <Field>
+          <Name>Token2</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Token number of the second leg</Description>
+        </Field>
+        <Field>
+          <Name>SecInfo1</Name>
+          <Type>STRUCT</Type>
+          <Size>30</Size>
+          <Description>Contract of the first leg</Description>
+        </Field>
+        <Field>
+          <Name>SecInfo2</Name>
+          <Type>STRUCT</Type>
+          <Size>30</Size>
+          <Description>Contract of the second leg</Description>
+        </Field>
+        <Field>
+          <Name>ReferencePrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Settlement price of the first leg, the base of the price difference ranges</Description>
+        </Field>
+        <Field>
+          <Name>DayLowPriceDiffRange</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Day low price difference range</Description>
+        </Field>
+        <Field>
+          <Name>DayHighPriceDiffRange</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Day high price difference range</Description>
+        </Field>
+        <Field>
+          <Name>OpLowPriceDiffRange</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Operating low price difference range</Description>
+        </Field>
+        <Field>
+          <Name>OpHighPriceDiffRange</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Operating high price difference range</Description>
+        </Field>
+        <Field>
+          <Name>ST_SPD_ELIGIBILITY</Name>
+          <Type>STRUCT</Type>
+          <Size>1</Size>
+          <Description>Whether the combination is allowed to trade</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>DeleteFlag</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Whether the combination is deleted</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Reserved</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+  </Messages>
+
+  <Structs>
+
+    <!-- SEC_INFO (Table 30, p96-97), 30 bytes -->
+
+    <!-- SEC_INFO -->
+    <Struct>
+      <Name>SEC_INFO</Name>
+      <Description>Contract the message is for</Description>
+      <Fields>
+        <Field>
+          <Name>InstrumentName</Name>
+          <Type>CHAR</Type>
+          <Size>6</Size>
+          <Description>Instrument the contract belongs to</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Symbol of the underlying</Description>
+        </Field>
+        <Field>
+          <Name>Series</Name>
+          <Type>CHAR</Type>
+          <Size>2</Size>
+          <Description>Series of the security</Description>
+        </Field>
+        <Field>
+          <Name>ExpiryDate</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Date the contract expires</Description>
+        </Field>
+        <Field>
+          <Name>StrikePrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Strike price of an option</Description>
+        </Field>
+        <Field>
+          <Name>OptionType</Name>
+          <Type>CHAR</Type>
+          <Size>2</Size>
+          <Description>Whether the option is a call or a put</Description>
+        </Field>
+        <Field>
+          <Name>CALevel</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Corporate action level</Description>
+        </Field>
+      </Fields>
+    </Struct>
+
+    <!-- SecInfo1 -->
+    <Struct>
+      <Name>SecInfo1</Name>
+      <Description>SEC_INFO of the first leg</Description>
+      <Fields>
+        <Field>
+          <Name>InstrumentName</Name>
+          <Type>CHAR</Type>
+          <Size>6</Size>
+          <Description>Instrument the contract belongs to</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Symbol of the underlying</Description>
+        </Field>
+        <Field>
+          <Name>Series</Name>
+          <Type>CHAR</Type>
+          <Size>2</Size>
+          <Description>Series of the security</Description>
+        </Field>
+        <Field>
+          <Name>ExpiryDate</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Date the contract expires</Description>
+        </Field>
+        <Field>
+          <Name>StrikePrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Strike price of an option</Description>
+        </Field>
+        <Field>
+          <Name>OptionType</Name>
+          <Type>CHAR</Type>
+          <Size>2</Size>
+          <Description>Whether the option is a call or a put</Description>
+        </Field>
+        <Field>
+          <Name>CALevel</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Corporate action level</Description>
+        </Field>
+      </Fields>
+    </Struct>
+
+    <!-- SecInfo2 -->
+    <Struct>
+      <Name>SecInfo2</Name>
+      <Description>SEC_INFO of the second leg</Description>
+      <Fields>
+        <Field>
+          <Name>InstrumentName</Name>
+          <Type>CHAR</Type>
+          <Size>6</Size>
+          <Description>Instrument the contract belongs to</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Symbol of the underlying</Description>
+        </Field>
+        <Field>
+          <Name>Series</Name>
+          <Type>CHAR</Type>
+          <Size>2</Size>
+          <Description>Series of the security</Description>
+        </Field>
+        <Field>
+          <Name>ExpiryDate</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Date the contract expires</Description>
+        </Field>
+        <Field>
+          <Name>StrikePrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Strike price of an option</Description>
+        </Field>
+        <Field>
+          <Name>OptionType</Name>
+          <Type>CHAR</Type>
+          <Size>2</Size>
+          <Description>Whether the option is a call or a put</Description>
+        </Field>
+        <Field>
+          <Name>CALevel</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Corporate action level</Description>
+        </Field>
+      </Fields>
+    </Struct>
+
+    <!--
+    ST_SEC_ELIGIBILITY_PER_MARKET (Table 63, p143-144), as printed: three bytes, see Security Master Change
+    -->
+
+    <!-- ST_SEC_ELIGIBILITY_PER_MARKET -->
+    <Struct>
+      <Name>ST_SEC_ELIGIBILITY_PER_MARKET</Name>
+      <Description>Eligibility and status of the security in one market</Description>
+      <Fields>
+        <Field>
+          <Name>Security Eligibility Flags</Name>
+          <Type>BITFIELD</Type>
+          <Size>1</Size>
+          <Description>Whether the security is eligible in this market</Description>
+        </Field>
+        <Field>
+          <Name>Status</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Status of the security in this market</Description>
+        </Field>
+      </Fields>
+    </Struct>
+
+    <!-- TOKEN_AND_ELIGIBILITY (Table 69, p150), 12 bytes -->
+
+    <!-- TOKEN_AND_ELIGIBILITY -->
+    <Struct>
+      <Name>TOKEN_AND_ELIGIBILITY</Name>
+      <Description>One security's status across the markets</Description>
+      <Fields>
+        <Field>
+          <Name>Token</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Token number of the security</Description>
+        </Field>
+        <Field>
+          <Name>ST_SEC_STATUS_PER_MARKET</Name>
+          <Type>STRUCT</Type>
+          <Size>2</Size>
+          <Description>Status in each of four markets</Description>
+        </Field>
+      </Fields>
+    </Struct>
+
+    <!-- ST_SEC_STATUS_PER_MARKET (p150), 2 bytes -->
+
+    <!-- ST_SEC_STATUS_PER_MARKET -->
+    <Struct>
+      <Name>ST_SEC_STATUS_PER_MARKET</Name>
+      <Description>Security status in one market</Description>
+      <Fields>
+        <Field>
+          <Name>Status</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>New status of the security</Description>
+        </Field>
+      </Fields>
+    </Struct>
+
+    <!--
+    ST_TICKER_INDEX_INFO (Table 73, p154, its structure name printed ST_TICKET_INDEX_INFO), 26 bytes
+    -->
+
+    <!-- ST_TICKER_INDEX_INFO -->
+    <Struct>
+      <Name>ST_TICKER_INDEX_INFO</Name>
+      <Description>One contract's last trade and open interest</Description>
+      <Fields>
+        <Field>
+          <Name>Token</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Token number of the contract</Description>
+        </Field>
+        <Field>
+          <Name>MarketType</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Type of market</Description>
+        </Field>
+        <Field>
+          <Name>FillPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Price at which the order traded</Description>
+        </Field>
+        <Field>
+          <Name>FillVolume</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Quantity traded</Description>
+        </Field>
+        <Field>
+          <Name>OpenInterest</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Open interest</Description>
+        </Field>
+        <Field>
+          <Name>DayHiOI</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Highest open interest of the day</Description>
+        </Field>
+        <Field>
+          <Name>DayLoOI</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Lowest open interest of the day</Description>
+        </Field>
+      </Fields>
+    </Struct>
+
+    <!--
+    ST_INTERACTIVE_MBO_DATA (Table 75, p155-156), 235 bytes. Its RecordBuffer is ten ST_MBO_INFO.
+    -->
+
+    <!-- ST_INTERACTIVE_MBO_DATA -->
+    <Struct>
+      <Name>ST_INTERACTIVE_MBO_DATA</Name>
+      <Description>Market by order data for one contract</Description>
+      <Fields>
+        <Field>
+          <Name>Token</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Token number of the contract</Description>
+        </Field>
+        <Field>
+          <Name>BookType</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Book the orders belong to</Description>
+        </Field>
+        <Field>
+          <Name>TradingStatus</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Trading status of the security</Description>
+        </Field>
+        <Field>
+          <Name>VolumeTradedToday</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Total quantity traded today</Description>
+        </Field>
+        <Field>
+          <Name>LastTradedPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Price of the latest trade</Description>
+        </Field>
+        <Field>
+          <Name>NetChangeIndicator</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Direction of the change from the last traded price</Description>
+        </Field>
+        <Field>
+          <Name>NetPriceChangeFromClosingPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Net change between the closing price and the last traded price</Description>
+        </Field>
+        <Field>
+          <Name>LastTradeQuantity</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Quantity of the last trade</Description>
+        </Field>
+        <Field>
+          <Name>LastTradeTime</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Time of the last trade</Description>
+        </Field>
+        <Field>
+          <Name>AverageTradePrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Average price of the trades</Description>
+        </Field>
+        <Field>
+          <Name>AuctionNumber</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Auction number</Description>
+        </Field>
+        <Field>
+          <Name>AuctionStatus</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Status of the auction</Description>
+        </Field>
+        <Field>
+          <Name>InitiatorType</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Type of the auction initiator</Description>
+        </Field>
+        <Field>
+          <Name>InitiatorPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Price of the initiator's auction order</Description>
+        </Field>
+        <Field>
+          <Name>InitiatorQuantity</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Quantity of the initiator's auction order</Description>
+        </Field>
+        <Field>
+          <Name>AuctionPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Price at which the auction takes place</Description>
+        </Field>
+        <Field>
+          <Name>AuctionQuantity</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Quantity at which the auction takes place</Description>
+        </Field>
+        <Field>
+          <Name>ST_MBO_INFO</Name>
+          <Type>STRUCT</Type>
+          <Size>18</Size>
+          <Description>Five best buy and five best sell orders</Description>
+        </Field>
+      </Fields>
+    </Struct>
+
+    <!-- ST_MBO_INFO (Table 76, p156), 18 bytes -->
+
+    <!-- ST_MBO_INFO -->
+    <Struct>
+      <Name>ST_MBO_INFO</Name>
+      <Description>One order in the market by order book</Description>
+      <Fields>
+        <Field>
+          <Name>TraderId</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Trader Id of the order</Description>
+        </Field>
+        <Field>
+          <Name>Qty</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Quantity of the order</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Price of the order</Description>
+        </Field>
+        <Field>
+          <Name>ST_MBO_MBP_TERMS</Name>
+          <Type>STRUCT</Type>
+          <Size>2</Size>
+          <Description>Terms attached to the order</Description>
+        </Field>
+        <Field>
+          <Name>Min Fill Qty</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Minimum fill quantity</Description>
+        </Field>
+      </Fields>
+    </Struct>
+
+    <!-- ST_MBP_INFO (Table 77, p156), 10 bytes -->
+
+    <!-- ST_MBP_INFO -->
+    <Struct>
+      <Name>ST_MBP_INFO</Name>
+      <Description>One price level in the market by price book</Description>
+      <Fields>
+        <Field>
+          <Name>Qty</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Quantity at the price</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Price</Description>
+        </Field>
+        <Field>
+          <Name>NoOfOrders</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Number of orders at the price</Description>
+        </Field>
+      </Fields>
+    </Struct>
+
+    <!--
+    INTERACTIVE_ONLY_MBP_DATA (Table 81, p161-162), 213 bytes. Its RecordBuffer is ten MBP_INFORMATION.
+    -->
+
+    <!-- INTERACTIVE_ONLY_MBP_DATA -->
+    <Struct>
+      <Name>INTERACTIVE_ONLY_MBP_DATA</Name>
+      <Description>Price aggregated order book for one contract</Description>
+      <Fields>
+        <Field>
+          <Name>Token</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Token number of the contract</Description>
+        </Field>
+        <Field>
+          <Name>BookType</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Book the orders belong to</Description>
+        </Field>
+        <Field>
+          <Name>TradingStatus</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Trading status of the security</Description>
+        </Field>
+        <Field>
+          <Name>VolumeTradedToday</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Total quantity traded today</Description>
+        </Field>
+        <Field>
+          <Name>LastTradedPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Price of the latest trade</Description>
+        </Field>
+        <Field>
+          <Name>NetChangeIndicator</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Direction of the change from the last traded price</Description>
+        </Field>
+        <Field>
+          <Name>NetPriceChangeFromClosingPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Net change between the closing price and the last traded price</Description>
+        </Field>
+        <Field>
+          <Name>LastTradeQuantity</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Quantity of the last trade</Description>
+        </Field>
+        <Field>
+          <Name>LastTradeTime</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Time of the last trade</Description>
+        </Field>
+        <Field>
+          <Name>AverageTradePrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Average price of the trades</Description>
+        </Field>
+        <Field>
+          <Name>AuctionNumber</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Auction number, not in use</Description>
+        </Field>
+        <Field>
+          <Name>AuctionStatus</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Status of the auction</Description>
+        </Field>
+        <Field>
+          <Name>InitiatorType</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Type of the auction initiator</Description>
+        </Field>
+        <Field>
+          <Name>InitiatorPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Price of the initiator's auction order</Description>
+        </Field>
+        <Field>
+          <Name>InitiatorQuantity</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Quantity of the initiator's auction order</Description>
+        </Field>
+        <Field>
+          <Name>AuctionPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Price at which the auction takes place</Description>
+        </Field>
+        <Field>
+          <Name>AuctionQuantity</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Quantity at which the auction takes place</Description>
+        </Field>
+        <Field>
+          <Name>MBP_INFORMATION</Name>
+          <Type>STRUCT</Type>
+          <Size>12</Size>
+          <Description>Five best buy and five best sell prices</Description>
+        </Field>
+        <Field>
+          <Name>BbTotalBuyFlag</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Buy back flag, zero</Description>
+        </Field>
+        <Field>
+          <Name>BbTotalSellFlag</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Buy back flag, zero</Description>
+        </Field>
+        <Field>
+          <Name>TotalBuyQuantity</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Total quantity of buy orders</Description>
+        </Field>
+        <Field>
+          <Name>TotalSellQuantity</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Total quantity of sell orders</Description>
+        </Field>
+        <Field>
+          <Name>ST_INDICATOR</Name>
+          <Type>STRUCT</Type>
+          <Size>2</Size>
+          <Description>Side and last trade direction indicators</Description>
+        </Field>
+        <Field>
+          <Name>ClosingPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Closing price</Description>
+        </Field>
+        <Field>
+          <Name>OpenPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Opening price</Description>
+        </Field>
+        <Field>
+          <Name>HighPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Highest trade price</Description>
+        </Field>
+        <Field>
+          <Name>LowPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Lowest trade price</Description>
+        </Field>
+      </Fields>
+    </Struct>
+
+    <!-- MBP_INFORMATION (Table 82, p162), 12 bytes -->
+
+    <!-- MBP_INFORMATION -->
+    <Struct>
+      <Name>MBP_INFORMATION</Name>
+      <Description>One price level</Description>
+      <Fields>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Quantity at the price</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Price</Description>
+        </Field>
+        <Field>
+          <Name>NumberOfOrders</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Number of orders at the price</Description>
+        </Field>
+        <Field>
+          <Name>BbBuySellFlag</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Buy back flag</Description>
+        </Field>
+      </Fields>
+    </Struct>
+
+    <!-- ST_MARKET_WATCH_BCAST (Table 84, p166), 86 bytes -->
+
+    <!-- ST_MARKET_WATCH_BCAST -->
+    <Struct>
+      <Name>ST_MARKET_WATCH_BCAST</Name>
+      <Description>Market watch for one contract across three markets</Description>
+      <Fields>
+        <Field>
+          <Name>Token</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Token number of the contract</Description>
+        </Field>
+        <Field>
+          <Name>ST_MKT_WISE_INFO</Name>
+          <Type>STRUCT</Type>
+          <Size>26</Size>
+          <Description>Market watch in each of three markets</Description>
+        </Field>
+        <Field>
+          <Name>OpenInterest</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Open interest</Description>
+        </Field>
+      </Fields>
+    </Struct>
+
+    <!-- ST_MKT_WISE_INFO (Table 85, p166), 26 bytes -->
+
+    <!-- ST_MKT_WISE_INFO -->
+    <Struct>
+      <Name>ST_MKT_WISE_INFO</Name>
+      <Description>Best buy and sell and last trade in one market</Description>
+      <Fields>
+        <Field>
+          <Name>ST_INDICATOR</Name>
+          <Type>STRUCT</Type>
+          <Size>2</Size>
+          <Description>Side and last trade direction indicators</Description>
+        </Field>
+        <Field>
+          <Name>BuyVolume</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Quantity of the best buy order</Description>
+        </Field>
+        <Field>
+          <Name>BuyPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Price of the best buy order</Description>
+        </Field>
+        <Field>
+          <Name>SellVolume</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Quantity of the best sell order</Description>
+        </Field>
+        <Field>
+          <Name>SellPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Price of the best sell order</Description>
+        </Field>
+        <Field>
+          <Name>LastTradePrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Latest trade price</Description>
+        </Field>
+        <Field>
+          <Name>LastTradeTime</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Latest trade time</Description>
+        </Field>
+      </Fields>
+    </Struct>
+
+    <!--
+    MbpBuy (Table 88, p168), 20 bytes. The name MbpBuy is also the count field of MS_SPD_MKT_INFO (p170), so
+    the structure is declared as MbpBuy Level.
+    -->
+
+    <!-- MbpBuy Level -->
+    <Struct>
+      <Name>MbpBuy Level</Name>
+      <Description>One buy level of an interest rate asset</Description>
+      <Fields>
+        <Field>
+          <Name>OrderCount</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Total number of orders at the price</Description>
+        </Field>
+        <Field>
+          <Name>OrderPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Price of the orders</Description>
+        </Field>
+        <Field>
+          <Name>YieldRate</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Yield for the price point</Description>
+        </Field>
+        <Field>
+          <Name>OrderQuantity</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Total volume ordered at the price</Description>
+        </Field>
+      </Fields>
+    </Struct>
+
+    <!-- MbpSell (Table 89, p169), 20 bytes, declared as MbpSell Level for the same reason -->
+
+    <!-- MbpSell Level -->
+    <Struct>
+      <Name>MbpSell Level</Name>
+      <Description>One sell level of an interest rate asset</Description>
+      <Fields>
+        <Field>
+          <Name>OrderCount</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Total number of orders at the price</Description>
+        </Field>
+        <Field>
+          <Name>OrderPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Price of the orders</Description>
+        </Field>
+        <Field>
+          <Name>YieldRate</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Yield for the price point</Description>
+        </Field>
+        <Field>
+          <Name>OrderQuantity</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Total volume ordered at the price</Description>
+        </Field>
+      </Fields>
+    </Struct>
+
+    <!-- MbpBuys (Table 91, p170), 10 bytes -->
+
+    <!-- MbpBuys -->
+    <Struct>
+      <Name>MbpBuys</Name>
+      <Description>One buy level of a spread combination</Description>
+      <Fields>
+        <Field>
+          <Name>NoOrders</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Number of orders at the price</Description>
+        </Field>
+        <Field>
+          <Name>Volume</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Total volume ordered at the price</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Price of the orders</Description>
+        </Field>
+      </Fields>
+    </Struct>
+
+    <!-- MbpSells (Table 92, p170-171), 10 bytes -->
+
+    <!-- MbpSells -->
+    <Struct>
+      <Name>MbpSells</Name>
+      <Description>One sell level of a spread combination</Description>
+      <Fields>
+        <Field>
+          <Name>NoOrders</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Number of orders at the price</Description>
+        </Field>
+        <Field>
+          <Name>Volume</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Total volume ordered at the price</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Price of the orders</Description>
+        </Field>
+      </Fields>
+    </Struct>
+
+    <!-- TotalOrderVolume (Table 93, p171), 16 bytes -->
+
+    <!-- TotalOrderVolume -->
+    <Struct>
+      <Name>TotalOrderVolume</Name>
+      <Description>Total order volume on each side</Description>
+      <Fields>
+        <Field>
+          <Name>Buy</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Total buy volume ordered for the combination</Description>
+        </Field>
+        <Field>
+          <Name>Sell</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Total sell volume ordered for the combination</Description>
+        </Field>
+      </Fields>
+    </Struct>
+
+    <!--
+    OPEN_INTEREST (Table 95, p172-173), 8 bytes. The name is also the OpenInterest field of the ticker and
+    market watch, so the structure is declared as ASSET_OPEN_INTEREST, the name Nse Fo gives it.
+    -->
+
+    <!-- ASSET_OPEN_INTEREST -->
+    <Struct>
+      <Name>ASSET_OPEN_INTEREST</Name>
+      <Description>Open interest of one underlying asset</Description>
+      <Fields>
+        <Field>
+          <Name>TokenNo</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Token number of the underlying asset</Description>
+        </Field>
+        <Field>
+          <Name>CurrentOI</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Current open interest of the underlying asset</Description>
+        </Field>
+      </Fields>
+    </Struct>
+
+    <!-- TRADE_EXECUTION_RANGE_DATA (Table 98, p174), 304 bytes -->
+
+    <!-- TRADE_EXECUTION_RANGE_DATA -->
+    <Struct>
+      <Name>TRADE_EXECUTION_RANGE_DATA</Name>
+      <Description>Execution bands for a set of contracts</Description>
+      <Fields>
+        <Field>
+          <Name>MsgCount</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Number of tokens in the packet</Description>
+        </Field>
+        <Field>
+          <Name>TRADE_EXECUTION_RANGE_DETAILS</Name>
+          <Type>STRUCT</Type>
+          <Size>12</Size>
+          <Description>Execution band of each contract, twenty five</Description>
+        </Field>
+      </Fields>
+    </Struct>
+
+    <!-- TRADE_EXECUTION_RANGE_DETAILS (Table 99, p174), 12 bytes -->
+
+    <!-- TRADE_EXECUTION_RANGE_DETAILS -->
+    <Struct>
+      <Name>TRADE_EXECUTION_RANGE_DETAILS</Name>
+      <Description>Execution band for one contract</Description>
+      <Fields>
+        <Field>
+          <Name>TokenNumber</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Token number of the contract</Description>
+        </Field>
+        <Field>
+          <Name>HighExecBand</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>High trade execution band</Description>
+        </Field>
+        <Field>
+          <Name>LowExecBand</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Low trade execution band</Description>
+        </Field>
+      </Fields>
+    </Struct>
+
+    <!-- MBA_DATA (Table 43, p123), 48 bytes -->
+
+    <!-- MBA_DATA -->
+    <Struct>
+      <Name>MBA_DATA</Name>
+      <Description>Buy and sell market by aggregate figures for one point</Description>
+      <Fields>
+        <Field>
+          <Name>BUY_SIDE</Name>
+          <Type>STRUCT</Type>
+          <Size>24</Size>
+          <Description>Buy side figures</Description>
+        </Field>
+        <Field>
+          <Name>SELL_SIDE</Name>
+          <Type>STRUCT</Type>
+          <Size>24</Size>
+          <Description>Sell side figures</Description>
+        </Field>
+      </Fields>
+    </Struct>
+
+    <!-- BUY_SIDE (Table 44, p123), 24 bytes -->
+
+    <!-- BUY_SIDE -->
+    <Struct>
+      <Name>BUY_SIDE</Name>
+      <Description>Buy side market by aggregate figures</Description>
+      <Fields>
+        <Field>
+          <Name>CumulativeQuantityOfOrders</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Cumulative quantity, or cumulative value, of orders</Description>
+        </Field>
+        <Field>
+          <Name>Wap</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Weighted average price for the cumulative quantity</Description>
+        </Field>
+        <Field>
+          <Name>TotalValue</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Total value for the cumulative quantity, in cents</Description>
+        </Field>
+        <Field>
+          <Name>ImpactCost</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Percentage markup over the ideal price</Description>
+        </Field>
+        <Field>
+          <Name>OrderPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Price at which an order should be placed for the point</Description>
+        </Field>
+      </Fields>
+    </Struct>
+
+    <!-- SELL_SIDE (Table 45, p123), 24 bytes -->
+
+    <!-- SELL_SIDE -->
+    <Struct>
+      <Name>SELL_SIDE</Name>
+      <Description>Sell side market by aggregate figures</Description>
+      <Fields>
+        <Field>
+          <Name>CumulativeQuantityOfOrders</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Cumulative quantity, or cumulative value, of orders</Description>
+        </Field>
+        <Field>
+          <Name>Wap</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Weighted average price for the cumulative quantity</Description>
+        </Field>
+        <Field>
+          <Name>TotalValue</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Total value for the cumulative quantity, in cents</Description>
+        </Field>
+        <Field>
+          <Name>ImpactCost</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Percentage markup over the ideal price</Description>
+        </Field>
+        <Field>
+          <Name>OrderPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Price at which an order should be placed for the point</Description>
+        </Field>
+      </Fields>
+    </Struct>
+
+  </Structs>
+
+  <Bitfields>
+
+    <!--
+    The bit structures are printed twice, For Small Endian Machines and For Big Endian Machines, two C
+    declarations of the same bytes, and the two agree in every structure here. Bits are listed least
+    significant first over the whole container, the second byte's bits before the first's, which is the Big
+    Endian listing read in reverse. A trailing Reserved CHAR byte is the second byte's eight bits.
+    ST_BCAST_DESTINATION (Table 40, p119)
+    -->
+
+    <!-- ST_BCAST_DESTINATION -->
+    <Bitfield>
+      <Name>ST_BCAST_DESTINATION</Name>
+      <Description>Destinations the broadcast is intended for</Description>
+      <Fields>
+        <Field>
+          <Name>Reserved 1-12</Name>
+          <Bits>12</Bits>
+          <Type>BIT</Type>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>Journaling Required</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Whether the message is to be journalled</Description>
+        </Field>
+        <Field>
+          <Name>Tandem</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Destined for Tandem</Description>
+        </Field>
+        <Field>
+          <Name>ControlWorkstation</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Destined for the control workstation</Description>
+        </Field>
+        <Field>
+          <Name>TraderWorkstation</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Destined for the trader workstation</Description>
+        </Field>
+      </Fields>
+    </Bitfield>
+
+    <!-- ST_SEC_ELIGIBILITY_PER_MARKET's first byte (Table 63, p143-144) -->
+
+    <!-- Security Eligibility Flags -->
+    <Bitfield>
+      <Name>Security Eligibility Flags</Name>
+      <Description>Whether the security is eligible in this market</Description>
+      <Fields>
+        <Field>
+          <Name>Reserved 1-7</Name>
+          <Bits>7</Bits>
+          <Type>BIT</Type>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>Eligibility</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Security is allowed to trade in this market</Description>
+        </Field>
+      </Fields>
+    </Bitfield>
+
+    <!-- ST_ELIGIBILITY_INDICATORS (Table 64, p144), printed ST_ELIGIBLITY_ INDICATORS in Table 62 -->
+
+    <!-- ST_ELIGIBLITY_INDICATORS -->
+    <Bitfield>
+      <Name>ST_ELIGIBLITY_INDICATORS</Name>
+      <Description>Order attributes the security is eligible for</Description>
+      <Fields>
+        <Field>
+          <Name>Reserved 1-13</Name>
+          <Bits>13</Bits>
+          <Type>BIT</Type>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>MinimumFill</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Minimum fill attribute allowed in orders in this security</Description>
+        </Field>
+        <Field>
+          <Name>AON</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>All or none attribute allowed in orders in this security</Description>
+        </Field>
+        <Field>
+          <Name>ParticipateInMarketIndex</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Security participates in the market index</Description>
+        </Field>
+      </Fields>
+    </Bitfield>
+
+    <!-- ST_PURPOSE (Table 65, p144-145) -->
+
+    <!-- ST_PURPOSE -->
+    <Bitfield>
+      <Name>ST_PURPOSE</Name>
+      <Description>Corporate action flags of the security</Description>
+      <Fields>
+        <Field>
+          <Name>Reserved 1-3</Name>
+          <Bits>3</Bits>
+          <Type>BIT</Type>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>Is Corporate Adjusted</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Record has been adjusted for a corporate action</Description>
+        </Field>
+        <Field>
+          <Name>Is This Asset</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Record describes the asset itself</Description>
+        </Field>
+        <Field>
+          <Name>Pl Allowed</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Position liquidation allowed</Description>
+        </Field>
+        <Field>
+          <Name>Ex Rejection Allowed</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Exercise rejection allowed</Description>
+        </Field>
+        <Field>
+          <Name>Ex Allowed</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Exercise allowed</Description>
+        </Field>
+        <Field>
+          <Name>Exercise Style</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Exercise style</Description>
+        </Field>
+        <Field>
+          <Name>Reserved 10</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>EGM</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Extraordinary general meeting</Description>
+        </Field>
+        <Field>
+          <Name>AGM</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Annual general meeting</Description>
+        </Field>
+        <Field>
+          <Name>Interest</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Interest</Description>
+        </Field>
+        <Field>
+          <Name>Bonus</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Bonus</Description>
+        </Field>
+        <Field>
+          <Name>Rights</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Rights</Description>
+        </Field>
+        <Field>
+          <Name>Dividend</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Dividend</Description>
+        </Field>
+      </Fields>
+    </Bitfield>
+
+    <!-- ST_INDICATOR (Table 78, p156-157) -->
+
+    <!-- ST_INDICATOR -->
+    <Bitfield>
+      <Name>ST_INDICATOR</Name>
+      <Description>Side and last trade direction indicators</Description>
+      <Fields>
+        <Field>
+          <Name>Reserved 1-12</Name>
+          <Bits>12</Bits>
+          <Type>BIT</Type>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>Sell</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Sell</Description>
+        </Field>
+        <Field>
+          <Name>Buy</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Buy</Description>
+        </Field>
+        <Field>
+          <Name>Last Trade Less</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Last trade less than the previous last traded price</Description>
+        </Field>
+        <Field>
+          <Name>Last Trade More</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Last trade greater than the previous last traded price</Description>
+        </Field>
+      </Fields>
+    </Bitfield>
+
+    <!-- ST_MBO_MBP_TERMS (Table 79, p157) -->
+
+    <!-- ST_MBO_MBP_TERMS -->
+    <Bitfield>
+      <Name>ST_MBO_MBP_TERMS</Name>
+      <Description>Terms attached to an order in the book</Description>
+      <Fields>
+        <Field>
+          <Name>Reserved 1-14</Name>
+          <Bits>14</Bits>
+          <Type>BIT</Type>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>AON</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>All or none order</Description>
+        </Field>
+        <Field>
+          <Name>MF</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Minimum fill order</Description>
+        </Field>
+      </Fields>
+    </Bitfield>
+
+    <!-- ST_SPD_ELIGIBILITY (Table 32, p97) -->
+
+    <!-- ST_SPD_ELIGIBILITY -->
+    <Bitfield>
+      <Name>ST_SPD_ELIGIBILITY</Name>
+      <Description>Whether the spread combination is allowed to trade</Description>
+      <Fields>
+        <Field>
+          <Name>Reserved 1-7</Name>
+          <Bits>7</Bits>
+          <Type>BIT</Type>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>Eligibility</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Combination is allowed to trade</Description>
+        </Field>
+      </Fields>
+    </Bitfield>
+
+  </Bitfields>
+
+  <Enums>
+
+    <!-- PermittedToTrade (p145) -->
+
+    <!-- PermittedToTrade -->
+    <Enum>
+      <Name>PermittedToTrade</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>Listed But Not Permitted To Trade</Name>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Permitted To Trade</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Security status (p146, p150-151, and the appendix Security Status table, p243-244) -->
+
+    <!-- Status -->
+    <Enum>
+      <Name>Status</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Preopen</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Open</Name>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Suspended</Name>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>Price Discovery</Name>
+        </Value>
+        <Value>
+          <Data>5</Data>
+          <Name>Preclose</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- TradingStatus -->
+    <Enum>
+      <Name>TradingStatus</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Preopen</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Open</Name>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Suspended</Name>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>Price Discovery</Name>
+        </Value>
+        <Value>
+          <Data>5</Data>
+          <Name>Preclose</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Book Types (Appendix, p243) -->
+
+    <!-- BookType -->
+    <Enum>
+      <Name>BookType</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Regular Lot Order</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Special Terms Order</Name>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Stop Loss Or Mit Order</Name>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>Negotiated Order Or Nlt</Name>
+        </Value>
+        <Value>
+          <Data>5</Data>
+          <Name>Odd Lot Order</Name>
+          <Description>Not used</Description>
+        </Value>
+        <Value>
+          <Data>6</Data>
+          <Name>Spot Order</Name>
+          <Description>Not used</Description>
+        </Value>
+        <Value>
+          <Data>7</Data>
+          <Name>Auction Order</Name>
+          <Description>Not used</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Market types (p153-154, and the appendix Market Types table, p243) -->
+
+    <!-- MarketType -->
+    <Enum>
+      <Name>MarketType</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Normal Market</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Odd Lot Market</Name>
+          <Description>Not used</Description>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Spot Market</Name>
+          <Description>Not used</Description>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>Auction Market</Name>
+          <Description>Not used</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- AuctionStatus refers to the appendix Market Status table (p243) -->
+
+    <!-- AuctionStatus -->
+    <Enum>
+      <Name>AuctionStatus</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>PreOpen</Name>
+          <Description>Only for the normal market</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Open</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Closed</Name>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>PreOpen Ended</Name>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>Postclose</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- NetChangeIndicator -->
+    <Enum>
+      <Name>NetChangeIndicator</Name>
+      <Values>
+        <Value>
+          <Data>+</Data>
+          <Name>Increase</Name>
+        </Value>
+        <Value>
+          <Data>-</Data>
+          <Name>Decrease</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- WarningType -->
+    <Enum>
+      <Name>WarningType</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Turnover Limit About To Exceed</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Turnover Limit Exceeded</Name>
+          <Description>The broker has been deactivated</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- DeleteFlag -->
+    <Enum>
+      <Name>DeleteFlag</Name>
+      <Values>
+        <Value>
+          <Data>Y</Data>
+          <Name>Deleted</Name>
+        </Value>
+        <Value>
+          <Data>N</Data>
+          <Name>Active</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- ParticipantStatus -->
+    <Enum>
+      <Name>ParticipantStatus</Name>
+      <Values>
+        <Value>
+          <Data>S</Data>
+          <Name>Suspended</Name>
+        </Value>
+        <Value>
+          <Data>A</Data>
+          <Name>Active</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- TradedInCents -->
+    <Enum>
+      <Name>TradedInCents</Name>
+      <Values>
+        <Value>
+          <Data>C</Data>
+          <Name>Traded In Cents</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- ActionCode of the general message broadcast (Table 39 notes, p120): SYS and LIS, and MWL, the new
+         action code identifying the market wide OI limit broadcasts (p118) -->
+
+    <!-- ActionCode -->
+    <Enum>
+      <Name>ActionCode</Name>
+      <Values>
+        <Value>
+          <Data>SYS</Data>
+          <Name>System</Name>
+        </Value>
+        <Value>
+          <Data>LIS</Data>
+          <Name>Listing</Name>
+        </Value>
+        <Value>
+          <Data>MWL</Data>
+          <Name>Market Wide OI Limit Message</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+  </Enums>
+
+</OmiNnfPdf>

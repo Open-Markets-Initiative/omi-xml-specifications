@@ -48,6 +48,7 @@
 | AmexEquities | OrderEntry | Fix | 6.0 | private |
 | AmexEquities | Trades | Pillar | 2.6 | private |
 | AmexEquities | Trades | Pillar | 2.6.a | private |
+| AmexEquities | Trades | Xdp | 2.5.e | private |
 | AmexOptions | BinaryGateway | PillarStream | 3.25 | private |
 | AmexOptions | BinaryGateway | PillarStream | 3.26 | private |
 | AmexOptions | BinaryGateway | PillarStream | 3.27 | private |
@@ -107,6 +108,7 @@
 | ArcaEquities | OrderEntry | Fix | 6.0 | private |
 | ArcaEquities | Trades | Pillar | 2.6 | private |
 | ArcaEquities | Trades | Pillar | 2.6.a | private |
+| ArcaEquities | Trades | Xdp | 2.5.e | private |
 | ArcaOptions | BinaryGateway | PillarStream | 3.25 | private |
 | ArcaOptions | BinaryGateway | PillarStream | 3.26 | private |
 | ArcaOptions | BinaryGateway | PillarStream | 3.27 | private |
@@ -163,6 +165,7 @@
 | NationalEquities | OrderEntry | Fix | 6.0 | private |
 | NationalEquities | Trades | Pillar | 2.6 | private |
 | NationalEquities | Trades | Pillar | 2.6.a | private |
+| NationalEquities | Trades | Xdp | 2.5.e | private |
 | NyseBonds | DepthOfBook | Abp | 4.01.b | private |
 | NyseBonds | Quote | Pdp | 1.2.a | private |
 | NyseBonds | Trades | Abp | 1.07.a | private |
@@ -224,6 +227,7 @@
 | NyseEquities | OrderEntry | Fix | 6.0 | private |
 | NyseEquities | Trades | Pillar | 2.6 | private |
 | NyseEquities | Trades | Pillar | 2.6.a | private |
+| NyseEquities | Trades | Xdp | 2.5.e | private |
 | NyseOptions | CommonClient | Pillar | 2.6 | private |
 | Options | DeepFeed | Xdp | 1.3.a | private |
 | Options | StreamProtocol | PillarStream | 1.1.6 | private |
@@ -267,6 +271,7 @@
 | TexasEquities | OrderEntry | Fix | 6.0 | private |
 | TexasEquities | Trades | Pillar | 2.6 | private |
 | TexasEquities | Trades | Pillar | 2.6.a | private |
+| TexasEquities | Trades | Xdp | 2.5.e | private |
 
 A specification marked private is released by the venue to registered participants only. Those protocols are listed here for completeness, and nothing read out of their documents is published: no message layouts, no field names, no wording. The generated parsers in the definition repositories describe the wire format and are published as usual.
 

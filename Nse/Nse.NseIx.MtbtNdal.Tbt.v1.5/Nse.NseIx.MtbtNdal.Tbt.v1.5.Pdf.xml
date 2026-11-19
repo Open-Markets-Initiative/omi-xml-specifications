@@ -1,0 +1,885 @@
+<OmiMtbtPdf>
+
+<!--
+  NDAL NSE IX MTBT API Technical Specification, Version 1.5, 13 October 2025, published by NSE
+  Data and Analytics for NSE IX. The NDAL redistribution of the NSE IX tick by tick feed: the
+  order and trade messages of sections 6.1 to 6.4, the market status and indicative equilibrium
+  messages of sections 6.5 and 6.6, and the Stream Id no. 99 messages for Infofeed vendors
+  (contract and spread contract masters of section 5.1, market statistics and open interest of
+  sections 6.7 and 6.8), behind the eight byte Stream Header of section 4.
+
+  Message types are case sensitive (FAQ 26, page 29): upper case belongs to Streams 1 and 2,
+  lower case to Stream 99. There is no Trade Cancel message ('C') in this document.
+
+  Not transcribed: the Tick Data Recovery Request and Response of section 7 (page 21), which run
+  on Tcp; a request carries no header, so they are not messages of this Udp feed.
+
+  Price: Price, Trade Price, Strike Price and Indicative price are each "divided by 10000 for
+  converting into USD", and FAQ 23 (page 28) says the same of all price fields. Low Price Range and
+  High Price Range are divided by 10000 except for INRUSD, divided by 100 (page 11). The spread
+  contract ranges are divided by 10000 "to get actual price in rupees" (page 12); rupees is a slip
+  for USD, as FAQ 23 has it, and the descriptions drop the currency.
+
+  Section 5.1.2 prints Operating Range: Low Price Diff Range and Operating Range: High Price Diff
+  Range with the colon, and it is kept in the name.
+-->
+
+  <Messages>
+
+    <!-- Contract Information Message -->
+    <Message>
+      <Name>Contract Information Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>c</Code>
+      <Category>Reference Data</Category>
+      <Origin>Exchange</Origin>
+      <Description>Beginning of day contract master information, sent before the market opens on Stream Id no. 99, for contracts valid in the NSE IX market.</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>LONG</Type>
+          <Size>8</Size>
+          <Description>Time in nanoseconds from 01-Jan-1980 00:00:00</Description>
+        </Field>
+        <Field>
+          <Name>Stream ID</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Availability of this contract on a particular stream</Description>
+        </Field>
+        <Field>
+          <Name>Token Number</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Unique identifier for contract</Description>
+        </Field>
+        <Field>
+          <Name>Instrument</Name>
+          <Type>CHAR</Type>
+          <Size>6</Size>
+          <Description>Security instrument, e.g. FUTIDX, FUTSTK; commodity instrument, e.g. FUTCOM</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Contract Symbol</Description>
+        </Field>
+        <Field>
+          <Name>Expiry Date</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Expiry date of contract in seconds from 01-Jan-1980 00:00:00</Description>
+        </Field>
+        <Field>
+          <Name>Strike Price</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Strike Price of Contract (In Cents), divided by 10000 for converting into USD; zero for a futures contract</Description>
+        </Field>
+        <Field>
+          <Name>Option Type</Name>
+          <Type>CHAR</Type>
+          <Size>2</Size>
+          <Description>Option Type for the contract</Description>
+        </Field>
+        <Field>
+          <Name>Low Price Range</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Minimum price at which an order can be placed without causing a price freeze; divided by 10000 for all contracts except INRUSD, which is divided by 100</Description>
+        </Field>
+        <Field>
+          <Name>High Price Range</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Maximum price at which an order can be placed without causing a price freeze; divided by 10000 for all contracts except INRUSD, which is divided by 100</Description>
+        </Field>
+        <Field>
+          <Name>Daily Contract Indicator</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Indicates whether the contract is categorized as a Daily contract</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Spread Contract Information Message -->
+    <Message>
+      <Name>Spread Contract Information Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>d</Code>
+      <Category>Reference Data</Category>
+      <Origin>Exchange</Origin>
+      <Description>Information about the spread contracts valid in the NSE IX market, sent on Stream Id no. 99.</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>LONG</Type>
+          <Size>8</Size>
+          <Description>Time in nanoseconds from 01-Jan-1980 00:00:00</Description>
+        </Field>
+        <Field>
+          <Name>Stream ID</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Availability of this contract on a particular stream</Description>
+        </Field>
+        <Field>
+          <Name>Token 1</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Token No. of First Spread Contract</Description>
+        </Field>
+        <Field>
+          <Name>Token 2</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Token No. of Second Spread Contract</Description>
+        </Field>
+        <Field>
+          <Name>Day Low Price Diff Range</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Day low price difference range for the combination, which may be changed intraday; divided by 10000 to get the actual price</Description>
+        </Field>
+        <Field>
+          <Name>Day High Price Diff Range</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Day high price difference range for the combination, which may be changed intraday; divided by 10000 to get the actual price</Description>
+        </Field>
+        <Field>
+          <Name>Operating Range: Low Price Diff Range</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Minimum price difference at which the spread order could be placed without being rejected by the system, which may be changed intraday and flexed; divided by 10000 to get the actual price</Description>
+        </Field>
+        <Field>
+          <Name>Operating Range: High Price Diff Range</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Maximum price difference at which the spread order could be placed without being rejected by the system, which may be changed intraday and flexed; divided by 10000 to get the actual price</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- New Order Message -->
+    <Message>
+      <Name>New Order Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>N</Code>
+      <Category>Market Data</Category>
+      <Origin>Exchange</Origin>
+      <Description>For every new order request, this message is sent. All new order requests are sent, including the active orders.</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>LONG</Type>
+          <Size>8</Size>
+          <Description>Time in nanoseconds from 01-Jan-1980 00:00:00</Description>
+        </Field>
+        <Field>
+          <Name>Order ID</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Day Unique Order Reference Number</Description>
+        </Field>
+        <Field>
+          <Name>Token</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Unique Contract Identifier</Description>
+        </Field>
+        <Field>
+          <Name>Order Type</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Order Type Values</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Price of the order (In cents), at which the order is placed, in multiples of the tick size; divided by 10000 for converting into USD</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Quantity of the order</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Order Modification Message -->
+    <Message>
+      <Name>Order Modification Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>M</Code>
+      <Category>Market Data</Category>
+      <Origin>Exchange</Origin>
+      <Description>For every order modification request, this message is sent. Modifications must be handled on the basis of Order Id and not on Price; one whose original Order Id is not found should be treated as a New Order.</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>LONG</Type>
+          <Size>8</Size>
+          <Description>Time in nanoseconds from 01-Jan-1980 00:00:00</Description>
+        </Field>
+        <Field>
+          <Name>Order ID</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Day Unique Order Reference Number</Description>
+        </Field>
+        <Field>
+          <Name>Token</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Unique Contract Identifier</Description>
+        </Field>
+        <Field>
+          <Name>Order Type</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Order Type Values</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Price of the order (In cents), at which the order is placed, in multiples of the tick size; divided by 10000 for converting into USD</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Quantity of the order</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Order Cancellation Message -->
+    <Message>
+      <Name>Order Cancellation Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>X</Code>
+      <Category>Market Data</Category>
+      <Origin>Exchange</Origin>
+      <Description>For every order cancellation request, this message is sent. Cancellations must be handled on the basis of Order Id and not on Price; one whose original Order Id is not found should be ignored.</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>LONG</Type>
+          <Size>8</Size>
+          <Description>Time in nanoseconds from 01-Jan-1980 00:00:00</Description>
+        </Field>
+        <Field>
+          <Name>Order ID</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Day Unique Order Reference Number</Description>
+        </Field>
+        <Field>
+          <Name>Token</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Unique Contract Identifier</Description>
+        </Field>
+        <Field>
+          <Name>Order Type</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Order Type Values</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Price of the order (In cents), at which the order is placed, in multiples of the tick size; divided by 10000 for converting into USD</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Quantity of the order</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Trade Message -->
+    <Message>
+      <Name>Trade Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>T</Code>
+      <Category>Market Data</Category>
+      <Origin>Exchange</Origin>
+      <Description>Sent whenever an order in the order book gets executed fully or partially. Either Buy Order ID or Sell Order ID can be zero, in which case that Order ID should be ignored; both are never zero at the same time.</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>LONG</Type>
+          <Size>8</Size>
+          <Description>Time in nanoseconds from 01-Jan-1980 00:00:00</Description>
+        </Field>
+        <Field>
+          <Name>Buy Order ID</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Day Unique Order Reference Number for Buy-Side Order</Description>
+        </Field>
+        <Field>
+          <Name>Sell Order ID</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Day Unique Order Reference Number for Sell-Side Order</Description>
+        </Field>
+        <Field>
+          <Name>Token</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Unique Contract Identifier</Description>
+        </Field>
+        <Field>
+          <Name>Trade Price</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Trade Price (In cents), at which the trade took place, in multiples of the tick size; divided by 10000 for converting into USD</Description>
+        </Field>
+        <Field>
+          <Name>Trade Quantity</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Trade Quantity</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- New Spread Order Message -->
+    <Message>
+      <Name>New Spread Order Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>G</Code>
+      <Category>Market Data</Category>
+      <Origin>Exchange</Origin>
+      <Description>For every new spread order request, this message is sent. All new spread order requests are sent, including the active orders.</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>LONG</Type>
+          <Size>8</Size>
+          <Description>Time in nanoseconds from 01-Jan-1980 00:00:00</Description>
+        </Field>
+        <Field>
+          <Name>Order ID</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Day Unique Order Reference Number</Description>
+        </Field>
+        <Field>
+          <Name>Token</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Unique Contract Identifier</Description>
+        </Field>
+        <Field>
+          <Name>Order Type</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Order Type Values</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Price of the order (In cents), the price difference for this spread, in multiples of the tick size; divided by 10000 for converting into USD</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Quantity of the spread order</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Spread Order Modification Message -->
+    <Message>
+      <Name>Spread Order Modification Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>H</Code>
+      <Category>Market Data</Category>
+      <Origin>Exchange</Origin>
+      <Description>For every spread order modification request, this message is sent.</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>LONG</Type>
+          <Size>8</Size>
+          <Description>Time in nanoseconds from 01-Jan-1980 00:00:00</Description>
+        </Field>
+        <Field>
+          <Name>Order ID</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Day Unique Order Reference Number</Description>
+        </Field>
+        <Field>
+          <Name>Token</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Unique Contract Identifier</Description>
+        </Field>
+        <Field>
+          <Name>Order Type</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Order Type Values</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Price of the order (In cents), the price difference for this spread, in multiples of the tick size; divided by 10000 for converting into USD</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Quantity of the spread order</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Spread Order Cancellation Message -->
+    <Message>
+      <Name>Spread Order Cancellation Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>J</Code>
+      <Category>Market Data</Category>
+      <Origin>Exchange</Origin>
+      <Description>For every spread order cancellation request, this message is sent.</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>LONG</Type>
+          <Size>8</Size>
+          <Description>Time in nanoseconds from 01-Jan-1980 00:00:00</Description>
+        </Field>
+        <Field>
+          <Name>Order ID</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Day Unique Order Reference Number</Description>
+        </Field>
+        <Field>
+          <Name>Token</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Unique Contract Identifier</Description>
+        </Field>
+        <Field>
+          <Name>Order Type</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Order Type Values</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Price of the order (In cents), the price difference for this spread, in multiples of the tick size; divided by 10000 for converting into USD</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Quantity of the spread order</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Spread Trade Message -->
+    <Message>
+      <Name>Spread Trade Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>K</Code>
+      <Category>Market Data</Category>
+      <Origin>Exchange</Origin>
+      <Description>Sent whenever a spread order in the order book gets executed fully or partially. Either Buy Order ID or Sell Order ID can be zero, in which case that Order ID should be ignored.</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>LONG</Type>
+          <Size>8</Size>
+          <Description>Time in nanoseconds from 01-Jan-1980 00:00:00</Description>
+        </Field>
+        <Field>
+          <Name>Buy Order ID</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Day Unique Order Reference Number for Buy-Side Order</Description>
+        </Field>
+        <Field>
+          <Name>Sell Order ID</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Day Unique Order Reference Number for Sell-Side Order</Description>
+        </Field>
+        <Field>
+          <Name>Token</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Unique Contract Identifier</Description>
+        </Field>
+        <Field>
+          <Name>Trade Price</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Trade Price (In cents), at which the trade took place, in multiples of the tick size; divided by 10000 for converting into USD</Description>
+        </Field>
+        <Field>
+          <Name>Quantity</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Quantity of the spread trade</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Market Status Message -->
+    <Message>
+      <Name>Market Status Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>S</Code>
+      <Category>Market Data</Category>
+      <Origin>Exchange</Origin>
+      <Description>Sent whenever the status of the market is changed to pre-open, pre-open end, open, closed, pre-close or pre-close end, for both T and T+1 sessions.</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>LONG</Type>
+          <Size>8</Size>
+          <Description>Time in nanoseconds from 01-Jan-1980 00:00:00</Description>
+        </Field>
+        <Field>
+          <Name>Instrument</Name>
+          <Type>CHAR</Type>
+          <Size>6</Size>
+          <Description>Name of the instrument for which the status change message is sent, e.g. FUTIDX, OPTIDX</Description>
+        </Field>
+        <Field>
+          <Name>Status</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Market status</Description>
+        </Field>
+        <Field>
+          <Name>Session Indicator</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Trading session</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Indicative Price And Quantity Message -->
+    <Message>
+      <Name>Indicative Price And Quantity Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>P</Code>
+      <Category>Market Data</Category>
+      <Origin>Exchange</Origin>
+      <Description>Indicative equilibrium price and quantity, sent for contracts with pre-open and pre-close sessions, only between the pre-open or pre-close and the pre-open end or pre-close end statuses, when the indicative price and quantity are determined or updated during order collection.</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>LONG</Type>
+          <Size>8</Size>
+          <Description>Time in nanoseconds from 01-Jan-1980 00:00:00</Description>
+        </Field>
+        <Field>
+          <Name>Token</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Unique Contract Identifier</Description>
+        </Field>
+        <Field>
+          <Name>Identifier</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Whether the open price or the close price is being determined</Description>
+        </Field>
+        <Field>
+          <Name>Indicative price</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Indicative open or close price, in multiples of the tick size; divided by 10000 for converting into USD</Description>
+        </Field>
+        <Field>
+          <Name>Indicative quantity</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Indicative equilibrium quantity which shall be traded at the indicative open or close price</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Market Statistics Information Message -->
+    <Message>
+      <Name>Market Statistics Information Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>f</Code>
+      <Category>Statistics</Category>
+      <Origin>Exchange</Origin>
+      <Description>End of session market statistics (Bhavcopy), sent on Stream Id no. 99.</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>LONG</Type>
+          <Size>8</Size>
+          <Description>Time in nanoseconds from 01-Jan-1980 00:00:00</Description>
+        </Field>
+        <Field>
+          <Name>Token</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Unique Contract Identifier</Description>
+        </Field>
+        <Field>
+          <Name>Opening Price</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Contract open price for the day</Description>
+        </Field>
+        <Field>
+          <Name>Trade High Price</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Contract high price for the day</Description>
+        </Field>
+        <Field>
+          <Name>Trade Low Price</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Contract low price for the day</Description>
+        </Field>
+        <Field>
+          <Name>Closing Price</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Contract close price for the day</Description>
+        </Field>
+        <Field>
+          <Name>Last Traded Price</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Contract last traded price for the day</Description>
+        </Field>
+        <Field>
+          <Name>Previous Close Price</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Contract previous day's close price</Description>
+        </Field>
+        <Field>
+          <Name>Settlement Price</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Contract settlement price for the day; zero for the USAIDR instrument</Description>
+        </Field>
+        <Field>
+          <Name>Total Traded Quantity</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Volume traded today for the contract</Description>
+        </Field>
+        <Field>
+          <Name>Total Traded Value</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Total traded value for the contract; divided by 10000 to get the value in USD, and by 100000 to get it in lakhs of USD</Description>
+        </Field>
+        <Field>
+          <Name>Open Interest</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Contract open interest; zero for the USAIDR instrument</Description>
+        </Field>
+        <Field>
+          <Name>Change In Open Interest</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Contract change in open interest; zero for the USAIDR instrument</Description>
+        </Field>
+        <Field>
+          <Name>Session Indicator</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Trading session</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Open Interest Message -->
+    <Message>
+      <Name>Open Interest Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>o</Code>
+      <Category>Statistics</Category>
+      <Origin>Exchange</Origin>
+      <Description>Open interest of the contracts traded, sent during trading hours on Stream Id no. 99.</Description>
+      <Fields>
+        <Field>
+          <Name>Timestamp</Name>
+          <Type>LONG</Type>
+          <Size>8</Size>
+          <Description>Time in nanoseconds from 01-Jan-1980 00:00:00</Description>
+        </Field>
+        <Field>
+          <Name>Token</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Unique Contract Identifier</Description>
+        </Field>
+        <Field>
+          <Name>Open interest</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Contract open interest</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- Heartbeat Message -->
+    <Message>
+      <Name>Heartbeat Message</Name>
+      <Branch>payload</Branch>
+      <Dependency>messagetype</Dependency>
+      <Code>Z</Code>
+      <Category>Administrative</Category>
+      <Origin>Exchange</Origin>
+      <Description>Sent when there is no data available for a few seconds. The sequence number field in the Stream Header will have the value 0 (zero) for this message.</Description>
+      <Fields>
+        <Field>
+          <Name>Last Sequence No</Name>
+          <Type>INT</Type>
+          <Size>4</Size>
+          <Description>Last sent data sequence no. of the stream</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+  </Messages>
+
+  <Enums>
+
+    <!-- Order Type -->
+    <Enum>
+      <Name>Order Type</Name>
+      <Values>
+        <Value>
+          <Data>B</Data>
+          <Name>Buy Order</Name>
+        </Value>
+        <Value>
+          <Data>S</Data>
+          <Name>Sell Order</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Daily Contract Indicator -->
+    <Enum>
+      <Name>Daily Contract Indicator</Name>
+      <Values>
+        <Value>
+          <Data>D</Data>
+          <Name>Daily contract</Name>
+        </Value>
+        <Value>
+          <Data>N</Data>
+          <Name>Not applicable</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Status -->
+    <Enum>
+      <Name>Status</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>Pre-open</Name>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Open</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Closed</Name>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Pre-open end</Name>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>Pre-close</Name>
+        </Value>
+        <Value>
+          <Data>5</Data>
+          <Name>Pre-close end</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Session Indicator -->
+    <Enum>
+      <Name>Session Indicator</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>T Session</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>T+1 Session</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Identifier -->
+    <Enum>
+      <Name>Identifier</Name>
+      <Values>
+        <Value>
+          <Data>O</Data>
+          <Name>Indicative open price</Name>
+        </Value>
+        <Value>
+          <Data>C</Data>
+          <Name>Indicative close price</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+  </Enums>
+
+</OmiMtbtPdf>

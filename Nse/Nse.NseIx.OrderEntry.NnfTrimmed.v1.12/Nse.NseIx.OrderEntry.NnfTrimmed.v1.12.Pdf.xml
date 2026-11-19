@@ -1,0 +1,2446 @@
+<OmiNnfPdf>
+
+  <!--
+  Nse Ix Trimmed Protocol for Non-NEAT Front End v1.12, the appendix sections Trimmed Request Structures
+  and Trimmed Response Structures (p252-266).
+
+  Each structure opens with its own two byte TransactionCode at offset 0, which the header source
+  carries, so a body here is its structure's printed Packet Length less two.
+
+  The structures are declared with pragma pack(2), and pack(1) for ADDITIONAL_ORDER_FLAGS, so a one byte
+  field followed by a wider one is padded to an even offset. The tables list only the fields, leaving those
+  gaps visible as jumps in the offset column; they are transcribed as Reserved fields named for the offset
+  they occupy, because without them every following field would decode one byte early. Where a table prints
+  the padding itself, as Filler, it is kept as printed.
+
+  Prices are not scaled: Chapter 2, Guidelines for Designers 6 and 7 (p14-15), divide prices by 10000 for a
+  contract trading in US dollars and by 100 for one trading in cents. The Price description of
+  MS_OE_REQUEST_TR (p256) still says to multiply by 100 before sending, as the Nse Fo document does.
+  -->
+
+  <Messages>
+
+    <!-- MS_OE_REQUEST_TR (Table 106, p252-253), Packet Length 158 bytes -->
+
+    <!-- Board Lot In Trimmed Message -->
+    <Message>
+      <Name>Board Lot In Trimmed Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Message Payload</Branch>
+      <Code>20000</Code>
+      <Category>Application</Category>
+      <Origin>Firm</Origin>
+      <Description>Trimmed order entry request</Description>
+      <Fields>
+        <Field>
+          <Name>UserId</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Id of the user entering the order</Description>
+        </Field>
+        <Field>
+          <Name>ReasonCode</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Reason the request was rejected or the order frozen, zero on entry</Description>
+        </Field>
+        <Field>
+          <Name>TokenNo</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Token number of the contract, or minus one to validate on the contract descriptor alone</Description>
+        </Field>
+        <Field>
+          <Name>CONTRACT_DESC_TR</Name>
+          <Type>STRUCT</Type>
+          <Size>26</Size>
+          <Description>Contract the order is for</Description>
+        </Field>
+        <Field>
+          <Name>AccountNumber</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Account number the order is for</Description>
+        </Field>
+        <Field>
+          <Name>BookType</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Book the order belongs to</Description>
+        </Field>
+        <Field>
+          <Name>Buy / SellIndicator</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Whether the order is a buy or a sell</Description>
+        </Field>
+        <Field>
+          <Name>DisclosedVolume</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Quantity disclosed to the market</Description>
+        </Field>
+        <Field>
+          <Name>Volume</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Quantity of the order</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Price of the order</Description>
+        </Field>
+        <Field>
+          <Name>GoodTillDate</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Good till date, as a number of days or as a date in seconds since midnight January 1, 1980</Description>
+        </Field>
+        <Field>
+          <Name>ST_ORDER_FLAGS</Name>
+          <Type>STRUCT</Type>
+          <Size>2</Size>
+          <Description>Terms attached to the order</Description>
+        </Field>
+        <Field>
+          <Name>BranchId</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Branch Id of the trading member</Description>
+        </Field>
+        <Field>
+          <Name>TraderId</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>User Id of the user</Description>
+        </Field>
+        <Field>
+          <Name>BrokerId</Name>
+          <Type>CHAR</Type>
+          <Size>5</Size>
+          <Description>Trading member Id</Description>
+        </Field>
+        <Field>
+          <Name>Open/Close</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Whether the order opens or closes a position</Description>
+        </Field>
+        <Field>
+          <Name>Settlor</Name>
+          <Type>CHAR</Type>
+          <Size>12</Size>
+          <Description>Participant responsible for settling the trades</Description>
+        </Field>
+        <Field>
+          <Name>Pro / ClientIndicator</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Whether the order is a client order or the broker's own</Description>
+        </Field>
+        <Field>
+          <Name>ADDITIONAL_ORDER_FLAGS</Name>
+          <Type>STRUCT</Type>
+          <Size>1</Size>
+          <Description>Further terms attached to the order</Description>
+        </Field>
+        <Field>
+          <Name>Reserved 97</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Padding to the two byte alignment of the next field</Description>
+        </Field>
+        <Field>
+          <Name>filler</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Filler</Description>
+        </Field>
+        <Field>
+          <Name>NnfField</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Fifteen digit Non Neat front end identifier supplied by the member</Description>
+        </Field>
+        <Field>
+          <Name>EchoBack</Name>
+          <Type>CHAR</Type>
+          <Size>16</Size>
+          <Description>Echo back field, carrying the algo Id in bytes 11 to 14</Description>
+        </Field>
+        <Field>
+          <Name>LastActivityReference</Name>
+          <Type>LONG LONG</Type>
+          <Size>8</Size>
+          <Description>Unique value of the last activity on the order, zero on entry</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>CHAR</Type>
+          <Size>24</Size>
+          <Description>Reserved</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!--
+    MS_OM_REQUEST_TR (Table 109, p258-260), Packet Length 186 bytes. Its ST_ORDER_FLAGS listing (Table 110,
+    p260) shows the three bits NLT Indc, Preclose and Preopen as Reserved; the structure is the one of
+    Table 107.
+    -->
+
+    <!-- Order Modify Cancel Trimmed Message -->
+    <Message>
+      <Name>Order Modify Cancel Trimmed Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Message Payload</Branch>
+      <Code>20040,20060,20070</Code>
+      <Category>Application</Category>
+      <Origin>Firm</Origin>
+      <Description>Trimmed order modification, quick cancellation and cancellation requests</Description>
+      <Fields>
+        <Field>
+          <Name>UserId</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Id of the user</Description>
+        </Field>
+        <Field>
+          <Name>Modified / CancelledBy</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Who modified or cancelled the order</Description>
+        </Field>
+        <Field>
+          <Name>Filler</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Filler</Description>
+        </Field>
+        <Field>
+          <Name>TokenNo</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Token number of the contract</Description>
+        </Field>
+        <Field>
+          <Name>CONTRACT_DESC_TR</Name>
+          <Type>STRUCT</Type>
+          <Size>26</Size>
+          <Description>Contract the order is for</Description>
+        </Field>
+        <Field>
+          <Name>OrderNumber</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Order number of the order to be modified or cancelled</Description>
+        </Field>
+        <Field>
+          <Name>AccountNumber</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Account number the order is for</Description>
+        </Field>
+        <Field>
+          <Name>BookType</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Book the order belongs to</Description>
+        </Field>
+        <Field>
+          <Name>Buy / SellIndicator</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Whether the order is a buy or a sell</Description>
+        </Field>
+        <Field>
+          <Name>DisclosedVolume</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Quantity disclosed to the market</Description>
+        </Field>
+        <Field>
+          <Name>DisclosedVolumeRemaining</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Disclosed quantity still outstanding</Description>
+        </Field>
+        <Field>
+          <Name>TotalVolumeRemaining</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Total quantity still outstanding</Description>
+        </Field>
+        <Field>
+          <Name>Volume</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Quantity of the order</Description>
+        </Field>
+        <Field>
+          <Name>VolumeFilledToday</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Quantity traded today</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Price of the order</Description>
+        </Field>
+        <Field>
+          <Name>GoodTillDate</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Good till date, as a number of days or as a date in seconds since midnight January 1, 1980</Description>
+        </Field>
+        <Field>
+          <Name>EntryDateTime</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Time the order entered the trading system</Description>
+        </Field>
+        <Field>
+          <Name>LastModified</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Time the order was last modified</Description>
+        </Field>
+        <Field>
+          <Name>ST_ORDER_FLAGS</Name>
+          <Type>STRUCT</Type>
+          <Size>2</Size>
+          <Description>Terms attached to the order</Description>
+        </Field>
+        <Field>
+          <Name>BranchId</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Branch Id of the trading member</Description>
+        </Field>
+        <Field>
+          <Name>TraderId</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>User Id of the user</Description>
+        </Field>
+        <Field>
+          <Name>BrokerId</Name>
+          <Type>CHAR</Type>
+          <Size>5</Size>
+          <Description>Trading member Id</Description>
+        </Field>
+        <Field>
+          <Name>Open/Close</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Whether the order opens or closes a position</Description>
+        </Field>
+        <Field>
+          <Name>Settlor</Name>
+          <Type>CHAR</Type>
+          <Size>12</Size>
+          <Description>Participant responsible for settling the trades</Description>
+        </Field>
+        <Field>
+          <Name>Pro / ClientIndicator</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Whether the order is a client order or the broker's own</Description>
+        </Field>
+        <Field>
+          <Name>ADDITIONAL_ORDER_FLAGS</Name>
+          <Type>STRUCT</Type>
+          <Size>1</Size>
+          <Description>Further terms attached to the order</Description>
+        </Field>
+        <Field>
+          <Name>Filler</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Filler</Description>
+        </Field>
+        <Field>
+          <Name>filler</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Filler</Description>
+        </Field>
+        <Field>
+          <Name>NnfField</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Fifteen digit Non Neat front end identifier supplied by the member</Description>
+        </Field>
+        <Field>
+          <Name>EchoBack</Name>
+          <Type>CHAR</Type>
+          <Size>16</Size>
+          <Description>Echo back field, carrying the algo Id in bytes 11 to 14</Description>
+        </Field>
+        <Field>
+          <Name>LastActivityReference</Name>
+          <Type>LONG LONG</Type>
+          <Size>8</Size>
+          <Description>Last activity reference received for the order</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>CHAR</Type>
+          <Size>24</Size>
+          <Description>Reserved</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- MS_OE_RESPONSE_TR (Table 111, p262-265), Packet Length 240 bytes -->
+
+    <!-- Order Response Trimmed Message -->
+    <Message>
+      <Name>Order Response Trimmed Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Message Payload</Branch>
+      <Code>20012,20042,20072,20073,20074,20075,20231</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Trimmed price confirmation, order, modification and cancellation confirmations, modification and cancellation rejections and order error. Transaction Code names the response</Description>
+      <Fields>
+        <Field>
+          <Name>LogTime</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Time the message was generated by the trading system</Description>
+        </Field>
+        <Field>
+          <Name>UserId</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Id of the user</Description>
+        </Field>
+        <Field>
+          <Name>ErrorCode</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Zero when the request succeeded</Description>
+        </Field>
+        <Field>
+          <Name>TimeStamp1</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Time the message arrived at the trading system host</Description>
+        </Field>
+        <Field>
+          <Name>TimeStamp2</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Number of the machine the message came from</Description>
+        </Field>
+        <Field>
+          <Name>Modified / CancelledBy</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Who modified or cancelled the order</Description>
+        </Field>
+        <Field>
+          <Name>ReasonCode</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Reason the request was rejected or the order frozen</Description>
+        </Field>
+        <Field>
+          <Name>TokenNo</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Token number of the contract</Description>
+        </Field>
+        <Field>
+          <Name>CONTRACT_DESC_TR</Name>
+          <Type>STRUCT</Type>
+          <Size>26</Size>
+          <Description>Contract the order is for</Description>
+        </Field>
+        <Field>
+          <Name>CloseoutFlag</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Whether the order closes out a position of a broker in closeout</Description>
+        </Field>
+        <Field>
+          <Name>Reserved 55</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Padding to the two byte alignment of the next field</Description>
+        </Field>
+        <Field>
+          <Name>OrderNumber</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Order number assigned by the trading system</Description>
+        </Field>
+        <Field>
+          <Name>AccountNumber</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Account number the order is for</Description>
+        </Field>
+        <Field>
+          <Name>BookType</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Book the order belongs to</Description>
+        </Field>
+        <Field>
+          <Name>Buy / SellIndicator</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Whether the order is a buy or a sell</Description>
+        </Field>
+        <Field>
+          <Name>DisclosedVolume</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Quantity disclosed to the market</Description>
+        </Field>
+        <Field>
+          <Name>DisclosedVolumeRemaining</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Disclosed quantity still outstanding</Description>
+        </Field>
+        <Field>
+          <Name>TotalVolumeRemaining</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Total quantity still outstanding</Description>
+        </Field>
+        <Field>
+          <Name>Volume</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Quantity of the order</Description>
+        </Field>
+        <Field>
+          <Name>VolumeFilledToday</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Quantity traded today</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Price of the order</Description>
+        </Field>
+        <Field>
+          <Name>GoodTillDate</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Good till date, as a number of days or as a date in seconds since midnight January 1, 1980</Description>
+        </Field>
+        <Field>
+          <Name>EntryDateTime</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Time the order entered the trading system</Description>
+        </Field>
+        <Field>
+          <Name>LastModified</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Time the order was last modified</Description>
+        </Field>
+        <Field>
+          <Name>ST_ORDER_FLAGS</Name>
+          <Type>STRUCT</Type>
+          <Size>2</Size>
+          <Description>Terms attached to the order</Description>
+        </Field>
+        <Field>
+          <Name>BranchId</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Branch Id of the trading member</Description>
+        </Field>
+        <Field>
+          <Name>TraderId</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>User Id of the user</Description>
+        </Field>
+        <Field>
+          <Name>BrokerId</Name>
+          <Type>CHAR</Type>
+          <Size>5</Size>
+          <Description>Trading member Id</Description>
+        </Field>
+        <Field>
+          <Name>Open/Close</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Whether the order opens or closes a position</Description>
+        </Field>
+        <Field>
+          <Name>Settlor</Name>
+          <Type>CHAR</Type>
+          <Size>12</Size>
+          <Description>Participant responsible for settling the trades</Description>
+        </Field>
+        <Field>
+          <Name>Pro / ClientIndicator</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Whether the order is a client order or the broker's own</Description>
+        </Field>
+        <Field>
+          <Name>ADDITIONAL_ORDER_FLAGS</Name>
+          <Type>STRUCT</Type>
+          <Size>1</Size>
+          <Description>Further terms attached to the order</Description>
+        </Field>
+        <Field>
+          <Name>Reserved 143</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Padding to the two byte alignment of the next field</Description>
+        </Field>
+        <Field>
+          <Name>filler</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Filler</Description>
+        </Field>
+        <Field>
+          <Name>NnfField</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Fifteen digit Non Neat front end identifier supplied by the member</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>CHAR</Type>
+          <Size>8</Size>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>EchoBack</Name>
+          <Type>CHAR</Type>
+          <Size>16</Size>
+          <Description>Echo back field, carrying the algo Id in bytes 11 to 14</Description>
+        </Field>
+        <Field>
+          <Name>LastActivityReference</Name>
+          <Type>LONG LONG</Type>
+          <Size>8</Size>
+          <Description>Unique value of the activity, currently in nanoseconds</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>CHAR</Type>
+          <Size>52</Size>
+          <Description>Reserved</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+    <!-- MS_TRADE_CONFIRM_TR (Table 112, p265-266), Packet Length 230 bytes -->
+
+    <!-- Trade Confirmation Trimmed Message -->
+    <Message>
+      <Name>Trade Confirmation Trimmed Message</Name>
+      <Dependency>Transaction Code</Dependency>
+      <Branch>Message Payload</Branch>
+      <Code>20222</Code>
+      <Category>Application</Category>
+      <Origin>Exchange</Origin>
+      <Description>Trimmed trade confirmation</Description>
+      <Fields>
+        <Field>
+          <Name>LogTime</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Time the message was generated by the trading system</Description>
+        </Field>
+        <Field>
+          <Name>TraderId</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>User Id the trade belongs to</Description>
+        </Field>
+        <Field>
+          <Name>TimeStamp</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Time stamp</Description>
+        </Field>
+        <Field>
+          <Name>TimeStamp1</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Time the message arrived at the trading system host</Description>
+        </Field>
+        <Field>
+          <Name>TimeStamp2</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Number of the machine the message came from</Description>
+        </Field>
+        <Field>
+          <Name>ResponseOrderNumber</Name>
+          <Type>DOUBLE</Type>
+          <Size>8</Size>
+          <Description>Order number of the trader's order taking part in the trade</Description>
+        </Field>
+        <Field>
+          <Name>BrokerId</Name>
+          <Type>CHAR</Type>
+          <Size>5</Size>
+          <Description>Trading member Id</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>AccountNumber</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Account number or client code</Description>
+        </Field>
+        <Field>
+          <Name>Buy / SellIndicator</Name>
+          <Type>SHORT</Type>
+          <Size>2</Size>
+          <Description>Whether the order is a buy or a sell</Description>
+        </Field>
+        <Field>
+          <Name>OriginalVolume</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Original quantity of the order</Description>
+        </Field>
+        <Field>
+          <Name>DisclosedVolume</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Quantity disclosed to the market</Description>
+        </Field>
+        <Field>
+          <Name>RemainingVolume</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Volume remaining after the trades</Description>
+        </Field>
+        <Field>
+          <Name>DisclosedVolume Remaining</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Disclosed volume remaining after the trades</Description>
+        </Field>
+        <Field>
+          <Name>Price</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Price of the order</Description>
+        </Field>
+        <Field>
+          <Name>ST_ORDER_FLAGS</Name>
+          <Type>STRUCT</Type>
+          <Size>2</Size>
+          <Description>Terms attached to the order</Description>
+        </Field>
+        <Field>
+          <Name>GoodTillDate</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Good till date, as a number of days or as a date in seconds since midnight January 1, 1980</Description>
+        </Field>
+        <Field>
+          <Name>FillNumber</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Trade number</Description>
+        </Field>
+        <Field>
+          <Name>FillQuantity</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Traded volume</Description>
+        </Field>
+        <Field>
+          <Name>FillPrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Price at which the order traded</Description>
+        </Field>
+        <Field>
+          <Name>VolumeFilledToday</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Quantity traded today</Description>
+        </Field>
+        <Field>
+          <Name>ActivityType</Name>
+          <Type>CHAR</Type>
+          <Size>2</Size>
+          <Description>Activity type</Description>
+        </Field>
+        <Field>
+          <Name>ActivityTime</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Time the activity took place</Description>
+        </Field>
+        <Field>
+          <Name>Token</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Token number of the contract</Description>
+        </Field>
+        <Field>
+          <Name>CONTRACT_DESC_TR</Name>
+          <Type>STRUCT</Type>
+          <Size>26</Size>
+          <Description>Contract the trade is for</Description>
+        </Field>
+        <Field>
+          <Name>OpenClose</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Whether the trade opens or closes a position</Description>
+        </Field>
+        <Field>
+          <Name>BookType</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Book type of the order</Description>
+        </Field>
+        <Field>
+          <Name>Participant</Name>
+          <Type>CHAR</Type>
+          <Size>12</Size>
+          <Description>Participant the trade is for</Description>
+        </Field>
+        <Field>
+          <Name>ADDITIONAL_ORDER_FLAGS</Name>
+          <Type>STRUCT</Type>
+          <Size>1</Size>
+          <Description>Further terms attached to the order</Description>
+        </Field>
+        <Field>
+          <Name>Reserved 153</Name>
+          <Type>CHAR</Type>
+          <Size>1</Size>
+          <Description>Padding to the two byte alignment of the next field</Description>
+        </Field>
+        <Field>
+          <Name>EchoBack</Name>
+          <Type>CHAR</Type>
+          <Size>16</Size>
+          <Description>Echo back field, carrying the algo Id in bytes 11 to 14</Description>
+        </Field>
+        <Field>
+          <Name>LastActivityReference</Name>
+          <Type>LONG LONG</Type>
+          <Size>8</Size>
+          <Description>Unique value of the trade activity, currently in nanoseconds</Description>
+        </Field>
+        <Field>
+          <Name>Reserved</Name>
+          <Type>CHAR</Type>
+          <Size>52</Size>
+          <Description>Reserved</Description>
+        </Field>
+      </Fields>
+    </Message>
+
+  </Messages>
+
+  <Structs>
+
+    <!-- CONTRACT_DESC_TR (Table 106, p253), Packet Length 26 bytes -->
+
+    <!-- CONTRACT_DESC_TR -->
+    <Struct>
+      <Name>CONTRACT_DESC_TR</Name>
+      <Description>Contract the order is for, without the corporate action level</Description>
+      <Fields>
+        <Field>
+          <Name>InstrumentName</Name>
+          <Type>CHAR</Type>
+          <Size>6</Size>
+          <Description>Instrument the contract belongs to</Description>
+        </Field>
+        <Field>
+          <Name>Symbol</Name>
+          <Type>CHAR</Type>
+          <Size>10</Size>
+          <Description>Symbol of the underlying</Description>
+        </Field>
+        <Field>
+          <Name>ExpiryDate</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Format>Seconds</Format>
+          <Description>Date the contract expires</Description>
+        </Field>
+        <Field>
+          <Name>StrikePrice</Name>
+          <Type>LONG</Type>
+          <Size>4</Size>
+          <Description>Strike price of an option, minus one for a future</Description>
+        </Field>
+        <Field>
+          <Name>OptionType</Name>
+          <Type>CHAR</Type>
+          <Size>2</Size>
+          <Description>Whether the option is a call or a put</Description>
+        </Field>
+      </Fields>
+    </Struct>
+
+  </Structs>
+
+  <Bitfields>
+
+    <!--
+    The bit structures are printed twice, For Small Endian Machines and For Big Endian Machines, two C
+    declarations of the same bytes. Bits are listed here least significant first over the whole container,
+    the second byte's bits before the first's.
+
+    ST_ORDER_FLAGS (Table 107, p253-254): the two listings disagree over the second byte. For Small Endian
+    Machines orders it, from its lowest bit, NLT Indc, Preclose, Preopen, Frozen, Modified, Traded,
+    MatchedInd, MF; For Big Endian Machines orders it, from its highest bit, MF, MatchedInd, Traded,
+    Modified, Frozen, NLT Indc, Preclose, Preopen, which puts Preopen in the lowest bit and NLT Indc in the
+    third. The Small Endian listing is followed, being the order both listings of Chapter 4's ST_ORDER_FLAGS
+    (Table 22, p51) agree on.
+    -->
+
+    <!-- ST_ORDER_FLAGS -->
+    <Bitfield>
+      <Name>ST_ORDER_FLAGS</Name>
+      <Description>Terms attached to the order</Description>
+      <Fields>
+        <Field>
+          <Name>NLT Indc</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Order is a negotiated large trade order</Description>
+        </Field>
+        <Field>
+          <Name>Preclose</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Order was entered in the pre close session</Description>
+        </Field>
+        <Field>
+          <Name>Preopen</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Order was entered in the pre open session</Description>
+        </Field>
+        <Field>
+          <Name>Frozen</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Order has gone for a freeze</Description>
+        </Field>
+        <Field>
+          <Name>Modified</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Order has been modified</Description>
+        </Field>
+        <Field>
+          <Name>Traded</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Order has traded partly or fully</Description>
+        </Field>
+        <Field>
+          <Name>MatchedInd</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Negotiated order has found a matching order</Description>
+        </Field>
+        <Field>
+          <Name>MF</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Minimum fill order</Description>
+        </Field>
+        <Field>
+          <Name>AON</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>All or none order</Description>
+        </Field>
+        <Field>
+          <Name>IOC</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Immediate or cancel order</Description>
+        </Field>
+        <Field>
+          <Name>GTC</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Good till cancelled order</Description>
+        </Field>
+        <Field>
+          <Name>Day</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Day order</Description>
+        </Field>
+        <Field>
+          <Name>MIT</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Market if touched order</Description>
+        </Field>
+        <Field>
+          <Name>SL</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Stop loss order</Description>
+        </Field>
+        <Field>
+          <Name>Market</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Market order</Description>
+        </Field>
+        <Field>
+          <Name>ATO</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Market order in the pre open or pre close session</Description>
+        </Field>
+      </Fields>
+    </Bitfield>
+
+    <!-- ADDITIONAL_ORDER_FLAGS (Table 108, p254-255) -->
+
+    <!-- ADDITIONAL_ORDER_FLAGS -->
+    <Bitfield>
+      <Name>ADDITIONAL_ORDER_FLAGS</Name>
+      <Description>Further terms attached to the order</Description>
+      <Fields>
+        <Field>
+          <Name>Reserved Bit 1</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>COL</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Cancel on logoff</Description>
+        </Field>
+        <Field>
+          <Name>Reserved 3-4</Name>
+          <Bits>2</Bits>
+          <Type>BIT</Type>
+          <Description>Reserved</Description>
+        </Field>
+        <Field>
+          <Name>STPC</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Self trade prevention check</Description>
+        </Field>
+        <Field>
+          <Name>SessionInd</Name>
+          <Bits>1</Bits>
+          <Type>BIT</Type>
+          <Description>Session the trade was done in, stamped only on trade messages</Description>
+        </Field>
+        <Field>
+          <Name>Reserved 7-8</Name>
+          <Bits>2</Bits>
+          <Type>BIT</Type>
+          <Description>Reserved</Description>
+        </Field>
+      </Fields>
+    </Bitfield>
+
+  </Bitfields>
+
+  <Enums>
+
+    <!-- Buy / SellIndicator -->
+    <Enum>
+      <Name>Buy / SellIndicator</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Buy Order</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Sell Order</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Book Types (Appendix, p243) -->
+
+    <!-- BookType -->
+    <Enum>
+      <Name>BookType</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Regular Lot Order</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Special Terms Order</Name>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Stop Loss Or Mit Order</Name>
+        </Value>
+        <Value>
+          <Data>4</Data>
+          <Name>Negotiated Order Or Nlt</Name>
+        </Value>
+        <Value>
+          <Data>5</Data>
+          <Name>Odd Lot Order</Name>
+          <Description>Not used</Description>
+        </Value>
+        <Value>
+          <Data>6</Data>
+          <Name>Spot Order</Name>
+          <Description>Not used</Description>
+        </Value>
+        <Value>
+          <Data>7</Data>
+          <Name>Auction Order</Name>
+          <Description>Not used</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Modified / CancelledBy -->
+    <Enum>
+      <Name>Modified / CancelledBy</Name>
+      <Values>
+        <Value>
+          <Data>T</Data>
+          <Name>Trader</Name>
+        </Value>
+        <Value>
+          <Data>B</Data>
+          <Name>Branch Manager</Name>
+        </Value>
+        <Value>
+          <Data>M</Data>
+          <Name>Corporate Manager</Name>
+        </Value>
+        <Value>
+          <Data>C</Data>
+          <Name>Exchange</Name>
+          <Description>Unmatched pre open order cancelled by the exchange</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Open/Close -->
+    <Enum>
+      <Name>Open/Close</Name>
+      <Values>
+        <Value>
+          <Data>O</Data>
+          <Name>Open</Name>
+        </Value>
+        <Value>
+          <Data>C</Data>
+          <Name>Close</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- Pro / ClientIndicator -->
+    <Enum>
+      <Name>Pro / ClientIndicator</Name>
+      <Values>
+        <Value>
+          <Data>1</Data>
+          <Name>Client Order</Name>
+        </Value>
+        <Value>
+          <Data>2</Data>
+          <Name>Broker Order</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- STPC -->
+    <Enum>
+      <Name>STPC</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>Cancel Order Resulting In Self Trade As Per Default</Name>
+          <Description>Cancel order resulting in self trade as per default action by the exchange</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Cancel Active Order Resulting In Self Trade</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- SessionInd -->
+    <Enum>
+      <Name>SessionInd</Name>
+      <Values>
+        <Value>
+          <Data>0</Data>
+          <Name>Session 1</Name>
+          <Description>Trade done in session 1</Description>
+        </Value>
+        <Value>
+          <Data>1</Data>
+          <Name>Session 2</Name>
+          <Description>Trade done in session 2</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- The trimmed structures carry the codes of the appendix lists: ReasonCode "along with the error
+         code" explains a rejection or freeze (p255), and ErrorCode (p262) is the header field Chapter 2
+         refers to the List of Error Codes in the Appendix (p18, p221-233). Both lists are copied as
+         Nse.NseIx.OrderEntry.Nnf.v1.12 transcribes them (Reason Codes p234). -->
+
+    <!--
+    Reason Codes (Appendix, p234). The table also lists Expl Security with the value 5, which Security
+    carries; one name is kept for the one value.
+    -->
+
+    <!-- ReasonCode -->
+    <Enum>
+      <Name>ReasonCode</Name>
+      <Values>
+        <Value>
+          <Data>2</Data>
+          <Name>Exercise</Name>
+        </Value>
+        <Value>
+          <Data>3</Data>
+          <Name>Position liquidation</Name>
+        </Value>
+        <Value>
+          <Data>5</Data>
+          <Name>Security</Name>
+        </Value>
+        <Value>
+          <Data>6</Data>
+          <Name>Broker</Name>
+        </Value>
+        <Value>
+          <Data>7</Data>
+          <Name>Branch</Name>
+        </Value>
+        <Value>
+          <Data>8</Data>
+          <Name>User</Name>
+        </Value>
+        <Value>
+          <Data>9</Data>
+          <Name>Participant</Name>
+        </Value>
+        <Value>
+          <Data>10</Data>
+          <Name>Counter Party</Name>
+        </Value>
+        <Value>
+          <Data>11</Data>
+          <Name>Order Number</Name>
+        </Value>
+        <Value>
+          <Data>15</Data>
+          <Name>Auction Number</Name>
+        </Value>
+        <Value>
+          <Data>17</Data>
+          <Name>Price Freeze</Name>
+        </Value>
+        <Value>
+          <Data>18</Data>
+          <Name>Quantity Freeze</Name>
+        </Value>
+        <Value>
+          <Data>29</Data>
+          <Name>Invalid EXPL</Name>
+        </Value>
+        <Value>
+          <Data>30</Data>
+          <Name>Exercise Mode Mismatch</Name>
+        </Value>
+        <Value>
+          <Data>31</Data>
+          <Name>EX PL Number</Name>
+        </Value>
+      </Values>
+    </Enum>
+
+    <!-- List of Error Codes (Appendix, p221-233) -->
+
+    <!-- Error Code -->
+    <Enum>
+      <Name>Error Code</Name>
+      <Values>
+        <Value>
+          <Data>293</Data>
+          <Name>Invalid Instrument Type</Name>
+          <Description>Invalid instrument type.</Description>
+        </Value>
+        <Value>
+          <Data>509</Data>
+          <Name>Order Number Invalid</Name>
+          <Description>Order does not exist.</Description>
+        </Value>
+        <Value>
+          <Data>8049</Data>
+          <Name>Ord Cxl Initiator Auc Not Allowed</Name>
+          <Description>Initiator is not allowed to cancel auction order.</Description>
+        </Value>
+        <Value>
+          <Data>8485</Data>
+          <Name>Auction Number Invalid</Name>
+          <Description>Auction number does not exist</Description>
+        </Value>
+        <Value>
+          <Data>16000</Data>
+          <Name>Market Closed</Name>
+          <Description>The trading system is not available for trading.</Description>
+        </Value>
+        <Value>
+          <Data>16001</Data>
+          <Name>E Invalid User</Name>
+          <Description>Header user ID is not equal to user ID in the order packet.</Description>
+        </Value>
+        <Value>
+          <Data>16003</Data>
+          <Name>Error Bad Trans Code</Name>
+          <Description>Invalid Transcode</Description>
+        </Value>
+        <Value>
+          <Data>16004</Data>
+          <Name>E User Already Signed On</Name>
+          <Description>The user is already signed on.</Description>
+        </Value>
+        <Value>
+          <Data>16005</Data>
+          <Name>E Invalid Signoff</Name>
+          <Description>System error while trying to sign-off. Please call the Exchange.</Description>
+        </Value>
+        <Value>
+          <Data>16006</Data>
+          <Name>E Invalid Signon</Name>
+          <Description>Invalid sign-on. Please try again.</Description>
+        </Value>
+        <Value>
+          <Data>16007</Data>
+          <Name>E Signon Not Possible</Name>
+          <Description>Signing onto the trading system is restricted. Please try later on.</Description>
+        </Value>
+        <Value>
+          <Data>16011</Data>
+          <Name>E Duplicate Report Request</Name>
+          <Description>This report has already been requested.</Description>
+        </Value>
+        <Value>
+          <Data>16012</Data>
+          <Name>Err Invalid Symbol</Name>
+          <Description>Invalid contract descriptor</Description>
+        </Value>
+        <Value>
+          <Data>16014</Data>
+          <Name>E Not Your Order</Name>
+          <Description>This order is not yours.</Description>
+        </Value>
+        <Value>
+          <Data>16015</Data>
+          <Name>E Not Your Fill</Name>
+          <Description>This trade is not yours.</Description>
+        </Value>
+        <Value>
+          <Data>16016</Data>
+          <Name>E Invalid Fill Number</Name>
+          <Description>Invalid trade number.</Description>
+        </Value>
+        <Value>
+          <Data>16019</Data>
+          <Name>E Stock Not Found</Name>
+          <Description>Stock not found.</Description>
+        </Value>
+        <Value>
+          <Data>16035</Data>
+          <Name>Security Not Available</Name>
+          <Description>Security is unavailable for trading at this time. Please try later.</Description>
+        </Value>
+        <Value>
+          <Data>16041</Data>
+          <Name>Broker Not Found</Name>
+          <Description>Trading member does not exist in the system.</Description>
+        </Value>
+        <Value>
+          <Data>16042</Data>
+          <Name>User Not Found</Name>
+          <Description>Dealer does not exist in the system.</Description>
+        </Value>
+        <Value>
+          <Data>16043</Data>
+          <Name>Duplicate Record</Name>
+          <Description>This record already exists on the NEAT system.</Description>
+        </Value>
+        <Value>
+          <Data>16044</Data>
+          <Name>E Order Modified</Name>
+          <Description>Order has been modified. Please try again.</Description>
+        </Value>
+        <Value>
+          <Data>16049</Data>
+          <Name>Stock Suspended</Name>
+          <Description>Stock is suspended.</Description>
+        </Value>
+        <Value>
+          <Data>16052</Data>
+          <Name>Err Function Not Available</Name>
+          <Description>Function Not Available</Description>
+        </Value>
+        <Value>
+          <Data>16053</Data>
+          <Name>E Change Password</Name>
+          <Description>Your password has expired, must be changed.</Description>
+        </Value>
+        <Value>
+          <Data>16054</Data>
+          <Name>Err Invalid Branch</Name>
+          <Description>Invalid branch for trading member.</Description>
+        </Value>
+        <Value>
+          <Data>16056</Data>
+          <Name>Oe Program Error</Name>
+          <Description>Program error.</Description>
+        </Value>
+        <Value>
+          <Data>16086</Data>
+          <Name>E Dup Trd Cxl Request</Name>
+          <Description>Duplicate trade cancel request.</Description>
+        </Value>
+        <Value>
+          <Data>16098</Data>
+          <Name>Err Invalid Buyer User Id</Name>
+          <Description>Invalid trader ID for buyer.</Description>
+        </Value>
+        <!-- 16099 is printed "Invalid trader ID for buyer." (p222), though its name, ERR_INVALID_SELLER_USER_ID,
+             says seller; kept as printed -->
+        <Value>
+          <Data>16099</Data>
+          <Name>Err Invalid Seller User Id</Name>
+          <Description>Invalid trader ID for buyer.</Description>
+        </Value>
+        <Value>
+          <Data>16100</Data>
+          <Name>E Invalid Version</Name>
+          <Description>Your system version has not been updated.</Description>
+        </Value>
+        <Value>
+          <Data>16104</Data>
+          <Name>Oe System Error</Name>
+          <Description>System could not complete your transaction - Admin notified.</Description>
+        </Value>
+        <Value>
+          <Data>16134</Data>
+          <Name>Err User Disabled</Name>
+          <Description>This Dealer is disabled. Please call the Exchange</Description>
+        </Value>
+        <Value>
+          <Data>16148</Data>
+          <Name>Err Invalid User Id</Name>
+          <Description>Invalid Dealer ID entered.</Description>
+        </Value>
+        <Value>
+          <Data>16154</Data>
+          <Name>Err Invalid Trader Id</Name>
+          <Description>Invalid Trader ID entered.</Description>
+        </Value>
+        <Value>
+          <Data>16169</Data>
+          <Name>Oe Ato In Open</Name>
+          <Description>Order priced ATO cannot be entered when a security is open.</Description>
+        </Value>
+        <Value>
+          <Data>16196</Data>
+          <Name>Ord Not Allowed In Preopen</Name>
+          <Description>Order Entry or Modification or Cancellation not allowed in preopen.</Description>
+        </Value>
+        <Value>
+          <Data>16197</Data>
+          <Name>Ord Not Allowed In Preclose</Name>
+          <Description>Order Entry or Modification or Cancellation not allowed in preclose.</Description>
+        </Value>
+        <Value>
+          <Data>16198</Data>
+          <Name>E Dup Request</Name>
+          <Description>Duplicate modification or cancellation request for the same trade has been encountered.</Description>
+        </Value>
+        <Value>
+          <Data>16227</Data>
+          <Name>E Only Cp Allowed</Name>
+          <Description>Only market orders are allowed in postclose.</Description>
+        </Value>
+        <Value>
+          <Data>16228</Data>
+          <Name>E Sl Mit Nt Not Allowed Pclose</Name>
+          <Description>SL, MIT or NT orders are not allowed during Post Close.</Description>
+        </Value>
+        <Value>
+          <Data>16229</Data>
+          <Name>E Gtc Gtd Ord Not Allowed Pclose</Name>
+          <Description>GTC GTD or Days orders are Not Allowed during Post Close.</Description>
+        </Value>
+        <Value>
+          <Data>16230</Data>
+          <Name>Oe Cont Mod Not Allowed</Name>
+          <Description>Continuous session orders cannot be modified.</Description>
+        </Value>
+        <Value>
+          <Data>16231</Data>
+          <Name>Trd Cont Mod Not Allowed</Name>
+          <Description>Continuous session trades cannot be changed.</Description>
+        </Value>
+        <Value>
+          <Data>16233</Data>
+          <Name>Str Pro Partivipant Invalid</Name>
+          <Description>Proprietary requests cannot be made for participant.</Description>
+        </Value>
+        <Value>
+          <Data>16247</Data>
+          <Name>Error Invalid Price</Name>
+          <Description>Invalid price received</Description>
+        </Value>
+        <Value>
+          <Data>16251</Data>
+          <Name>Oe Diff Trd Mod Vol</Name>
+          <Description>Trade modification with different quantities is received.</Description>
+        </Value>
+        <Value>
+          <Data>16273</Data>
+          <Name>Record Not Found</Name>
+          <Description>Record does not exist.</Description>
+        </Value>
+        <Value>
+          <Data>16278</Data>
+          <Name>Oe Markets Closed</Name>
+          <Description>The markets have not been opened for trading.</Description>
+        </Value>
+        <Value>
+          <Data>16279</Data>
+          <Name>Oe Security Not Admitted</Name>
+          <Description>The contract has not yet been admitted for trading.</Description>
+        </Value>
+        <Value>
+          <Data>16280</Data>
+          <Name>Oe Security Matured</Name>
+          <Description>The Contract has matured.</Description>
+        </Value>
+        <Value>
+          <Data>16281</Data>
+          <Name>Oe Security Expelled</Name>
+          <Description>The security has been expelled.</Description>
+        </Value>
+        <Value>
+          <Data>16282</Data>
+          <Name>Oe Issued Cap Exceeds</Name>
+          <Description>The order quantity is greater than the issued capital.</Description>
+        </Value>
+        <Value>
+          <Data>16283</Data>
+          <Name>Oe Price Not Mult</Name>
+          <Description>The order price is not multiple of the tick size.</Description>
+        </Value>
+        <Value>
+          <Data>16284</Data>
+          <Name>Oe Price Exceeds Day Min Max</Name>
+          <Description>The order price is out of the day's price range.</Description>
+        </Value>
+        <Value>
+          <Data>16285</Data>
+          <Name>Oe Is Not Active</Name>
+          <Description>The broker is not active.</Description>
+        </Value>
+        <Value>
+          <Data>16300</Data>
+          <Name>E System Wrong State</Name>
+          <Description>System is in a wrong state to make the requested change.</Description>
+        </Value>
+        <Value>
+          <Data>16303</Data>
+          <Name>Oe Auction Pending</Name>
+          <Description>The auction is pending.</Description>
+        </Value>
+        <Value>
+          <Data>16307</Data>
+          <Name>Oe Qty Freeze Can</Name>
+          <Description>The order has been canceled due to quantity freeze.</Description>
+        </Value>
+        <Value>
+          <Data>16308</Data>
+          <Name>Oe Price Freeze Can</Name>
+          <Description>The order has been canceled due to price freeze.</Description>
+        </Value>
+        <Value>
+          <Data>16311</Data>
+          <Name>Oe Sol Period Over</Name>
+          <Description>The Solicitor period for the Auction is over.</Description>
+        </Value>
+        <Value>
+          <Data>16312</Data>
+          <Name>Oe Comp Period Over</Name>
+          <Description>The Competitor period for the Auction is over.</Description>
+        </Value>
+        <Value>
+          <Data>16313</Data>
+          <Name>Oe Auc Period Greater</Name>
+          <Description>The Auction period will cross market close time.</Description>
+        </Value>
+        <Value>
+          <Data>16315</Data>
+          <Name>Oe Limit Trigger</Name>
+          <Description>The limit price is worse than the trigger price.</Description>
+        </Value>
+        <Value>
+          <Data>16316</Data>
+          <Name>Oe Trigger Price Not Mult</Name>
+          <Description>The trigger price is not a multiple of tick size.</Description>
+        </Value>
+        <Value>
+          <Data>16317</Data>
+          <Name>Oe No Aon Attrib</Name>
+          <Description>AON attribute not allowed.</Description>
+        </Value>
+        <Value>
+          <Data>16318</Data>
+          <Name>Oe No Mf Attrib</Name>
+          <Description>MF attribute not allowed.</Description>
+        </Value>
+        <Value>
+          <Data>16319</Data>
+          <Name>Oe No Aon In Attrib1</Name>
+          <Description>AON attribute not allowed at Security level.</Description>
+        </Value>
+        <Value>
+          <Data>16320</Data>
+          <Name>Oe No Mf Attrib1</Name>
+          <Description>MF attribute not allowed at security level.</Description>
+        </Value>
+        <Value>
+          <Data>16321</Data>
+          <Name>Oe Mf Greater Disc</Name>
+          <Description>MF quantity is greater than disclosed quantity</Description>
+        </Value>
+        <Value>
+          <Data>16322</Data>
+          <Name>Oe Mf Not Mult</Name>
+          <Description>MF quantity is not a multiple of regular lot.</Description>
+        </Value>
+        <Value>
+          <Data>16323</Data>
+          <Name>Oe Mf Greater Original</Name>
+          <Description>MF quantity is greater than Original quantity.</Description>
+        </Value>
+        <Value>
+          <Data>16324</Data>
+          <Name>Oe Disc Greater Original</Name>
+          <Description>Disclosed quantity is greater than Original quantity.</Description>
+        </Value>
+        <Value>
+          <Data>16325</Data>
+          <Name>Oe Disc Not Mult</Name>
+          <Description>Disclosed quantity is not a multiple of regular lot.</Description>
+        </Value>
+        <Value>
+          <Data>16326</Data>
+          <Name>Oe Gtd Greater</Name>
+          <Description>GTD is greater than that specified at the trading system.</Description>
+        </Value>
+        <Value>
+          <Data>16327</Data>
+          <Name>Oe Quantity Gerater Rl</Name>
+          <Description>Odd lot quantity cannot be greater than or equal to regular lot size.</Description>
+        </Value>
+        <Value>
+          <Data>16328</Data>
+          <Name>Oe Quantity Not Mult Rl</Name>
+          <Description>Quantity is not a multiple of regular lot.</Description>
+        </Value>
+        <Value>
+          <Data>16329</Data>
+          <Name>Oe Broker Not Permitted</Name>
+          <Description>Trading Member not permitted in the market.</Description>
+        </Value>
+        <Value>
+          <Data>16330</Data>
+          <Name>Oe Is Suspended</Name>
+          <Description>Security is suspended.</Description>
+        </Value>
+        <Value>
+          <Data>16333</Data>
+          <Name>Oe Branch Limit Exceeded</Name>
+          <Description>Branch Order Value Limit has been exceeded.</Description>
+        </Value>
+        <Value>
+          <Data>16343</Data>
+          <Name>Oe Ord Can Changed</Name>
+          <Description>The order to be cancelled has changed.</Description>
+        </Value>
+        <Value>
+          <Data>16344</Data>
+          <Name>Oe Ord Cannot Cancel</Name>
+          <Description>The order cannot be cancelled.</Description>
+        </Value>
+        <Value>
+          <Data>16345</Data>
+          <Name>Oe Init Ord Cancel</Name>
+          <Description>Initiator order cannot be cancelled.</Description>
+        </Value>
+        <Value>
+          <Data>16346</Data>
+          <Name>Oe Ord Cannot Modify</Name>
+          <Description>Order cannot be modified.</Description>
+        </Value>
+        <Value>
+          <Data>16348</Data>
+          <Name>Err Trading Not Allowed</Name>
+          <Description>Trading is not allowed in this market.</Description>
+        </Value>
+        <Value>
+          <Data>16357</Data>
+          <Name>Oe Nt Rejected</Name>
+          <Description>Control has rejected the Negotiated Trade.</Description>
+        </Value>
+        <Value>
+          <Data>16363</Data>
+          <Name>Chg St Exists</Name>
+          <Description>Status is in the required state.</Description>
+        </Value>
+        <Value>
+          <Data>16369</Data>
+          <Name>Oe Security In Preopen</Name>
+          <Description>Contract is in preopen.</Description>
+        </Value>
+        <Value>
+          <Data>16372</Data>
+          <Name>Oe Inq Not Allowed</Name>
+          <Description>Order entry not allowed for user as it is of inquiry type.</Description>
+        </Value>
+        <Value>
+          <Data>16387</Data>
+          <Name>Oe Security Ineligible</Name>
+          <Description>Contract not allowed to trader in.</Description>
+        </Value>
+        <Value>
+          <Data>16388</Data>
+          <Name>Err Fok Order Cancelled</Name>
+          <Description>When IOC orders are cancelled if not matched or Preopen/ preclose unmatched orders are cancelled by the system after preopen session ends.</Description>
+        </Value>
+        <Value>
+          <Data>16392</Data>
+          <Name>Turnover Limit Not Provided</Name>
+          <Description>Turnover limit not provided. Please contact Exchange.</Description>
+        </Value>
+        <Value>
+          <Data>16400</Data>
+          <Name>Oe Max Dq Allowed</Name>
+          <Description>DQ is less than minimum quantity allowed.</Description>
+        </Value>
+        <Value>
+          <Data>16404</Data>
+          <Name>Oe Admin Susp Can</Name>
+          <Description>Order has been cancelled due to freeze admin suspension.</Description>
+        </Value>
+        <Value>
+          <Data>16405</Data>
+          <Name>E Invalid Buy Sell Type</Name>
+          <Description>BUY - SELL type entered is invalid.</Description>
+        </Value>
+        <Value>
+          <Data>16414</Data>
+          <Name>E Invalid Pro Client</Name>
+          <Description>Pro Cli field is invalid (something other than Pro - 2 or Cli - 1)</Description>
+        </Value>
+        <Value>
+          <Data>16415</Data>
+          <Name>E Invalid Instructions</Name>
+          <Description>Invalid combination of book type and instructions (order_type).</Description>
+        </Value>
+        <Value>
+          <Data>16416</Data>
+          <Name>E Invalid Order Parameters</Name>
+          <Description>Invalid combination of mf/aon/disclosed volume.</Description>
+        </Value>
+        <Value>
+          <Data>16418</Data>
+          <Name>E Nnf Req Exceeded</Name>
+          <Description>Number of NNF requests exceeded.</Description>
+        </Value>
+        <Value>
+          <Data>16419</Data>
+          <Name>Invalid Order</Name>
+          <Description>This error code will be returned for invalid data in the order packet.</Description>
+        </Value>
+        <Value>
+          <Data>16438</Data>
+          <Name>Ord Attribute Not Allowed In Preopen Preclose</Name>
+          <Description>Orders attribute are not allowed in preopen/preclose.</Description>
+        </Value>
+        <Value>
+          <Data>16440</Data>
+          <Name>E Gtd Gt Maturity</Name>
+          <Description>GTD is greater than Maturity date.</Description>
+        </Value>
+        <Value>
+          <Data>16441</Data>
+          <Name>E Dq Ord Not Allowed Popen</Name>
+          <Description>DQ orders are not allowed in preopen.</Description>
+        </Value>
+        <Value>
+          <Data>16442</Data>
+          <Name>E St Ord Not Allowed Popen</Name>
+          <Description>ST orders are not allowed in preopen.</Description>
+        </Value>
+        <Value>
+          <Data>16443</Data>
+          <Name>E Ord Lim Exceeds Ord Val Lim</Name>
+          <Description>Order value exceeds the order limit value.</Description>
+        </Value>
+        <Value>
+          <Data>16445</Data>
+          <Name>Sl Not Allowed</Name>
+          <Description>Stop Loss orders are not allowed.</Description>
+        </Value>
+        <Value>
+          <Data>16446</Data>
+          <Name>Mit Not Allowed</Name>
+          <Description>Market If Touched orders are not allowed.</Description>
+        </Value>
+        <Value>
+          <Data>16447</Data>
+          <Name>E Ord Not Allowed In Preopen</Name>
+          <Description>Order entry not allowed in Pre-open.</Description>
+        </Value>
+        <Value>
+          <Data>16448</Data>
+          <Name>Error Sl Lmt Rsnblty Check</Name>
+          <Description>Difference between limit price and trigger price is beyond permissible range</Description>
+        </Value>
+        <Value>
+          <Data>16500</Data>
+          <Name>E Not Allowed</Name>
+          <Description>Ex/Pl not allowed.</Description>
+        </Value>
+        <Value>
+          <Data>16501</Data>
+          <Name>E Invalid Ex Pl Char</Name>
+          <Description>Invalid ExPl flag value.</Description>
+        </Value>
+        <Value>
+          <Data>16513</Data>
+          <Name>E Rejection Not Allowed</Name>
+          <Description>Ex/Pl rejection not allowed.</Description>
+        </Value>
+        <Value>
+          <Data>16514</Data>
+          <Name>E Not Modifiable</Name>
+          <Description>Not modifiable.</Description>
+        </Value>
+        <Value>
+          <Data>16518</Data>
+          <Name>E Tm Cm Does Not Exist</Name>
+          <Description>Clearing member, Trading Member link not found.</Description>
+        </Value>
+        <Value>
+          <Data>16521</Data>
+          <Name>E Not Clg Mem</Name>
+          <Description>Not a clearing member.</Description>
+        </Value>
+        <Value>
+          <Data>16523</Data>
+          <Name>E User Not Corp Mgr</Name>
+          <Description>User in not a corporate manager.</Description>
+        </Value>
+        <Value>
+          <Data>16529</Data>
+          <Name>E Not Valid Fo Contract</Name>
+          <Description>Not a valid derivative contract.</Description>
+        </Value>
+        <Value>
+          <Data>16532</Data>
+          <Name>E Pm Cm Invalid</Name>
+          <Description>Clearing member Participant link not found.</Description>
+        </Value>
+        <Value>
+          <Data>16533</Data>
+          <Name>E Corp Mgr Vu Mod</Name>
+          <Description>Enter either TM or Participant.</Description>
+        </Value>
+        <Value>
+          <Data>16541</Data>
+          <Name>E Invalid Participant</Name>
+          <Description>Participant is invalid.</Description>
+        </Value>
+        <Value>
+          <Data>16550</Data>
+          <Name>E Trade Approved By Cm</Name>
+          <Description>Trade cannot be modified /cancelled. It has already been approved by CM.</Description>
+        </Value>
+        <Value>
+          <Data>16552</Data>
+          <Name>E Cm Stock Suspended</Name>
+          <Description>Stock has been suspended.</Description>
+        </Value>
+        <Value>
+          <Data>16554</Data>
+          <Name>E Broker Not Permitted In Fut</Name>
+          <Description>Trading Member not permitted in Futures.</Description>
+        </Value>
+        <Value>
+          <Data>16555</Data>
+          <Name>E Broker Not Permitted In Opt</Name>
+          <Description>Trading Member not permitted in Options.</Description>
+        </Value>
+        <Value>
+          <Data>16556</Data>
+          <Name>E Qty Less Than Min Lot</Name>
+          <Description>Quantity less than the minimum lot size.</Description>
+        </Value>
+        <Value>
+          <Data>16557</Data>
+          <Name>E Disc Qty Less Than Min Lot</Name>
+          <Description>Disclose quantity less than the minimum lot size.</Description>
+        </Value>
+        <Value>
+          <Data>16558</Data>
+          <Name>E Mf Qty Less Than Min Lot</Name>
+          <Description>Minimum fill is less than the minimum lot size.</Description>
+        </Value>
+        <Value>
+          <Data>16560</Data>
+          <Name>E Already Rejected</Name>
+          <Description>The give up trade has already been rejected.</Description>
+        </Value>
+        <Value>
+          <Data>16561</Data>
+          <Name>E Nt Orders Not Allowed</Name>
+          <Description>Negotiated Orders not allowed.</Description>
+        </Value>
+        <Value>
+          <Data>16562</Data>
+          <Name>E Nt Trade Not Allowed</Name>
+          <Description>Negotiated Trade not allowed.</Description>
+        </Value>
+        <Value>
+          <Data>16566</Data>
+          <Name>E Inconsistent Broker Branch</Name>
+          <Description>User does not belong to Broker or Branch.</Description>
+        </Value>
+        <Value>
+          <Data>16570</Data>
+          <Name>M Post Close Start</Name>
+          <Description>The market is in post-close.</Description>
+        </Value>
+        <Value>
+          <Data>16571</Data>
+          <Name>M Post Close Ended</Name>
+          <Description>The Closing Session has ended.</Description>
+        </Value>
+        <Value>
+          <Data>16572</Data>
+          <Name>M Post Close Trades</Name>
+          <Description>Closing Session trades have been generated.</Description>
+        </Value>
+        <Value>
+          <Data>16573</Data>
+          <Name>E Invalid Msg Length</Name>
+          <Description>Message length is invalid.</Description>
+        </Value>
+        <Value>
+          <Data>16574</Data>
+          <Name>E Invalid Open Close Type</Name>
+          <Description>Open - Close type entered is invalid.</Description>
+        </Value>
+        <Value>
+          <Data>16576</Data>
+          <Name>E Nnf Inq Req Exceeded</Name>
+          <Description>No. of nnf inquiry requests exceeded.</Description>
+        </Value>
+        <Value>
+          <Data>16577</Data>
+          <Name>E Participant And Volume Changed</Name>
+          <Description>Both participant and volume changed.</Description>
+        </Value>
+        <Value>
+          <Data>16578</Data>
+          <Name>E Invalid Cover Uncover Type</Name>
+          <Description>Cover - Uncover type entered is invalid.</Description>
+        </Value>
+        <Value>
+          <Data>16579</Data>
+          <Name>E Illegal Cm Id</Name>
+          <Description>Giveup requested for wrong CM ID.</Description>
+        </Value>
+        <Value>
+          <Data>16580</Data>
+          <Name>E Illegal Participant</Name>
+          <Description>Order does not belong to the given participant.</Description>
+        </Value>
+        <Value>
+          <Data>16581</Data>
+          <Name>E Invalid Fill Price</Name>
+          <Description>Invalid trade price.</Description>
+        </Value>
+        <Value>
+          <Data>16583</Data>
+          <Name>E Pro No Participant</Name>
+          <Description>For Pro order participant entry not allowed.</Description>
+        </Value>
+        <Value>
+          <Data>16585</Data>
+          <Name>E Invalid Account No</Name>
+          <Description>Not a valid account number.</Description>
+        </Value>
+        <Value>
+          <Data>16586</Data>
+          <Name>E Allow No Participant Order</Name>
+          <Description>Participant Order Entry Not Allowed.</Description>
+        </Value>
+        <Value>
+          <Data>16589</Data>
+          <Name>M Delete All Orders</Name>
+          <Description>All continuous session orders are being deleted now.</Description>
+        </Value>
+        <Value>
+          <Data>16594</Data>
+          <Name>Trade Qty Not Mod After Giveup</Name>
+          <Description>After giveup approve/reject, trade quantity cannot be modified.</Description>
+        </Value>
+        <Value>
+          <Data>16596</Data>
+          <Name>E Tmid Cant Exercise For Ptcpnt</Name>
+          <Description>Trading member cannot put Ex/Pl request for Participant.</Description>
+        </Value>
+        <Value>
+          <Data>16597</Data>
+          <Name>E Cum Ur Ord Val Limit Exceeded</Name>
+          <Description>Branch limit should be greater than sum of user limits.</Description>
+        </Value>
+        <Value>
+          <Data>16598</Data>
+          <Name>E Branch Ord Val Limit Exceeded</Name>
+          <Description>Branch limit should be greater than used limit.</Description>
+        </Value>
+        <Value>
+          <Data>16601</Data>
+          <Name>Order Rejected With System Error</Name>
+          <Description>Order has been rejected due to system error at exchange</Description>
+        </Value>
+        <Value>
+          <Data>16602</Data>
+          <Name>E Dealer Value Limit Exceeds</Name>
+          <Description>Dealer value limit exceeds the set limit.</Description>
+        </Value>
+        <Value>
+          <Data>16604</Data>
+          <Name>E Participant Not Found</Name>
+          <Description>Participant not found.</Description>
+        </Value>
+        <Value>
+          <Data>16605</Data>
+          <Name>E Either Leg Failed</Name>
+          <Description>One leg of spread/2L failed.</Description>
+        </Value>
+        <Value>
+          <Data>16606</Data>
+          <Name>E Qty Greater Than Freeze Qty</Name>
+          <Description>Quantity greater than Freeze quantity.</Description>
+        </Value>
+        <Value>
+          <Data>16607</Data>
+          <Name>E Spread Not Allowed</Name>
+          <Description>Spread not allowed.</Description>
+        </Value>
+        <Value>
+          <Data>16608</Data>
+          <Name>E Spread Allowed Only In Open</Name>
+          <Description>Spread allowed only when market is open.</Description>
+        </Value>
+        <Value>
+          <Data>16609</Data>
+          <Name>E Spread Allowed If Stock Open</Name>
+          <Description>Spread allowed only when stock is open.</Description>
+        </Value>
+        <Value>
+          <Data>16610</Data>
+          <Name>E Qty Should Be Same</Name>
+          <Description>Both legs should have same quantity.</Description>
+        </Value>
+        <Value>
+          <Data>16611</Data>
+          <Name>E Ord Mod Qty Frz Not Allowed</Name>
+          <Description>Modified order qty freeze not allowed.</Description>
+        </Value>
+        <Value>
+          <Data>16612</Data>
+          <Name>E Trade Rec Modified</Name>
+          <Description>The trade record has been modified.</Description>
+        </Value>
+        <Value>
+          <Data>16615</Data>
+          <Name>E Tm Order Cant Be Modified</Name>
+          <Description>Order cannot be modified.</Description>
+        </Value>
+        <Value>
+          <Data>16616</Data>
+          <Name>E Tm Order Cant Be Cancelled</Name>
+          <Description>Order cannot be cancelled.</Description>
+        </Value>
+        <Value>
+          <Data>16617</Data>
+          <Name>E Tm Trade Cant Be Manipulated</Name>
+          <Description>Trade cannot be manipulated.</Description>
+        </Value>
+        <Value>
+          <Data>16619</Data>
+          <Name>E Pcm Cant Ex Pl For Himself</Name>
+          <Description>PCM cannot ex_pl for himself.</Description>
+        </Value>
+        <Value>
+          <Data>16620</Data>
+          <Name>E Clearing Member Cant Expl</Name>
+          <Description>Ex/Pl by clearing member for TM not allowed.</Description>
+        </Value>
+        <Value>
+          <Data>16621</Data>
+          <Name>E Cant Manipulate Expl Of Tm</Name>
+          <Description>Clearing member cannot change the Ex/Pl requests placed by Trading Member.</Description>
+        </Value>
+        <Value>
+          <Data>16625</Data>
+          <Name>E Cm Of Tm Suspended</Name>
+          <Description>Clearing member is suspended.</Description>
+        </Value>
+        <Value>
+          <Data>16626</Data>
+          <Name>E Expdate Not In Ascending Ord</Name>
+          <Description>Expiry date not in ascending order.</Description>
+        </Value>
+        <Value>
+          <Data>16627</Data>
+          <Name>E Invalid Contract Comb</Name>
+          <Description>Invalid contract combination.</Description>
+        </Value>
+        <Value>
+          <Data>16628</Data>
+          <Name>E Bm Cannot Cancel Cm Orders</Name>
+          <Description>Branch manager cannot cancel corporate manager's order.</Description>
+        </Value>
+        <Value>
+          <Data>16629</Data>
+          <Name>E Bm Cannot Cancel Bm Orders</Name>
+          <Description>Branch manager cannot cancel other branch manager's order.</Description>
+        </Value>
+        <Value>
+          <Data>16630</Data>
+          <Name>E Cm Cannot Cancel Cm Orders</Name>
+          <Description>Corporate manager cannot cancel other corporate manager's order.</Description>
+        </Value>
+        <Value>
+          <Data>16631</Data>
+          <Name>E Spread In Different Underlying</Name>
+          <Description>Spread not allowed for different underlying.</Description>
+        </Value>
+        <Value>
+          <Data>16632</Data>
+          <Name>E Invalid Cli Ac</Name>
+          <Description>Cli A/c number cannot be modified as trading member ID.</Description>
+        </Value>
+        <Value>
+          <Data>16636</Data>
+          <Name>E Br Ord Limit Fut Buy Exceeded</Name>
+          <Description>Futures buy branch Order Value Limit has been exceeded.</Description>
+        </Value>
+        <Value>
+          <Data>16637</Data>
+          <Name>E Br Ord Limit Fut Sell Exceeded</Name>
+          <Description>Futures sell branch Order Value Limit has been exceeded.</Description>
+        </Value>
+        <Value>
+          <Data>16638</Data>
+          <Name>E Br Ord Limit Opt Buy Exceeded</Name>
+          <Description>Options buy branch Order Value Limit has been exceeded.</Description>
+        </Value>
+        <Value>
+          <Data>16639</Data>
+          <Name>E Br Ord Limit Opt Sell Exceeded</Name>
+          <Description>Options sell branch Order Value Limit has been exceeded.</Description>
+        </Value>
+        <Value>
+          <Data>16640</Data>
+          <Name>E Ur Ord Limit Fut Buy Exceeded</Name>
+          <Description>Futures buy used limit exceeded the user limit.</Description>
+        </Value>
+        <Value>
+          <Data>16641</Data>
+          <Name>E Ur Ord Limit Fut Sell Exceeded</Name>
+          <Description>Futures sell used limit exceeded the user limit.</Description>
+        </Value>
+        <Value>
+          <Data>16642</Data>
+          <Name>E Ur Ord Limit Opt Buy Exceeded</Name>
+          <Description>Options buy used limit exceeded the user limit.</Description>
+        </Value>
+        <Value>
+          <Data>16643</Data>
+          <Name>E Ur Ord Limit Opt Sell Exceeded</Name>
+          <Description>Options sell used limit exceeded the user limit.</Description>
+        </Value>
+        <Value>
+          <Data>16645</Data>
+          <Name>E Cant Appr Bhav Copy Generated</Name>
+          <Description>Cannot approve. Bhav Copy generated.</Description>
+        </Value>
+        <Value>
+          <Data>16646</Data>
+          <Name>E Collateral Lmt Chk</Name>
+          <Description>Cannot modify.</Description>
+        </Value>
+        <Value>
+          <Data>16656</Data>
+          <Name>E Address Not Found</Name>
+          <Description>No address in the database.</Description>
+        </Value>
+        <Value>
+          <Data>16662</Data>
+          <Name>E Stk In Popen</Name>
+          <Description>Contract is opening. Please wait for the contract to open.</Description>
+        </Value>
+        <Value>
+          <Data>16666</Data>
+          <Name>E Invalid Nnf Field</Name>
+          <Description>Invalid NNF field.</Description>
+        </Value>
+        <Value>
+          <Data>16667</Data>
+          <Name>E Gtcgtd Not Allowed</Name>
+          <Description>GTC GTD Orders not allowed.</Description>
+        </Value>
+        <Value>
+          <Data>16686</Data>
+          <Name>Closeout Order Reject</Name>
+          <Description>This error code will be returned if Close out order rejected by the system.</Description>
+        </Value>
+        <Value>
+          <Data>16687</Data>
+          <Name>Closeout Frz Reject</Name>
+          <Description>This error code will be returned if the close out order entered is going into freeze. (Since Freeze is not allowed for close out orders)</Description>
+        </Value>
+        <Value>
+          <Data>16688</Data>
+          <Name>Closeout Not Allowed</Name>
+          <Description>This error code will be returned if the close out order is not allowed in the system.</Description>
+        </Value>
+        <Value>
+          <Data>16690</Data>
+          <Name>Closeout Trdmod Reject</Name>
+          <Description>This error code will be returned when a Trade MOD request is placed by a broker in Close-out.</Description>
+        </Value>
+        <Value>
+          <Data>16706</Data>
+          <Name>Partial Order Reject</Name>
+          <Description>Cancelled by the System</Description>
+        </Value>
+        <Value>
+          <Data>16708</Data>
+          <Name>Partial Quick Order Cxl Rej</Name>
+          <Description>System Error. Orders not completely cancelled by the system. Please request Quick CXL again</Description>
+        </Value>
+        <Value>
+          <Data>16713</Data>
+          <Name>E Price Diff Out Of Range</Name>
+          <Description>Spread order price difference is out of range.</Description>
+        </Value>
+        <Value>
+          <Data>16732</Data>
+          <Name>Error Algo Mkt Not Allowed</Name>
+          <Description>Market order not allowed for Algo order.</Description>
+        </Value>
+        <Value>
+          <Data>16733</Data>
+          <Name>Error Invalid Nnfid Rejection</Name>
+          <Description>Invalid NNF Id</Description>
+        </Value>
+        <Value>
+          <Data>16793</Data>
+          <Name>E Vc Order Rejected</Name>
+          <Description>Order Entered has invalid data.</Description>
+        </Value>
+        <Value>
+          <Data>16794</Data>
+          <Name>E Ssd Order Rejected</Name>
+          <Description>Order Entered has invalid data.</Description>
+        </Value>
+        <Value>
+          <Data>16795</Data>
+          <Name>E Order Cancelled For Vc</Name>
+          <Description>Order cancelled due to voluntary close out.</Description>
+        </Value>
+        <Value>
+          <Data>16796</Data>
+          <Name>E Order Cancelled For Ssd</Name>
+          <Description>Order cancelled due to OI violation.</Description>
+        </Value>
+        <Value>
+          <Data>16807</Data>
+          <Name>E Account Debarred</Name>
+          <Description>The account is debarred from trading.</Description>
+        </Value>
+        <Value>
+          <Data>17036</Data>
+          <Name>E Mba Inq Not Allowed</Name>
+          <Description>MBA inquiry is not allowed for this contract</Description>
+        </Value>
+        <Value>
+          <Data>17037</Data>
+          <Name>E Mba Insuff Record</Name>
+          <Description>insufficient record for MBA inquiry</Description>
+        </Value>
+        <Value>
+          <Data>17038</Data>
+          <Name>E Outstanding Order Present</Name>
+          <Description>Order is outstanding.</Description>
+        </Value>
+        <Value>
+          <Data>17039</Data>
+          <Name>E Pro Cli Mod Not Allowed</Name>
+          <Description>Pro Cli Modification not allowed for the Order.</Description>
+        </Value>
+        <Value>
+          <Data>17045</Data>
+          <Name>E Ord Qty Exceeds Qty Val Lim</Name>
+          <Description>Order Quantity Exceeds Quantity Value Limit for User.</Description>
+        </Value>
+        <Value>
+          <Data>17046</Data>
+          <Name>E User Type Trd Mod Disabled</Name>
+          <Description>Trade Modification Not Allowed for User Type.</Description>
+        </Value>
+        <Value>
+          <Data>17047</Data>
+          <Name>E Tm Trade Mod Not Allowed</Name>
+          <Description>Trade Modification not Allowed for Broker.</Description>
+        </Value>
+        <Value>
+          <Data>17048</Data>
+          <Name>E User Trd Mod Disabled</Name>
+          <Description>Trade Modification Not Allowed for User.</Description>
+        </Value>
+        <Value>
+          <Data>17070</Data>
+          <Name>E Trd Price Out Of Stock Tpp</Name>
+          <Description>The Price is out of the current execution range</Description>
+        </Value>
+        <Value>
+          <Data>17071</Data>
+          <Name>E Order Cancelled For Self Trade</Name>
+          <Description>The order could have resulted in self trade</Description>
+        </Value>
+        <Value>
+          <Data>17101</Data>
+          <Name>E Invalid Packet</Name>
+          <Description>The packet has invalid data</Description>
+        </Value>
+        <Value>
+          <Data>17102</Data>
+          <Name>E Hearbeat Not Received</Name>
+          <Description>Heart Beat not received</Description>
+        </Value>
+        <Value>
+          <Data>17103</Data>
+          <Name>E Single User Login Allowed</Name>
+          <Description>One user login allowed per box for direct connection</Description>
+        </Value>
+        <Value>
+          <Data>17104</Data>
+          <Name>E Invalid Box Id</Name>
+          <Description>Invalid box id</Description>
+        </Value>
+        <Value>
+          <Data>17105</Data>
+          <Name>E Seq No Mismatch</Name>
+          <Description>Sequence number mismatch</Description>
+        </Value>
+        <Value>
+          <Data>17106</Data>
+          <Name>E Box Rate Exceeded</Name>
+          <Description>Box Rate has been exceeded by the Member</Description>
+        </Value>
+        <Value>
+          <Data>16403</Data>
+          <Name>E Invalid Box Ip Combination</Name>
+          <Description>Login from invalid IP</Description>
+        </Value>
+        <Value>
+          <Data>17179</Data>
+          <Name>Err Invalid Algo Id</Name>
+          <Description>Invalid Algo Id</Description>
+        </Value>
+        <Value>
+          <Data>17184</Data>
+          <Name>Err User Having Null Rights</Name>
+          <Description>Order Rejected as user has no trading rights</Description>
+        </Value>
+        <Value>
+          <Data>19028</Data>
+          <Name>Err Checksum Failed Gr</Name>
+          <Description>Checksum verification failed at Gateway Router</Description>
+        </Value>
+        <Value>
+          <Data>19029</Data>
+          <Name>Err Multiple Gr Query Rcv</Name>
+          <Description>Multiple GR_QUERY request received</Description>
+        </Value>
+        <Value>
+          <Data>19030</Data>
+          <Name>Err Encryption Flag Mismatch</Name>
+          <Description>Encryption Flag Mismatch</Description>
+        </Value>
+        <Value>
+          <Data>19031</Data>
+          <Name>Err Md5 Checksum Failure</Name>
+          <Description>MD5 Checksum Failed</Description>
+        </Value>
+      </Values>
+    </Enum>
+
+  </Enums>
+
+</OmiNnfPdf>
