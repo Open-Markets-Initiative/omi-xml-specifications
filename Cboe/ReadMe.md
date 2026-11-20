@@ -134,6 +134,7 @@
 | C1Options | Complex | Pitch | 2.1.18 | [files](Cboe.C1Options.Complex.Pitch.v2.1.18/) |
 | C1Options | Complex | Pitch | 2.1.37 | [files](Cboe.C1Options.Complex.Pitch.v2.1.37/) |
 | C1Options | Complex | Pitch | 2.1.61 | [files](Cboe.C1Options.Complex.Pitch.v2.1.61/) |
+| C1Options | Complex | Spin | 2.1.18 | [files](Cboe.C1Options.Complex.Spin.v2.1.18/) |
 | C1Options | Complex | Spin | 2.1.61 | [files](Cboe.C1Options.Complex.Spin.v2.1.61/) |
 | C1Options | ComplexAuction | Pitch | 2.2.41 | [files](Cboe.C1Options.ComplexAuction.Pitch.v2.2.41/) |
 | C1Options | ComplexOptionsFutures | Pitch | 1.0.0 | [files](Cboe.C1Options.ComplexOptionsFutures.Pitch.v1.0.0/) |
