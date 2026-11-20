@@ -223,6 +223,7 @@
 | CfeFutures | MulticastDepthOfBook | Pitch | 1.2.22 | [files](Cboe.CfeFutures.MulticastDepthOfBook.Pitch.v1.2.22/) |
 | CfeFutures | MulticastDepthOfBook | Spin | 1.2.13 | [files](Cboe.CfeFutures.MulticastDepthOfBook.Spin.v1.2.13/) |
 | CfeFutures | MulticastDepthOfBook | Spin | 1.2.19 | [files](Cboe.CfeFutures.MulticastDepthOfBook.Spin.v1.2.19/) |
+| CfeFutures | MulticastTop | Pitch | 1.0.15 | [files](Cboe.CfeFutures.MulticastTop.Pitch.v1.0.15/) |
 | CfeFutures | MulticastTop | Pitch | 1.2.20 | [files](Cboe.CfeFutures.MulticastTop.Pitch.v1.2.20/) |
 | CfeFutures | MulticastTop | Pitch | 1.2.22 | [files](Cboe.CfeFutures.MulticastTop.Pitch.v1.2.22/) |
 | CfeFutures | MulticastTop | Spin | 1.2.20 | [files](Cboe.CfeFutures.MulticastTop.Spin.v1.2.20/) |

@@ -28,6 +28,8 @@
 | AmexEquities | DropCopy | Fix | 6.0 | private |
 | AmexEquities | ImbalancesFeed | Pillar | 2.2.n | private |
 | AmexEquities | ImbalancesFeed | Pillar | 2.2.o | private |
+| AmexEquities | ImbalancesFeed | Xdp | 2.1.f | private |
+| AmexEquities | ImbalancesFeed | Xdp | 2.2.a | private |
 | AmexEquities | IntegratedFeed | Pillar | 2.5.g | private |
 | AmexEquities | IntegratedFeed | Pillar | 2.5.h | private |
 | AmexEquities | IntegratedFeed | Xdp | 2.1.g | private |
@@ -93,6 +95,8 @@
 | ArcaEquities | DropCopy | Fix | 6.0 | private |
 | ArcaEquities | ImbalancesFeed | Pillar | 2.2.n | private |
 | ArcaEquities | ImbalancesFeed | Pillar | 2.2.o | private |
+| ArcaEquities | ImbalancesFeed | Xdp | 2.1.f | private |
+| ArcaEquities | ImbalancesFeed | Xdp | 2.2.a | private |
 | ArcaEquities | IntegratedFeed | Pillar | 2.5.g | private |
 | ArcaEquities | IntegratedFeed | Pillar | 2.5.h | private |
 | ArcaEquities | IntegratedFeedRefresh | Pillar | 2.5.g | private |
@@ -129,6 +133,7 @@
 | ArcaOptions | TopFeed | Pillar | 1.2.j | private |
 | ArcaOptions | TopFeed | Pillar | 1.2.k | private |
 | ArcaOptions | TopFeed | Xdp | 1.3.a | private |
+| GlobalOtc | Bbo | Xdp | 2.5 | private |
 | NationalEquities | Bbo | Pillar | 2.5.d | private |
 | NationalEquities | BinaryGateway | PillarStream | 5.17 | private |
 | NationalEquities | BinaryGateway | PillarStream | 6.0 | private |

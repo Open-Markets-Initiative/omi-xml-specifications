@@ -85,6 +85,7 @@
 | NomOptions | Bono | Itch | 3.2 | [files](Nasdaq.NomOptions.Bono.Itch.v3.2/) |
 | NomOptions | Bono | Itch | 3.3 | [files](Nasdaq.NomOptions.Bono.Itch.v3.3/) |
 | NomOptions | Cti | Itch | 3.0 | [files](Nasdaq.NomOptions.Cti.Itch.v3.0/) |
+| NomOptions | DepthOfMarket | Glimpse | 2.1 | private |
 | NomOptions | DropCopy | Fix | 2.1 | [files](Nasdaq.NomOptions.DropCopy.Fix.v2.1/) |
 | NomOptions | Itto | Itch | 3.2 | [files](Nasdaq.NomOptions.Itto.Itch.v3.2/) |
 | NomOptions | Itto | Itch | 4.0 | [files](Nasdaq.NomOptions.Itto.Itch.v4.0/) |
@@ -92,10 +93,14 @@
 | NomOptions | OrderEntry | Fix | 1.3.g | [files](Nasdaq.NomOptions.OrderEntry.Fix.v1.3/) |
 | NomOptions | OrderEntry | Fix | 1.3.i | [files](Nasdaq.NomOptions.OrderEntry.Fix.v1.3.i/) |
 | NomOptions | OrderEntry | Fix | 13.4 | [files](Nasdaq.NomOptions.OrderEntry.Fix.v13.4/) |
+| NomOptions | OrderFeed | Itch | 2.1 | private |
 | NomOptions | Otto | Ouch | 2.1.4 | [files](Nasdaq.NomOptions.Otto.Ouch.v2.1.4/) |
 | NomOptions | Otto | Ouch | 2.2 | [files](Nasdaq.NomOptions.Otto.Ouch.v2.2/) |
 | NomOptions | Otto | Ouch | 3.0.0 | [files](Nasdaq.NomOptions.Otto.Ouch.v3.0.0/) |
 | NomOptions | Quoting | Sqf | 9.0 | [files](Nasdaq.NomOptions.Quoting.Sqf.v9.0/) |
+| NomOptions | TopOfMarket | Glimpse | 2.1 | [files](Nasdaq.NomOptions.TopOfMarket.Glimpse.v2.1/) |
+| NomOptions | TopOfMarket | Itch | 2.1 | [files](Nasdaq.NomOptions.TopOfMarket.Itch.v2.1/) |
+| NomOptions | TradeFeed | Itch | 2.1 | [files](Nasdaq.NomOptions.TradeFeed.Itch.v2.1/) |
 | NordicDerivatives | DepthOfBook | Glimpse | 2.22.4 | [files](Nasdaq.NordicDerivatives.DepthOfBook.Glimpse.v2.22.4/) |
 | NordicDerivatives | DepthOfBook | Itch | 1.06 | [files](Nasdaq.NordicDerivatives.DepthOfBook.Itch.v1.06/) |
 | NordicDerivatives | DepthOfBook | Itch | 2.22.4 | [files](Nasdaq.NordicDerivatives.DepthOfBook.Itch.v2.22.4/) |
