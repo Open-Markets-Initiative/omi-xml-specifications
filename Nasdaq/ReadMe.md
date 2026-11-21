@@ -21,6 +21,7 @@
 | GemxOptions | TopOfMarket | Glimpse | 2.1 | [files](Nasdaq.GemxOptions.TopOfMarket.Glimpse.v2.1/) |
 | GemxOptions | TopOfMarket | Itch | 2.1 | [files](Nasdaq.GemxOptions.TopOfMarket.Itch.v2.1/) |
 | GemxOptions | TradeFeed | Itch | 2.1 | [files](Nasdaq.GemxOptions.TradeFeed.Itch.v2.1/) |
+| Index | Gids | Itch | 1.0.i | [files](Nasdaq.Index.Gids.Itch.v1.0.i/) |
 | IseOptions | Cti | Itch | 3.0 | [files](Nasdaq.IseOptions.Cti.Itch.v3.0/) |
 | IseOptions | DepthComboFeed | Itch | 1.0 | [files](Nasdaq.IseOptions.DepthComboFeed.Itch.v1.0/) |
 | IseOptions | DepthOfMarket | Glimpse | 2.1 | [files](Nasdaq.IseOptions.DepthOfMarket.Glimpse.v2.1/) |
@@ -75,6 +76,7 @@
 | MrxOptions | TopOfMarket | Glimpse | 2.1 | [files](Nasdaq.MrxOptions.TopOfMarket.Glimpse.v2.1/) |
 | MrxOptions | TopOfMarket | Itch | 2.1 | [files](Nasdaq.MrxOptions.TopOfMarket.Itch.v2.1/) |
 | MrxOptions | TradeFeed | Itch | 2.1 | [files](Nasdaq.MrxOptions.TradeFeed.Itch.v2.1/) |
+| NasdaqCanada | Basic | Itch | 1.6 | [files](Nasdaq.NasdaqCanada.Basic.Itch.v1.6/) |
 | NasdaqCanada | Chixmd | AsciiItch | 3.4.1 | [files](Nasdaq.NasdaqCanada.Chixmd.AsciiItch.v3.4.1.23/) |
 | NasdaqCanada | Chixmmd | AsciiItch | 1.1.3 | [files](Nasdaq.NasdaqCanada.Chixmmd.AsciiItch.v1.1.3.5/) |
 | NasdaqCanada | Chixmmd | Glimpse | 1.0 | [files](Nasdaq.NasdaqCanada.Chixmmd.Glimpse.v1.0/) |

@@ -12,7 +12,7 @@ Every published specification is validated for well-formed xml on each change. P
 
 | Specification Files |
 | --- |
-| 2,266 |
+| 2,270 |
 
 ## Open Markets Initiative
 
@@ -21,7 +21,7 @@ The Open Markets Initiative (Omi) is a group of technologists dedicated to enhan
 Other generated code can be found at [Omi Repositories](https://github.com/Open-Markets-Initiative/Directory/tree/main/Repositories "Open Markets Initiative Repositories"); for Omi rules and regulations, see [Omi Directory](https://github.com/Open-Markets-Initiative/Directory "Open Markets Initiative Directory").
 ## Organizations
 
-> [24X][24X.Directory] · [A2X][A2X.Directory] · [Aix][Aix.Directory] · [Aquis][Aquis.Directory] · [AsiaNext][AsiaNext.Directory] · [Asx][Asx.Directory] · [Athex][Athex.Directory] · [B3][B3.Directory] · [Binance][Binance.Directory] · [Bist][Bist.Directory] · [Biva][Biva.Directory] · [Bjse][Bjse.Directory] · [BlueOceanAts][BlueOceanAts.Directory] · [Bme][Bme.Directory] · [Bmv][Bmv.Directory] · [Box][Box.Directory] · [BruceAts][BruceAts.Directory] · [Bse][Bse.Directory] · [Cboe][Cboe.Directory] · [CixAts][CixAts.Directory] · [Cme][Cme.Directory] · [Cnsx][Cnsx.Directory] · [Coinbase][Coinbase.Directory] · [Currenex][Currenex.Directory] · [Databento][Databento.Directory] · [Eurex][Eurex.Directory] · [Euronext][Euronext.Directory] · [Finra][Finra.Directory] · [Gpw][Gpw.Directory] · [Hkex][Hkex.Directory] · [Ice][Ice.Directory] · [Iex][Iex.Directory] · [Imperative][Imperative.Directory] · [Jnx][Jnx.Directory] · [Jpx][Jpx.Directory] · [Jse][Jse.Directory] · [Koscom][Koscom.Directory] · [Lme][Lme.Directory] · [Lseg][Lseg.Directory] · [Ltse][Ltse.Directory] · [Memx][Memx.Directory] · [Miax][Miax.Directory] · [Moex][Moex.Directory] · [Nairobi][Nairobi.Directory] · [Nasdaq][Nasdaq.Directory] · [Neeq][Neeq.Directory] · [Nextrade][Nextrade.Directory] · [Nse][Nse.Directory] · [NsxAustralia][NsxAustralia.Directory] · [Nyse][Nyse.Directory] · [Odx][Odx.Directory] · [Okx][Okx.Directory] · [OtcMarkets][OtcMarkets.Directory] · [Pse][Pse.Directory] · [Qse][Qse.Directory] · [Sgx][Sgx.Directory] · [Siac][Siac.Directory] · [Six][Six.Directory] · [SmallX][SmallX.Directory] · [Sse][Sse.Directory] · [Szse][Szse.Directory] · [Taifex][Taifex.Directory] · [Tmx][Tmx.Directory] · [Tradelogiq][Tradelogiq.Directory] · [Txse][Txse.Directory]
+> [24X][24X.Directory] · [A2X][A2X.Directory] · [Aix][Aix.Directory] · [Aquis][Aquis.Directory] · [AsiaNext][AsiaNext.Directory] · [Asx][Asx.Directory] · [Athex][Athex.Directory] · [B3][B3.Directory] · [Binance][Binance.Directory] · [Bist][Bist.Directory] · [Biva][Biva.Directory] · [Bjse][Bjse.Directory] · [BlueOceanAts][BlueOceanAts.Directory] · [Bme][Bme.Directory] · [Bmv][Bmv.Directory] · [Box][Box.Directory] · [BruceAts][BruceAts.Directory] · [Bse][Bse.Directory] · [Cboe][Cboe.Directory] · [CixAts][CixAts.Directory] · [Cme][Cme.Directory] · [Cnsx][Cnsx.Directory] · [Coinbase][Coinbase.Directory] · [Currenex][Currenex.Directory] · [Databento][Databento.Directory] · [Eurex][Eurex.Directory] · [Euronext][Euronext.Directory] · [Finra][Finra.Directory] · [Gpw][Gpw.Directory] · [Hkex][Hkex.Directory] · [Ice][Ice.Directory] · [Iex][Iex.Directory] · [Imperative][Imperative.Directory] · [Jnx][Jnx.Directory] · [Jpx][Jpx.Directory] · [Jse][Jse.Directory] · [Koscom][Koscom.Directory] · [Lme][Lme.Directory] · [Lseg][Lseg.Directory] · [Ltse][Ltse.Directory] · [Memx][Memx.Directory] · [Miax][Miax.Directory] · [Moex][Moex.Directory] · [Nasdaq][Nasdaq.Directory] · [Neeq][Neeq.Directory] · [Nextrade][Nextrade.Directory] · [Nse][Nse.Directory] · [NseKenya][NseKenya.Directory] · [NsxAustralia][NsxAustralia.Directory] · [Nyse][Nyse.Directory] · [Odx][Odx.Directory] · [Okx][Okx.Directory] · [OtcMarkets][OtcMarkets.Directory] · [Pse][Pse.Directory] · [Qse][Qse.Directory] · [Sgx][Sgx.Directory] · [Siac][Siac.Directory] · [Six][Six.Directory] · [SmallX][SmallX.Directory] · [Sse][Sse.Directory] · [Szse][Szse.Directory] · [Taifex][Taifex.Directory] · [Tmx][Tmx.Directory] · [Tradelogiq][Tradelogiq.Directory] · [Txse][Txse.Directory]
 
 ## Exchanges
 
@@ -33,7 +33,7 @@ Other generated code can be found at [Omi Repositories](https://github.com/Open-
 
 ## Consolidators
 
-> [Cqs][Cqs.Consolidator] · [Cts][Cts.Consolidator] · [MdcsRealtime][MdcsRealtime.Consolidator] · [NyseConsolidated][NyseConsolidated.Consolidator] · [Opra][Opra.Consolidator] · [TitaniumConsolidated][TitaniumConsolidated.Consolidator] · [Uqdf][Uqdf.Consolidator] · [Utdf][Utdf.Consolidator] · [Utp][Utp.Consolidator]
+> [Cqs][Cqs.Consolidator] · [Cts][Cts.Consolidator] · [Index][Index.Consolidator] · [MdcsRealtime][MdcsRealtime.Consolidator] · [NyseConsolidated][NyseConsolidated.Consolidator] · [Opra][Opra.Consolidator] · [TitaniumConsolidated][TitaniumConsolidated.Consolidator] · [Uqdf][Uqdf.Consolidator] · [Utdf][Utdf.Consolidator] · [Utp][Utp.Consolidator]
 
 ## Related Definitions
 
@@ -106,11 +106,11 @@ Enjoy.
 [Memx.Directory]: https://github.com/Open-Markets-Initiative/omi-xml-specifications/tree/main/Memx "The Members Exchange"
 [Miax.Directory]: https://github.com/Open-Markets-Initiative/omi-xml-specifications/tree/main/Miax "Miami International Holdings"
 [Moex.Directory]: https://github.com/Open-Markets-Initiative/omi-xml-specifications/tree/main/Moex "Moscow Exchange"
-[Nairobi.Directory]: https://github.com/Open-Markets-Initiative/omi-xml-specifications/tree/main/Nairobi "Nairobi Securities Exchange"
 [Nasdaq.Directory]: https://github.com/Open-Markets-Initiative/omi-xml-specifications/tree/main/Nasdaq "National Association of Securities Dealers Automated Quotations (Nasdaq)"
 [Neeq.Directory]: https://github.com/Open-Markets-Initiative/omi-xml-specifications/tree/main/Neeq "National Equities Exchange and Quotations"
 [Nextrade.Directory]: https://github.com/Open-Markets-Initiative/omi-xml-specifications/tree/main/Nextrade "Nextrade"
 [Nse.Directory]: https://github.com/Open-Markets-Initiative/omi-xml-specifications/tree/main/Nse "National Stock Exchange of India Ltd"
+[NseKenya.Directory]: https://github.com/Open-Markets-Initiative/omi-xml-specifications/tree/main/NseKenya "Nairobi Securities Exchange"
 [NsxAustralia.Directory]: https://github.com/Open-Markets-Initiative/omi-xml-specifications/tree/main/NsxAustralia "Nation Stock Exchange of Australia"
 [Nyse.Directory]: https://github.com/Open-Markets-Initiative/omi-xml-specifications/tree/main/Nyse "New York Stock Exchange"
 [Odx.Directory]: https://github.com/Open-Markets-Initiative/omi-xml-specifications/tree/main/Odx "Osaka Digital Exchange"
@@ -186,6 +186,7 @@ Enjoy.
 [IceFutures.Exchange]: https://github.com/Open-Markets-Initiative/Open-Markets-Initiative/tree/main/Organizations/Ice/Protocols/IceFutures "Intercontinental Exchange Futures"
 [IexEquities.Exchange]: https://github.com/Open-Markets-Initiative/Open-Markets-Initiative/tree/main/Organizations/Iex/Protocols/IexEquities "IEX Equities"
 [IexOptions.Exchange]: https://github.com/Open-Markets-Initiative/Open-Markets-Initiative/tree/main/Organizations/Iex/Protocols/IexOptions "IEX Options"
+[Index.Consolidator]: https://github.com/Open-Markets-Initiative/Open-Markets-Initiative/tree/main/Organizations/Nasdaq/Protocols/Index "Nasdaq Global Indexes"
 [IseOptions.Exchange]: https://github.com/Open-Markets-Initiative/Open-Markets-Initiative/tree/main/Organizations/Nasdaq/Protocols/IseOptions "Nasdaq ISE"
 [Itac.Platform]: https://github.com/Open-Markets-Initiative/Open-Markets-Initiative/tree/main/Organizations/Jse/Protocols/Itac "Integrated Trading and Clearing"
 [JnxBonds.Exchange]: https://github.com/Open-Markets-Initiative/Open-Markets-Initiative/tree/main/Organizations/Jnx/Protocols/JnxBonds "Japannext Bonds"
@@ -206,9 +207,9 @@ Enjoy.
 [MoonAts.Ats]: https://github.com/Open-Markets-Initiative/Open-Markets-Initiative/tree/main/Organizations/OtcMarkets/Protocols/MoonAts "MOON ATS"
 [MrxOptions.Exchange]: https://github.com/Open-Markets-Initiative/Open-Markets-Initiative/tree/main/Organizations/Nasdaq/Protocols/MrxOptions "Nasdaq MRX"
 [Mx.Exchange]: https://github.com/Open-Markets-Initiative/Open-Markets-Initiative/tree/main/Organizations/Tmx/Protocols/Mx "Montreal Exchange"
-[NairobiBonds.Exchange]: https://github.com/Open-Markets-Initiative/Open-Markets-Initiative/tree/main/Organizations/Nairobi/Protocols/NairobiBonds "Nairobi Securities Exchange Bonds"
-[NairobiDerivatives.Exchange]: https://github.com/Open-Markets-Initiative/Open-Markets-Initiative/tree/main/Organizations/Nairobi/Protocols/NairobiDerivatives "Nairobi Securities Exchange Derivatives"
-[NairobiEquities.Exchange]: https://github.com/Open-Markets-Initiative/Open-Markets-Initiative/tree/main/Organizations/Nairobi/Protocols/NairobiEquities "Nairobi Securities Exchange Equities"
+[NairobiBonds.Exchange]: https://github.com/Open-Markets-Initiative/Open-Markets-Initiative/tree/main/Organizations/NseKenya/Protocols/NairobiBonds "Nairobi Securities Exchange Bonds"
+[NairobiDerivatives.Exchange]: https://github.com/Open-Markets-Initiative/Open-Markets-Initiative/tree/main/Organizations/NseKenya/Protocols/NairobiDerivatives "Nairobi Securities Exchange Derivatives"
+[NairobiEquities.Exchange]: https://github.com/Open-Markets-Initiative/Open-Markets-Initiative/tree/main/Organizations/NseKenya/Protocols/NairobiEquities "Nairobi Securities Exchange Equities"
 [NasdaqCanada.Exchange]: https://github.com/Open-Markets-Initiative/Open-Markets-Initiative/tree/main/Organizations/Nasdaq/Protocols/NasdaqCanada "Nasdaq Canada"
 [NationalEquities.Exchange]: https://github.com/Open-Markets-Initiative/Open-Markets-Initiative/tree/main/Organizations/Nyse/Protocols/NationalEquities "Nyse National Equities"
 [NeeqSecurities.Exchange]: https://github.com/Open-Markets-Initiative/Open-Markets-Initiative/tree/main/Organizations/Neeq/Protocols/NeeqSecurities "National Equities Exchange and Quotations"

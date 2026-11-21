@@ -13,6 +13,7 @@
 | AsxDerivatives | Trade24 | Fix | 1.0 | private |
 | AsxSecurities | DropCopy | Fix | 1.1 | private |
 | AsxSecurities | MarketPoint | Fix | 1.0 | private |
+| AsxSecurities | Mdf | Itch | 1.0 | [files](Asx.AsxSecurities.Mdf.Itch.v1.0/) |
 | AsxSecurities | OrderEntry | Fix | 1.1 | private |
 | AsxSecurities | SignalB | Fix | 1.0 | private |
 | AsxSecurities | Trade | Itch | 2.0 | private |
