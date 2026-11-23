@@ -41,6 +41,7 @@
 | Spectra | OptInfoReplay | Simba | 8.0.0 | [files](Moex.Spectra.OptInfoReplay.Simba.v8.0.0/) |
 | Spectra | OptInfoReplay | Simba | 9.12.0 | [files](Moex.Spectra.OptInfoReplay.Simba.v9.12.0/) |
 | Spectra | OptInfoReplay | Simba | 9.9.0 | [files](Moex.Spectra.OptInfoReplay.Simba.v9.9.0/) |
+| Spectra | OrderEntry | Twime | 9.12.0 | [files](Moex.Spectra.OrderEntry.Twime.v9.12.0/) |
 | Spectra | OrdersLogIncremental | Simba | 1.0.4 | [files](Moex.Spectra.OrdersLogIncremental.Simba.v1.0.4/) |
 | Spectra | OrdersLogIncremental | Simba | 2.2.0 | [files](Moex.Spectra.OrdersLogIncremental.Simba.v2.2.0/) |
 | Spectra | OrdersLogIncremental | Simba | 3.1.0 | [files](Moex.Spectra.OrdersLogIncremental.Simba.v3.1.0/) |
