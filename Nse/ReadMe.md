@@ -28,7 +28,6 @@
 | NseCm | Mtbt | Tbt | 7.1 | [files](Nse.NseCm.Mtbt.Tbt.v7.1/) |
 | NseCm | MtbtNdal | Tbt | 6.5 | [files](Nse.NseCm.MtbtNdal.Tbt.v6.5/) |
 | NseCm | OrderEntry | Nnf | 6.6 | [files](Nse.NseCm.OrderEntry.Nnf.v6.6/) |
-| NseCm | OrderEntry | NnfDirect | 6.6 | [files](Nse.NseCm.OrderEntry.NnfDirect.v6.6/) |
 | NseCm | OrderEntry | NnfTrimmed | 6.6 | [files](Nse.NseCm.OrderEntry.NnfTrimmed.v6.6/) |
 | NseCm | Recovery | Tbt | 6.8 | [files](Nse.NseCm.Recovery.Tbt.v6.8/) |
 | NseCm | Recovery | Tbt | 6.9 | [files](Nse.NseCm.Recovery.Tbt.v6.9/) |

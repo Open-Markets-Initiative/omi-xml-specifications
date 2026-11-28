@@ -5,6 +5,7 @@
 
 | Division | Protocol | Encoding | Version | Specification |
 | --- | --- | --- | --- | --- |
+| FxMatching | MarketData | Sbe | 1.12 | private |
 | Idem | OrderEntry | Fix | 3.2 | private |
 | Lse | Analytics | Gtp | 26.2 | private |
 | Lse | Analytics | Gtp | 27.3 | [files](Lseg.Lse.Analytics.Gtp.v27.3/) |

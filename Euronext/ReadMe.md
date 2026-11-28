@@ -120,6 +120,11 @@
 | Optiq | OrderEntryGateway | Sbe | 6.65 | [files](Euronext.Optiq.OrderEntryGateway.Sbe.v6.65/) |
 | Optiq | OrderEntryGateway | Sbe | 6.67 | [files](Euronext.Optiq.OrderEntryGateway.Sbe.v6.67/) |
 | Optiq | OrderEntryGateway | Sbe | 6.69 | [files](Euronext.Optiq.OrderEntryGateway.Sbe.v6.69/) |
+| Optiq | StreamPro | Sbe | 6.65 | [files](Euronext.Optiq.StreamPro.Sbe.v6.65/) |
+| Optiq | StreamPro | Sbe | 6.67 | [files](Euronext.Optiq.StreamPro.Sbe.v6.67/) |
+| Optiq | StreamPro | Sbe | 6.69 | [files](Euronext.Optiq.StreamPro.Sbe.v6.69/) |
+| Optiq | StreamProRegulatory | Sbe | 6.67 | [files](Euronext.Optiq.StreamProRegulatory.Sbe.v6.67/) |
+| Optiq | StreamProRegulatory | Sbe | 6.69 | [files](Euronext.Optiq.StreamProRegulatory.Sbe.v6.69/) |
 
 A specification marked private is released by the venue to registered participants only. Those protocols are listed here for completeness, and nothing read out of their documents is published: no message layouts, no field names, no wording. The generated parsers in the definition repositories describe the wire format and are published as usual.
 

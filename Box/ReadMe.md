@@ -5,6 +5,8 @@
 
 | Division | Protocol | Encoding | Version | Specification |
 | --- | --- | --- | --- | --- |
+| BoxOptions | BinaryMulticast | BoxBinary | 1.0 | [files](Box.BoxOptions.BinaryMulticast.BoxBinary.v1.0/) |
+| BoxOptions | BinaryRetransmission | BoxBinary | 1.0 | [files](Box.BoxOptions.BinaryRetransmission.BoxBinary.v1.0/) |
 | BoxOptions | OrderEntry | Fix | 4.5 | [files](Box.BoxOptions.OrderEntry.Fix.v4.5/) |
 | BoxOptions | OrderEntry | Fix | 4.6 | [files](Box.BoxOptions.OrderEntry.Fix.v4.6/) |
 | BoxOptions | OrderEntry | Fix | 4.7 | [files](Box.BoxOptions.OrderEntry.Fix.v4.7/) |
